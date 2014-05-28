@@ -250,7 +250,7 @@ public class BiomeDecorator extends Kernel{
     }
 
     @Override
-    public void run() {
+    public void run() {//softpak
         int gid = getGlobalId();
         if (func == 1){
             i1g[gid] = cg + brg1[gid];
@@ -309,7 +309,7 @@ public class BiomeDecorator extends Kernel{
     
     
     int kg;
-    protected void b(int i, WorldGenerator worldgenerator, int j, int k) {
+    protected void b(int i, WorldGenerator worldgenerator, int j, int k) {//softpak
         /*for (int l = 0; l < i; ++l) {
             int i1 = this.c + this.b.nextInt(16);
             int j1 = this.b.nextInt(k) + this.b.nextInt(k) + (j - k);
