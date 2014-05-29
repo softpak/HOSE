@@ -101,7 +101,9 @@ public class Chunk extends Kernel{
         int gid = getGlobalId();
         k1g[gid] = lg[gid] * kg[gid] * 16 | i1g[gid] * kg[gid] | j1g[gid];
     }
+    
 
+    
     int[] k1g,lg,kg,i1g,j1g;
     public Chunk(World world, Block[] ablock, byte[] abyte, int i, int j) {//softpak
         this(world, i, j);
@@ -113,24 +115,29 @@ public class Chunk extends Kernel{
         kg = new int[16*16*k];
         i1g = new int[16*16*k];
         j1g = new int[16*16*k];
-        int gg=0;
+        int gg=-1;
         for (int l = 0; l < 16; ++l) {
             for (int i1 = 0; i1 < 16; ++i1) {
                 for (int j1 = 0; j1 < k; ++j1) {
-                    k1g[gg] = lg[gg] * kg[gg] * 16 | i1g[gg] * kg[gg] | j1g[gg];
                     gg++;
+                    lg[gg] = l;
+                    kg[gg] = k;
+                    i1g[gg] = i1;
+                    j1g[gg] = j1;
                 }
             }
         }
         setExecutionMode(Kernel.EXECUTION_MODE.GPU);
         execute(Range.create(16*16*k));
-        if (gg>60){dispose();}
+        //System.out.println(gg+" times.");
+        //if (gg % 128 == 0){dispose();}
         
-        int ggr = 0; 
+        int ggr = -1; 
         for (int l = 0; l < 16; ++l) {
             for (int i1 = 0; i1 < 16; ++i1) {
                 for (int j1 = 0; j1 < k; ++j1) {
                     //int k1 = l * k * 16 | i1 * k | j1;
+                    ggr++;
                     Block block = ablock[k1g[ggr]];
                     
                     if (block != null && block != Blocks.AIR) {
@@ -143,12 +150,13 @@ public class Chunk extends Kernel{
                         this.sections[l1].setTypeId(l, j1 & 15, i1, block);
                         this.sections[l1].setData(l, j1 & 15, i1, checkData( block, abyte[k1g[ggr]] ) );
                     }
-                    ggr++;
+                    
                 }
             }
         }
         long et = System.nanoTime();
         //System.out.println("Time:"+(et-st)+"ns.");
+        //dispose();
     }
 
     public boolean a(int i, int j) {
