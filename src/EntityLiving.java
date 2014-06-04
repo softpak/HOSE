@@ -86,34 +86,35 @@ public abstract class EntityLiving extends Entity {
         ++this.aU; // Above all the floats
     }
     // Spigot end
-    /*
-    float[] val = new float[3];
-    class calc extends Kernel{
-        
-        @Override
-        public void run() {
-            val[0] = (float) (Math.random() + 1.0D) * 0.01F;
-            val[1] = (float) Math.random() * 12398.0F;
-            val[2] = (float) (Math.random() * 3.1415927410125732D * 2.0D);
-        }
-        
-    }*/
+    
+    double[] val = new double[3];
+    
     
     
 
     public EntityLiving(World world) {//softpak
         super(world);
         this.aC();
-        /*
-        calc cal = new calc();
-        cal.execute(3);*/
+        val[0] = Math.random();
+        val[1] = Math.random();
+        val[2] = Math.random();;
+        new Kernel(){
+            @Override
+            public void run() {
+                //int gid = getGlobalId();
+                val[0] = (val[0] + 1.000000000000) * 0.01000000000;
+                val[1] = val[1] * 12398.000000000000;
+                val[2] = (val[2] * 3.1415927410125732 * 2.000000000000);
+            }
+        };
+        //System.out.println("EntityLiving");
         // CraftBukkit - setHealth(getMaxHealth()) inlined and simplified to skip the instanceof check for EntityPlayer, as getBukkitEntity() is not initialized in constructor
         this.datawatcher.watch(6, (float) this.getAttributeInstance(GenericAttributes.a).getValue());
         this.k = true;
-        this.aL = (float) (Math.random() + 1.0D) * 0.01F;//(float) (Math.random() + 1.0D) * 0.01F
+        this.aL = (float)val[0];//(float) (Math.random() + 1.0D) * 0.01F
         this.setPosition(this.locX, this.locY, this.locZ);
-        this.aK = (float) Math.random() * 12398.0F;//(float) Math.random() * 12398.0F
-        this.yaw = (float) (Math.random() * 3.1415927410125732D * 2.0D);//(float) (Math.random() * 3.1415927410125732D * 2.0D)
+        this.aK = (float)val[1];//(float) Math.random() * 12398.0F
+        this.yaw = (float)val[2];//(float) (Math.random() * 3.1415927410125732D * 2.0D)
         this.aO = this.yaw;
         this.W = 0.5F;
     }
