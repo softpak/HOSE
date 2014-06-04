@@ -252,16 +252,22 @@ public class BiomeDecorator  extends Kernel{
     
     
     
-    //@Override
+    @Override
     public void run() {//softpak
         int pid = getPassId();
-        i1g[pid] = this.c + bg1[pid];
-        j1g[pid] = bg2[pid] + jg[pid];
-        k1g[pid] = this.d + bg3[pid];
+        if (func == 1){
+            i1g[pid] = this.c + bg1[pid];
+            j1g[pid] = bg2[pid] + jg[pid];
+            k1g[pid] = this.d + bg3[pid];
+        }else if (func == 2){
+            i1g[pid] = this.c + bg1[pid];
+            j1g[pid] = bg2[pid] + bg3[pid] + (jg[pid] - kg[pid]);
+            k1g[pid] = this.d + bg4[pid];
+        }
     }
     
-    
-    int[] i1g,j1g,k1g,kg,jg,bg1,bg2,bg3;
+    int func = 0;
+    int[] i1g,j1g,k1g,kg,jg,bg1,bg2,bg3,bg4;
     protected void a(int i, WorldGenerator worldgenerator, int j, int k) {//softpak
         
         //long st = System.nanoTime();
@@ -272,6 +278,7 @@ public class BiomeDecorator  extends Kernel{
 
             worldgenerator.a(this.a, this.b, i1, j1, k1);
         }*/
+        func = 1;
         setExplicit(true);
         i1g = new int[i];
         j1g = new int[i];
@@ -281,35 +288,70 @@ public class BiomeDecorator  extends Kernel{
         bg1 = new int[i];
         bg2 = new int[i];
         bg3 = new int[i];
+        bg4 = new int[i];
+        put(i1g);        put(j1g);
+        put(k1g);        put(bg1);
+        put(bg2);        put(bg3);
         for (int l = 0; l < i; ++l) {
             bg1[l] = this.b.nextInt(16);
             bg2[l] = this.b.nextInt(k - j);
             bg3[l] = this.b.nextInt(16);
-            execute(l);
         }
+        setExecutionMode(EXECUTION_MODE.GPU);
+        execute(i);
         
-
         for (int l = 0; l < i; ++l) {
             worldgenerator.a(this.a, this.b, i1g[l], j1g[l], k1g[l]);
         }
+        /*
         GPU_C++;
         if (GPU_C % 100 == 0){
             dispose();
             GPU_C = 0;
             //System.out.println("Dispose.");
-        }
+        }*/
         //long et = System.nanoTime();
         //System.out.println("Time:"+(et-st)+"ns.");
     }
 
     protected void b(int i, WorldGenerator worldgenerator, int j, int k) {//softpak
+        /*
         for (int l = 0; l < i; ++l) {
             int i1 = this.c + this.b.nextInt(16);
             int j1 = this.b.nextInt(k) + this.b.nextInt(k) + (j - k);
             int k1 = this.d + this.b.nextInt(16);
 
             worldgenerator.a(this.a, this.b, i1, j1, k1);
+        }*/
+        func = 2;
+        setExplicit(true);
+        i1g = new int[i];
+        j1g = new int[i];
+        k1g = new int[i];
+        kg = new int[i];
+        jg = new int[i];
+        bg1 = new int[i];
+        bg2 = new int[i];
+        bg3 = new int[i];
+        bg4 = new int[i];
+        put(i1g);        put(j1g);
+        put(k1g);        put(kg);
+        put(jg);         put(bg1);
+        put(bg2);        put(bg3);
+        put(bg4);
+        for (int l = 0; l < i; ++l) {
+            bg1[l] = this.b.nextInt(16);
+            bg2[l] = this.b.nextInt(k);
+            bg3[l] = this.b.nextInt(k);
+            jg[l] = j;
+            kg[l] = k;
+            bg4[l] = this.b.nextInt(16);
         }
+        execute(i);
+        for (int l = 0; l < i; ++l) {
+            worldgenerator.a(this.a, this.b, i1g[l], j1g[l], k1g[l]);
+        }
+        
     }
 
     protected void a() {

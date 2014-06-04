@@ -71,16 +71,45 @@ public class Chunk extends Kernel{
     public org.bukkit.Chunk bukkitChunk;
     public boolean mustSave;
     // CraftBukkit end
+
     
-    public Chunk(World world, Block[] ablock, int i, int j) {
+    
+    @Override
+    public void run() {
+        int pid = getGlobalId();
+        val[pid] = lg[pid] << 11 | i1g[pid] << 7 | j1g[pid];
+    }
+    int[] lg,i1g,j1g,val;
+    int cg;
+    
+    public Chunk(World world, Block[] ablock, int i, int j) {//softpak
         this(world, i, j);
         int k = ablock.length / 256;
         boolean flag = !world.worldProvider.g;
-
+        int as = 16*16*k;
+        cg = -1;
+        lg = new int[as];
+        i1g = new int[as];
+        j1g = new int[as];
+        val = new int[as];
+        put(lg);    put(i1g);
+        put(j1g);   put(val);
         for (int l = 0; l < 16; ++l) {
             for (int i1 = 0; i1 < 16; ++i1) {
                 for (int j1 = 0; j1 < k; ++j1) {
-                    Block block = ablock[l << 11 | i1 << 7 | j1];
+                    cg++;
+                    lg[cg] = l;
+                    i1g[cg] = i1;
+                    j1g[cg] = j1;
+                }
+            }
+        }
+        cg = -1;
+        for (int l = 0; l < 16; ++l) {
+            for (int i1 = 0; i1 < 16; ++i1) {
+                for (int j1 = 0; j1 < k; ++j1) {
+                    cg++;
+                    Block block = ablock[val[cg]];
 
                     if (block != null && block.getMaterial() != Material.AIR) {
                         int k1 = j1 >> 4;
@@ -94,52 +123,22 @@ public class Chunk extends Kernel{
                 }
             }
         }
+        //System.out.println("Chunk.");
     }
-    
-    //@Override
-    public void run() {
-        int gid = getGlobalId();
-        k1g[gid] = lg[gid] * kg[gid] * 16 | i1g[gid] * kg[gid] | j1g[gid];
-    }
-    
 
     
-    int[] k1g,lg,kg,i1g,j1g;
-    public Chunk(World world, Block[] ablock, byte[] abyte, int i, int j) {//softpak
+    
+    public Chunk(World world, Block[] ablock, byte[] abyte, int i, int j) {
         this(world, i, j);
-        long st = System.nanoTime();
         int k = ablock.length / 256;
         boolean flag = !world.worldProvider.g;
-        k1g = new int[16*16*k];
-        lg = new int[16*16*k];
-        kg = new int[16*16*k];
-        i1g = new int[16*16*k];
-        j1g = new int[16*16*k];
-        int gg=-1;
+
         for (int l = 0; l < 16; ++l) {
             for (int i1 = 0; i1 < 16; ++i1) {
                 for (int j1 = 0; j1 < k; ++j1) {
-                    gg++;
-                    lg[gg] = l;
-                    kg[gg] = k;
-                    i1g[gg] = i1;
-                    j1g[gg] = j1;
-                }
-            }
-        }
-        setExecutionMode(Kernel.EXECUTION_MODE.GPU);
-        execute(Range.create(16*16*k));
-        //System.out.println(gg+" times.");
-        //if (gg % 128 == 0){dispose();}
-        
-        int ggr = -1; 
-        for (int l = 0; l < 16; ++l) {
-            for (int i1 = 0; i1 < 16; ++i1) {
-                for (int j1 = 0; j1 < k; ++j1) {
-                    //int k1 = l * k * 16 | i1 * k | j1;
-                    ggr++;
-                    Block block = ablock[k1g[ggr]];
-                    
+                    int k1 = l * k * 16 | i1 * k | j1;
+                    Block block = ablock[k1];
+
                     if (block != null && block != Blocks.AIR) {
                         int l1 = j1 >> 4;
 
@@ -148,15 +147,64 @@ public class Chunk extends Kernel{
                         }
 
                         this.sections[l1].setTypeId(l, j1 & 15, i1, block);
-                        this.sections[l1].setData(l, j1 & 15, i1, checkData( block, abyte[k1g[ggr]] ) );
+                        this.sections[l1].setData(l, j1 & 15, i1, checkData( block, abyte[k1] ) );
                     }
-                    
                 }
             }
         }
-        long et = System.nanoTime();
-        //System.out.println("Time:"+(et-st)+"ns.");
-        //dispose();
+        /*this(world, i, j);
+        int k = ablock.length / 256;
+        boolean flag = !world.worldProvider.g;
+        int as = 16*16*k;//array size
+        //setExplicit(true);
+        k1g = new int[as];
+        lg = new int[as];
+        i1g = new int[as];
+        j1g = new int[as];
+        put(k1g);   put(lg);
+        put(i1g);   put(j1g);
+        kig = k;
+        cg = -1;
+        GPU_C++;
+        for (int l = 0; l < 16; ++l) {
+            for (int i1 = 0; i1 < 16; ++i1) {
+                for (int j1 = 0; j1 < k; ++j1) {
+                    cg++;
+                    lg[cg] = l;
+                    i1g[cg] = i1;
+                    j1g[cg] = j1;
+                }
+            }
+        }
+        setExecutionMode(EXECUTION_MODE.GPU);
+        execute(as);
+        
+        if (GPU_C % 2 == 0){
+            dispose();
+            GPU_C = 0;
+        }
+        cg = -1;
+        for (int l = 0; l < 16; ++l) {
+            for (int i1 = 0; i1 < 16; ++i1) {
+                for (int j1 = 0; j1 < k; ++j1) {
+                    cg++;
+                    //int k1 = l * k * 16 | i1 * k | j1;
+                    Block block = ablock[k1g[cg]];
+
+                    if (block != null && block != Blocks.AIR) {
+                        int l1 = j1 >> 4;
+
+                        if (this.sections[l1] == null) {
+                            this.sections[l1] = new ChunkSection(l1 << 4, flag);
+                        }
+
+                        this.sections[l1].setTypeId(l, j1 & 15, i1, block);
+                        this.sections[l1].setData(l, j1 & 15, i1, checkData( block, abyte[k1g[cg]] ) );
+                    }
+                }
+            }
+        }
+        dispose();*/
     }
 
     public boolean a(int i, int j) {
@@ -436,13 +484,13 @@ public class Chunk extends Kernel{
     }
 
     // Spigot start - prevent invalid data values
-    private static int checkData( Block block, int l )
+    public static int checkData( Block block, int data )
     {
-        if (block == Block.b( "minecraft:double_plant" ) )
+        if (block == Blocks.DOUBLE_PLANT )
         {
-            return l == 7 ? 0 : l;
+            return data < 6 || data >= 8 ? data : 0;
         }
-        return l;
+        return data;
     }
     // Spigot end
 
@@ -759,6 +807,11 @@ public class Chunk extends Kernel{
 
             tileentity.t();
             this.tileEntities.put(chunkposition, tileentity);
+            // Spigot start - The tile entity has a world, now hoppers can be born ticking.
+            if (this.world.spigotConfig.altHopperTicking) {
+                this.world.triggerHoppersList.add(tileentity);
+            }
+            // Spigot end
             // CraftBukkit start
         } else {
             System.out.println("Attempted to place a tile entity (" + tileentity + ") at " + tileentity.x + "," + tileentity.y + "," + tileentity.z
@@ -1171,5 +1224,4 @@ public class Chunk extends Kernel{
         return true;
     }
 
-    
 }
