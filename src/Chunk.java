@@ -74,7 +74,7 @@ public class Chunk extends Kernel{
 
     
     
-    @Override
+    //@Override
     public void run() {
         int pid = getGlobalId();
         val[pid] = lg[pid] << 11 | i1g[pid] << 7 | j1g[pid];
@@ -104,6 +104,7 @@ public class Chunk extends Kernel{
                 }
             }
         }
+        execute(as);
         cg = -1;
         for (int l = 0; l < 16; ++l) {
             for (int i1 = 0; i1 < 16; ++i1) {
@@ -124,6 +125,7 @@ public class Chunk extends Kernel{
             }
         }
         //System.out.println("Chunk.");
+        dispose();
     }
 
     

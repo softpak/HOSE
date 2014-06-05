@@ -252,7 +252,7 @@ public class BiomeDecorator  extends Kernel{
     
     
     
-    @Override
+    //@Override
     public void run() {//softpak
         int pid = getPassId();
         if (func == 1){

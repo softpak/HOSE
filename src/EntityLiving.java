@@ -99,7 +99,7 @@ public abstract class EntityLiving extends Entity {
         val[1] = Math.random();
         val[2] = Math.random();;
         new Kernel(){
-            @Override
+            //@Override
             public void run() {
                 //int gid = getGlobalId();
                 val[0] = (val[0] + 1.000000000000) * 0.01000000000;
