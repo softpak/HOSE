@@ -451,6 +451,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
     // Spigot End
     ExecutorService threadpool = Executors.newFixedThreadPool(100);
     Future<Long> task;
+    hosecalc_long hl = new hosecalc_long();
     public void run() {//softpak
         try {
             if (this.init()) {
@@ -467,10 +468,9 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                     //System.out.println("run");
                     curTime = System.nanoTime();
                     //wait = TICK_TIME - (curTime - lastTick) - catchupTime;
-                    task = threadpool.submit(new hosecalc_long(TICK_TIME,curTime,lastTick,catchupTime));
-                    wait = task.get();
-                    long et = System.nanoTime();
-                    System.out.println(wait+","+(et-curTime));
+                    wait = hl.calc(TICK_TIME,curTime,lastTick,catchupTime);
+                    //long et = System.nanoTime();
+                    //System.out.println(wait);
                     //Thread.sleep(wait / 1000000);
                     
                     if (wait > 0) {
@@ -579,7 +579,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
     protected void t() {}
 
     protected void u() throws ExceptionWorldConflict { // CraftBukkit - added throws
-        System.out.println("u");
+        //System.out.println("u");
         SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
         ++this.ticks;
