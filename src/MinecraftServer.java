@@ -449,8 +449,6 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
         return ( avg * exp ) + ( tps * ( 1 - exp ) );
     }
     // Spigot End
-    ExecutorService threadpool = Executors.newFixedThreadPool(100);
-    Future<Long> task;
     hosecalc_long hl = new hosecalc_long();
     public void run() {//softpak
         try {
