@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import org.HOSE.hosecalc_double;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -88,26 +89,16 @@ public abstract class EntityLiving extends Entity {
     // Spigot end
     
     double[] val = new double[3];
-    
-    
-    
-
+    hosecalc_double hd= new hosecalc_double();
     public EntityLiving(World world) {//softpak
         super(world);
         this.aC();
-        val[0] = Math.random();
-        val[1] = Math.random();
-        val[2] = Math.random();;
-        new Kernel(){
-            //@Override
-            public void run() {
-                //int gid = getGlobalId();
-                val[0] = (val[0] + 1.000000000000) * 0.01000000000;
-                val[1] = val[1] * 12398.000000000000;
-                val[2] = (val[2] * 3.1415927410125732 * 2.000000000000);
-            }
-        };
-        //System.out.println("EntityLiving");
+        //long st = System.nanoTime();
+        val = hd.calcEntityLiving();
+        //hd.dispose();
+        //long et = System.nanoTime();
+        
+        //System.out.println("EntityLiving:"+(et-st)+"ns.");
         // CraftBukkit - setHealth(getMaxHealth()) inlined and simplified to skip the instanceof check for EntityPlayer, as getBukkitEntity() is not initialized in constructor
         this.datawatcher.watch(6, (float) this.getAttributeInstance(GenericAttributes.a).getValue());
         this.k = true;
@@ -117,6 +108,7 @@ public abstract class EntityLiving extends Entity {
         this.yaw = (float)val[2];//(float) (Math.random() * 3.1415927410125732D * 2.0D)
         this.aO = this.yaw;
         this.W = 0.5F;
+        //System.out.println(val[0]+","+val[1]+","+val[2]);
     }
 
     protected void c() {
