@@ -1,4 +1,4 @@
 HOSE
 ====
 
-It`s based on Spigot and with Aparapi.
+Now, It`s based on Spigot and with MPI.
