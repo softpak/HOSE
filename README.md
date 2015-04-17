@@ -1,4 +1,6 @@
 HOSE
 ====
 
-Now, It`s based on Spigot and with MPI.
+MPI failed.
+Now I use HSA instead.
+Please see HSAFoundation for further information.
