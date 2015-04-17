@@ -1,6 +1,6 @@
 HOSE
 ====
 
-MPI failed.
-Now I use HSA instead.
+MPI failed.\n
+Now I use HSA instead.\n
 Please see HSAFoundation for further information.
