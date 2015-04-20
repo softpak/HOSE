@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.io.DataInputStream;
@@ -23,7 +24,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
     // Spigot end
     private Object d = new Object();
     private final File e;
-
+    
     public ChunkRegionLoader(File file) {
         this.e = file;
     }
@@ -86,7 +87,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
 
         return this.a(world, i, j, nbttagcompound);
     }
-
+    
     protected Object[] a(World world, int i, int j, NBTTagCompound nbttagcompound) { // CraftBukkit - return Chunk -> Object[]
         if (!nbttagcompound.hasKeyOfType("Level", 10)) {
             ChunkRegionLoader.a.error("Chunk file at " + i + "," + j + " is missing level data, skipping");
@@ -104,10 +105,10 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
                     ChunkRegionLoader.a.error("Chunk file at " + i + "," + j + " is in the wrong location; relocating. (Expected " + i + ", " + j + ", got " + chunk.locX + ", " + chunk.locZ + ")");
                     nbttagcompound1.setInt("xPos", i);
                     nbttagcompound1.setInt("zPos", j);
-
                     // CraftBukkit start - Have to move tile entities since we don't load them at this stage
                     NBTTagList tileEntities = nbttagcompound.getCompound("Level").getList("TileEntities", 10);
                     if (tileEntities != null) {
+                        //HSA may make some mistakes...ob it.
                         for (int te = 0; te < tileEntities.size(); te++) {
                             NBTTagCompound tileEntity = (NBTTagCompound) tileEntities.get(te);
                             int x = tileEntity.getInt("x") - chunk.locX * 16;

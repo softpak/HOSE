@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
@@ -120,14 +121,24 @@ public class BlockRedstoneTorch extends BlockTorch {
                 world.setTypeAndData(blockposition, Blocks.UNLIT_REDSTONE_TORCH.getBlockData().set(BlockRedstoneTorch.FACING, iblockdata.get(BlockRedstoneTorch.FACING)), 3);
                 if (this.a(world, blockposition, true)) {
                     world.makeSound((double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-
+                    //HSA
+                    double[] d0 = new double[5];
+                    double[] d1 = new double[5];
+                    double[] d2 = new double[5];
+                    Aparapi.range(5).forEach(gid -> {
+                        d0[gid] = (double) blockposition.getX() + random.nextDouble() * 0.6D + 0.2D;
+                        d1[gid] = (double) blockposition.getY() + random.nextDouble() * 0.6D + 0.2D;
+                        d2[gid] = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;
+                        world.addParticle(EnumParticle.SMOKE_NORMAL, d0[gid], d1[gid], d2[gid], 0.0D, 0.0D, 0.0D, new int[0]);
+                    });
+                    /*
                     for (int i = 0; i < 5; ++i) {
                         double d0 = (double) blockposition.getX() + random.nextDouble() * 0.6D + 0.2D;
                         double d1 = (double) blockposition.getY() + random.nextDouble() * 0.6D + 0.2D;
                         double d2 = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;
 
                         world.addParticle(EnumParticle.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
-                    }
+                    }*/
 
                     world.a(blockposition, world.getType(blockposition).getBlock(), 160);
                 }

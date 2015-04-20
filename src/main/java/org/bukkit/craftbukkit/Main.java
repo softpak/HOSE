@@ -21,22 +21,24 @@ public class Main {
     public static void main(String[] args) {
         
         //run HSA test
-        
         System.out.println("Run HSA tests.");
         final int size = 100000;
         final float[] a = new float[size];
         final float[] b = new float[size];
-        for (int i=0;i<100;i++){
+        for (int i=0;i<10;i++){
             final float[] sum = new float[size];
             long st = System.nanoTime();
             Aparapi.range(size).forEach(gid -> a[gid] = (float)(Math.random()*100));
             Aparapi.range(size).forEach(gid -> b[gid] = (float)(Math.random()*100));
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]*b[gid]*b[gid]);
-            Device.hsa().forEach(0, size, gid-> sum[gid] = a[gid] + b[gid]*b[gid]*b[gid]);
+            Device.hsa().forEach(0, size, gid-> {
+                sum[gid] = a[gid] + b[gid]*b[gid]*b[gid];
+            });
             long et = System.nanoTime();
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]);
             //Aparapi.range(size).forEach(id -> System.out.printf("%6.2f + %6.2f = %8.2f\n", a[id], b[id], sum[id]));
-            System.out.println("Time use:"+(et-st)+"ns.");
+            System.out.println("Time"+i+" use:"+(et-st)+"ns.");
+            
         }
         System.out.println("HSA passed.");
         

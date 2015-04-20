@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -352,14 +353,21 @@ public class Block {
 
         }
     }
-
+    
+    //HSA
     public static void a(World world, BlockPosition blockposition, ItemStack itemstack) {
         if (!world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
+            double[] d = new double[3];
+            
             float f = 0.5F;
+            Aparapi.range(3).forEach(gid -> d[gid] = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D);
+            /*
             double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack);
+            */
+            //EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack);
+            EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d[0], (double) blockposition.getY() + d[1], (double) blockposition.getZ() + d[2], itemstack);
 
             entityitem.p();
             world.addEntity(entityitem);

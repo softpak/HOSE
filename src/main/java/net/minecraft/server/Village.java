@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import java.util.Iterator;
@@ -85,12 +86,17 @@ public class Village {
         if (!World.a((IBlockAccess) this.a, blockposition1.down())) {
             return false;
         } else {
-            int i = blockposition1.getX() - blockposition.getX() / 2;
-            int j = blockposition1.getZ() - blockposition.getZ() / 2;
+            //HSA
+            int[] hi = new int[1];
+            int[] hj = new int[1];
+            Aparapi.range(1).forEach(gid -> hi[gid] = blockposition1.getX() - blockposition.getX() / 2);
+            Aparapi.range(1).forEach(gid -> hj[gid] = blockposition1.getZ() - blockposition.getZ() / 2);
+            //int i = blockposition1.getX() - blockposition.getX() / 2;
+            //int j = blockposition1.getZ() - blockposition.getZ() / 2;
 
-            for (int k = i; k < i + blockposition.getX(); ++k) {
+            for (int k = hi[0]; k < hi[0] + blockposition.getX(); ++k) {
                 for (int l = blockposition1.getY(); l < blockposition1.getY() + blockposition.getY(); ++l) {
-                    for (int i1 = j; i1 < j + blockposition.getZ(); ++i1) {
+                    for (int i1 = hj[0]; i1 < hj[0] + blockposition.getZ(); ++i1) {
                         if (this.a.getType(new BlockPosition(k, l, i1)).getBlock().isOccluding()) {
                             return false;
                         }
@@ -413,7 +419,7 @@ public class Village {
         nbttagcompound.setInt("ACZ", this.c.getZ());
         NBTTagList nbttaglist = new NBTTagList();
         Iterator iterator = this.b.iterator();
-
+        //HSA posible
         while (iterator.hasNext()) {
             VillageDoor villagedoor = (VillageDoor) iterator.next();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();

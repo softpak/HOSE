@@ -930,30 +930,53 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected void X() {
+        //HSA
+        float f[] = new float[1];
+        Aparapi.range(1).forEach(gid -> f[gid] = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F);
+        if (f[0] > 1.0F) {
+            f[0] = 1.0F;
+        }
+        /*
         float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
 
         if (f > 1.0F) {
             f = 1.0F;
-        }
-
-        this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+        }*/
+        
+        this.makeSound(this.aa(), f[0], 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
         int i;
-        float f2;
-        float f3;
+        //float f2;
+        //float f3;
+        int loopsize = (int)(1.0F + this.width * 20.0F);
+        float[] hf2 = new float[loopsize];
+        float[] hf3 = new float[loopsize];
+        Aparapi.range(loopsize).forEach(gid -> {
+            hf2[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+            hf3[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) hf2[gid], (double) (f1 + 1.0F), this.locZ + (double) hf3[gid], this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
+        });
 
+        /*
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
-        }
-
+        }*/
+        
+        Aparapi.range(loopsize).forEach(gid -> {
+            hf2[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+            hf3[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) hf2[0], (double) (f1 + 1.0F), this.locZ + (double) hf3[0], this.motX, this.motY, this.motZ, new int[0]);
+        });
+        
+        /*
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
-        }
+        }*/
 
     }
 
@@ -1002,24 +1025,39 @@ public abstract class Entity implements ICommandListener {
     public boolean ab() {
         return this.world.a(this.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
     }
-
+    
+    
     public void a(float f, float f1, float f2) {
-        float f3 = f * f + f1 * f1;
-
-        if (f3 >= 1.0E-4F) {
-            f3 = MathHelper.c(f3);
-            if (f3 < 1.0F) {
-                f3 = 1.0F;
+        //HSA
+        //float f3 = f * f + f1 * f1;
+        float[] f3 = new float[1];
+        float[] hf = new float[1];
+        float[] hf1 = new float[1];
+        hf[0] = f;
+        hf1[0] = f1;
+        
+        Aparapi.range(1).forEach(gid -> f3[gid] = hf[gid] * hf[gid] + hf1[gid] * hf1[gid]);
+        
+        
+        if (f3[0] >= 1.0E-4F) {
+            f3[0] = MathHelper.c(f3[0]);
+            if (f3[0] < 1.0F) {
+                f3[0] = 1.0F;
             }
 
-            f3 = f2 / f3;
-            f *= f3;
-            f1 *= f3;
-            float f4 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
-            float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
-
-            this.motX += (double) (f * f5 - f1 * f4);
-            this.motZ += (double) (f1 * f5 + f * f4);
+            f3[0] = f2 / f3[0];
+            hf[0] *= f3[0];
+            hf1[0] *= f3[0];
+            float[] hf4 = new float[1];
+            float[] hf5 = new float[1];
+            //float f4 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
+            //float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
+            Aparapi.range(1).forEach(gid -> hf4[gid] = MathHelper.sin(this.yaw * 3.1415927F / 180.0F));
+            Aparapi.range(1).forEach(gid -> hf5[gid] = MathHelper.cos(this.yaw * 3.1415927F / 180.0F));
+            //this.motX += (double) (f * f5 - f1 * f4);
+            //this.motZ += (double) (f1 * f5 + f * f4);
+            this.motX += (double) (hf[0] * hf5[0] - hf1[0] * hf4[0]);
+            this.motZ += (double) (hf1[0] * hf5[0] + hf[0] * hf4[0]);
         }
     }
 
@@ -1081,12 +1119,24 @@ public abstract class Entity implements ICommandListener {
         return MathHelper.c(f * f + f1 * f1 + f2 * f2);
     }
 
+    //HSA
     public double e(double d0, double d1, double d2) {
+        /*
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
-
-        return d3 * d3 + d4 * d4 + d5 * d5;
+        */
+        double[] d3 = new double[1];
+        double[] d4 = new double[1];
+        double[] d5 = new double[1];
+        double[] re = new double[1];
+        d3[0] = this.locX - d0;
+        d4[0] = this.locY - d1;
+        d5[0] = this.locZ - d2;
+        Aparapi.range(1).forEach(gid -> re[gid] = d3[gid] * d3[gid] + d4[gid] * d4[gid] + d5[gid] * d5[gid]);
+        
+        //return d3 * d3 + d4 * d4 + d5 * d5;
+        return re[0];
     }
 
     public double b(BlockPosition blockposition) {
@@ -1096,13 +1146,25 @@ public abstract class Entity implements ICommandListener {
     public double c(BlockPosition blockposition) {
         return blockposition.d(this.locX, this.locY, this.locZ);
     }
-
+    
+    //HSA
     public double f(double d0, double d1, double d2) {
+        /*
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
-
-        return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+        */
+        double[] d3 = new double[1];
+        double[] d4 = new double[1];
+        double[] d5 = new double[1];
+        double[] re = new double[1];
+        d3[0] = this.locX - d0;
+        d4[0] = this.locY - d1;
+        d5[0] = this.locZ - d2;
+        Aparapi.range(1).forEach(gid -> re[gid] = (double) MathHelper.sqrt(d3[gid] * d3[gid] + d4[gid] * d4[gid] + d5[gid] * d5[gid]));
+        
+        return re[0];
+        //return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
     }
 
     public double h(Entity entity) {
