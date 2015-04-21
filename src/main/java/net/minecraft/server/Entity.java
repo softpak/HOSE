@@ -1593,7 +1593,7 @@ public abstract class Entity implements ICommandListener {
             if (this.vehicle != null) {
                 this.vehicle.al();
                 this.as += (double) (this.vehicle.yaw - this.vehicle.lastYaw);
-
+                //HSA
                 for (this.ar += (double) (this.vehicle.pitch - this.vehicle.lastPitch); this.as >= 180.0D; this.as -= 360.0D) {
                     ;
                 }

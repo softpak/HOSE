@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -369,7 +370,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             return false;
         }
     }
-
+    
+    int hi1;
+    int jjh;
+    int iih;
     protected void h() {
         super.h();
         if (this.worldData.getType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
@@ -385,9 +389,11 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             }
 
         } else {
-            int i = 0;
-            int j = 0;
-
+            //int i = 0;
+            //int j = 0;
+            iih = 0;
+            jjh = 0;
+            
             // CraftBukkit start
             //for (Iterator iterator1 = this.chunkTickList.iterator(); iterator1.hasNext(); this.methodProfiler.b()) {
             //    ChunkCoordIntPair chunkcoordintpair1 = (ChunkCoordIntPair) iterator1.next();
@@ -419,13 +425,13 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 this.methodProfiler.c("tickChunk");
                 chunk.b(false);
                 this.methodProfiler.c("thunder");
-                int i1;
+                //int i1;
                 BlockPosition blockposition;
 
                 if (this.random.nextInt(100000) == 0 && this.S() && this.R()) {
                     this.m = this.m * 3 + 1013904223;
-                    i1 = this.m >> 2;
-                    blockposition = this.a(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
+                    hi1 = this.m >> 2;
+                    blockposition = this.a(new BlockPosition(k + (hi1 & 15), 0, l + (hi1 >> 8 & 15)));
                     if (this.isRainingAt(blockposition)) {
                         this.strikeLightning(new EntityLightning(this, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ()));
                     }
@@ -434,8 +440,8 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 this.methodProfiler.c("iceandsnow");
                 if (this.random.nextInt(16) == 0) {
                     this.m = this.m * 3 + 1013904223;
-                    i1 = this.m >> 2;
-                    blockposition = this.q(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
+                    hi1 = this.m >> 2;
+                    blockposition = this.q(new BlockPosition(k + (hi1 & 15), 0, l + (hi1 >> 8 & 15)));
                     BlockPosition blockposition1 = blockposition.down();
 
                     if (this.w(blockposition1)) {
@@ -470,11 +476,40 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 }
 
                 this.methodProfiler.c("tickBlocks");
-                i1 = this.getGameRules().c("randomTickSpeed");
-                if (i1 > 0) {
+                hi1 = this.getGameRules().c("randomTickSpeed");
+                if (hi1 > 0) {
                     ChunkSection[] achunksection = chunk.getSections();
                     int j1 = achunksection.length;
+                    
+                    
+                    //HSA
+                    Aparapi.range(j1).forEach(gid_k1 -> {
+                        ChunkSection chunksection = achunksection[gid_k1];
+                        if (chunksection != null && chunksection.shouldTick()) {
+                            Aparapi.range(hi1).forEach(gid_l1 -> {
+                                this.m = this.m * 3 + 1013904223;
+                                int i2 = this.m >> 2;
+                                int j2 = i2 & 15;
+                                int k2 = i2 >> 8 & 15;
+                                int l2 = i2 >> 16 & 15;
 
+                                ++jjh;
+                                IBlockData iblockdata = chunksection.getType(j2, l2, k2);
+                                Block block = iblockdata.getBlock();
+
+                                if (block.isTicking()) {
+                                    ++iih;
+                                    block.a((World) this, new BlockPosition(j2 + k, l2 + chunksection.getYPosition(), k2 + l), iblockdata, this.random);
+                                }
+                            });
+                            
+                            
+                            
+                            
+                        }
+                        
+                    });
+                    /*
                     for (int k1 = 0; k1 < j1; ++k1) {
                         ChunkSection chunksection = achunksection[k1];
 
@@ -496,7 +531,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
 

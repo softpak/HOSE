@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -41,7 +42,8 @@ public class Explosion {
         this.a = flag;
         this.b = flag1;
     }
-
+    
+    //HSA
     public void a() {
         // CraftBukkit start
         if (this.size < 0.1F) {
@@ -53,7 +55,52 @@ public class Explosion {
 
         int i;
         int j;
+        //HSA
+        Aparapi.range(16).forEach(gid_k -> {
+            Aparapi.range(16).forEach(gid_i -> {
+                Aparapi.range(16).forEach(gid_j -> {
+                    if (gid_k == 0 || gid_k == 15 || gid_i == 0 || gid_i == 15 || gid_j == 0 || gid_j == 15) {
+                        double d0 = (double) ((float) gid_k / 15.0F * 2.0F - 1.0F);
+                        double d1 = (double) ((float) gid_i / 15.0F * 2.0F - 1.0F);
+                        double d2 = (double) ((float) gid_j / 15.0F * 2.0F - 1.0F);
+                        double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
+                        d0 /= d3;
+                        d1 /= d3;
+                        d2 /= d3;
+                        float f = this.size * (0.7F + this.world.random.nextFloat() * 0.6F);
+                        double d4 = this.posX;
+                        double d5 = this.posY;
+                        double d6 = this.posZ;
+
+                        for (float f1 = 0.3F; f > 0.0F; f -= 0.22500001F) {
+                            BlockPosition blockposition = new BlockPosition(d4, d5, d6);
+                            IBlockData iblockdata = this.world.getType(blockposition);
+
+                            if (iblockdata.getBlock().getMaterial() != Material.AIR) {
+                                float f2 = this.source != null ? this.source.a(this, this.world, blockposition, iblockdata) : iblockdata.getBlock().a((Entity) null);
+
+                                f -= (f2 + 0.3F) * 0.3F;
+                            }
+
+                            if (f > 0.0F && (this.source == null || this.source.a(this, this.world, blockposition, iblockdata, f)) && blockposition.getY() < 256 && blockposition.getY() >= 0) { // CraftBukkit - don't wrap explosions
+                                hashset.add(blockposition);
+                            }
+
+                            d4 += d0 * 0.30000001192092896D;
+                            d5 += d1 * 0.30000001192092896D;
+                            d6 += d2 * 0.30000001192092896D;
+                        }
+                    }
+                    
+
+                });
+
+            });
+        
+        });
+        
+        /*
         for (int k = 0; k < 16; ++k) {
             for (i = 0; i < 16; ++i) {
                 for (j = 0; j < 16; ++j) {
@@ -92,7 +139,7 @@ public class Explosion {
                     }
                 }
             }
-        }
+        }*/
 
         this.blocks.addAll(hashset);
         float f3 = this.size * 2.0F;
@@ -106,6 +153,9 @@ public class Explosion {
         List list = this.world.getEntities(this.source, new AxisAlignedBB((double) i, (double) l, (double) j1, (double) j, (double) i1, (double) k1));
         Vec3D vec3d = new Vec3D(this.posX, this.posY, this.posZ);
 
+        
+        
+        
         for (int l1 = 0; l1 < list.size(); ++l1) {
             Entity entity = (Entity) list.get(l1);
 

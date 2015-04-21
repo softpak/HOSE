@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
@@ -88,7 +89,19 @@ public class WorldMap extends PersistentBase {
             this.colors = new byte[16384];
             int i = (128 - short0) / 2;
             int j = (128 - short1) / 2;
-
+            //HSA
+            Aparapi.range(short1).forEach(gid_k -> {
+                int l = gid_k + j;
+                if (l >= 0 || l < 128) {
+                    Aparapi.range(short0).forEach(gid_i1 -> {
+                        int j1 = gid_i1 + i;
+                        if (j1 >= 0 || j1 < 128) {
+                            this.colors[j1 + l * 128] = abyte[gid_i1 + gid_k * short0];
+                        }
+                    });
+                }
+            });
+            /*
             for (int k = 0; k < short1; ++k) {
                 int l = k + j;
 
@@ -101,7 +114,7 @@ public class WorldMap extends PersistentBase {
                         }
                     }
                 }
-            }
+            }*/
         }
 
     }

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -895,7 +896,7 @@ public abstract class World implements IBlockAccess {
                     }
 
                     EnumDirection enumdirection;
-
+                    //HSA
                     if (d3 < d4 && d3 < d5) {
                         enumdirection = i > l ? EnumDirection.WEST : EnumDirection.EAST;
                         vec3d = new Vec3D(d0, vec3d.b + d7 * d3, vec3d.c + d8 * d3);
@@ -1283,9 +1284,20 @@ public abstract class World implements IBlockAccess {
 
         return arraylist;
     }
-
+    //HSA
     public int a(float f) {
         float f1 = this.c(f);
+        float[] f2 = new float[1];
+        Aparapi.range(1).forEach(gid -> {
+            f2[gid] = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
+            f2[gid] = MathHelper.a(f2[gid], 0.0F, 1.0F);
+            f2[gid] = 1.0F - f2[gid];
+            f2[gid] = (float) ((double) f2[gid] * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
+            f2[gid] = (float) ((double) f2[gid] * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
+            f2[gid] = 1.0F - f2[gid];
+        });
+        
+        /*
         float f2 = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
 
         f2 = MathHelper.a(f2, 0.0F, 1.0F);
@@ -1293,7 +1305,8 @@ public abstract class World implements IBlockAccess {
         f2 = (float) ((double) f2 * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
         f2 = (float) ((double) f2 * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
         f2 = 1.0F - f2;
-        return (int) (f2 * 11.0F);
+        return (int) (f2 * 11.0F);*/
+        return (int) (f2[0] * 11.0F);
     }
 
     public float c(float f) {
@@ -1304,10 +1317,13 @@ public abstract class World implements IBlockAccess {
         return WorldProvider.a[this.worldProvider.a(this.worldData.getDayTime())];
     }
 
+    //HSA
     public float d(float f) {
         float f1 = this.c(f);
-
-        return f1 * 3.1415927F * 2.0F;
+        float[] hd = new float[1];
+        Aparapi.range(1).forEach(gid -> hd[gid] = f1 * 3.1415927F * 2.0F);
+        //return f1 * 3.1415927F * 2.0F;
+        return hd[0];
     }
 
     public BlockPosition q(BlockPosition blockposition) {
@@ -1865,7 +1881,9 @@ public abstract class World implements IBlockAccess {
         explosion.a(true);
         return explosion;
     }
-
+    
+    
+    //HSA
     public float a(Vec3D vec3d, AxisAlignedBB axisalignedbb) {
         double d0 = 1.0D / ((axisalignedbb.d - axisalignedbb.a) * 2.0D + 1.0D);
         double d1 = 1.0D / ((axisalignedbb.e - axisalignedbb.b) * 2.0D + 1.0D);
@@ -2899,12 +2917,20 @@ public abstract class World implements IBlockAccess {
     }
     // CraftBukkit end
 
+    //HSA
+    float[] hf = new float[1];
     public float h(float f) {
-        return (this.q + (this.r - this.q) * f) * this.j(f);
+        Aparapi.range(1).forEach(gid -> hf[gid] = (this.q + (this.r - this.q) * f) * this.j(f));
+        return hf[0];
+        //return (this.q + (this.r - this.q) * f) * this.j(f);
     }
-
+    
+    //HSA
+    float[] hj = new float[1];
     public float j(float f) {
-        return this.o + (this.p - this.o) * f;
+        Aparapi.range(1).forEach(gid -> hj[gid] = this.o + (this.p - this.o) * f);
+        return hj[0];
+        //return this.o + (this.p - this.o) * f;
     }
 
     public boolean R() {
@@ -2988,10 +3014,14 @@ public abstract class World implements IBlockAccess {
         return this.worldProvider.o() ? 128 : 256;
     }
 
+    //HSA
+    long[] hl = new long[1];
     public Random a(int i, int j, int k) {
-        long l = (long) i * 341873128712L + (long) j * 132897987541L + this.getWorldData().getSeed() + (long) k;
-
-        this.random.setSeed(l);
+        Aparapi.range(1).forEach(gid -> hl[gid] = (long) i * 341873128712L + (long) j * 132897987541L + this.getWorldData().getSeed() + (long) k);
+        this.random.setSeed(hl[0]);
+        //long l = (long) i * 341873128712L + (long) j * 132897987541L + this.getWorldData().getSeed() + (long) k;
+        //this.random.setSeed(l);
+        //return this.random;
         return this.random;
     }
 
@@ -3115,13 +3145,22 @@ public abstract class World implements IBlockAccess {
     public WorldBorder getWorldBorder() {
         return this.N;
     }
-
+    
+    //HSA
+    int[] hk = new int[1];
+    int[] hhl = new int[1];
+    boolean[] h_tf = new boolean[1];
     public boolean c(int i, int j) {
         BlockPosition blockposition = this.getSpawn();
-        int k = i * 16 + 8 - blockposition.getX();
-        int l = j * 16 + 8 - blockposition.getZ();
+        Aparapi.range(1).forEach(gid -> hk[gid] = i * 16 + 8 - blockposition.getX());
+        Aparapi.range(1).forEach(gid -> hhl[gid] = i * 16 + 8 - blockposition.getZ());
+                
+        //int k = i * 16 + 8 - blockposition.getX();
+        //int l = j * 16 + 8 - blockposition.getZ();
         short short0 = 128;
-
-        return k >= -short0 && k <= short0 && l >= -short0 && l <= short0 && this.keepSpawnInMemory; // CraftBukkit - Added 'this.keepSpawnInMemory'
+        Aparapi.range(1).forEach(gid -> h_tf[gid] = hk[gid] >= -short0 && hk[gid] <= short0 && hhl[gid] >= -short0 && hhl[gid] <= short0 && this.keepSpawnInMemory);
+        
+        return h_tf[0]; // CraftBukkit - Added 'this.keepSpawnInMemory'
+        //return k >= -short0 && k <= short0 && l >= -short0 && l <= short0 && this.keepSpawnInMemory; // CraftBukkit - Added 'this.keepSpawnInMemory'
     }
 }
