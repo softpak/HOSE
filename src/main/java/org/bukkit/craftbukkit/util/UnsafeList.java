@@ -193,7 +193,9 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
             data = newData;
         }
     }
-
+    
+    
+    //HSA
     private void writeObject(ObjectOutputStream os) throws IOException {
         os.defaultWriteObject();
 
@@ -205,6 +207,8 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
         os.writeInt(maxPool);
     }
 
+    
+    //HSA
     private void readObject(ObjectInputStream is) throws IOException, ClassNotFoundException {
         is.defaultReadObject();
 

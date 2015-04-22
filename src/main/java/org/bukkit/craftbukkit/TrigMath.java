@@ -5,7 +5,7 @@ package org.bukkit.craftbukkit;
  * Source: http://stackoverflow.com/questions/4454630/j2me-calculate-the-the-distance-between-2-latitude-and-longitude
  */
 public class TrigMath {
-
+    //HSA
     static final double sq2p1 = 2.414213562373095048802e0;
     static final double sq2m1 = .414213562373095048802e0;
     static final double p4 = .161536412982230228262e2;

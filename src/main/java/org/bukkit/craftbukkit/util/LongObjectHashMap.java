@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
@@ -86,7 +86,8 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         if (innerKeys == null) {
             // need to make a new chain
             keys[index] = innerKeys = new long[8];
-            Arrays.fill(innerKeys, EMPTY_KEY);
+            //Arrays.fill(innerKeys, EMPTY_KEY);
+            HSA_Arrays.fill(innerKeys, EMPTY_KEY);
             values[index] = innerValues = (V[]) new Object[8];
             innerKeys[0] = key;
             innerValues[0] = value;
@@ -113,7 +114,8 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
 
             // chain is full, resize it and add our new entry
             keys[index] = innerKeys = Arrays_copyOf(innerKeys, i << 1);
-            Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
+            //Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
+            HSA_Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
             values[index] = innerValues = Arrays_copyOf(innerValues, i << 1);
             innerKeys[i] = key;
             innerValues[i] = value;
@@ -172,8 +174,10 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
 
         modCount++;
         size = 0;
-        Arrays.fill(keys, null);
-        Arrays.fill(values, null);
+        //Arrays.fill(keys, null);
+        //Arrays.fill(values, null);
+        HSA_Arrays.fill(keys, null);
+        HSA_Arrays.fill(values, null);
     }
 
     public Set<Long> keySet() {

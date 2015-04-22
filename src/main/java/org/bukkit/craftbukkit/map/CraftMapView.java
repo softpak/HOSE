@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.util.HSA_Arrays;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
@@ -131,8 +132,9 @@ public final class CraftMapView implements MapView {
         if (context && renderCache.containsKey(null)) {
             renderCache.remove(null);
         }
-
-        Arrays.fill(render.buffer, (byte) 0);
+        //HSA
+        //Arrays.fill(render.buffer, (byte) 0);
+        HSA_Arrays.fill(render.buffer, (byte) 0);
         render.cursors.clear();
 
         for (MapRenderer renderer : renderers) {

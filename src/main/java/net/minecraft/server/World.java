@@ -476,10 +476,14 @@ public abstract class World implements IBlockAccess {
         return this.setTypeAndData(blockposition, iblockdata, 3);
     }
 
+    //HSA
     public void notify(BlockPosition blockposition) {
-        for (int i = 0; i < this.u.size(); ++i) {
+        Aparapi.range(this.u.size()).forEach(gid_i -> {
+            ((IWorldAccess) this.u.get(gid_i)).a(blockposition);
+        });
+        /*for (int i = 0; i < this.u.size(); ++i) {
             ((IWorldAccess) this.u.get(i)).a(blockposition);
-        }
+        }*/
 
     }
 
@@ -936,18 +940,22 @@ public abstract class World implements IBlockAccess {
             return null;
         }
     }
-
+    //HSA
     public void makeSound(Entity entity, String s, float f, float f1) {
         for (int i = 0; i < this.u.size(); ++i) {
             ((IWorldAccess) this.u.get(i)).a(s, entity.locX, entity.locY, entity.locZ, f, f1);
         }
 
     }
-
+    //HSA
     public void a(EntityHuman entityhuman, String s, float f, float f1) {
+        Aparapi.range(this.u.size()).forEach(gid_i -> {
+            ((IWorldAccess) this.u.get(gid_i)).a(entityhuman, s, entityhuman.locX, entityhuman.locY, entityhuman.locZ, f, f1);
+        });
+        /*
         for (int i = 0; i < this.u.size(); ++i) {
             ((IWorldAccess) this.u.get(i)).a(entityhuman, s, entityhuman.locX, entityhuman.locY, entityhuman.locZ, f, f1);
-        }
+        }*/
 
     }
 
@@ -959,23 +967,31 @@ public abstract class World implements IBlockAccess {
     }
 
     public void a(double d0, double d1, double d2, String s, float f, float f1, boolean flag) {}
-
+    
+    //HSA
     public void a(BlockPosition blockposition, String s) {
+        Aparapi.range(this.u.size()).forEach(gid_i -> {
+            ((IWorldAccess) this.u.get(gid_i)).a(s, blockposition);
+        });
+        /*
         for (int i = 0; i < this.u.size(); ++i) {
             ((IWorldAccess) this.u.get(i)).a(s, blockposition);
-        }
-
+        }*/
     }
 
     public void addParticle(EnumParticle enumparticle, double d0, double d1, double d2, double d3, double d4, double d5, int... aint) {
         this.a(enumparticle.c(), enumparticle.e(), d0, d1, d2, d3, d4, d5, aint);
     }
-
+    
+    //HSA
     private void a(int i, boolean flag, double d0, double d1, double d2, double d3, double d4, double d5, int... aint) {
+        Aparapi.range(this.u.size()).forEach(gid_j -> {
+            ((IWorldAccess) this.u.get(gid_j)).a(i, flag, d0, d1, d2, d3, d4, d5, aint);
+        });
+        /*
         for (int j = 0; j < this.u.size(); ++j) {
             ((IWorldAccess) this.u.get(j)).a(i, flag, d0, d1, d2, d3, d4, d5, aint);
-        }
-
+        }*/
     }
 
     public boolean strikeLightning(Entity entity) {

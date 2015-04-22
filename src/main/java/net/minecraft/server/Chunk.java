@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists; // CraftBukkit
 import org.bukkit.Bukkit; // CraftBukkit
+import org.bukkit.craftbukkit.util.HSA_Arrays;
 
 public class Chunk {
 
@@ -71,7 +73,8 @@ public class Chunk {
         this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
     }
     // CraftBukkit end
-
+    
+    //HSA
     public Chunk(World world, int i, int j) {
         this.sections = new ChunkSection[16];
         this.e = new byte[256];
@@ -86,12 +89,18 @@ public class Chunk {
         this.locZ = j;
         this.heightMap = new int[256];
 
+        Aparapi.range(this.entitySlices.length).forEach(gid_k -> {
+            this.entitySlices[gid_k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
+        });
+        /*
         for (int k = 0; k < this.entitySlices.length; ++k) {
             this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
-        }
-
-        Arrays.fill(this.f, -999);
-        Arrays.fill(this.e, (byte) -1);
+        }*/
+        
+        HSA_Arrays.fill(this.f, -999);
+        HSA_Arrays.fill(this.e, (byte) -1);
+        //Arrays.fill(this.f, -999);
+        //Arrays.fill(this.e, (byte) -1);
 
         // CraftBukkit start
         if (!(this instanceof EmptyChunk)) {

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
@@ -194,14 +195,25 @@ public abstract class EntityLiving extends Entity {
                     this.setAirTicks(this.j(this.getAirTicks()));
                     if (this.getAirTicks() == -20) {
                         this.setAirTicks(0);
-
+                        //HSA
+                        float[] hf = new float[8];
+                        float[] hf1 = new float[8];
+                        float[] hf2 = new float[8];
+                        
+                        Aparapi.range(8).forEach(gid_i -> {
+                            hf[gid_i] = this.random.nextFloat() - this.random.nextFloat();
+                            hf1[gid_i] = this.random.nextFloat() - this.random.nextFloat();
+                            hf2[gid_i] = this.random.nextFloat() - this.random.nextFloat();
+                            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) hf[gid_i], this.locY + (double) hf1[gid_i], this.locZ + (double) hf2[gid_i], this.motX, this.motY, this.motZ, new int[0]);
+                        });
+                        /*
                         for (int i = 0; i < 8; ++i) {
                             float f = this.random.nextFloat() - this.random.nextFloat();
                             float f1 = this.random.nextFloat() - this.random.nextFloat();
                             float f2 = this.random.nextFloat() - this.random.nextFloat();
 
                             this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f, this.locY + (double) f1, this.locZ + (double) f2, this.motX, this.motY, this.motZ, new int[0]);
-                        }
+                        }*/
 
                         this.damageEntity(DamageSource.DROWN, 2.0F);
                     }
@@ -295,14 +307,25 @@ public abstract class EntityLiving extends Entity {
             // CraftBukkit end
 
             this.die();
-
+            //HSA
+            double[] hd0 = new double[20];
+            double[] hd1 = new double[20];
+            double[] hd2 = new double[20];
+                        
+            Aparapi.range(20).forEach(gid_i -> {
+                hd0[gid_i] = this.random.nextGaussian() * 0.02D;
+                hd1[gid_i] = this.random.nextGaussian() * 0.02D;
+                hd2[gid_i] = this.random.nextGaussian() * 0.02D;
+                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, hd0[gid_i], hd1[gid_i], hd2[gid_i], new int[0]);
+            });
+            /*
             for (i = 0; i < 20; ++i) {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
 
                 this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
-            }
+            }*/
         }
 
     }
@@ -820,10 +843,11 @@ public abstract class EntityLiving extends Entity {
             }
         }
     }
-
+    
+    //HSA
     public void b(ItemStack itemstack) {
         this.makeSound("random.break", 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
-
+        
         for (int i = 0; i < 5; ++i) {
             Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 
@@ -1247,7 +1271,8 @@ public abstract class EntityLiving extends Entity {
     protected boolean bD() {
         return this.getHealth() <= 0.0F;
     }
-
+    
+    //HSA
     public void q(Entity entity) {
         double d0 = entity.locX;
         double d1 = entity.getBoundingBox().b + (double) entity.length;
@@ -1458,7 +1483,8 @@ public abstract class EntityLiving extends Entity {
                     this.o(i - 1);
                 }
             }
-
+            
+            //HSA
             for (int j = 0; j < 5; ++j) {
                 ItemStack itemstack = this.h[j];
                 ItemStack itemstack1 = this.getEquipment(j);

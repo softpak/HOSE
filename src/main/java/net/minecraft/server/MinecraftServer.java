@@ -47,6 +47,7 @@ import joptsimple.OptionSet;
 import org.bukkit.craftbukkit.Main;
 import org.bukkit.World.Environment;
 import org.bukkit.craftbukkit.SpigotTimings; // Spigot
+import org.bukkit.craftbukkit.util.HSA_Arrays;
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.world.WorldSaveEvent;
@@ -528,7 +529,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 this.a(this.r);
 
                 // Spigot start
-                Arrays.fill( recentTps, 20 );
+                //HSA
+                //Arrays.fill( recentTps, 20 );
+                HSA_Arrays.fill( recentTps, 20 );
                 long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                 while (this.isRunning) {
                     curTime = System.nanoTime();

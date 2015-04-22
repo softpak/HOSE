@@ -119,7 +119,7 @@ public class ActivationRange
             int j = MathHelper.floor( maxBB.d / 16.0D );
             int k = MathHelper.floor( maxBB.c / 16.0D );
             int l = MathHelper.floor( maxBB.f / 16.0D );
-
+            //HSA
             for ( int i1 = i; i1 <= j; ++i1 )
             {
                 for ( int j1 = k; j1 <= l; ++j1 )

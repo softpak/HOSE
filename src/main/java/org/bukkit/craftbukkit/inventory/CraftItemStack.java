@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.inventory;
 
+import com.amd.aparapi.Aparapi;
 import static org.bukkit.craftbukkit.inventory.CraftMetaItem.ENCHANTMENTS;
 import static org.bukkit.craftbukkit.inventory.CraftMetaItem.ENCHANTMENTS_ID;
 import static org.bukkit.craftbukkit.inventory.CraftMetaItem.ENCHANTMENTS_LVL;
@@ -283,6 +284,7 @@ public final class CraftItemStack extends ItemStack {
         return getEnchantments(handle);
     }
 
+    
     static Map<Enchantment, Integer> getEnchantments(net.minecraft.server.ItemStack item) {
         NBTTagList list = (item != null && item.hasEnchantments()) ? item.getEnchantments() : null;
 
@@ -291,13 +293,20 @@ public final class CraftItemStack extends ItemStack {
         }
 
         ImmutableMap.Builder<Enchantment, Integer> result = ImmutableMap.builder();
+        //HSA
+        Aparapi.range(list.size()).forEach(gid_i -> {
+            int id = 0xffff & ((NBTTagCompound) list.get(gid_i)).getShort(ENCHANTMENTS_ID.NBT);
+            int level = 0xffff & ((NBTTagCompound) list.get(gid_i)).getShort(ENCHANTMENTS_LVL.NBT);
 
+            result.put(Enchantment.getById(id), level);
+        });
+        /*
         for (int i = 0; i < list.size(); i++) {
             int id = 0xffff & ((NBTTagCompound) list.get(i)).getShort(ENCHANTMENTS_ID.NBT);
             int level = 0xffff & ((NBTTagCompound) list.get(i)).getShort(ENCHANTMENTS_LVL.NBT);
 
             result.put(Enchantment.getById(id), level);
-        }
+        }*/
 
         return result.build();
     }

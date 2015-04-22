@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.inventory;
 
+import com.amd.aparapi.Aparapi;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -47,32 +48,49 @@ public class CraftInventory implements Inventory {
         net.minecraft.server.ItemStack item = getInventory().getItem(index);
         return item == null ? null : CraftItemStack.asCraftMirror(item);
     }
-
+    
+    //HSA
     public ItemStack[] getContents() {
         ItemStack[] items = new ItemStack[getSize()];
         net.minecraft.server.ItemStack[] mcItems = getInventory().getContents();
 
         int size = Math.min(items.length, mcItems.length);
+        
+        Aparapi.range(size).forEach(gid_i -> {
+            items[gid_i] = mcItems[gid_i] == null ? null : CraftItemStack.asCraftMirror(mcItems[gid_i]);
+        });
+        /*
         for (int i = 0; i < size; i++) {
             items[i] = mcItems[i] == null ? null : CraftItemStack.asCraftMirror(mcItems[i]);
-        }
+        }*/
         return items;
     }
 
+    
+    //HSA
     public void setContents(ItemStack[] items) {
         if (getInventory().getContents().length < items.length) {
             throw new IllegalArgumentException("Invalid inventory size; expected " + getInventory().getContents().length + " or less");
         }
-
+        
         net.minecraft.server.ItemStack[] mcItems = getInventory().getContents();
-
+        
+        
+        Aparapi.range(mcItems.length).forEach(gid_i -> {
+            if (gid_i >= items.length) {
+                mcItems[gid_i] = null;
+            } else {
+                mcItems[gid_i] = CraftItemStack.asNMSCopy(items[gid_i]);
+            }
+        });
+        /*
         for (int i = 0; i < mcItems.length; i++) {
             if (i >= items.length) {
                 mcItems[i] = null;
             } else {
                 mcItems[i] = CraftItemStack.asNMSCopy(items[i]);
             }
-        }
+        }*/
     }
 
     public void setItem(int index, ItemStack item) {
@@ -154,16 +172,25 @@ public class CraftInventory implements Inventory {
         return false;
     }
 
+    //HSA
     public HashMap<Integer, ItemStack> all(int materialId) {
         HashMap<Integer, ItemStack> slots = new HashMap<Integer, ItemStack>();
 
         ItemStack[] inventory = getContents();
+        
+        Aparapi.range(inventory.length).forEach(gid_i -> {
+            ItemStack item = inventory[gid_i];
+            if (item != null && item.getTypeId() == materialId) {
+                slots.put(gid_i, item);
+            }
+        });
+        /*
         for (int i = 0; i < inventory.length; i++) {
             ItemStack item = inventory[i];
             if (item != null && item.getTypeId() == materialId) {
                 slots.put(i, item);
             }
-        }
+        }*/
         return slots;
     }
 
@@ -172,15 +199,23 @@ public class CraftInventory implements Inventory {
         return all(material.getId());
     }
 
+    //HSA
     public HashMap<Integer, ItemStack> all(ItemStack item) {
         HashMap<Integer, ItemStack> slots = new HashMap<Integer, ItemStack>();
         if (item != null) {
             ItemStack[] inventory = getContents();
+            
+            Aparapi.range(inventory.length).forEach(gid_i -> {
+                if (item.equals(inventory[gid_i])) {
+                    slots.put(gid_i, inventory[gid_i]);
+                }
+            });
+            /*
             for (int i = 0; i < inventory.length; i++) {
                 if (item.equals(inventory[i])) {
                     slots.put(i, inventory[i]);
                 }
-            }
+            }*/
         }
         return slots;
     }
@@ -368,14 +403,22 @@ public class CraftInventory implements Inventory {
     private int getMaxItemStack() {
         return getInventory().getMaxStackSize();
     }
-
+    
+    //HSA
     public void remove(int materialId) {
         ItemStack[] items = getContents();
+        
+        Aparapi.range(items.length).forEach(gid_i -> {
+            if (items[gid_i] != null && items[gid_i].getTypeId() == materialId) {
+                clear(gid_i);
+            }
+        });
+        /*
         for (int i = 0; i < items.length; i++) {
             if (items[i] != null && items[i].getTypeId() == materialId) {
                 clear(i);
             }
-        }
+        }*/
     }
 
     public void remove(Material material) {
@@ -383,23 +426,36 @@ public class CraftInventory implements Inventory {
         remove(material.getId());
     }
 
+    //HSA
     public void remove(ItemStack item) {
         ItemStack[] items = getContents();
+        
+        Aparapi.range(items.length).forEach(gid_i -> {
+            if (items[gid_i] != null && items[gid_i].equals(item)) {
+                clear(gid_i);
+            }
+        });
+        /*
         for (int i = 0; i < items.length; i++) {
             if (items[i] != null && items[i].equals(item)) {
                 clear(i);
             }
-        }
+        }*/
     }
 
     public void clear(int index) {
         setItem(index, null);
     }
-
+    
+    //HSA
     public void clear() {
+        Aparapi.range(getSize()).forEach(gid_i -> {
+            clear(gid_i);
+        });
+        /*
         for (int i = 0; i < getSize(); i++) {
             clear(i);
-        }
+        }*/
     }
 
     public ListIterator<ItemStack> iterator() {

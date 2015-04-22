@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit;
 
+import com.amd.aparapi.Aparapi;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -232,9 +233,13 @@ public class CraftWorld implements World {
         // And will include biome data if all sections have been 'touched'
         // This flags 65 blocks distributed across all the sections of the chunk, so that everything is sent, including biomes
         int height = getMaxHeight() / 16;
-        for (int idx = 0; idx < 64; idx++) {
+        
+        Aparapi.range(64).forEach(gid_idx -> {
+            world.notify(new BlockPosition(px + (gid_idx / height), ((gid_idx % height) * 16), pz));
+        });
+        /*for (int idx = 0; idx < 64; idx++) {
             world.notify(new BlockPosition(px + (idx / height), ((idx % height) * 16), pz));
-        }
+        }*/
         world.notify(new BlockPosition(px + 15, (height * 16) - 1, pz + 15));
 
         return true;

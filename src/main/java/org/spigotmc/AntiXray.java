@@ -111,6 +111,7 @@ public class AntiXray
                 if ( ( bitmask & 1 << i ) != 0 )
                 {
                     // Work through all blocks in the chunk, y,z,x
+                    //HSA
                     for ( int y = 0; y < 16; y++ )
                     {
                         for ( int z = 0; z < 16; z++ )

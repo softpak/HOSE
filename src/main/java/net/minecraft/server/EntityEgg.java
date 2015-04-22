@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -58,10 +59,14 @@ public class EntityEgg extends EntityProjectile {
         // CraftBukkit end
 
         double d0 = 0.08D;
-
+        //HSA
+        Aparapi.range(8).forEach(gid_j -> {
+            this.world.addParticle(EnumParticle.ITEM_CRACK, this.locX, this.locY, this.locZ, ((double) this.random.nextFloat() - 0.5D) * 0.08D, ((double) this.random.nextFloat() - 0.5D) * 0.08D, ((double) this.random.nextFloat() - 0.5D) * 0.08D, new int[] { Item.getId(Items.EGG)});
+        });
+        /*
         for (int j = 0; j < 8; ++j) {
             this.world.addParticle(EnumParticle.ITEM_CRACK, this.locX, this.locY, this.locZ, ((double) this.random.nextFloat() - 0.5D) * 0.08D, ((double) this.random.nextFloat() - 0.5D) * 0.08D, ((double) this.random.nextFloat() - 0.5D) * 0.08D, new int[] { Item.getId(Items.EGG)});
-        }
+        }*/
 
         if (!this.world.isClientSide) {
             this.die();
