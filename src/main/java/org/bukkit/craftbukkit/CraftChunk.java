@@ -78,15 +78,22 @@ public class CraftChunk implements Chunk {
     }
     
     //HSA
+    int hcount;
     public Entity[] getEntities() {
-        int count = 0, index = 0;
+        //int count = 0, index = 0;
+        int index = 0;
+        hcount = 0;
         net.minecraft.server.Chunk chunk = getHandle();
-
+        //
+        Aparapi.range(16).forEach(gid_i -> {
+            hcount += chunk.entitySlices[gid_i].size();
+        });
+        /*
         for (int i = 0; i < 16; i++) {
             count += chunk.entitySlices[i].size();
-        }
+        }*/
 
-        Entity[] entities = new Entity[count];
+        Entity[] entities = new Entity[hcount];
 
         for (int i = 0; i < 16; i++) {
 

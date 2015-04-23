@@ -1,5 +1,6 @@
 package org.spigotmc;
 
+import com.amd.aparapi.Aparapi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -120,6 +121,15 @@ public class ActivationRange
             int k = MathHelper.floor( maxBB.c / 16.0D );
             int l = MathHelper.floor( maxBB.f / 16.0D );
             //HSA
+            Aparapi.range(j-i).forEach(gid_i1 -> {
+                Aparapi.range(l-k).forEach(gid_j1 -> {
+                    if ( world.getWorld().isChunkLoaded( gid_i1, gid_j1 ) ){
+                        activateChunkEntities( world.getChunkAt( gid_i1, gid_j1 ) );
+                    }
+                });
+            });
+            
+            /*
             for ( int i1 = i; i1 <= j; ++i1 )
             {
                 for ( int j1 = k; j1 <= l; ++j1 )
@@ -129,7 +139,7 @@ public class ActivationRange
                         activateChunkEntities( world.getChunkAt( i1, j1 ) );
                     }
                 }
-            }
+            }*/
         }
         SpigotTimings.entityActivationCheckTimer.stopTiming();
     }

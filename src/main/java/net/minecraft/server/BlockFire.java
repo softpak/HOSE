@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
@@ -293,22 +294,28 @@ public class BlockFire extends Block {
 
         return false;
     }
-
+    int hhi;
     private int m(World world, BlockPosition blockposition) {
         if (!world.isEmpty(blockposition)) {
             return 0;
         } else {
-            int i = 0;
+            hhi = 0;
             EnumDirection[] aenumdirection = EnumDirection.values();
             int j = aenumdirection.length;
-
+            
+            //HSA
+            Aparapi.range(j).forEach(gid_k -> {
+                EnumDirection enumdirection = aenumdirection[gid_k];
+                hhi = Math.max(this.d(world.getType(blockposition.shift(enumdirection)).getBlock()), hhi);
+            });
+            /*
             for (int k = 0; k < j; ++k) {
                 EnumDirection enumdirection = aenumdirection[k];
 
                 i = Math.max(this.d(world.getType(blockposition.shift(enumdirection)).getBlock()), i);
-            }
+            }*/
 
-            return i;
+            return hhi;
         }
     }
 

@@ -339,7 +339,18 @@ public class Block {
     public void dropNaturally(World world, BlockPosition blockposition, IBlockData iblockdata, float f, int i) {
         if (!world.isClientSide) {
             int j = this.getDropCount(i, world.random);
-
+            //HSA
+            Aparapi.range(j).forEach(gid_k -> {
+                if (world.random.nextFloat() < f) {
+                    Item item = this.getDropType(iblockdata, world.random, i);
+                    if (item != null) {
+                        a(world, blockposition, new ItemStack(item, 1, this.getDropData(iblockdata)));
+                    }
+                }
+            });
+            
+            
+            /*
             for (int k = 0; k < j; ++k) {
                 // CraftBukkit - <= to < to allow for plugins to completely disable block drops from explosions
                 if (world.random.nextFloat() < f) {
@@ -349,7 +360,7 @@ public class Block {
                         a(world, blockposition, new ItemStack(item, 1, this.getDropData(iblockdata)));
                     }
                 }
-            }
+            }*/
 
         }
     }

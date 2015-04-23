@@ -2536,7 +2536,8 @@ public abstract class World implements IBlockAccess {
     public List<Entity> getEntities(Entity entity, AxisAlignedBB axisalignedbb) {
         return this.a(entity, axisalignedbb, IEntitySelector.d);
     }
-
+    
+    //HSA
     public List<Entity> a(Entity entity, AxisAlignedBB axisalignedbb, Predicate<? super Entity> predicate) {
         ArrayList arraylist = Lists.newArrayList();
         int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
@@ -2550,14 +2551,23 @@ public abstract class World implements IBlockAccess {
             return arraylist;
         }
         // CraftBukkit end
-
+        
+        Aparapi.range(j-i+1).forEach(gid_i1 -> {
+            Aparapi.range(l-k+1).forEach(gid_j1 -> {
+                if (this.isChunkLoaded(gid_i1+i, gid_j1+k, true)) {
+                    this.getChunkAt(gid_i1+i, gid_j1+k).a(entity, axisalignedbb, arraylist, predicate);
+                }
+            });
+        });
+        
+        /*
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
                     this.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, predicate);
                 }
             }
-        }
+        }*/
 
         return arraylist;
     }
@@ -2595,30 +2605,61 @@ public abstract class World implements IBlockAccess {
     public <T extends Entity> List<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb) {
         return this.a(oclass, axisalignedbb, IEntitySelector.d);
     }
-
+    
+    
+    //HSA
     public <T extends Entity> List<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, Predicate<? super T> predicate) {
         int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
         int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
         int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
         int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
         ArrayList arraylist = Lists.newArrayList();
-
+        
+        Aparapi.range(j-i+1).forEach(gid_i1 -> {
+            Aparapi.range(l-k+1).forEach(gid_j1 -> {
+                if (this.isChunkLoaded(gid_i1+i, gid_j1+k, true)) {
+                    this.getChunkAt(gid_i1+i, gid_j1+k).a(oclass, axisalignedbb, arraylist, predicate);
+                }
+            });
+        });
+        /*
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
                     this.getChunkAt(i1, j1).a(oclass, axisalignedbb, arraylist, predicate);
                 }
             }
-        }
+        }*/
 
         return arraylist;
     }
-
+    
+    //HSA
+    double hd1;
+    double hd0;
+    Entity hentity = null;
+    Entity hentity1 = null;
     public <T extends Entity> T a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, T t0) {
         List list = this.a(oclass, axisalignedbb);
-        Entity entity = null;
-        double d0 = Double.MAX_VALUE;
+        //Entity entity = null;
+        //double d0 = Double.MAX_VALUE;
+        hd0 = Double.MAX_VALUE;
 
+        Aparapi.range(list.size()).forEach(gid_i -> {
+            //Entity entity1 = (Entity) list.get(gid_i);
+            hentity1 = (Entity) list.get(gid_i);
+            
+            if (hentity1 != t0 && IEntitySelector.d.apply(hentity1)) {
+                hd1 = t0.h(hentity1);
+
+                if (hd1 <= hd0) {
+                    hentity = hentity1;
+                    hd0 = hd1;
+                }
+            }
+        });
+        
+        /*
         for (int i = 0; i < list.size(); ++i) {
             Entity entity1 = (Entity) list.get(i);
 
@@ -2630,9 +2671,9 @@ public abstract class World implements IBlockAccess {
                     d0 = d1;
                 }
             }
-        }
+        }*/
 
-        return (T) entity; // CraftBukkit fix decompile error
+        return (T) hentity; // CraftBukkit fix decompile error
     }
 
     public Entity a(int i) {
@@ -2992,11 +3033,16 @@ public abstract class World implements IBlockAccess {
     public int b(String s) {
         return this.worldMaps.a(s);
     }
-
+    
+    //HSA
     public void a(int i, BlockPosition blockposition, int j) {
+        Aparapi.range(this.u.size()).forEach(gid_k -> {
+            ((IWorldAccess) this.u.get(gid_k)).a(i, blockposition, j);
+        });
+        /*
         for (int k = 0; k < this.u.size(); ++k) {
             ((IWorldAccess) this.u.get(k)).a(i, blockposition, j);
-        }
+        }*/
 
     }
 
@@ -3006,9 +3052,13 @@ public abstract class World implements IBlockAccess {
 
     public void a(EntityHuman entityhuman, int i, BlockPosition blockposition, int j) {
         try {
+            Aparapi.range(this.u.size()).forEach(gid_k -> {
+                ((IWorldAccess) this.u.get(gid_k)).a(entityhuman, i, blockposition, j);
+            });
+            /*
             for (int k = 0; k < this.u.size(); ++k) {
                 ((IWorldAccess) this.u.get(k)).a(entityhuman, i, blockposition, j);
-            }
+            }*/
 
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.a(throwable, "Playing level event");
@@ -3076,13 +3126,20 @@ public abstract class World implements IBlockAccess {
 
         return crashreportsystemdetails;
     }
-
+    
+    //HSA
     public void c(int i, BlockPosition blockposition, int j) {
+        Aparapi.range(this.u.size()).forEach(gid_k -> {
+            IWorldAccess iworldaccess = (IWorldAccess) this.u.get(gid_k);
+            iworldaccess.b(i, blockposition, j);
+        });
+        
+        /*
         for (int k = 0; k < this.u.size(); ++k) {
             IWorldAccess iworldaccess = (IWorldAccess) this.u.get(k);
 
             iworldaccess.b(i, blockposition, j);
-        }
+        }*/
 
     }
 

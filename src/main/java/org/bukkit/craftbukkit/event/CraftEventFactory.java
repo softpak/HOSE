@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.event;
 
+import com.amd.aparapi.Aparapi;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -98,6 +99,7 @@ public class CraftEventFactory {
         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
 
         boolean canBuild = true;
+        //HSA
         for (int i = 0; i < blockStates.size(); i++) {
             if (!canBuild(craftWorld, player, blockStates.get(i).getX(), blockStates.get(i).getZ())) {
                 canBuild = false;

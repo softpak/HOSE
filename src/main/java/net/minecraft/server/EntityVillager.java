@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.Random;
 import org.bukkit.craftbukkit.entity.CraftVillager; // CraftBukkit
@@ -160,14 +161,22 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
         }
 
         NBTTagList nbttaglist = new NBTTagList();
-
+        
+        //HSA
+        Aparapi.range(this.inventory.getSize()).forEach(gid_i -> {
+            ItemStack itemstack = this.inventory.getItem(gid_i);
+            if (itemstack != null) {
+                nbttaglist.add(itemstack.save(new NBTTagCompound()));
+            }
+        });
+        /*
         for (int i = 0; i < this.inventory.getSize(); ++i) {
             ItemStack itemstack = this.inventory.getItem(i);
 
             if (itemstack != null) {
                 nbttaglist.add(itemstack.save(new NBTTagCompound()));
             }
-        }
+        }*/
 
         nbttagcompound.set("Inventory", nbttaglist);
     }
@@ -186,14 +195,22 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
         }
 
         NBTTagList nbttaglist = nbttagcompound.getList("Inventory", 10);
+        //HSA
+        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+            ItemStack itemstack = ItemStack.createStack(nbttaglist.get(gid_i));
 
+            if (itemstack != null) {
+                this.inventory.a(itemstack);
+            }
+        });
+        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             ItemStack itemstack = ItemStack.createStack(nbttaglist.get(i));
 
             if (itemstack != null) {
                 this.inventory.a(itemstack);
             }
-        }
+        }*/
 
         this.j(true);
         this.cv();
@@ -296,7 +313,7 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
     public boolean n(boolean flag) {
         if (!this.bu && flag && this.cr()) {
             boolean flag1 = false;
-
+            
             for (int i = 0; i < this.inventory.getSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
 
@@ -396,12 +413,21 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
             EntityVillager.IMerchantRecipeOption[] aentityvillager_imerchantrecipeoption2 = aentityvillager_imerchantrecipeoption1[j];
             EntityVillager.IMerchantRecipeOption[] aentityvillager_imerchantrecipeoption3 = aentityvillager_imerchantrecipeoption2;
             int k = aentityvillager_imerchantrecipeoption2.length;
+            
+            
+            //HSA
+            Aparapi.range(k).forEach(gid_l -> {
+                EntityVillager.IMerchantRecipeOption entityvillager_imerchantrecipeoption = aentityvillager_imerchantrecipeoption3[gid_l];
 
+                entityvillager_imerchantrecipeoption.a(this.br, this.random);
+            });
+            
+            /*
             for (int l = 0; l < k; ++l) {
                 EntityVillager.IMerchantRecipeOption entityvillager_imerchantrecipeoption = aentityvillager_imerchantrecipeoption3[l];
 
                 entityvillager_imerchantrecipeoption.a(this.br, this.random);
-            }
+            }*/
         }
 
     }

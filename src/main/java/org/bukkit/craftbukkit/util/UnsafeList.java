@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.util;
 
+import com.amd.aparapi.Aparapi;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.RandomAccess;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // implementation of an ArrayList that offers a getter without range checks
 @SuppressWarnings("unchecked")
@@ -118,9 +121,14 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
         if (data.length > initialCapacity << 3) {
             data = new Object[initialCapacity];
         } else {
+            //HSA
+            Aparapi.range(data.length).forEach(gid_i -> {
+                data[gid_i] = null;
+            });
+            /*
             for (int i = 0; i < data.length; i++) {
                 data[i] = null;
-            }
+            }*/
         }
     }
 
@@ -201,9 +209,18 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
 
         os.writeInt(size);
         os.writeInt(initialCapacity);
+        Aparapi.range(size).forEach(gid_i -> {
+            try {
+                os.writeObject(data[gid_i]);
+            } catch (IOException ex) {
+                Logger.getLogger(UnsafeList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        /*
         for (int i = 0; i < size; i++) {
             os.writeObject(data[i]);
-        }
+        }*/
         os.writeInt(maxPool);
     }
 
@@ -215,9 +232,20 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
         size = is.readInt();
         initialCapacity = is.readInt();
         data = new Object[Integer.highestOneBit(size - 1) << 1];
+        Aparapi.range(size).forEach(gid_i -> {
+            try {
+                data[gid_i] = is.readObject();
+            } catch (IOException ex) {
+                Logger.getLogger(UnsafeList.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(UnsafeList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        /*
         for (int i = 0; i < size; i++) {
             data[i] = is.readObject();
-        }
+        }*/
         maxPool = is.readInt();
         iterPool = new Iterator[1];
         iterPool[0] = new Itr();

@@ -20,6 +20,7 @@ public class MultipleCommandAliasHelpTopic extends HelpTopic {
         name = "/" + alias.getLabel();
 
         // Build short text
+        //HSA
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < alias.getCommands().length; i++) {
             if (i != 0) {

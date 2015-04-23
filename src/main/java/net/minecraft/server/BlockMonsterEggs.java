@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Random;
 
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason; // CraftBukkit
@@ -186,7 +187,7 @@ public class BlockMonsterEggs extends Block {
         public static BlockMonsterEggs.EnumMonsterEggVarient a(IBlockData iblockdata) {
             BlockMonsterEggs.EnumMonsterEggVarient[] ablockmonstereggs_enummonstereggvarient = values();
             int i = ablockmonstereggs_enummonstereggvarient.length;
-
+            
             for (int j = 0; j < i; ++j) {
                 BlockMonsterEggs.EnumMonsterEggVarient blockmonstereggs_enummonstereggvarient = ablockmonstereggs_enummonstereggvarient[j];
 
@@ -209,12 +210,19 @@ public class BlockMonsterEggs extends Block {
         static {
             BlockMonsterEggs.EnumMonsterEggVarient[] ablockmonstereggs_enummonstereggvarient = values();
             int i = ablockmonstereggs_enummonstereggvarient.length;
-
+            
+            //HSA
+            Aparapi.range(i).forEach(gid_j -> {
+                BlockMonsterEggs.EnumMonsterEggVarient blockmonstereggs_enummonstereggvarient = ablockmonstereggs_enummonstereggvarient[gid_j];
+                BlockMonsterEggs.EnumMonsterEggVarient.g[blockmonstereggs_enummonstereggvarient.a()] = blockmonstereggs_enummonstereggvarient;
+            });
+            
+            /*
             for (int j = 0; j < i; ++j) {
                 BlockMonsterEggs.EnumMonsterEggVarient blockmonstereggs_enummonstereggvarient = ablockmonstereggs_enummonstereggvarient[j];
 
                 BlockMonsterEggs.EnumMonsterEggVarient.g[blockmonstereggs_enummonstereggvarient.a()] = blockmonstereggs_enummonstereggvarient;
-            }
+            }*/
 
         }
     }

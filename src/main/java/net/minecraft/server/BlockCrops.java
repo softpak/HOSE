@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Random;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
@@ -118,12 +119,20 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
 
             if (j >= 7) {
                 int k = 3 + i;
-
+                
+                //HSA
+                Aparapi.range(k).forEach(gid_l -> {
+                    if (world.random.nextInt(15) <= j) {
+                        a(world, blockposition, new ItemStack(this.l(), 1, 0));
+                    }
+                });
+                
+                /*
                 for (int l = 0; l < k; ++l) {
                     if (world.random.nextInt(15) <= j) {
                         a(world, blockposition, new ItemStack(this.l(), 1, 0));
                     }
-                }
+                }*/
             }
 
         }

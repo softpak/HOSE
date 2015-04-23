@@ -813,6 +813,29 @@ public abstract class Entity implements ICommandListener {
         BlockPosition blockposition1 = new BlockPosition(this.getBoundingBox().d - 0.001D, this.getBoundingBox().e - 0.001D, this.getBoundingBox().f - 0.001D);
 
         if (this.world.areChunksLoadedBetween(blockposition, blockposition1)) {
+            
+            Aparapi.range(blockposition1.getX()-blockposition.getX()+1).forEach(gid_i -> {
+                Aparapi.range(blockposition1.getY()-blockposition.getY()+1).forEach(gid_j -> {
+                    Aparapi.range(blockposition1.getZ()-blockposition.getZ()+1).forEach(gid_k -> {
+                        BlockPosition blockposition2 = new BlockPosition(gid_i+blockposition.getX(), gid_j+blockposition.getY(), gid_k+blockposition.getZ());
+                        IBlockData iblockdata = this.world.getType(blockposition2);
+
+                        try {
+                            iblockdata.getBlock().a(this.world, blockposition2, iblockdata, this);
+                        } catch (Throwable throwable) {
+                            CrashReport crashreport = CrashReport.a(throwable, "Colliding entity with block");
+                            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being collided with");
+
+                            CrashReportSystemDetails.a(crashreportsystemdetails, blockposition2, iblockdata);
+                            throw new ReportedException(crashreport);
+                        }
+                
+                    });
+                });
+            });
+            
+            
+            /*
             for (int i = blockposition.getX(); i <= blockposition1.getX(); ++i) {
                 for (int j = blockposition.getY(); j <= blockposition1.getY(); ++j) {
                     for (int k = blockposition.getZ(); k <= blockposition1.getZ(); ++k) {
@@ -830,7 +853,7 @@ public abstract class Entity implements ICommandListener {
                         }
                     }
                 }
-            }
+            }*/
         }
 
     }
@@ -946,7 +969,7 @@ public abstract class Entity implements ICommandListener {
         this.makeSound(this.aa(), f[0], 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
-        int i;
+        //int i;
         //float f2;
         //float f3;
         int loopsize = (int)(1.0F + this.width * 20.0F);
@@ -968,7 +991,7 @@ public abstract class Entity implements ICommandListener {
         Aparapi.range(loopsize).forEach(gid -> {
             hf2[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             hf3[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) hf2[0], (double) (f1 + 1.0F), this.locZ + (double) hf3[0], this.motX, this.motY, this.motZ, new int[0]);
+            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) hf2[gid], (double) (f1 + 1.0F), this.locZ + (double) hf3[gid], this.motX, this.motY, this.motZ, new int[0]);
         });
         
         /*
@@ -1178,6 +1201,7 @@ public abstract class Entity implements ICommandListener {
     public void d(EntityHuman entityhuman) {}
 
     int numCollisions = 0; // Spigot
+    //HSA
     public void collide(Entity entity) {
         if (entity.passenger != this && entity.vehicle != this) {
             if (!entity.noclip && !this.noclip) {
@@ -1492,31 +1516,43 @@ public abstract class Entity implements ICommandListener {
     protected abstract void b(NBTTagCompound nbttagcompound);
 
     public void ah() {}
-
+    
+    //HSA
     protected NBTTagList a(double... adouble) {
         NBTTagList nbttaglist = new NBTTagList();
         double[] adouble1 = adouble;
         int i = adouble.length;
-
+        
+        Aparapi.range(i).forEach(gid_j -> {
+            double d0 = adouble1[gid_j];
+            nbttaglist.add(new NBTTagDouble(d0));
+        });
+        /*
         for (int j = 0; j < i; ++j) {
             double d0 = adouble1[j];
 
             nbttaglist.add(new NBTTagDouble(d0));
-        }
-
+        }*/
         return nbttaglist;
     }
-
+    
+    //HSA
     protected NBTTagList a(float... afloat) {
         NBTTagList nbttaglist = new NBTTagList();
         float[] afloat1 = afloat;
         int i = afloat.length;
+        
+        Aparapi.range(i).forEach(gid_j -> {
+            float f = afloat1[gid_j];
 
+            nbttaglist.add(new NBTTagFloat(f));
+        });
+        /*
         for (int j = 0; j < i; ++j) {
             float f = afloat1[j];
 
             nbttaglist.add(new NBTTagFloat(f));
-        }
+        }*/
 
         return nbttaglist;
     }
