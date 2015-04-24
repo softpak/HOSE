@@ -116,7 +116,27 @@ public class Chunk {
         this(world, i, j);
         short short0 = 256;
         boolean flag = !world.worldProvider.o();
+        //HSA
+        Aparapi.range(16).forEach(gid_k -> {
+            Aparapi.range(16).forEach(gid_l -> {
+                Aparapi.range(short0).forEach(gid_i1 -> {
+                    int j1 = gid_k * short0 * 16 | gid_l * short0 | gid_i1;
+                    IBlockData iblockdata = chunksnapshot.a(j1);
 
+                    if (iblockdata.getBlock().getMaterial() != Material.AIR) {
+                        int k1 = gid_i1 >> 4;
+
+                        if (this.sections[k1] == null) {
+                            this.sections[k1] = new ChunkSection(k1 << 4, flag);
+                        }
+
+                        this.sections[k1].setType(gid_k, gid_i1 & 15, gid_l, iblockdata);
+                    }
+                });
+            });
+        });
+        
+        /*
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 for (int i1 = 0; i1 < short0; ++i1) {
@@ -134,7 +154,7 @@ public class Chunk {
                     }
                 }
             }
-        }
+        }*/
 
     }
 
@@ -279,12 +299,17 @@ public class Chunk {
         }
 
     }
-
+    //HSA
     private void a(int i, int j, int k, int l) {
         if (l > k && this.world.areChunksLoaded(new BlockPosition(i, 0, j), 16)) {
+            Aparapi.range(l-k).forEach(gid_i1 -> {
+                this.world.c(EnumSkyBlock.SKY, new BlockPosition(i, gid_i1+k, j));
+            });
+            
+            /*
             for (int i1 = k; i1 < l; ++i1) {
                 this.world.c(EnumSkyBlock.SKY, new BlockPosition(i, i1, j));
-            }
+            }*/
 
             this.q = true;
         }
@@ -315,6 +340,7 @@ public class Chunk {
                 ChunkSection chunksection;
 
                 if (i1 < l) {
+                    //HSA
                     for (l1 = i1; l1 < l; ++l1) {
                         chunksection = this.sections[l1 >> 4];
                         if (chunksection != null) {

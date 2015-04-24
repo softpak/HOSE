@@ -2172,16 +2172,23 @@ public abstract class World implements IBlockAccess {
             }
         }
     }
-
+    
+    
+    int hhi;
+    EntityHuman hhentityhuman;
+    int hhj;
+    int hhk;
+    int hhhl;
+    int hhrandRange;
     protected void D() {
         // this.chunkTickList.clear(); // CraftBukkit - removed
         this.methodProfiler.a("buildList");
-
+        /*
         int i;
         EntityHuman entityhuman;
         int j;
         int k;
-        int l;
+        int l;*/
 
         // Spigot start
         int optimalChunks = spigotConfig.chunksPerTick;
@@ -2192,12 +2199,40 @@ public abstract class World implements IBlockAccess {
         }
         // Keep chunks with growth inside of the optimal chunk range
         int chunksPerPlayer = Math.min( 200, Math.max( 1, (int) ( ( ( optimalChunks - players.size() ) / (double) players.size() ) + 0.5 ) ) );
-        int randRange = 3 + chunksPerPlayer / 30;
+        //int randRange = 3 + chunksPerPlayer / 30;
+        hhrandRange = 3 + chunksPerPlayer / 30;
         // Limit to normal tick radius - including view distance
-        randRange = ( randRange > chunkTickRadius ) ? chunkTickRadius : randRange;
+        hhrandRange = ( hhrandRange > chunkTickRadius ) ? chunkTickRadius : hhrandRange;
         // odds of growth happening vs growth happening in vanilla
         this.growthOdds = this.modifiedOdds = Math.max( 35, Math.min( 100, ( ( chunksPerPlayer + 1 ) * 100F ) / 15F ) );
         // Spigot end
+        
+        //HSA
+        
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            
+            hhentityhuman = (EntityHuman) this.players.get(gid_i);
+            hhj = MathHelper.floor(hhentityhuman.locX / 16.0D);
+            hhk = MathHelper.floor(hhentityhuman.locZ / 16.0D);
+            hhhl = this.q();
+
+            // Spigot start - Always update the chunk the player is on
+            long key = chunkToKey( hhj, hhk );
+            int existingPlayers = Math.max( 0, chunkTickList.get( key ) ); // filter out -1
+            chunkTickList.put( key, (short) ( existingPlayers + 1 ) );
+
+            // Check and see if we update the chunks surrounding the player this tick
+            Aparapi.range(chunksPerPlayer).forEach(gid_chunk -> {
+                int dx = ( random.nextBoolean() ? 1 : -1 ) * random.nextInt( hhrandRange );
+                int dz = ( random.nextBoolean() ? 1 : -1 ) * random.nextInt( hhrandRange );
+                long hash = chunkToKey( dx + hhj, dz + hhk );
+                if ( !chunkTickList.contains( hash ) && this.chunkProvider.isChunkLoaded(dx + hhj, dz + hhk ) )
+                {
+                    chunkTickList.put( hash, (short) -1 ); // no players
+                }
+            });
+        });
+        /*
         for (i = 0; i < this.players.size(); ++i) {
             entityhuman = (EntityHuman) this.players.get(i);
             j = MathHelper.floor(entityhuman.locX / 16.0D);
@@ -2221,7 +2256,7 @@ public abstract class World implements IBlockAccess {
                 }
             }
             // Spigot End
-        }
+        }*/
 
         this.methodProfiler.b();
         if (this.L > 0) {
@@ -2230,12 +2265,12 @@ public abstract class World implements IBlockAccess {
 
         this.methodProfiler.a("playerCheckLight");
         if (spigotConfig.randomLightUpdates && !this.players.isEmpty()) { // Spigot
-            i = this.random.nextInt(this.players.size());
-            entityhuman = (EntityHuman) this.players.get(i);
-            j = MathHelper.floor(entityhuman.locX) + this.random.nextInt(11) - 5;
-            k = MathHelper.floor(entityhuman.locY) + this.random.nextInt(11) - 5;
-            l = MathHelper.floor(entityhuman.locZ) + this.random.nextInt(11) - 5;
-            this.x(new BlockPosition(j, k, l));
+            hhi = this.random.nextInt(this.players.size());
+            hhentityhuman = (EntityHuman) this.players.get(hhi);
+            hhj = MathHelper.floor(hhentityhuman.locX) + this.random.nextInt(11) - 5;
+            hhk = MathHelper.floor(hhentityhuman.locY) + this.random.nextInt(11) - 5;
+            hhhl = MathHelper.floor(hhentityhuman.locZ) + this.random.nextInt(11) - 5;
+            this.x(new BlockPosition(hhj, hhk, hhhl));
         }
 
         this.methodProfiler.b();
