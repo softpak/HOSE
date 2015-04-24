@@ -1,9 +1,6 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
-import com.amd.aparapi.HSAILInstructionSet;
-import com.amd.aparapi.Kernel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -626,8 +623,8 @@ public abstract class Entity implements ICommandListener {
                 }
 
                 axisalignedbb9 = axisalignedbb9.c(0.0D, 0.0D, hd18[0]);
-                Aparapi.range(1).forEach(gid -> hd19[gid] = hd14[0] * hd14[0] + hd15[0] * hd15[0]);
-                Aparapi.range(1).forEach(gid -> hd20[gid] = hd17[0] * hd17[0] + hd18[0] * hd18[0]);
+                Aparapi.range(1).forEach(gid -> hd19[gid] = hd14[gid] * hd14[gid] + hd15[gid] * hd15[gid]);
+                Aparapi.range(1).forEach(gid -> hd20[gid] = hd17[gid] * hd17[gid] + hd18[gid] * hd18[gid]);
                 /*
                 d19 = d14 * d14 + d15 * d15;
                 d20 = d17 * d17 + d18 * d18;*/

@@ -48,7 +48,7 @@ public class HSA_Arrays {
     
     public static void fill(long[] a, int fromIndex, int toIndex, long val) {
         rangeCheck(a.length, fromIndex, toIndex);
-        Aparapi.range(a.length).forEach(gid_i -> {
+        Aparapi.range(toIndex-fromIndex).forEach(gid_i -> {
             a[gid_i+fromIndex] = val;
         });
         /*for (int i = fromIndex; i < toIndex; i++)

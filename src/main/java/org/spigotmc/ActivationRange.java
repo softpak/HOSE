@@ -120,11 +120,11 @@ public class ActivationRange
             int j = MathHelper.floor( maxBB.d / 16.0D );
             int k = MathHelper.floor( maxBB.c / 16.0D );
             int l = MathHelper.floor( maxBB.f / 16.0D );
-            //HSA
-            Aparapi.range(j-i).forEach(gid_i1 -> {
-                Aparapi.range(l-k).forEach(gid_j1 -> {
-                    if ( world.getWorld().isChunkLoaded( gid_i1, gid_j1 ) ){
-                        activateChunkEntities( world.getChunkAt( gid_i1, gid_j1 ) );
+            //HSA  fix bug for moving in wrong status.
+            Aparapi.range(j-i+1).forEach(gid_i1 -> {
+                Aparapi.range(l-k+1).forEach(gid_j1 -> {
+                    if ( world.getWorld().isChunkLoaded( gid_i1+i, gid_j1+k ) ){
+                        activateChunkEntities( world.getChunkAt( gid_i1+i, gid_j1+k ) );
                     }
                 });
             });
