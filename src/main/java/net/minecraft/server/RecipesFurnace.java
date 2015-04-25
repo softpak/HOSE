@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,14 +40,23 @@ public class RecipesFurnace {
         this.a(new ItemStack(Blocks.SPONGE, 1, 1), new ItemStack(Blocks.SPONGE, 1, 0), 0.15F);
         ItemFish.EnumFish[] aitemfish_enumfish = ItemFish.EnumFish.values();
         int i = aitemfish_enumfish.length;
+        
+        //HSA
+        Aparapi.range(i).forEach(gid_j -> {
+            ItemFish.EnumFish itemfish_enumfish = aitemfish_enumfish[gid_j];
 
+            if (itemfish_enumfish.g()) {
+                this.a(new ItemStack(Items.FISH, 1, itemfish_enumfish.a()), new ItemStack(Items.COOKED_FISH, 1, itemfish_enumfish.a()), 0.35F);
+            }
+        });
+        /*
         for (int j = 0; j < i; ++j) {
             ItemFish.EnumFish itemfish_enumfish = aitemfish_enumfish[j];
 
             if (itemfish_enumfish.g()) {
                 this.a(new ItemStack(Items.FISH, 1, itemfish_enumfish.a()), new ItemStack(Items.COOKED_FISH, 1, itemfish_enumfish.a()), 0.35F);
             }
-        }
+        }*/
 
         this.registerRecipe(Blocks.COAL_ORE, new ItemStack(Items.COAL), 0.1F);
         this.registerRecipe(Blocks.REDSTONE_ORE, new ItemStack(Items.REDSTONE), 0.7F);

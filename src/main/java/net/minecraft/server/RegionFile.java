@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -24,7 +27,9 @@ public class RegionFile {
     private List<Boolean> f;
     private int g;
     private long h;
-
+    
+    
+    int hk;
     public RegionFile(File file) {
         this.b = file;
         this.g = 0;
@@ -38,38 +43,81 @@ public class RegionFile {
             int i;
 
             if (this.c.length() < 4096L) {
+                Aparapi.range(1024).forEach(gid_i -> {
+                    try {
+                        this.c.writeInt(0);
+                    } catch (IOException ex) {
+                        Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                Aparapi.range(1024).forEach(gid_i -> {
+                    try {
+                        this.c.writeInt(0);
+                    } catch (IOException ex) {
+                        Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                /*
                 for (i = 0; i < 1024; ++i) {
                     this.c.writeInt(0);
                 }
 
                 for (i = 0; i < 1024; ++i) {
                     this.c.writeInt(0);
-                }
+                }*/
 
                 this.g += 8192;
             }
 
             if ((this.c.length() & 4095L) != 0L) {
+                Aparapi.range((int) (this.c.length() & 4095L)).forEach(gid_i -> {
+                    try {
+                        this.c.write(0);
+                    } catch (IOException ex) {
+                        Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                
+                /*
                 for (i = 0; (long) i < (this.c.length() & 4095L); ++i) {
                     this.c.write(0);
-                }
+                }*/
             }
 
             i = (int) this.c.length() / 4096;
             this.f = Lists.newArrayListWithCapacity(i);
 
             int j;
-
+            Aparapi.range(i).forEach(gid_j -> {
+                this.f.add(Boolean.valueOf(true));
+            });
+            
+            /*
             for (j = 0; j < i; ++j) {
                 this.f.add(Boolean.valueOf(true));
-            }
+            }*/
 
             this.f.set(0, Boolean.valueOf(false));
             this.f.set(1, Boolean.valueOf(false));
             this.c.seek(0L);
 
-            int k;
-
+            //int k;
+            
+            Aparapi.range(1024).forEach(gid_j -> {
+                try {
+                    hk = this.c.readInt();
+                    this.d[gid_j] = hk;
+                    if (hk != 0 && (hk >> 8) + (hk & 255) <= this.f.size()) {
+                        Aparapi.range((hk & 255)).forEach(gid_l -> {
+                            this.f.set((hk >> 8) + gid_l, Boolean.valueOf(false));
+                        });
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            
+            /*
             for (j = 0; j < 1024; ++j) {
                 k = this.c.readInt();
                 this.d[j] = k;
@@ -78,12 +126,21 @@ public class RegionFile {
                         this.f.set((k >> 8) + l, Boolean.valueOf(false));
                     }
                 }
-            }
-
+            }*/
+            
+            Aparapi.range(1024).forEach(gid_j -> {
+                try {
+                    hk = this.c.readInt();
+                    this.e[gid_j] = hk;
+                } catch (IOException ex) {
+                    Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            /*
             for (j = 0; j < 1024; ++j) {
-                k = this.c.readInt();
-                this.e[j] = k;
-            }
+                hk = this.c.readInt();
+                this.e[j] = hk;
+            }*/
         } catch (IOException ioexception) {
             ioexception.printStackTrace();
         }
@@ -179,11 +236,13 @@ public class RegionFile {
     public DataOutputStream b(int i, int j) {
         return this.d(i, j) ? null : new DataOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(i, j)));
     }
-
+    
+    int hi1;
     protected synchronized void a(int i, int j, byte[] abyte, int k) {
         try {
             int l = this.e(i, j);
-            int i1 = l >> 8;
+            //int i1 = l >> 8;
+            hi1 = l >> 8;
             int j1 = l & 255;
             int k1 = (k + 5) / 4096 + 1;
 
@@ -191,14 +250,18 @@ public class RegionFile {
                 return;
             }
 
-            if (i1 != 0 && j1 == k1) {
-                this.a(i1, abyte, k);
+            if (hi1 != 0 && j1 == k1) {
+                this.a(hi1, abyte, k);
             } else {
                 int l1;
-
+                //HSA
+                Aparapi.range(j1).forEach(gid_l1 -> {
+                    this.f.set(hi1 + gid_l1, Boolean.valueOf(true));
+                });
+                /*
                 for (l1 = 0; l1 < j1; ++l1) {
                     this.f.set(i1 + l1, Boolean.valueOf(true));
-                }
+                }*/
 
                 l1 = this.f.indexOf(Boolean.valueOf(true));
                 int i2 = 0;
@@ -224,26 +287,39 @@ public class RegionFile {
                 }
 
                 if (i2 >= k1) {
-                    i1 = l1;
+                    hi1 = l1;
                     this.a(i, j, l1 << 8 | k1);
-
+                    
+                    Aparapi.range(k1).forEach(gid_j2 -> {
+                        this.f.set(hi1 + gid_j2, Boolean.valueOf(false));
+                    });
+                    /*
                     for (j2 = 0; j2 < k1; ++j2) {
-                        this.f.set(i1 + j2, Boolean.valueOf(false));
-                    }
+                        this.f.set(hi1 + j2, Boolean.valueOf(false));
+                    }*/
 
-                    this.a(i1, abyte, k);
+                    this.a(hi1, abyte, k);
                 } else {
                     this.c.seek(this.c.length());
-                    i1 = this.f.size();
+                    hi1 = this.f.size();
 
+                    Aparapi.range(k1).forEach(gid_j2 -> {
+                        try {
+                            this.c.write(RegionFile.a);
+                            this.f.add(Boolean.valueOf(false));
+                        } catch (IOException ex) {
+                            Logger.getLogger(RegionFile.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                    /*
                     for (j2 = 0; j2 < k1; ++j2) {
                         this.c.write(RegionFile.a);
                         this.f.add(Boolean.valueOf(false));
-                    }
+                    }*/
 
                     this.g += 4096 * k1;
-                    this.a(i1, abyte, k);
-                    this.a(i, j, i1 << 8 | k1);
+                    this.a(hi1, abyte, k);
+                    this.a(i, j, hi1 << 8 | k1);
                 }
             }
 

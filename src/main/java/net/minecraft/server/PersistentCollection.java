@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.DataInputStream;
@@ -71,8 +72,17 @@ public class PersistentCollection {
         this.a.put(s, persistentbase);
         this.c.add(persistentbase);
     }
-
+    //HSA
     public void a() {
+        Aparapi.range(this.c.size()).forEach(gid_i -> {
+            PersistentBase persistentbase = (PersistentBase) this.c.get(gid_i);
+
+            if (persistentbase.d()) {
+                this.a(persistentbase);
+                persistentbase.a(false);
+            }
+        });
+        /*
         for (int i = 0; i < this.c.size(); ++i) {
             PersistentBase persistentbase = (PersistentBase) this.c.get(i);
 
@@ -80,7 +90,7 @@ public class PersistentCollection {
                 this.a(persistentbase);
                 persistentbase.a(false);
             }
-        }
+        }*/
 
     }
 

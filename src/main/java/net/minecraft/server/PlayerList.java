@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -369,6 +370,7 @@ public abstract class PlayerList {
         // CraftBukkit start
         //  this.sendAll(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new EntityPlayer[] { entityplayer}));
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityplayer);
+        
         for (int i = 0; i < players.size(); i++) {
             EntityPlayer entityplayer2 = (EntityPlayer) this.players.get(i);
 
@@ -709,7 +711,7 @@ public abstract class PlayerList {
         float pitch = enter.getPitch();
         double d0 = enter.getX();
         double d1 = enter.getZ();
-         double d2 = 8.0D;
+        double d2 = 8.0D;
         /*
         double d0 = entity.locX;
         double d1 = entity.locZ;
@@ -869,31 +871,51 @@ public abstract class PlayerList {
         }
 
     }
-
+    
+    //HSA
     public void sendAll(Packet packet) {
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            ((EntityPlayer) this.players.get(gid_i)).playerConnection.sendPacket(packet);
+        });
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             ((EntityPlayer) this.players.get(i)).playerConnection.sendPacket(packet);
-        }
+        }*/
 
     }
 
     // CraftBukkit start - add a world limited version
+    //HSA
     public void sendAll(Packet packet, World world) {
+        Aparapi.range(world.players.size()).forEach(gid_i -> {
+            ((EntityPlayer) this.players.get(gid_i)).playerConnection.sendPacket(packet);
+        });
+        /*
         for (int i = 0; i < world.players.size(); ++i) {
             ((EntityPlayer) this.players.get(i)).playerConnection.sendPacket(packet);
-        }
+        }*/
 
     }
     // CraftBukkit end
-
+    
+    //HSA
     public void a(Packet packet, int i) {
+        Aparapi.range(this.players.size()).forEach(gid_j -> {
+            EntityPlayer entityplayer = (EntityPlayer) this.players.get(gid_j);
+
+            if (entityplayer.dimension == i) {
+                entityplayer.playerConnection.sendPacket(packet);
+            } 
+        });
+        
+        /*
         for (int j = 0; j < this.players.size(); ++j) {
             EntityPlayer entityplayer = (EntityPlayer) this.players.get(j);
 
             if (entityplayer.dimension == i) {
                 entityplayer.playerConnection.sendPacket(packet);
             }
-        }
+        }*/
 
     }
 
@@ -932,11 +954,24 @@ public abstract class PlayerList {
 
         }
     }
-
+    
+    //HSA
+    String hs;
     public String b(boolean flag) {
-        String s = "";
+        hs = "";
         ArrayList arraylist = Lists.newArrayList(this.players);
 
+        Aparapi.range(arraylist.size()).forEach(gid_i -> {
+            if (gid_i > 0) {
+                hs = hs + ", ";
+            }
+
+            hs = hs + ((EntityPlayer) arraylist.get(gid_i)).getName();
+            if (flag) {
+                hs = hs + " (" + ((EntityPlayer) arraylist.get(gid_i)).getUniqueID().toString() + ")";
+            }
+        });
+        /*
         for (int i = 0; i < arraylist.size(); ++i) {
             if (i > 0) {
                 s = s + ", ";
@@ -946,27 +981,37 @@ public abstract class PlayerList {
             if (flag) {
                 s = s + " (" + ((EntityPlayer) arraylist.get(i)).getUniqueID().toString() + ")";
             }
-        }
+        }*/
 
-        return s;
+        return hs;
     }
-
+    
+    //HSA
     public String[] f() {
         String[] astring = new String[this.players.size()];
-
+        
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            astring[gid_i] = ((EntityPlayer) this.players.get(gid_i)).getName();
+        });
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             astring[i] = ((EntityPlayer) this.players.get(i)).getName();
-        }
+        }*/
 
         return astring;
     }
-
+    
+    //HSA
     public GameProfile[] g() {
         GameProfile[] agameprofile = new GameProfile[this.players.size()];
-
+        
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            agameprofile[gid_i] = ((EntityPlayer) this.players.get(gid_i)).getProfile();
+        });
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             agameprofile[i] = ((EntityPlayer) this.players.get(i)).getProfile();
-        }
+        }*/
 
         return agameprofile;
     }
@@ -1051,11 +1096,17 @@ public abstract class PlayerList {
         }
 
     }
-
+    
+    //HSA
     public void savePlayers() {
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            this.savePlayerFile((EntityPlayer) this.players.get(gid_i));
+        });
+        
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             this.savePlayerFile((EntityPlayer) this.players.get(i));
-        }
+        }*/
 
     }
 
@@ -1165,11 +1216,17 @@ public abstract class PlayerList {
 
         entityplayer.playerInteractManager.b(world.getWorldData().getGameType());
     }
-
+    
+    //HSA
     public void u() {
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            ((EntityPlayer) this.players.get(gid_i)).playerConnection.disconnect(this.server.server.getShutdownMessage()); // CraftBukkit - add custom shutdown message
+        });
+        
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             ((EntityPlayer) this.players.get(i)).playerConnection.disconnect(this.server.server.getShutdownMessage()); // CraftBukkit - add custom shutdown message
-        }
+        }*/
 
     }
 

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Random;
 
 // CraftBukkit start
@@ -129,13 +130,23 @@ public class TileEntityDispenser extends TileEntityContainer implements IInvento
     public boolean hasCustomName() {
         return this.a != null;
     }
-
+    
+    //HSA
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
         NBTTagList nbttaglist = nbttagcompound.getList("Items", 10);
 
         this.items = new ItemStack[this.getSize()];
+        
+        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+            NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
+            int j = nbttagcompound1.getByte("Slot") & 255;
 
+            if (j >= 0 && j < this.items.length) {
+                this.items[j] = ItemStack.createStack(nbttagcompound1);
+            }
+        });
+        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
             int j = nbttagcompound1.getByte("Slot") & 255;
@@ -143,18 +154,29 @@ public class TileEntityDispenser extends TileEntityContainer implements IInvento
             if (j >= 0 && j < this.items.length) {
                 this.items[j] = ItemStack.createStack(nbttagcompound1);
             }
-        }
+        }*/
 
         if (nbttagcompound.hasKeyOfType("CustomName", 8)) {
             this.a = nbttagcompound.getString("CustomName");
         }
 
     }
-
+    
+    //HSA
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         NBTTagList nbttaglist = new NBTTagList();
+        
+        Aparapi.range(this.items.length).forEach(gid_i -> {
+            if (this.items[gid_i] != null) {
+                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
+                nbttagcompound1.setByte("Slot", (byte) gid_i);
+                this.items[gid_i].save(nbttagcompound1);
+                nbttaglist.add(nbttagcompound1);
+            }
+        });
+        /*
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
@@ -163,7 +185,7 @@ public class TileEntityDispenser extends TileEntityContainer implements IInvento
                 this.items[i].save(nbttagcompound1);
                 nbttaglist.add(nbttagcompound1);
             }
-        }
+        }*/
 
         nbttagcompound.set("Items", nbttaglist);
         if (this.hasCustomName()) {
@@ -205,11 +227,17 @@ public class TileEntityDispenser extends TileEntityContainer implements IInvento
     public int g() {
         return 0;
     }
-
+    
+    //HSA
     public void l() {
+        Aparapi.range(this.items.length).forEach(gid_i -> {
+            this.items[gid_i] = null;
+        });
+        
+        /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
-        }
+        }*/
 
     }
 }

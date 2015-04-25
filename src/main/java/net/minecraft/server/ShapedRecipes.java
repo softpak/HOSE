@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.inventory.CraftShapedRecipe;
 // CraftBukkit end
@@ -66,6 +67,9 @@ public class ShapedRecipes implements IRecipe {
             break;
         }
         char c = 'a';
+        
+        
+        
         for (ItemStack stack : this.items) {
             if (stack != null) {
                 recipe.setIngredient(c, org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(stack.getItem()), stack.getData());
@@ -80,16 +84,25 @@ public class ShapedRecipes implements IRecipe {
         return this.result;
     }
 
+    //HSA
     public ItemStack[] b(InventoryCrafting inventorycrafting) {
         ItemStack[] aitemstack = new ItemStack[inventorycrafting.getSize()];
+        
+        Aparapi.range(aitemstack.length).forEach(gid_i -> {
+            ItemStack itemstack = inventorycrafting.getItem(gid_i);
 
+            if (itemstack != null && itemstack.getItem().r()) {
+                aitemstack[gid_i] = new ItemStack(itemstack.getItem().q());
+            }
+        });
+        /*
         for (int i = 0; i < aitemstack.length; ++i) {
             ItemStack itemstack = inventorycrafting.getItem(i);
 
             if (itemstack != null && itemstack.getItem().r()) {
                 aitemstack[i] = new ItemStack(itemstack.getItem().q());
             }
-        }
+        }*/
 
         return aitemstack;
     }
@@ -145,18 +158,29 @@ public class ShapedRecipes implements IRecipe {
 
         return true;
     }
-
+    
+    
+    //HSA
     public ItemStack a(InventoryCrafting inventorycrafting) {
         ItemStack itemstack = this.b().cloneItemStack();
 
         if (this.e) {
+            
+            Aparapi.range(inventorycrafting.getSize()).forEach(gid_i -> {
+                ItemStack itemstack1 = inventorycrafting.getItem(gid_i);
+
+                if (itemstack1 != null && itemstack1.hasTag()) {
+                    itemstack.setTag((NBTTagCompound) itemstack1.getTag().clone());
+                }
+            });
+            /*
             for (int i = 0; i < inventorycrafting.getSize(); ++i) {
                 ItemStack itemstack1 = inventorycrafting.getItem(i);
 
                 if (itemstack1 != null && itemstack1.hasTag()) {
                     itemstack.setTag((NBTTagCompound) itemstack1.getTag().clone());
                 }
-            }
+            }*/
         }
 
         return itemstack;

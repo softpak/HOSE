@@ -156,7 +156,8 @@ public class TileEntityBrewingStand extends TileEntityContainer implements IUpda
                 }
             }
             // CraftBukkit end
-
+            
+            //HSA
             for (int i = 0; i < 3; ++i) {
                 if (this.items[i] != null && this.items[i].getItem() == Items.POTION) {
                     int j = this.items[i].getData();

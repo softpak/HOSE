@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import io.netty.buffer.Unpooled;
@@ -1694,10 +1695,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                     this.player.playerConnection.sendPacket(new PacketPlayOutTransaction(packetplayinwindowclick.a(), packetplayinwindowclick.d(), false));
                     this.player.activeContainer.a(this.player, false);
                     ArrayList arraylist1 = Lists.newArrayList();
-
+                    
+                    //HSA
+                    Aparapi.range(this.player.activeContainer.c.size()).forEach(gid_j -> {
+                        arraylist1.add(((Slot) this.player.activeContainer.c.get(gid_j)).getItem());
+                    });
+                    /*
                     for (int j = 0; j < this.player.activeContainer.c.size(); ++j) {
                         arraylist1.add(((Slot) this.player.activeContainer.c.get(j)).getItem());
-                    }
+                    }*/
 
                     this.player.a(this.player.activeContainer, (List) arraylist1);
                 }

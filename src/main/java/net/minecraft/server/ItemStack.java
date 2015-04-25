@@ -138,6 +138,7 @@ public final class ItemStack {
                     this.setData(newData);
                     this.count = newCount;
                 }
+                //HSA
                 for (BlockState blockstate : blocks) {
                     blockstate.update(true);
                 }
@@ -660,7 +661,9 @@ public final class ItemStack {
 
         this.tag.setInt("RepairCost", i);
     }
-
+    
+    
+    //HSA
     public Multimap<String, AttributeModifier> B() {
         Object object;
 

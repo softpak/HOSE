@@ -268,7 +268,7 @@ public class CraftChunk implements Chunk {
     static BiomeBase[] hebiome = null;
     static double[] hebiomeTemp = null;
     static double[] hebiomeRain = null;
-    static float[] hedat = null;
+    static float[] hedat;
     //HSA
     public static ChunkSnapshot getEmptyChunkSnapshot(int x, int z, CraftWorld world, boolean includeBiome, boolean includeBiomeTempRain) {
         //BiomeBase[] biome = null;

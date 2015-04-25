@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -128,7 +129,8 @@ public class PlayerChunkMap {
 
         // CraftBukkit start - Load nearby chunks first
         List<ChunkCoordIntPair> chunkList = new LinkedList<ChunkCoordIntPair>();
-
+        
+        //HSA
         for (int k = i - this.g; k <= i + this.g; ++k) {
             for (int l = j - this.g; l <= j + this.g; ++l) {
                 chunkList.add(new ChunkCoordIntPair(k, l));
@@ -436,42 +438,66 @@ public class PlayerChunkMap {
             }
 
         }
-
+        
+        //HSA
         public void a(Packet packet) {
+            Aparapi.range(this.b.size()).forEach(gid_i -> {
+               EntityPlayer entityplayer = (EntityPlayer) this.b.get(gid_i);
+
+                if (!entityplayer.chunkCoordIntPairQueue.contains(this.location)) {
+                    entityplayer.playerConnection.sendPacket(packet);
+                } 
+            });
+            /*
             for (int i = 0; i < this.b.size(); ++i) {
                 EntityPlayer entityplayer = (EntityPlayer) this.b.get(i);
 
                 if (!entityplayer.chunkCoordIntPairQueue.contains(this.location)) {
                     entityplayer.playerConnection.sendPacket(packet);
                 }
-            }
+            }*/
 
         }
-
+        
+        int hl, hi, hj, hk;
         public void b() {
             if (this.dirtyCount != 0) {
-                int i;
-                int j;
-                int k;
-
+                //int i;
+                //int j;
+                //int k;
+                
                 if (this.dirtyCount == 1) {
-                    i = (this.dirtyBlocks[0] >> 12 & 15) + this.location.x * 16;
-                    j = this.dirtyBlocks[0] & 255;
-                    k = (this.dirtyBlocks[0] >> 8 & 15) + this.location.z * 16;
-                    BlockPosition blockposition = new BlockPosition(i, j, k);
+                    //i = (this.dirtyBlocks[0] >> 12 & 15) + this.location.x * 16;
+                    //j = this.dirtyBlocks[0] & 255;
+                    hi = (this.dirtyBlocks[0] >> 12 & 15) + this.location.x * 16;
+                    hj = this.dirtyBlocks[0] & 255;
+                    hk = (this.dirtyBlocks[0] >> 8 & 15) + this.location.z * 16;
+                    BlockPosition blockposition = new BlockPosition(hi, hj, hk);
 
                     this.a((Packet) (new PacketPlayOutBlockChange(PlayerChunkMap.this.world, blockposition)));
                     if (PlayerChunkMap.this.world.getType(blockposition).getBlock().isTileEntity()) {
                         this.a(PlayerChunkMap.this.world.getTileEntity(blockposition));
                     }
                 } else {
-                    int l;
+                    //int l;
 
                     if (this.dirtyCount == 64) {
-                        i = this.location.x * 16;
-                        j = this.location.z * 16;
+                        hi = this.location.x * 16;
+                        hj = this.location.z * 16;
                         this.a((Packet) (new PacketPlayOutMapChunk(PlayerChunkMap.this.world.getChunkAt(this.location.x, this.location.z), false, this.f)));
-
+                        //HSA
+                        Aparapi.range(16).forEach(gid_k -> {
+                            if ((this.f & 1 << gid_k) != 0) {
+                                hl = gid_k << 4;
+                                List list = PlayerChunkMap.this.world.getTileEntities(hi, hl, hj, hi + 16, hl + 16, hj + 16);
+                                
+                                Aparapi.range(list.size()).forEach(gid_i1 -> {
+                                    this.a((TileEntity) list.get(gid_i1));
+                                });
+                            }
+                        });
+                        
+                        /*
                         for (k = 0; k < 16; ++k) {
                             if ((this.f & 1 << k) != 0) {
                                 l = k << 4;
@@ -481,10 +507,21 @@ public class PlayerChunkMap {
                                     this.a((TileEntity) list.get(i1));
                                 }
                             }
-                        }
+                        }*/
                     } else {
                         this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, PlayerChunkMap.this.world.getChunkAt(this.location.x, this.location.z))));
+                        
+                        Aparapi.range(this.dirtyCount).forEach(gid_hi -> {
+                            hj = (this.dirtyBlocks[gid_hi] >> 12 & 15) + this.location.x * 16;
+                            hk = this.dirtyBlocks[gid_hi] & 255;
+                            hl = (this.dirtyBlocks[gid_hi] >> 8 & 15) + this.location.z * 16;
+                            BlockPosition blockposition1 = new BlockPosition(hj, hk, hl);
 
+                            if (PlayerChunkMap.this.world.getType(blockposition1).getBlock().isTileEntity()) {
+                                this.a(PlayerChunkMap.this.world.getTileEntity(blockposition1));
+                            }
+                        });
+                        /*
                         for (i = 0; i < this.dirtyCount; ++i) {
                             j = (this.dirtyBlocks[i] >> 12 & 15) + this.location.x * 16;
                             k = this.dirtyBlocks[i] & 255;
@@ -494,7 +531,7 @@ public class PlayerChunkMap {
                             if (PlayerChunkMap.this.world.getType(blockposition1).getBlock().isTileEntity()) {
                                 this.a(PlayerChunkMap.this.world.getTileEntity(blockposition1));
                             }
-                        }
+                        }*/
                     }
                 }
 
