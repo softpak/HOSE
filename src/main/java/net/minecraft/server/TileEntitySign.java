@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.gson.JsonParseException;
 
 public class TileEntitySign extends TileEntity {
@@ -11,15 +12,22 @@ public class TileEntitySign extends TileEntity {
     private final CommandObjectiveExecutor i = new CommandObjectiveExecutor();
 
     public TileEntitySign() {}
-
+    
+    //HSA
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
+        
+        Aparapi.range(4).forEach(gid_i -> {
+            String s = IChatBaseComponent.ChatSerializer.a(this.lines[gid_i]);
 
+            nbttagcompound.setString("Text" + (gid_i + 1), s);
+        });
+        /*
         for (int i = 0; i < 4; ++i) {
             String s = IChatBaseComponent.ChatSerializer.a(this.lines[i]);
 
             nbttagcompound.setString("Text" + (i + 1), s);
-        }
+        }*/
 
         // CraftBukkit start
         if (Boolean.getBoolean("convertLegacySigns")) {
@@ -161,7 +169,9 @@ public class TileEntitySign extends TileEntity {
                 TileEntitySign.this.i.a(this, commandobjectiveexecutor_enumcommandresult, i);
             }
         };
-
+        
+        
+        
         for (int i = 0; i < this.lines.length; ++i) {
             ChatModifier chatmodifier = this.lines[i] == null ? null : this.lines[i].getChatModifier();
 

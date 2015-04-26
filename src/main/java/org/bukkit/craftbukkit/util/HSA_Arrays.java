@@ -45,6 +45,7 @@ public class HSA_Arrays {
         });
     }
     
+    //Aparapi.range(size).parallel().forEach(gid -> squares[gid] = values[gid]*values[gid]);
     
     public static void fill(long[] a, int fromIndex, int toIndex, long val) {
         rangeCheck(a.length, fromIndex, toIndex);
@@ -68,5 +69,7 @@ public class HSA_Arrays {
             throw new ArrayIndexOutOfBoundsException(toIndex);
         }
     }
+
+    
     
 }

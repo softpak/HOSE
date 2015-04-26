@@ -70,6 +70,7 @@ public class PathfinderGoalNearestAttackableTarget<T extends EntityLiving> exten
             return false;
         } else {
             double d0 = this.f();
+            
             List list = this.e.world.a(this.a, this.e.getBoundingBox().grow(d0, 4.0D, d0), Predicates.and(this.c, IEntitySelector.d));
 
             Collections.sort(list, this.b);

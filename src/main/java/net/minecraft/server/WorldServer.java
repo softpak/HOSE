@@ -307,11 +307,22 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         }
 
     }
-
+    
+    
+    //lambda test
     protected void e() {
         this.O = false;
         Iterator iterator = this.players.iterator();
-
+        
+        //Aparapi.range(a.length).forEach(gid_i -> {});
+        /*
+        this.players.forEach(gid_i -> {
+            if (gid_i.isSleeping()) {
+                gid_i.a(false, false, true);
+            }
+        });*/
+        
+        
         while (iterator.hasNext()) {
             EntityHuman entityhuman = (EntityHuman) iterator.next();
 

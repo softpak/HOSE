@@ -147,7 +147,8 @@ public class WorldMap extends PersistentBase {
         nbttagcompound.setShort("height", (short) 128);
         nbttagcompound.setByteArray("colors", this.colors);
     }
-
+    
+    //HSA
     public void a(EntityHuman entityhuman, ItemStack itemstack) {
         if (!this.i.containsKey(entityhuman)) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker = new WorldMap.WorldMapHumanTracker(entityhuman);
@@ -159,7 +160,20 @@ public class WorldMap extends PersistentBase {
         if (!entityhuman.inventory.c(itemstack)) {
             this.decorations.remove(entityhuman.getName());
         }
+        
+        Aparapi.range(this.g.size()).forEach(gid_i -> {
+            WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker1 = (WorldMap.WorldMapHumanTracker) this.g.get(gid_i);
 
+            if (!worldmap_worldmaphumantracker1.trackee.dead && (worldmap_worldmaphumantracker1.trackee.inventory.c(itemstack) || itemstack.y())) {
+                if (!itemstack.y() && worldmap_worldmaphumantracker1.trackee.dimension == this.map) {
+                    this.a(0, worldmap_worldmaphumantracker1.trackee.world, worldmap_worldmaphumantracker1.trackee.getName(), worldmap_worldmaphumantracker1.trackee.locX, worldmap_worldmaphumantracker1.trackee.locZ, (double) worldmap_worldmaphumantracker1.trackee.yaw);
+                }
+            } else {
+                this.i.remove(worldmap_worldmaphumantracker1.trackee);
+                this.g.remove(worldmap_worldmaphumantracker1);
+            }
+        });
+        /*
         for (int i = 0; i < this.g.size(); ++i) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker1 = (WorldMap.WorldMapHumanTracker) this.g.get(i);
 
@@ -171,7 +185,7 @@ public class WorldMap extends PersistentBase {
                 this.i.remove(worldmap_worldmaphumantracker1.trackee);
                 this.g.remove(worldmap_worldmaphumantracker1);
             }
-        }
+        }*/
 
         if (itemstack.y()) {
             EntityItemFrame entityitemframe = itemstack.z();
@@ -182,14 +196,23 @@ public class WorldMap extends PersistentBase {
 
         if (itemstack.hasTag() && itemstack.getTag().hasKeyOfType("Decorations", 9)) {
             NBTTagList nbttaglist = itemstack.getTag().getList("Decorations", 10);
+            
+            Aparapi.range(nbttaglist.size()).forEach(gid_j -> {
+                NBTTagCompound nbttagcompound = nbttaglist.get(gid_j);
 
+                if (!this.decorations.containsKey(nbttagcompound.getString("id"))) {
+                    this.a(nbttagcompound.getByte("type"), entityhuman.world, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
+                }
+            });
+            
+            /*
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 NBTTagCompound nbttagcompound = nbttaglist.get(j);
 
                 if (!this.decorations.containsKey(nbttagcompound.getString("id"))) {
                     this.a(nbttagcompound.getByte("type"), entityhuman.world, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
                 }
-            }
+            }*/
         }
 
     }

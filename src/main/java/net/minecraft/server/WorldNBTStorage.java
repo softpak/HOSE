@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -263,21 +264,30 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
     public IPlayerFileData getPlayerFileData() {
         return this;
     }
-
+    
+    //HSA
+    String[] hastring;
     public String[] getSeenPlayers() {
-        String[] astring = this.playerDir.list();
+        //String[] astring = this.playerDir.list();
+        hastring = this.playerDir.list();
 
-        if (astring == null) {
-            astring = new String[0];
+        if (hastring == null) {
+            hastring = new String[0];
         }
-
+        
+        Aparapi.range(hastring.length).forEach(gid_i -> {
+            if (hastring[gid_i].endsWith(".dat")) {
+                hastring[gid_i] = hastring[gid_i].substring(0, hastring[gid_i].length() - 4);
+            }
+        });
+        /*
         for (int i = 0; i < astring.length; ++i) {
             if (astring[i].endsWith(".dat")) {
                 astring[i] = astring[i].substring(0, astring[i].length() - 4);
             }
-        }
+        }*/
 
-        return astring;
+        return hastring;
     }
 
     public void a() {}

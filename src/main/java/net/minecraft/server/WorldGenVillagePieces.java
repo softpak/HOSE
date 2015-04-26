@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -429,8 +430,24 @@ public class WorldGenVillagePieces {
             this.a(world, structureboundingbox, 1, 0, 8, 5, 0, 8, Blocks.LOG.getBlockData(), Blocks.LOG.getBlockData(), false);
             this.a(world, structureboundingbox, 3, 0, 1, 3, 0, 7, Blocks.WATER.getBlockData(), Blocks.WATER.getBlockData(), false);
 
-            int i;
-
+            //int i;
+            
+            
+            //HSA
+            Aparapi.range(7).forEach(gid_i -> {
+                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 1, 1, (gid_i+1), structureboundingbox);
+                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 2, 1, (gid_i+1), structureboundingbox);
+                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 4, 1, (gid_i+1), structureboundingbox);
+                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 5, 1, (gid_i+1), structureboundingbox);
+            });
+            
+            Aparapi.range(9).forEach(gid_i -> {
+               Aparapi.range(7).forEach(gid_j -> {
+                    this.b(world, gid_j, 4, gid_i, structureboundingbox);
+                    this.b(world, Blocks.DIRT.getBlockData(), gid_j, -1, gid_i, structureboundingbox); 
+               });
+            });
+            /*
             for (i = 1; i <= 7; ++i) {
                 this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 1, 1, i, structureboundingbox);
                 this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 2, 1, i, structureboundingbox);
@@ -443,7 +460,7 @@ public class WorldGenVillagePieces {
                     this.b(world, j, 4, i, structureboundingbox);
                     this.b(world, Blocks.DIRT.getBlockData(), j, -1, i, structureboundingbox);
                 }
-            }
+            }*/
 
             return true;
         }
@@ -529,19 +546,27 @@ public class WorldGenVillagePieces {
             }
 
             int i;
-
+            //HSA
             for (i = 6; i <= 8; ++i) {
                 if (this.a(world, i, 0, -1, structureboundingbox).getBlock().getMaterial() == Material.AIR && this.a(world, i, -1, -1, structureboundingbox).getBlock().getMaterial() != Material.AIR) {
                     this.a(world, Blocks.STONE_STAIRS.fromLegacyData(this.a(Blocks.STONE_STAIRS, 3)), i, 0, -1, structureboundingbox);
                 }
             }
-
+            
+            Aparapi.range(7).forEach(gid_i -> {
+                Aparapi.range(10).forEach(gid_j -> {
+                    this.b(world, gid_j, 6, gid_i, structureboundingbox);
+                    this.b(world, Blocks.COBBLESTONE.getBlockData(), gid_j, -1, gid_i, structureboundingbox);
+                });
+            });
+            
+            /*
             for (i = 0; i < 7; ++i) {
                 for (int j = 0; j < 10; ++j) {
                     this.b(world, j, 6, i, structureboundingbox);
                     this.b(world, Blocks.COBBLESTONE.getBlockData(), j, -1, i, structureboundingbox);
                 }
-            }
+            }*/
 
             this.a(world, structureboundingbox, 7, 1, 1, 1);
             return true;
@@ -567,7 +592,8 @@ public class WorldGenVillagePieces {
 
             return a(structureboundingbox) && StructurePiece.a(list, structureboundingbox) == null ? new WorldGenVillagePieces.WorldGenVillageHouse2(worldgenvillagepieces_worldgenvillagestartpiece, l, random, structureboundingbox, enumdirection) : null;
         }
-
+        
+        int hk;
         public boolean a(World world, Random random, StructureBoundingBox structureboundingbox) {
             if (this.h < 0) {
                 this.h = this.b(world, structureboundingbox);
@@ -601,16 +627,24 @@ public class WorldGenVillagePieces {
             int i = this.a(Blocks.OAK_STAIRS, 3);
             int j = this.a(Blocks.OAK_STAIRS, 2);
 
-            int k;
+            //int k;
             int l;
-
-            for (k = -1; k <= 2; ++k) {
+            
+            for (hk = -1; hk <= 2; ++hk) {
+                
+                Aparapi.range(9).forEach(gid_l -> {
+                    this.a(world, Blocks.OAK_STAIRS.fromLegacyData(i), gid_l, 4 + hk, hk, structureboundingbox);
+                    if ((hk > -1 || gid_l <= 1) && (hk > 0 || gid_l <= 3) && (hk > 1 || gid_l <= 4 || gid_l >= 6)) {
+                        this.a(world, Blocks.OAK_STAIRS.fromLegacyData(j), gid_l, 4 + hk, 5 - hk, structureboundingbox);
+                    }
+                });
+                /*
                 for (l = 0; l <= 8; ++l) {
                     this.a(world, Blocks.OAK_STAIRS.fromLegacyData(i), l, 4 + k, k, structureboundingbox);
                     if ((k > -1 || l <= 1) && (k > 0 || l <= 3) && (k > 1 || l <= 4 || l >= 6)) {
                         this.a(world, Blocks.OAK_STAIRS.fromLegacyData(j), l, 4 + k, 5 - k, structureboundingbox);
                     }
-                }
+                }*/
             }
 
             this.a(world, structureboundingbox, 3, 4, 5, 3, 4, 10, Blocks.PLANKS.getBlockData(), Blocks.PLANKS.getBlockData(), false);
@@ -618,7 +652,7 @@ public class WorldGenVillagePieces {
             this.a(world, structureboundingbox, 4, 5, 4, 4, 5, 10, Blocks.PLANKS.getBlockData(), Blocks.PLANKS.getBlockData(), false);
             this.a(world, structureboundingbox, 6, 5, 4, 6, 5, 10, Blocks.PLANKS.getBlockData(), Blocks.PLANKS.getBlockData(), false);
             this.a(world, structureboundingbox, 5, 6, 3, 5, 6, 10, Blocks.PLANKS.getBlockData(), Blocks.PLANKS.getBlockData(), false);
-            k = this.a(Blocks.OAK_STAIRS, 0);
+            hk = this.a(Blocks.OAK_STAIRS, 0);
 
             int i1;
 
@@ -626,7 +660,7 @@ public class WorldGenVillagePieces {
                 this.a(world, Blocks.PLANKS.getBlockData(), l, 2 + l, 7 - l, structureboundingbox);
 
                 for (i1 = 8 - l; i1 <= 10; ++i1) {
-                    this.a(world, Blocks.OAK_STAIRS.fromLegacyData(k), l, 2 + l, i1, structureboundingbox);
+                    this.a(world, Blocks.OAK_STAIRS.fromLegacyData(hk), l, 2 + l, i1, structureboundingbox);
                 }
             }
 
@@ -675,13 +709,20 @@ public class WorldGenVillagePieces {
             if (this.a(world, 2, 0, -1, structureboundingbox).getBlock().getMaterial() == Material.AIR && this.a(world, 2, -1, -1, structureboundingbox).getBlock().getMaterial() != Material.AIR) {
                 this.a(world, Blocks.STONE_STAIRS.fromLegacyData(this.a(Blocks.STONE_STAIRS, 3)), 2, 0, -1, structureboundingbox);
             }
-
+            
+            Aparapi.range(5).forEach(gid_i1 -> {
+               Aparapi.range(9).forEach(gid_j1 -> {
+                    this.b(world, gid_j1, 7, gid_i1, structureboundingbox);
+                    this.b(world, Blocks.COBBLESTONE.getBlockData(), gid_j1, -1, gid_i1, structureboundingbox);
+                }); 
+            });
+            /*
             for (i1 = 0; i1 < 5; ++i1) {
                 for (j1 = 0; j1 < 9; ++j1) {
                     this.b(world, j1, 7, i1, structureboundingbox);
                     this.b(world, Blocks.COBBLESTONE.getBlockData(), j1, -1, i1, structureboundingbox);
                 }
-            }
+            }*/
 
             for (i1 = 5; i1 < 11; ++i1) {
                 for (j1 = 2; j1 < 9; ++j1) {
@@ -1434,7 +1475,16 @@ public class WorldGenVillagePieces {
             this.a(world, Blocks.FENCE.getBlockData(), 4, 13, 4, structureboundingbox);
             this.a(world, Blocks.FENCE.getBlockData(), 4, 14, 4, structureboundingbox);
             this.a(world, structureboundingbox, 1, 15, 1, 4, 15, 4, Blocks.COBBLESTONE.getBlockData(), Blocks.COBBLESTONE.getBlockData(), false);
-
+            
+            Aparapi.range(6).forEach(gid_i -> {
+                Aparapi.range(6).forEach(gid_j -> {
+                    if (gid_j == 0 || gid_j == 5 || gid_i == 0 || gid_i == 5) {
+                        this.a(world, Blocks.GRAVEL.getBlockData(), gid_j, 11, gid_i, structureboundingbox);
+                        this.b(world, gid_j, 12, gid_i, structureboundingbox);
+                    }
+                });
+            });
+            /*
             for (int i = 0; i <= 5; ++i) {
                 for (int j = 0; j <= 5; ++j) {
                     if (j == 0 || j == 5 || i == 0 || i == 5) {
@@ -1442,7 +1492,7 @@ public class WorldGenVillagePieces {
                         this.b(world, j, 12, i, structureboundingbox);
                     }
                 }
-            }
+            }*/
 
             return true;
         }
