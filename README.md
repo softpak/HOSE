@@ -20,3 +20,8 @@ Software :
 Hardware :
 *   CPU : AMD APU Kaveri series or later products.
 *   VGA : AMD GCN v1.1 or later products.
+
+####Test Server
+*     IP address : 59.127.231.87 (static)
+*     Version : 1.8.0 ~ 1.8.4
+*     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server. If you are getting lag. You can try /tps command to check the ticks. Maybe it is you PCs. The map will be wiped out every month or the map data reaches 10GB. You are welcome to leave any messages.`     
