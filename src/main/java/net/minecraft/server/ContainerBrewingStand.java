@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryBrewer;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -16,6 +17,7 @@ public class ContainerBrewingStand extends Container {
     private PlayerInventory player;
     // CraftBukkit end
 
+    //HSA
     public ContainerBrewingStand(PlayerInventory playerinventory, IInventory iinventory) {
         player = playerinventory; // CraftBukkit
         this.brewingStand = iinventory;
@@ -24,8 +26,18 @@ public class ContainerBrewingStand extends Container {
         this.a((Slot) (new ContainerBrewingStand.SlotPotionBottle(playerinventory.player, iinventory, 2, 102, 46)));
         this.f = this.a((Slot) (new ContainerBrewingStand.SlotBrewing(iinventory, 3, 79, 17)));
 
-        int i;
-
+        //int i;
+        
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(9).forEach(gid_j -> {
+                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, 84 + gid_i * 18));
+            });
+        });
+        
+        Aparapi.range(9).forEach(gid_i -> {
+            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
+        });
+        /*
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.a(new Slot(playerinventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -34,7 +46,7 @@ public class ContainerBrewingStand extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }
+        }*/
 
     }
 
@@ -42,17 +54,26 @@ public class ContainerBrewingStand extends Container {
         super.addSlotListener(icrafting);
         icrafting.setContainerData(this, this.brewingStand);
     }
-
+    
+    //HSA
     public void b() {
         super.b();
+        Aparapi.range(this.listeners.size()).forEach(gid_i -> {
+            ICrafting icrafting = (ICrafting) this.listeners.get(gid_i);
 
+            if (this.g != this.brewingStand.getProperty(0)) {
+                icrafting.setContainerData(this, 0, this.brewingStand.getProperty(0));
+            }
+        });
+        
+        /*
         for (int i = 0; i < this.listeners.size(); ++i) {
             ICrafting icrafting = (ICrafting) this.listeners.get(i);
 
             if (this.g != this.brewingStand.getProperty(0)) {
                 icrafting.setContainerData(this, 0, this.brewingStand.getProperty(0));
             }
-        }
+        }*/
 
         this.g = this.brewingStand.getProperty(0);
     }

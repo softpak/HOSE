@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.IOException;
@@ -190,14 +191,29 @@ public class DataWatcher {
         this.f.readLock().unlock();
         packetdataserializer.writeByte(127);
     }
-
+    
+    //HSA
     public List<DataWatcher.WatchableObject> c() {
         ArrayList arraylist = Lists.newArrayList(); // Spigot
 
         this.f.readLock().lock();
-
+        
+        
         arraylist.addAll(this.dataValues.valueCollection()); // Spigot
         // Spigot start - copy ItemStacks to prevent ConcurrentModificationExceptions
+        Aparapi.range(arraylist.size()).forEach(gid_i -> {
+            WatchableObject watchableobject = (WatchableObject) arraylist.get( gid_i );
+            if ( watchableobject.b() instanceof ItemStack )
+            {
+                watchableobject = new WatchableObject(
+                        watchableobject.c(),
+                        watchableobject.a(),
+                        ( (ItemStack) watchableobject.b() ).cloneItemStack()
+                );
+                arraylist.set( gid_i, watchableobject );
+            }
+        });
+        /*
         for ( int i = 0; i < arraylist.size(); i++ )
         {
             WatchableObject watchableobject = (WatchableObject) arraylist.get( i );
@@ -210,7 +226,7 @@ public class DataWatcher {
                 );
                 arraylist.set( i, watchableobject );
             }
-        }
+        }*/
         // Spigot end
 
         this.f.readLock().unlock();

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView; // CraftBukkit
 
 public class ContainerBeacon extends Container {
@@ -10,7 +11,8 @@ public class ContainerBeacon extends Container {
     private CraftInventoryView bukkitEntity = null;
     private PlayerInventory player;
     // CraftBukkit end
-
+    
+    //HSA
     public ContainerBeacon(IInventory iinventory, IInventory iinventory1) {
         player = (PlayerInventory) iinventory; // CraftBukkit - TODO: check this
         this.a = iinventory1;
@@ -18,8 +20,18 @@ public class ContainerBeacon extends Container {
         byte b0 = 36;
         short short0 = 137;
 
-        int i;
-
+        //int i;
+        
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(9).forEach(gid_j -> {
+                this.a(new Slot(iinventory, gid_j + gid_i * 9 + 9, b0 + gid_j * 18, short0 + gid_i * 18));
+            });
+        });
+        
+        Aparapi.range(9).forEach(gid_i -> {
+            this.a(new Slot(iinventory, gid_i, b0 + gid_i * 18, 58 + short0));
+        });
+        /*
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.a(new Slot(iinventory, j + i * 9 + 9, b0 + j * 18, short0 + i * 18));
@@ -28,7 +40,7 @@ public class ContainerBeacon extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(iinventory, i, b0 + i * 18, 58 + short0));
-        }
+        }*/
 
     }
 

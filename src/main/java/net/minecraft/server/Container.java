@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -60,18 +61,41 @@ public abstract class Container {
             this.b();
         }
     }
-
+    
+    //HSA
     public List<ItemStack> a() {
         ArrayList arraylist = Lists.newArrayList();
-
+        Aparapi.range(this.c.size()).forEach(gid_i -> {
+            arraylist.add(((Slot) this.c.get(gid_i)).getItem());
+        });
+        /*
         for (int i = 0; i < this.c.size(); ++i) {
             arraylist.add(((Slot) this.c.get(i)).getItem());
-        }
+        }*/
 
         return arraylist;
     }
-
+    
+    //HSA
+    ItemStack hitemstack1;
     public void b() {
+        
+        Aparapi.range(this.c.size()).forEach(gid_i -> {
+            ItemStack itemstack = ((Slot) this.c.get(gid_i)).getItem();
+            //ItemStack itemstack1 = (ItemStack) this.b.get(gid_i);
+            hitemstack1 = (ItemStack) this.b.get(gid_i);
+
+            if (!ItemStack.fastMatches(hitemstack1, itemstack) || (tickCount % 20 == 0 && !ItemStack.matches(hitemstack1, itemstack))) { // Spigot
+                hitemstack1 = itemstack == null ? null : itemstack.cloneItemStack();
+                this.b.set(gid_i, hitemstack1);
+                
+                Aparapi.range(this.listeners.size()).forEach(gid_j -> {
+                    ((ICrafting) this.listeners.get(gid_j)).a(this, gid_i, hitemstack1);
+                });
+                
+            }
+        });
+        /*
         for (int i = 0; i < this.c.size(); ++i) {
             ItemStack itemstack = ((Slot) this.c.get(i)).getItem();
             ItemStack itemstack1 = (ItemStack) this.b.get(i);
@@ -84,7 +108,7 @@ public abstract class Container {
                     ((ICrafting) this.listeners.get(j)).a(this, i, itemstack1);
                 }
             }
-        }
+        }*/
         tickCount++; // Spigot
 
     }
@@ -603,13 +627,26 @@ public abstract class Container {
         return tileentity instanceof IInventory ? b((IInventory) tileentity) : 0;
     }
 
+    static int hi;
+    static float f;
     public static int b(IInventory iinventory) {
         if (iinventory == null) {
             return 0;
         } else {
-            int i = 0;
-            float f = 0.0F;
+            //int i = 0;
+            //float f = 0.0F;
+            hi = 0;
+            f = 0.0F;
+            //HSA
+            Aparapi.range(iinventory.getSize()).forEach(gid_j -> {
+                ItemStack itemstack = iinventory.getItem(gid_j);
 
+                if (itemstack != null) {
+                    f += (float) itemstack.count / (float) Math.min(iinventory.getMaxStackSize(), itemstack.getMaxStackSize());
+                    ++hi;
+                }
+            });
+            /*
             for (int j = 0; j < iinventory.getSize(); ++j) {
                 ItemStack itemstack = iinventory.getItem(j);
 
@@ -617,10 +654,10 @@ public abstract class Container {
                     f += (float) itemstack.count / (float) Math.min(iinventory.getMaxStackSize(), itemstack.getMaxStackSize());
                     ++i;
                 }
-            }
+            }*/
 
             f /= (float) iinventory.getSize();
-            return MathHelper.d(f * 14.0F) + (i > 0 ? 1 : 0);
+            return MathHelper.d(f * 14.0F) + (hi > 0 ? 1 : 0);
         }
     }
 }

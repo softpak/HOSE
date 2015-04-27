@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
@@ -122,19 +123,28 @@ public abstract class Enchantment {
     public void a(EntityLiving entityliving, Entity entity, int i) {}
 
     public void b(EntityLiving entityliving, Entity entity, int i) {}
-
+    
+    //HSA
     static {
         ArrayList arraylist = Lists.newArrayList();
         Enchantment[] aenchantment = Enchantment.byId;
         int i = aenchantment.length;
+        
+        Aparapi.range(i).forEach(gid_j -> {
+            Enchantment enchantment = aenchantment[gid_j];
 
+            if (enchantment != null) {
+                arraylist.add(enchantment);
+            }
+        });
+        /*
         for (int j = 0; j < i; ++j) {
             Enchantment enchantment = aenchantment[j];
 
             if (enchantment != null) {
                 arraylist.add(enchantment);
             }
-        }
+        }*/
 
         b = (Enchantment[]) arraylist.toArray(new Enchantment[arraylist.size()]);
     }

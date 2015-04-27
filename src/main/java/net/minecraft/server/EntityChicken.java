@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
+
 public class EntityChicken extends EntityAnimal {
 
     public float bm;
@@ -84,13 +86,18 @@ public class EntityChicken extends EntityAnimal {
     protected Item getLoot() {
         return Items.FEATHER;
     }
-
+    
+    //HSA
     protected void dropDeathLoot(boolean flag, int i) {
         int j = this.random.nextInt(3) + this.random.nextInt(1 + i);
-
+        
+        Aparapi.range(j).forEach(gid_k -> {
+            this.a(Items.FEATHER, 1);
+        });
+        /*
         for (int k = 0; k < j; ++k) {
             this.a(Items.FEATHER, 1);
-        }
+        }*/
 
         if (this.isBurning()) {
             this.a(Items.COOKED_CHICKEN, 1);

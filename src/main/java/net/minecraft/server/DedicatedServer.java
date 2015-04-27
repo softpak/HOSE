@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
 import java.io.File;
@@ -606,7 +607,18 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         if (plugins.length > 0 && server.getQueryPlugins()) {
             result.append(": ");
+            
+            //HSA
+            Aparapi.range(plugins.length).forEach(gid_i -> {
+                if (gid_i > 0) {
+                    result.append("; ");
+                }
 
+                result.append(plugins[gid_i].getDescription().getName());
+                result.append(" ");
+                result.append(plugins[gid_i].getDescription().getVersion().replaceAll(";", ","));
+            });
+            /*
             for (int i = 0; i < plugins.length; i++) {
                 if (i > 0) {
                     result.append("; ");
@@ -615,7 +627,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 result.append(plugins[i].getDescription().getName());
                 result.append(" ");
                 result.append(plugins[i].getDescription().getVersion().replaceAll(";", ","));
-            }
+            }*/
         }
 
         return result.toString();

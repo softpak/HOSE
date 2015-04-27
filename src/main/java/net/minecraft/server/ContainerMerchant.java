@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView; // CraftBukkit
 
 public class ContainerMerchant extends Container {
@@ -20,7 +21,7 @@ public class ContainerMerchant extends Container {
         return bukkitEntity;
     }
     // CraftBukkit end
-
+    //HSA
     public ContainerMerchant(PlayerInventory playerinventory, IMerchant imerchant, World world) {
         this.merchant = imerchant;
         this.g = world;
@@ -30,8 +31,18 @@ public class ContainerMerchant extends Container {
         this.a((Slot) (new SlotMerchantResult(playerinventory.player, imerchant, this.f, 2, 120, 53)));
         this.player = playerinventory; // CraftBukkit - save player
 
-        int i;
-
+        //int i;
+        
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(9).forEach(gid_j -> {
+                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, 84 + gid_i * 18));
+            });
+        });
+        
+        Aparapi.range(9).forEach(gid_i -> {
+            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
+        });
+        /*
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.a(new Slot(playerinventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -40,7 +51,7 @@ public class ContainerMerchant extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }
+        }*/
 
     }
 

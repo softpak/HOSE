@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -32,7 +33,7 @@ public class ContainerChest extends Container {
         return bukkitEntity;
     }
     // CraftBukkit end
-
+    //HSA
     public ContainerChest(IInventory iinventory, IInventory iinventory1, EntityHuman entityhuman) {
         this.container = iinventory1;
         this.f = iinventory1.getSize() / 9;
@@ -44,9 +45,25 @@ public class ContainerChest extends Container {
         this.player = (PlayerInventory) iinventory;
         // CraftBukkit end
 
-        int j;
-        int k;
-
+        //int j;
+        //int k;
+        
+        Aparapi.range(this.f).forEach(gid_j -> {
+            Aparapi.range(9).forEach(gid_k -> {
+                this.a(new Slot(iinventory1, gid_k + gid_j * 9, 8 + gid_k * 18, 18 + gid_j * 18));
+            });
+        });
+        
+        Aparapi.range(3).forEach(gid_j -> {
+            Aparapi.range(9).forEach(gid_k -> {
+                this.a(new Slot(iinventory, gid_k + gid_j * 9 + 9, 8 + gid_k * 18, 103 + gid_j * 18 + i));
+            });
+        });
+        
+        Aparapi.range(9).forEach(gid_j -> {
+            this.a(new Slot(iinventory, gid_j, 8 + gid_j * 18, 161 + i));
+        });
+        /*
         for (j = 0; j < this.f; ++j) {
             for (k = 0; k < 9; ++k) {
                 this.a(new Slot(iinventory1, k + j * 9, 8 + k * 18, 18 + j * 18));
@@ -61,7 +78,7 @@ public class ContainerChest extends Container {
 
         for (j = 0; j < 9; ++j) {
             this.a(new Slot(iinventory, j, 8 + j * 18, 161 + i));
-        }
+        }*/
 
     }
 

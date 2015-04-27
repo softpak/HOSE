@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryCrafting;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -15,7 +16,8 @@ public class ContainerWorkbench extends Container {
     private CraftInventoryView bukkitEntity = null;
     private PlayerInventory player;
     // CraftBukkit end
-
+    
+    //HSA
     public ContainerWorkbench(PlayerInventory playerinventory, World world, BlockPosition blockposition) {
         // CraftBukkit start - Switched order of IInventory construction and stored player
         this.resultInventory = new InventoryCraftResult();
@@ -27,9 +29,25 @@ public class ContainerWorkbench extends Container {
         this.h = blockposition;
         this.a((Slot) (new SlotResult(playerinventory.player, this.craftInventory, this.resultInventory, 0, 124, 35)));
 
-        int i;
-        int j;
-
+        //int i;
+        //int j;
+        
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(3).forEach(gid_j -> {
+                this.a(new Slot(this.craftInventory, gid_j + gid_i * 3, 30 + gid_j * 18, 17 + gid_i * 18));
+            }); 
+        });
+        
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(9).forEach(gid_j -> {
+                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, 84 + gid_i * 18));
+            }); 
+        });
+        
+        Aparapi.range(9).forEach(gid_i -> {
+            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
+        });
+        /*
         for (i = 0; i < 3; ++i) {
             for (j = 0; j < 3; ++j) {
                 this.a(new Slot(this.craftInventory, j + i * 3, 30 + j * 18, 17 + i * 18));
@@ -44,7 +62,7 @@ public class ContainerWorkbench extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }
+        }*/
 
         this.a((IInventory) this.craftInventory);
     }
@@ -67,16 +85,26 @@ public class ContainerWorkbench extends Container {
         // CraftBukkit end
     }
 
+    //HSA
     public void b(EntityHuman entityhuman) {
         super.b(entityhuman);
         if (!this.g.isClientSide) {
+            
+            Aparapi.range(9).forEach(gid_i -> {
+                ItemStack itemstack = this.craftInventory.splitWithoutUpdate(gid_i);
+
+                if (itemstack != null) {
+                    entityhuman.drop(itemstack, false);
+                }
+            });
+            /*
             for (int i = 0; i < 9; ++i) {
                 ItemStack itemstack = this.craftInventory.splitWithoutUpdate(i);
 
                 if (itemstack != null) {
                     entityhuman.drop(itemstack, false);
                 }
-            }
+            }*/
 
         }
     }

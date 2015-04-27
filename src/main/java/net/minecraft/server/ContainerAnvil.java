@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -86,7 +87,18 @@ public class ContainerAnvil extends Container {
         });
 
         int i;
-
+        
+        //HSA
+        Aparapi.range(3).forEach(gid_i -> {
+            Aparapi.range(9).forEach(gid_j -> {
+                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, 84 + gid_i * 18));
+            });
+        });
+        
+        Aparapi.range(9).forEach(gid_i -> {
+            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
+        });
+        /*
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.a(new Slot(playerinventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -95,7 +107,7 @@ public class ContainerAnvil extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }
+        }*/
 
     }
 
@@ -308,17 +320,27 @@ public class ContainerAnvil extends Container {
         super.addSlotListener(icrafting);
         icrafting.setContainerData(this, 0, this.a);
     }
-
+    
+    //HSA
     public void b(EntityHuman entityhuman) {
         super.b(entityhuman);
         if (!this.i.isClientSide) {
+            Aparapi.range(this.h.getSize()).forEach(gid_i -> {
+                ItemStack itemstack = this.h.splitWithoutUpdate(gid_i);
+
+                if (itemstack != null) {
+                    entityhuman.drop(itemstack, false);
+                }
+            });
+            
+            /*
             for (int i = 0; i < this.h.getSize(); ++i) {
                 ItemStack itemstack = this.h.splitWithoutUpdate(i);
 
                 if (itemstack != null) {
                     entityhuman.drop(itemstack, false);
                 }
-            }
+            }*/
 
         }
     }
