@@ -497,7 +497,8 @@ public class EntityZombie extends EntityMonster {
         entityvillager.addEffect(new MobEffect(MobEffectList.CONFUSION.id, 200, 0));
         this.world.a((EntityHuman) null, 1017, new BlockPosition((int) this.locX, (int) this.locY, (int) this.locZ), 0);
     }
-
+    
+    //HSA
     protected int cr() {
         int i = 1;
 

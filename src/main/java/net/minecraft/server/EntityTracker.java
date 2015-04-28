@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -179,7 +180,20 @@ public class EntityTracker {
                 arraylist.add((EntityPlayer) entitytrackerentry.tracker);
             }
         }
+        //HSA
+        Aparapi.range(arraylist.size()).forEach(gid_i -> {
+            EntityPlayer entityplayer = (EntityPlayer) arraylist.get(gid_i);
+            Iterator iterator1 = this.c.iterator();
 
+            while (iterator1.hasNext()) {
+                EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) iterator1.next();
+
+                if (entitytrackerentry1.tracker != entityplayer) {
+                    entitytrackerentry1.updatePlayer(entityplayer);
+                }
+            }
+        });
+        /*
         for (int i = 0; i < arraylist.size(); ++i) {
             EntityPlayer entityplayer = (EntityPlayer) arraylist.get(i);
             Iterator iterator1 = this.c.iterator();
@@ -191,7 +205,7 @@ public class EntityTracker {
                     entitytrackerentry1.updatePlayer(entityplayer);
                 }
             }
-        }
+        }*/
 
     }
 

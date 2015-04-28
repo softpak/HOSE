@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +59,15 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
         ArrayList arraylist = Lists.newArrayList();
 
         int j;
+        Aparapi.range(achunksection.length).forEach(gid_j -> {
+            ChunkSection chunksection = achunksection[gid_j];
 
+            if (chunksection != null && (!flag || !chunksection.a()) && (i & 1 << gid_j) != 0) {
+                packetplayoutmapchunk_chunkmap.b |= 1 << gid_j;
+                arraylist.add(chunksection);
+            }
+        });
+        /*
         for (j = 0; j < achunksection.length; ++j) {
             ChunkSection chunksection = achunksection[j];
 
@@ -66,7 +75,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
                 packetplayoutmapchunk_chunkmap.b |= 1 << j;
                 arraylist.add(chunksection);
             }
-        }
+        }*/
 
         packetplayoutmapchunk_chunkmap.a = new byte[a(Integer.bitCount(packetplayoutmapchunk_chunkmap.b), flag1, flag)];
         j = 0;
@@ -80,6 +89,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
             char[] achar1 = achar;
             int k = achar.length;
 
+            
             for (int l = 0; l < k; ++l) {
                 char c0 = achar1[l];
 

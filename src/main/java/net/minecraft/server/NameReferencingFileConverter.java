@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
@@ -68,14 +69,22 @@ public class NameReferencingFileConverter {
         } else {
             String[] astring1 = astring;
             int i = astring.length;
+            
+            Aparapi.range(i).forEach(gid_j -> {
+                String s = astring1[gid_j];
+                UUID uuid = EntityHuman.a(new GameProfile((UUID) null, s));
+                GameProfile gameprofile = new GameProfile(uuid, s);
 
+                profilelookupcallback.onProfileLookupSucceeded(gameprofile);
+            });
+            /*
             for (int j = 0; j < i; ++j) {
                 String s = astring1[j];
                 UUID uuid = EntityHuman.a(new GameProfile((UUID) null, s));
                 GameProfile gameprofile = new GameProfile(uuid, s);
 
                 profilelookupcallback.onProfileLookupSucceeded(gameprofile);
-            }
+            }*/
         }
 
     }

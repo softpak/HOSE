@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
@@ -40,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 // CraftBukkit start
 import java.io.IOException;
+import java.util.logging.Level;
 
 import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
@@ -417,12 +419,31 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD); // CraftBukkit
     }
 
+    //HSA
     protected void saveChunks(boolean flag) throws ExceptionWorldConflict { // CraftBukkit - added throws
         if (!this.N) {
             WorldServer[] aworldserver = this.worldServer;
             int i = aworldserver.length;
 
             // CraftBukkit start
+            Aparapi.range(worlds.size()).forEach(gid_j -> {
+                WorldServer worldserver = worlds.get(gid_j);
+                // CraftBukkit end
+
+                if (worldserver != null) {
+                    try {
+                        if (!flag) {
+                            MinecraftServer.LOGGER.info("Saving chunks for level \'" + worldserver.getWorldData().getName() + "\'/" + worldserver.worldProvider.getName());
+                        }
+                        
+                        worldserver.save(true, (IProgressUpdate) null);
+                        worldserver.saveLevel();
+                    } catch (ExceptionWorldConflict ex) {
+                        java.util.logging.Logger.getLogger(MinecraftServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            /*
             for (int j = 0; j < worlds.size(); ++j) {
                 WorldServer worldserver = worlds.get(j);
                 // CraftBukkit end
@@ -435,7 +456,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                     worldserver.save(true, (IProgressUpdate) null);
                     worldserver.saveLevel();
                 }
-            }
+            }*/
 
         }
     }
@@ -658,9 +679,13 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             GameProfile[] agameprofile = new GameProfile[Math.min(this.H(), 12)];
             int j = MathHelper.nextInt(this.s, 0, this.H() - agameprofile.length);
 
+            Aparapi.range(agameprofile.length).forEach(gid_k -> {
+                agameprofile[gid_k] = ((EntityPlayer) this.v.v().get(j + gid_k)).getProfile();
+            });
+            /*
             for (int k = 0; k < agameprofile.length; ++k) {
                 agameprofile[k] = ((EntityPlayer) this.v.v().get(j + k)).getProfile();
-            }
+            }*/
 
             Collections.shuffle(Arrays.asList(agameprofile));
             this.r.b().a(agameprofile);
@@ -735,10 +760,15 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         SpigotTimings.timeUpdateTimer.startTiming(); // Spigot
         // Send time updates to everyone, it will get the right time from the world the player is in.
         if (this.ticks % 20 == 0) {
+            Aparapi.range(this.getPlayerList().players.size()).forEach(gid_i -> {
+                EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(gid_i);
+                entityplayer.playerConnection.sendPacket(new PacketPlayOutUpdateTime(entityplayer.world.getTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle"))); // Add support for per player time
+            });
+            /*
             for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
                 EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(i);
                 entityplayer.playerConnection.sendPacket(new PacketPlayOutUpdateTime(entityplayer.world.getTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle"))); // Add support for per player time
-            }
+            }*/
         }
         SpigotTimings.timeUpdateTimer.stopTiming(); // Spigot
 
@@ -818,9 +848,15 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.methodProfiler.c("tickables");
 
         SpigotTimings.tickablesTimer.startTiming(); // Spigot
+        
+        //HSA
+        Aparapi.range(this.p.size()).forEach(gid_i -> {
+            ((IUpdatePlayerListBox) this.p.get(gid_i)).c();
+        });
+        /*
         for (i = 0; i < this.p.size(); ++i) {
             ((IUpdatePlayerListBox) this.p.get(i)).c();
-        }
+        }*/
         SpigotTimings.tickablesTimer.stopTiming(); // Spigot
 
         this.methodProfiler.b();
@@ -1153,9 +1189,29 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     public void a(KeyPair keypair) {
         this.H = keypair;
     }
-
+    
+    //HSA
     public void a(EnumDifficulty enumdifficulty) {
         // CraftBukkit start
+        Aparapi.range(this.worlds.size()).forEach(gid_i -> {
+            WorldServer worldserver = this.worlds.get(gid_i);
+            // CraftBukkit end
+
+            if (worldserver != null) {
+                if (worldserver.getWorldData().isHardcore()) {
+                    worldserver.getWorldData().setDifficulty(EnumDifficulty.HARD);
+                    worldserver.setSpawnFlags(true, true);
+                } else if (this.S()) {
+                    worldserver.getWorldData().setDifficulty(enumdifficulty);
+                    worldserver.setSpawnFlags(worldserver.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                } else {
+                    worldserver.getWorldData().setDifficulty(enumdifficulty);
+                    worldserver.setSpawnFlags(this.getSpawnMonsters(), this.spawnAnimals);
+                }
+            }
+        });
+        
+        /*
         for (int i = 0; i < this.worlds.size(); ++i) {
             WorldServer worldserver = this.worlds.get(i);
             // CraftBukkit end
@@ -1172,7 +1228,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                     worldserver.setSpawnFlags(this.getSpawnMonsters(), this.spawnAnimals);
                 }
             }
-        }
+        }*/
 
     }
 
@@ -1195,12 +1251,23 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     public Convertable getConvertable() {
         return this.convertable;
     }
-
+    
+    //HSA
     public void Z() {
         this.N = true;
         this.getConvertable().d();
 
         // CraftBukkit start
+        
+        Aparapi.range(this.worlds.size()).forEach(gid_i -> {
+            WorldServer worldserver = this.worlds.get(gid_i);
+            // CraftBukkit end
+            
+            if (worldserver != null) {
+                worldserver.saveLevel();
+            }
+        });
+        /*
         for (int i = 0; i < this.worlds.size(); ++i) {
             WorldServer worldserver = this.worlds.get(i);
             // CraftBukkit end
@@ -1208,7 +1275,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             if (worldserver != null) {
                 worldserver.saveLevel();
             }
-        }
+        }*/
 
         this.getConvertable().e(this.worlds.get(0).getDataManager().g()); // CraftBukkit
         this.safeShutdown();
@@ -1226,7 +1293,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.O = s;
         this.P = s1;
     }
-
+    
+    //HSA
+    int hi;
     public void a(MojangStatisticsGenerator mojangstatisticsgenerator) {
         mojangstatisticsgenerator.a("whitelist_enabled", Boolean.valueOf(false));
         mojangstatisticsgenerator.a("whitelist_count", Integer.valueOf(0));
@@ -1240,10 +1309,30 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         mojangstatisticsgenerator.a("gui_state", this.ar() ? "enabled" : "disabled");
         mojangstatisticsgenerator.a("run_time", Long.valueOf((ay() - mojangstatisticsgenerator.g()) / 60L * 1000L));
         mojangstatisticsgenerator.a("avg_tick_ms", Integer.valueOf((int) (MathHelper.a(this.h) * 1.0E-6D)));
-        int i = 0;
+        //int i = 0;
+        hi = 0;
 
         if (this.worldServer != null) {
             // CraftBukkit start
+            //HSA
+            Aparapi.range(this.worlds.size()).forEach(gid_j -> {
+                WorldServer worldserver = this.worlds.get(gid_j);
+                if (worldserver != null) {
+                    // CraftBukkit end
+                    WorldData worlddata = worldserver.getWorldData();
+
+                    mojangstatisticsgenerator.a("world[" + hi + "][dimension]", Integer.valueOf(worldserver.worldProvider.getDimension()));
+                    mojangstatisticsgenerator.a("world[" + hi + "][mode]", worlddata.getGameType());
+                    mojangstatisticsgenerator.a("world[" + hi + "][difficulty]", worldserver.getDifficulty());
+                    mojangstatisticsgenerator.a("world[" + hi + "][hardcore]", Boolean.valueOf(worlddata.isHardcore()));
+                    mojangstatisticsgenerator.a("world[" + hi + "][generator_name]", worlddata.getType().name());
+                    mojangstatisticsgenerator.a("world[" + hi + "][generator_version]", Integer.valueOf(worlddata.getType().getVersion()));
+                    mojangstatisticsgenerator.a("world[" + hi + "][height]", Integer.valueOf(this.F));
+                    mojangstatisticsgenerator.a("world[" + hi + "][chunks_loaded]", Integer.valueOf(worldserver.N().getLoadedChunks()));
+                    ++hi;
+                }
+            });
+            /*
             for (int j = 0; j < this.worlds.size(); ++j) {
                 WorldServer worldserver = this.worlds.get(j);
                 if (worldserver != null) {
@@ -1260,10 +1349,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                     mojangstatisticsgenerator.a("world[" + i + "][chunks_loaded]", Integer.valueOf(worldserver.N().getLoadedChunks()));
                     ++i;
                 }
-            }
+            }*/
         }
 
-        mojangstatisticsgenerator.a("worlds", Integer.valueOf(i));
+        mojangstatisticsgenerator.a("worlds", Integer.valueOf(hi));
     }
 
     public void b(MojangStatisticsGenerator mojangstatisticsgenerator) {
@@ -1351,11 +1440,16 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.v = playerlist;
     }
 
+    //HSA
     public void setGamemode(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
         // CraftBukkit start
+        Aparapi.range(this.worlds.size()).forEach(gid_i -> {
+            getServer().worlds.get(gid_i).getWorldData().setGameType(worldsettings_enumgamemode);
+        });
+        /*
         for (int i = 0; i < this.worlds.size(); ++i) {
             getServer().worlds.get(i).getWorldData().setGameType(worldsettings_enumgamemode);
-        }
+        }*/
 
     }
 

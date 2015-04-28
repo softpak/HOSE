@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Calendar;
 
 import org.bukkit.event.entity.EntityCombustEvent; // CraftBukkit
@@ -148,7 +149,8 @@ public class EntitySkeleton extends EntityMonster implements IRangedEntity {
         return Items.ARROW;
     }
     // CraftBukkit end */
-
+    
+    //HSA
     protected void dropDeathLoot(boolean flag, int i) {
         super.dropDeathLoot(flag, i); // CraftBukkit
         int j;
@@ -156,23 +158,35 @@ public class EntitySkeleton extends EntityMonster implements IRangedEntity {
 
         if (this.getSkeletonType() == 1) {
             j = this.random.nextInt(3 + i) - 1;
-
+            
+            Aparapi.range(j).forEach(gid_k -> {
+                this.a(Items.COAL, 1);
+            });
+            /*
             for (k = 0; k < j; ++k) {
                 this.a(Items.COAL, 1);
-            }
+            }*/
         } else {
             j = this.random.nextInt(3 + i);
 
+            Aparapi.range(j).forEach(gid_k -> {
+                this.a(Items.ARROW, 1);
+            });
+            /*
             for (k = 0; k < j; ++k) {
                 this.a(Items.ARROW, 1);
-            }
+            }*/
         }
 
         j = this.random.nextInt(3 + i);
-
+        
+        Aparapi.range(j).forEach(gid_k -> {
+            this.a(Items.BONE, 1);
+        });
+        /*
         for (k = 0; k < j; ++k) {
             this.a(Items.BONE, 1);
-        }
+        }*/
 
     }
 

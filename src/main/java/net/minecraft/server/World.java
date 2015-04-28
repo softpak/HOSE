@@ -862,7 +862,7 @@ public abstract class World implements IBlockAccess {
                     } else {
                         flag3 = false;
                     }
-
+                    
                     if (j > i1) {
                         d1 = (double) i1 + 1.0D;
                     } else if (j < i1) {
@@ -3030,8 +3030,9 @@ public abstract class World implements IBlockAccess {
 
         return false;
     }
-
+    //HSA
     public EntityHuman a(String s) {
+        
         for (int i = 0; i < this.players.size(); ++i) {
             EntityHuman entityhuman = (EntityHuman) this.players.get(i);
 

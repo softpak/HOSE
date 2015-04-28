@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
@@ -73,28 +74,38 @@ public class EntitySheep extends EntityAnimal {
         super.h();
         this.datawatcher.a(16, new Byte((byte) 0));
     }
-
+    
+    //HSA
     protected void dropDeathLoot(boolean flag, int i) {
         if (!this.isSheared()) {
             this.a(new ItemStack(Item.getItemOf(Blocks.WOOL), 1, this.getColor().getColorIndex()), 0.0F);
         }
 
         int j = this.random.nextInt(2) + 1 + this.random.nextInt(1 + i);
-
+        
+        Aparapi.range(j).forEach(gid_k -> {
+            if (this.isBurning()) {
+                this.a(Items.COOKED_MUTTON, 1);
+            } else {
+                this.a(Items.MUTTON, 1);
+            }
+        });
+        /*
         for (int k = 0; k < j; ++k) {
             if (this.isBurning()) {
                 this.a(Items.COOKED_MUTTON, 1);
             } else {
                 this.a(Items.MUTTON, 1);
             }
-        }
+        }*/
 
     }
 
     protected Item getLoot() {
         return Item.getItemOf(Blocks.WOOL);
     }
-
+    
+    //HSA
     public boolean a(EntityHuman entityhuman) {
         ItemStack itemstack = entityhuman.inventory.getItemInHand();
 
@@ -111,14 +122,22 @@ public class EntitySheep extends EntityAnimal {
 
                 this.setSheared(true);
                 int i = 1 + this.random.nextInt(3);
+                
+                Aparapi.range(i).forEach(gid_j -> {
+                    EntityItem entityitem = this.a(new ItemStack(Item.getItemOf(Blocks.WOOL), 1, this.getColor().getColorIndex()), 1.0F);
 
+                    entityitem.motY += (double) (this.random.nextFloat() * 0.05F);
+                    entityitem.motX += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
+                    entityitem.motZ += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
+                });
+                /*
                 for (int j = 0; j < i; ++j) {
                     EntityItem entityitem = this.a(new ItemStack(Item.getItemOf(Blocks.WOOL), 1, this.getColor().getColorIndex()), 1.0F);
 
                     entityitem.motY += (double) (this.random.nextFloat() * 0.05F);
                     entityitem.motX += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
                     entityitem.motZ += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
-                }
+                }*/
             }
 
             itemstack.damage(1, entityhuman);

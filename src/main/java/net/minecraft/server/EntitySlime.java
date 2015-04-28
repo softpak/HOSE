@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import com.amd.aparapi.Aparapi;
 import org.bukkit.event.entity.SlimeSplitEvent;
 // CraftBukkit end
 
@@ -66,7 +67,8 @@ public class EntitySlime extends EntityInsentient implements IMonster {
     protected String ck() {
         return "mob.slime." + (this.getSize() > 1 ? "big" : "small");
     }
-
+    
+    //HSA
     public void t_() {
         if (!this.world.isClientSide && this.world.getDifficulty() == EnumDifficulty.PEACEFUL && this.getSize() > 0) {
             this.dead = true;
@@ -77,7 +79,20 @@ public class EntitySlime extends EntityInsentient implements IMonster {
         super.t_();
         if (this.onGround && !this.bk) {
             int i = this.getSize();
+            
+            Aparapi.range(i*8).forEach(gid_j -> {
+                float f = this.random.nextFloat() * 3.1415927F * 2.0F;
+                float f1 = this.random.nextFloat() * 0.5F + 0.5F;
+                float f2 = MathHelper.sin(f) * (float) i * 0.5F * f1;
+                float f3 = MathHelper.cos(f) * (float) i * 0.5F * f1;
+                World world = this.world;
+                EnumParticle enumparticle = this.n();
+                double d0 = this.locX + (double) f2;
+                double d1 = this.locZ + (double) f3;
 
+                world.addParticle(enumparticle, d0, this.getBoundingBox().b, d1, 0.0D, 0.0D, 0.0D, new int[0]);
+            });
+            /*
             for (int j = 0; j < i * 8; ++j) {
                 float f = this.random.nextFloat() * 3.1415927F * 2.0F;
                 float f1 = this.random.nextFloat() * 0.5F + 0.5F;
@@ -89,7 +104,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
                 double d1 = this.locZ + (double) f3;
 
                 world.addParticle(enumparticle, d0, this.getBoundingBox().b, d1, 0.0D, 0.0D, 0.0D, new int[0]);
-            }
+            }*/
 
             if (this.cl()) {
                 this.makeSound(this.ck(), this.bB(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
@@ -130,7 +145,8 @@ public class EntitySlime extends EntityInsentient implements IMonster {
 
         super.i(i);
     }
-
+    
+    //HSA
     public void die() {
         int i = this.getSize();
 
@@ -148,7 +164,26 @@ public class EntitySlime extends EntityInsentient implements IMonster {
                 return;
             }
             // CraftBukkit end
+            
+            Aparapi.range(j).forEach(gid_k -> {
+                float f = ((float) (gid_k % 2) - 0.5F) * (float) i / 4.0F;
+                float f1 = ((float) (gid_k / 2) - 0.5F) * (float) i / 4.0F;
+                EntitySlime entityslime = this.cf();
 
+                if (this.hasCustomName()) {
+                    entityslime.setCustomName(this.getCustomName());
+                }
+
+                if (this.isPersistent()) {
+                    entityslime.bX();
+                }
+
+                entityslime.setSize(i / 2);
+                entityslime.setPositionRotation(this.locX + (double) f, this.locY + 0.5D, this.locZ + (double) f1, this.random.nextFloat() * 360.0F, 0.0F);
+                this.world.addEntity(entityslime, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SLIME_SPLIT); // CraftBukkit - SpawnReason
+                
+            });
+            /*
             for (int k = 0; k < j; ++k) {
                 float f = ((float) (k % 2) - 0.5F) * (float) i / 4.0F;
                 float f1 = ((float) (k / 2) - 0.5F) * (float) i / 4.0F;
@@ -165,7 +200,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
                 entityslime.setSize(i / 2);
                 entityslime.setPositionRotation(this.locX + (double) f, this.locY + 0.5D, this.locZ + (double) f1, this.random.nextFloat() * 360.0F, 0.0F);
                 this.world.addEntity(entityslime, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SLIME_SPLIT); // CraftBukkit - SpawnReason
-            }
+            }*/
         }
 
         super.die();

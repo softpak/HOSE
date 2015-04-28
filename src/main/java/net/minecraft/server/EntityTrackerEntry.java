@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Iterator;
@@ -422,11 +423,16 @@ public class EntityTrackerEntry {
     private boolean e(EntityPlayer entityplayer) {
         return entityplayer.u().getPlayerChunkMap().a(entityplayer, this.tracker.ae, this.tracker.ag);
     }
-
+    
+    //HSA
     public void scanPlayers(List<EntityHuman> list) {
+        Aparapi.range(list.size()).forEach(gid_i -> {
+            this.updatePlayer((EntityPlayer) list.get(gid_i));
+        });
+        /*
         for (int i = 0; i < list.size(); ++i) {
             this.updatePlayer((EntityPlayer) list.get(i));
-        }
+        }*/
 
     }
 

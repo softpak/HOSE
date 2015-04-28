@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
@@ -232,10 +233,14 @@ public abstract class MobSpawnerAbstract {
         this.mobs.clear();
         if (nbttagcompound.hasKeyOfType("SpawnPotentials", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("SpawnPotentials", 10);
-
+            
+            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+                this.mobs.add(new MobSpawnerAbstract.a(nbttaglist.get(gid_i)));
+            });
+            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 this.mobs.add(new MobSpawnerAbstract.a(nbttaglist.get(i)));
-            }
+            }*/
         }
 
         if (nbttagcompound.hasKeyOfType("SpawnData", 10)) {

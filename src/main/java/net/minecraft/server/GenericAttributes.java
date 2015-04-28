@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
@@ -66,8 +67,19 @@ public class GenericAttributes {
         nbttagcompound.setLong("UUIDLeast", attributemodifier.a().getLeastSignificantBits());
         return nbttagcompound;
     }
-
+    //HSA
     public static void a(AttributeMapBase attributemapbase, NBTTagList nbttaglist) {
+        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+            NBTTagCompound nbttagcompound = nbttaglist.get(gid_i);
+            AttributeInstance attributeinstance = attributemapbase.a(nbttagcompound.getString("Name"));
+
+            if (attributeinstance != null) {
+                a(attributeinstance, nbttagcompound);
+            } else {
+                GenericAttributes.f.warn("Ignoring unknown attribute \'" + nbttagcompound.getString("Name") + "\'");
+            }
+        });
+        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound = nbttaglist.get(i);
             AttributeInstance attributeinstance = attributemapbase.a(nbttagcompound.getString("Name"));
@@ -77,15 +89,29 @@ public class GenericAttributes {
             } else {
                 GenericAttributes.f.warn("Ignoring unknown attribute \'" + nbttagcompound.getString("Name") + "\'");
             }
-        }
+        }*/
 
     }
-
+    //HSA
     private static void a(AttributeInstance attributeinstance, NBTTagCompound nbttagcompound) {
         attributeinstance.setValue(nbttagcompound.getDouble("Base"));
         if (nbttagcompound.hasKeyOfType("Modifiers", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("Modifiers", 10);
+            
+            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+                AttributeModifier attributemodifier = a(nbttaglist.get(gid_i));
 
+                if (attributemodifier != null) {
+                    AttributeModifier attributemodifier1 = attributeinstance.a(attributemodifier.a());
+
+                    if (attributemodifier1 != null) {
+                        attributeinstance.c(attributemodifier1);
+                    }
+
+                    attributeinstance.b(attributemodifier);
+                }
+            });
+            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 AttributeModifier attributemodifier = a(nbttaglist.get(i));
 
@@ -98,7 +124,7 @@ public class GenericAttributes {
 
                     attributeinstance.b(attributemodifier);
                 }
-            }
+            }*/
         }
 
     }
