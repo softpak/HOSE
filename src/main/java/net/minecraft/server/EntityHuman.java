@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -256,13 +257,32 @@ public abstract class EntityHuman extends EntityLiving {
     public void makeSound(String s, float f, float f1) {
         this.world.a(this, s, f, f1);
     }
-
+    
+    //HSA
     protected void b(ItemStack itemstack, int i) {
         if (itemstack.m() == EnumAnimation.DRINK) {
             this.makeSound("random.drink", 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
         }
 
         if (itemstack.m() == EnumAnimation.EAT) {
+            Aparapi.range(i).forEach(gid_j -> {
+                Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+
+                vec3d = vec3d.a(-this.pitch * 3.1415927F / 180.0F);
+                vec3d = vec3d.b(-this.yaw * 3.1415927F / 180.0F);
+                double d0 = (double) (-this.random.nextFloat()) * 0.6D - 0.3D;
+                Vec3D vec3d1 = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
+
+                vec3d1 = vec3d1.a(-this.pitch * 3.1415927F / 180.0F);
+                vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
+                vec3d1 = vec3d1.add(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
+                if (itemstack.usesData()) {
+                    this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem()), itemstack.getData()});
+                } else {
+                    this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
+                }
+            });
+            /*
             for (int j = 0; j < i; ++j) {
                 Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 
@@ -279,7 +299,7 @@ public abstract class EntityHuman extends EntityLiving {
                 } else {
                     this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
                 }
-            }
+            }*/
 
             this.makeSound("random.eat", 0.5F + 0.5F * (float) this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
         }
@@ -372,6 +392,7 @@ public abstract class EntityHuman extends EntityLiving {
         this.aK = this.yaw;
     }
 
+    //HSA
     public void m() {
         if (this.bm > 0) {
             --this.bm;
@@ -432,13 +453,21 @@ public abstract class EntityHuman extends EntityLiving {
             List list = this.world.getEntities(this, axisalignedbb);
 
             if (this.ae()) { // Spigot: Add this.ae() condition (second !this.isDead near bottom of EntityLiving)
+            Aparapi.range(list.size()).forEach(gid_i -> {
+                Entity entity = (Entity) list.get(gid_i);
+
+                if (!entity.dead) {
+                    this.d(entity);
+                }
+            });
+            /*
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity = (Entity) list.get(i);
 
                 if (!entity.dead) {
                     this.d(entity);
                 }
-            }
+            }*/
             } // Spigot 
         }
 
@@ -836,21 +865,32 @@ public abstract class EntityHuman extends EntityLiving {
     public int br() {
         return this.inventory.m();
     }
-
+    
+    //HSA
+    int bYi;
     public float bY() {
-        int i = 0;
+        //int i = 0;
+        bYi = 0;
         ItemStack[] aitemstack = this.inventory.armor;
         int j = aitemstack.length;
+        
+        Aparapi.range(j).forEach(gid_k -> {
+            ItemStack itemstack = aitemstack[gid_k];
 
+            if (itemstack != null) {
+                ++bYi;
+            }
+        });
+        /*
         for (int k = 0; k < j; ++k) {
             ItemStack itemstack = aitemstack[k];
 
             if (itemstack != null) {
                 ++i;
             }
-        }
+        }*/
 
-        return (float) i / (float) this.inventory.armor.length;
+        return (float) bYi / (float) this.inventory.armor.length;
     }
 
     // CraftBukkit start
@@ -1824,12 +1864,18 @@ public abstract class EntityHuman extends EntityLiving {
         static {
             EntityHuman.EnumChatVisibility[] aentityhuman_enumchatvisibility = values();
             int i = aentityhuman_enumchatvisibility.length;
+            
+            Aparapi.range(i).forEach(gid_j -> {
+                EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = aentityhuman_enumchatvisibility[gid_j];
 
+                EntityHuman.EnumChatVisibility.d[entityhuman_enumchatvisibility.e] = entityhuman_enumchatvisibility;
+            });
+            /*
             for (int j = 0; j < i; ++j) {
                 EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = aentityhuman_enumchatvisibility[j];
 
                 EntityHuman.EnumChatVisibility.d[entityhuman_enumchatvisibility.e] = entityhuman_enumchatvisibility;
-            }
+            }*/
 
         }
     }

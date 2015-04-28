@@ -1014,7 +1014,8 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         this.dataManager.saveWorldData(this.worldData, this.server.getPlayerList().t());
         // CraftBukkit end
     }
-
+    
+    //HSA
     protected void a(Entity entity) {
         super.a(entity);
         this.entitiesById.a(entity.getId(), entity);
@@ -1022,13 +1023,18 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         Entity[] aentity = entity.aB();
 
         if (aentity != null) {
+            Aparapi.range(aentity.length).forEach(gid_i -> {
+                this.entitiesById.a(aentity[gid_i].getId(), aentity[gid_i]);
+            });
+            /*
             for (int i = 0; i < aentity.length; ++i) {
                 this.entitiesById.a(aentity[i].getId(), aentity[i]);
-            }
+            }*/
         }
 
     }
-
+    
+    //HSA
     protected void b(Entity entity) {
         super.b(entity);
         this.entitiesById.d(entity.getId());
@@ -1036,9 +1042,13 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         Entity[] aentity = entity.aB();
 
         if (aentity != null) {
+            Aparapi.range(aentity.length).forEach(gid_i -> {
+                this.entitiesById.d(aentity[gid_i].getId());
+            });
+            /*
             for (int i = 0; i < aentity.length; ++i) {
                 this.entitiesById.d(aentity[i].getId());
-            }
+            }*/
         }
 
     }
@@ -1168,19 +1178,34 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             this.server.getPlayerList().sendAll(new PacketPlayOutGameStateChange(8, this.r));
         }
         // */
+        
+        //HSA
+        
         if (flag != this.S()) {
             // Only send weather packets to those affected
+            Aparapi.range(this.players.size()).forEach(gid_i -> {
+                if (((EntityPlayer) this.players.get(gid_i)).world == this) {
+                    ((EntityPlayer) this.players.get(gid_i)).setPlayerWeather((!flag ? WeatherType.DOWNFALL : WeatherType.CLEAR), false);
+                }
+            });
+            /*
             for (int i = 0; i < this.players.size(); ++i) {
                 if (((EntityPlayer) this.players.get(i)).world == this) {
                     ((EntityPlayer) this.players.get(i)).setPlayerWeather((!flag ? WeatherType.DOWNFALL : WeatherType.CLEAR), false);
                 }
-            }
+            }*/
         }
+        Aparapi.range(this.players.size()).forEach(gid_i -> {
+            if (((EntityPlayer) this.players.get(gid_i)).world == this) {
+                ((EntityPlayer) this.players.get(gid_i)).updateWeather(this.o, this.p, this.q, this.r);
+            }
+        });
+        /*
         for (int i = 0; i < this.players.size(); ++i) {
             if (((EntityPlayer) this.players.get(i)).world == this) {
                 ((EntityPlayer) this.players.get(i)).updateWeather(this.o, this.p, this.q, this.r);
             }
-        }
+        }*/
         // CraftBukkit end
 
     }
