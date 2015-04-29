@@ -313,7 +313,7 @@ public class EnchantmentManager {
 
         if (list != null) {
             Iterator iterator = list.iterator();
-
+            
             while (iterator.hasNext()) {
                 WeightedRandomEnchant weightedrandomenchant = (WeightedRandomEnchant) iterator.next();
 

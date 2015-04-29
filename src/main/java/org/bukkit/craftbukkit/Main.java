@@ -25,10 +25,17 @@ public class Main {
         final int size = 100000;
         final float[] a = new float[size];
         final float[] b = new float[size];
+        //Runnable r2 = () -> System.out.println("Hello world two!");
+        
+        
         for (int i=0;i<10;i++){
             final float[] sum = new float[size];
             long st = System.nanoTime();
-            Aparapi.range(size).forEach(gid -> a[gid] = (float)(Math.random()*100));
+            Aparapi.range(size).forEach(gid -> {
+                a[gid] = (float)(Math.random()*100);
+                
+            });
+
             Aparapi.range(size).forEach(gid -> b[gid] = (float)(Math.random()*100));
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]*b[gid]*b[gid]);
             Device.hsa().forEach(0, size, gid-> {

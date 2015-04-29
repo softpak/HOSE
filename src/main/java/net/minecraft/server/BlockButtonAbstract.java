@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.List;
 import java.util.Random;
 
@@ -45,10 +46,10 @@ public abstract class BlockButtonAbstract extends Block {
     public boolean canPlace(World world, BlockPosition blockposition) {
         EnumDirection[] aenumdirection = EnumDirection.values();
         int i = aenumdirection.length;
-
+        
         for (int j = 0; j < i; ++j) {
             EnumDirection enumdirection = aenumdirection[j];
-
+            
             if (a(world, blockposition, enumdirection)) {
                 return true;
             }
@@ -59,7 +60,7 @@ public abstract class BlockButtonAbstract extends Block {
 
     protected static boolean a(World world, BlockPosition blockposition, EnumDirection enumdirection) {
         BlockPosition blockposition1 = blockposition.shift(enumdirection);
-
+        
         return enumdirection == EnumDirection.DOWN ? World.a((IBlockAccess) world, blockposition1) : world.getType(blockposition1).getBlock().isOccluding();
     }
 

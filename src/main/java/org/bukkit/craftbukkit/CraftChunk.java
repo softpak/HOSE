@@ -156,9 +156,9 @@ public class CraftChunk implements Chunk {
         return getChunkSnapshot(true, false, false);
     }
     
-    BiomeBase[] hbiome = null;
-    double[] hbiomeTemp = null;
-    double[] hbiomeRain = null;
+    BiomeBase[] hbiome;
+    double[] hbiomeTemp;
+    double[] hbiomeRain;
     float[] hdat;
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTempRain) {
         net.minecraft.server.Chunk chunk = getHandle();
@@ -224,7 +224,7 @@ public class CraftChunk implements Chunk {
         hbiome = null;
         hbiomeTemp = null;
         hbiomeRain = null;
-
+        hdat = null;
         if (includeBiome || includeBiomeTempRain) {
             WorldChunkManager wcm = chunk.world.getWorldChunkManager();
             

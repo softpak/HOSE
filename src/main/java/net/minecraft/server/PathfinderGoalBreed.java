@@ -47,14 +47,30 @@ public class PathfinderGoalBreed extends PathfinderGoal {
         }
 
     }
-
+    
+    //lambda parallel
+    EntityAnimal entityanimal;
+    double d0;
     private EntityAnimal f() {
         float f = 8.0F;
         List list = this.a.a(this.d.getClass(), this.d.getBoundingBox().grow((double) f, (double) f, (double) f));
-        double d0 = Double.MAX_VALUE;
-        EntityAnimal entityanimal = null;
-        Iterator iterator = list.iterator();
-
+        //double d0 = Double.MAX_VALUE;
+        //EntityAnimal entityanimal = null;
+        //Iterator iterator = list.iterator();
+        entityanimal = null;
+        d0 = Double.MAX_VALUE;
+        
+        
+        list.parallelStream().filter(
+                ea -> this.d.mate((EntityAnimal)ea)&& this.d.h((EntityAnimal)ea) < d0).forEach(
+                ea -> {entityanimal = (EntityAnimal)ea;
+                        d0 = this.d.h((EntityAnimal)ea);
+                });
+        //System.out.println("go bread!!");
+        
+        //staff -> staff.getServiceOfYear() > 5).forEach(
+        //staff -> staff.setSalary(staff.getSalary() * 1.1)) ;        
+             /*   
         while (iterator.hasNext()) {
             EntityAnimal entityanimal1 = (EntityAnimal) iterator.next();
 
@@ -62,7 +78,7 @@ public class PathfinderGoalBreed extends PathfinderGoal {
                 entityanimal = entityanimal1;
                 d0 = this.d.h(entityanimal1);
             }
-        }
+        }*/
 
         return entityanimal;
     }
