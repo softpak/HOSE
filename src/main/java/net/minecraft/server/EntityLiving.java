@@ -386,7 +386,10 @@ public abstract class EntityLiving extends Entity {
     public int bh() {
         return this.ticksFarFromPlayer;
     }
-
+    
+    //HSA
+    ItemStack[] aitemstack;
+    ItemStack itemstack;
     public void b(NBTTagCompound nbttagcompound) {
         nbttagcompound.setFloat("HealF", this.getHealth());
         nbttagcompound.setShort("Health", (short) ((int) Math.ceil((double) this.getHealth())));
@@ -394,45 +397,64 @@ public abstract class EntityLiving extends Entity {
         nbttagcompound.setInt("HurtByTimestamp", this.hurtTimestamp);
         nbttagcompound.setShort("DeathTime", (short) this.deathTicks);
         nbttagcompound.setFloat("AbsorptionAmount", this.getAbsorptionHearts());
-        ItemStack[] aitemstack = this.getEquipment();
+        //ItemStack[] aitemstack = this.getEquipment();
+        aitemstack = this.getEquipment();
         int i = aitemstack.length;
 
         int j;
-        ItemStack itemstack;
-
+        //ItemStack itemstack;
+        
+        Aparapi.range(i).forEach(gid_j -> {
+            itemstack = aitemstack[gid_j];
+            if (itemstack != null) {
+                this.c.a(itemstack.B());
+            }
+        });
+        /*
         for (j = 0; j < i; ++j) {
             itemstack = aitemstack[j];
             if (itemstack != null) {
                 this.c.a(itemstack.B());
             }
-        }
+        }*/
 
         nbttagcompound.set("Attributes", GenericAttributes.a(this.getAttributeMap()));
         aitemstack = this.getEquipment();
         i = aitemstack.length;
 
+        Aparapi.range(i).forEach(gid_j -> {
+            itemstack = aitemstack[gid_j];
+            if (itemstack != null) {
+                this.c.b(itemstack.B());
+            }
+        });
+        /*
         for (j = 0; j < i; ++j) {
             itemstack = aitemstack[j];
             if (itemstack != null) {
                 this.c.b(itemstack.B());
             }
-        }
+        }*/
 
         if (!this.effects.isEmpty()) {
             NBTTagList nbttaglist = new NBTTagList();
             Iterator iterator = this.effects.values().iterator();
 
+            //lambda
+            iterator.forEachRemaining(it -> nbttaglist.add(((MobEffect)it).a(new NBTTagCompound())));
+            /*
             while (iterator.hasNext()) {
                 MobEffect mobeffect = (MobEffect) iterator.next();
 
                 nbttaglist.add(mobeffect.a(new NBTTagCompound()));
-            }
+            }*/
 
             nbttagcompound.set("ActiveEffects", nbttaglist);
         }
 
     }
-
+    
+    //HSA
     public void a(NBTTagCompound nbttagcompound) {
         this.setAbsorptionHearts(nbttagcompound.getFloat("AbsorptionAmount"));
         if (nbttagcompound.hasKeyOfType("Attributes", 9) && this.world != null && !this.world.isClientSide) {
@@ -441,7 +463,16 @@ public abstract class EntityLiving extends Entity {
 
         if (nbttagcompound.hasKeyOfType("ActiveEffects", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("ActiveEffects", 10);
+            
+            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
+                NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
+                MobEffect mobeffect = MobEffect.b(nbttagcompound1);
 
+                if (mobeffect != null) {
+                    this.effects.put(Integer.valueOf(mobeffect.getEffectId()), mobeffect);
+                }
+            });
+            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
                 MobEffect mobeffect = MobEffect.b(nbttagcompound1);
@@ -449,7 +480,7 @@ public abstract class EntityLiving extends Entity {
                 if (mobeffect != null) {
                     this.effects.put(Integer.valueOf(mobeffect.getEffectId()), mobeffect);
                 }
-            }
+            }*/
         }
 
         // CraftBukkit start
@@ -486,7 +517,8 @@ public abstract class EntityLiving extends Entity {
     private boolean isTickingEffects = false;
     private List<Object> effectsToProcess = Lists.newArrayList();
     // CraftBukkit end
-
+    
+    //lambda parallel
     protected void bi() {
         Iterator iterator = this.effects.keySet().iterator();
 

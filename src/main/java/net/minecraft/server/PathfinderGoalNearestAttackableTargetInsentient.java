@@ -39,12 +39,14 @@ public class PathfinderGoalNearestAttackableTargetInsentient extends PathfinderG
         };
         this.d = new PathfinderGoalNearestAttackableTarget.DistanceComparator(entityinsentient);
     }
-
+    
+    //lambda parallel
     public boolean a() {
         double d0 = this.f();
         List list = this.b.world.a(this.f, this.b.getBoundingBox().grow(d0, 4.0D, d0), this.c);
-
-        Collections.sort(list, this.d);
+        
+        list.parallelStream().sorted(this.d);
+        //Collections.sort(list, this.d);
         if (list.isEmpty()) {
             return false;
         } else {

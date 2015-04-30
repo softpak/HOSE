@@ -719,7 +719,9 @@ public class Block {
     public String toString() {
         return "Block{" + Block.REGISTRY.c(this) + "}";
     }
-
+    
+    //lambda
+    static Block block13;
     public static void S() {
         a(0, Block.a, (new BlockAir()).c("air"));
         a(1, "stone", (new BlockStone()).c(1.5F).b(10.0F).a(Block.i).c("stone"));
@@ -948,8 +950,31 @@ public class Block {
         Block.REGISTRY.a();
         Iterator iterator = Block.REGISTRY.iterator();
 
-        Block block13;
+        //Block block13;
+        
+        iterator.forEachRemaining( it -> {
+            block13 = (Block) it;
+            if (block13.material == Material.AIR) {
+                block13.v = false;
+            } else {
+                boolean flag = false;
+                boolean flag1 = block13 instanceof BlockStairs;
+                boolean flag2 = block13 instanceof BlockStepAbstract;
+                boolean flag3 = block13 == block6;
+                boolean flag4 = block13.t;
+                boolean flag5 = block13.s == 0;
 
+                if (flag1 || flag2 || flag3 || flag4 || flag5) {
+                    flag = true;
+                }
+
+                block13.v = flag;
+            }
+        });
+        
+        
+        
+        /*
         while (iterator.hasNext()) {
             block13 = (Block) iterator.next();
             if (block13.material == Material.AIR) {
@@ -968,10 +993,23 @@ public class Block {
 
                 block13.v = flag;
             }
-        }
+        }*/
 
         iterator = Block.REGISTRY.iterator();
+        
+        iterator.forEachRemaining( it -> {
+            block13 = (Block) it;
+            Iterator iterator1 = block13.P().a().iterator();
+            
+            iterator1.forEachRemaining( it1 -> {
+                IBlockData iblockdata = (IBlockData) it1;
+                int i = Block.REGISTRY.b(block13) << 4 | block13.toLegacyData(iblockdata);
 
+                Block.d.a(iblockdata, i); 
+            });
+        });
+        
+        /*
         while (iterator.hasNext()) {
             block13 = (Block) iterator.next();
             Iterator iterator1 = block13.P().a().iterator();
@@ -982,7 +1020,7 @@ public class Block {
 
                 Block.d.a(iblockdata, i);
             }
-        }
+        }*/
 
     }
 

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 // CraftBukkit start
@@ -102,6 +103,7 @@ public class EntityArrow extends Entity implements IProjectile {
         this.datawatcher.a(16, Byte.valueOf((byte) 0));
     }
 
+    float hf3;
     public void shoot(double d0, double d1, double d2, float f, float f1) {
         float f2 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
@@ -123,7 +125,12 @@ public class EntityArrow extends Entity implements IProjectile {
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
         this.ar = 0;
     }
-
+    
+    //lambda parallel
+    float f1;
+    Vec3D vec3d, vec3d1;
+    double d0;
+    Entity entity;
     public void t_() {
         super.t_();
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
@@ -169,8 +176,10 @@ public class EntityArrow extends Entity implements IProjectile {
 
         } else {
             ++this.as;
-            Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
-            Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+            //Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+            //Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+            vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+            vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
             MovingObjectPosition movingobjectposition = this.world.rayTrace(vec3d, vec3d1, false, true, false);
 
             vec3d = new Vec3D(this.locX, this.locY, this.locZ);
@@ -179,13 +188,35 @@ public class EntityArrow extends Entity implements IProjectile {
                 vec3d1 = new Vec3D(movingobjectposition.pos.a, movingobjectposition.pos.b, movingobjectposition.pos.c);
             }
 
-            Entity entity = null;
+            //Entity entity = null;
+            entity = null;
             List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
-            double d0 = 0.0D;
-
+            //double d0 = 0.0D;
+            d0 = 0.0D;
             int j;
-            float f1;
+            //float f1;
+            
+            list.parallelStream().filter( 
+                e1 -> ((Entity)e1).ad() && ((Entity)e1 != this.shooter || this.as >= 5)).forEach(
+                e1 -> {
+                    f1 = 0.3F;
+                    AxisAlignedBB axisalignedbb1 = ((Entity)e1).getBoundingBox().grow((double) f1, (double) f1, (double) f1);
+                    MovingObjectPosition movingobjectposition1 = axisalignedbb1.a(vec3d, vec3d1);
+                    
+                    if (movingobjectposition1 != null) {
+                        double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
 
+                        if (d1 < d0 || d0 == 0.0D) {
+                            entity = (Entity)e1;
+                            d0 = d1;
+                        }
+                    }
+                    
+                });     
+            
+            
+            
+            /*
             for (j = 0; j < list.size(); ++j) {
                 Entity entity1 = (Entity) list.get(j);
 
@@ -203,7 +234,7 @@ public class EntityArrow extends Entity implements IProjectile {
                         }
                     }
                 }
-            }
+            }*/
 
             if (entity != null) {
                 movingobjectposition = new MovingObjectPosition(entity);
@@ -218,7 +249,7 @@ public class EntityArrow extends Entity implements IProjectile {
             }
 
             float f2;
-            float f3;
+            //float f3;
 
             if (movingobjectposition != null) {
                 org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this); // CraftBukkit - Call event
@@ -258,9 +289,9 @@ public class EntityArrow extends Entity implements IProjectile {
                             }
 
                             if (this.knockbackStrength > 0) {
-                                f3 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
-                                if (f3 > 0.0F) {
-                                    movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3);
+                                hf3 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                                if (hf3 > 0.0F) {
+                                    movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) hf3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) hf3);
                                 }
                             }
 
@@ -314,9 +345,13 @@ public class EntityArrow extends Entity implements IProjectile {
             }
 
             if (this.isCritical()) {
+                Aparapi.range(4).forEach(gid_j -> {
+                    this.world.addParticle(EnumParticle.CRIT, this.locX + this.motX * (double) gid_j / 4.0D, this.locY + this.motY * (double) gid_j / 4.0D, this.locZ + this.motZ * (double) gid_j / 4.0D, -this.motX, -this.motY + 0.2D, -this.motZ, new int[0]);
+                });
+                /*
                 for (j = 0; j < 4; ++j) {
                     this.world.addParticle(EnumParticle.CRIT, this.locX + this.motX * (double) j / 4.0D, this.locY + this.motY * (double) j / 4.0D, this.locZ + this.motZ * (double) j / 4.0D, -this.motX, -this.motY + 0.2D, -this.motZ, new int[0]);
-                }
+                }*/
             }
 
             this.locX += this.motX;
@@ -347,10 +382,16 @@ public class EntityArrow extends Entity implements IProjectile {
 
             f1 = 0.05F;
             if (this.V()) {
+                
+                Aparapi.range(4).forEach(gid_l -> {
+                    hf3 = 0.25F;
+                    this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX - this.motX * (double) hf3, this.locY - this.motY * (double) hf3, this.locZ - this.motZ * (double) hf3, this.motX, this.motY, this.motZ, new int[0]);
+                });
+                /*
                 for (int l = 0; l < 4; ++l) {
                     f3 = 0.25F;
                     this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX - this.motX * (double) f3, this.locY - this.motY * (double) f3, this.locZ - this.motZ * (double) f3, this.motX, this.motY, this.motZ, new int[0]);
-                }
+                }*/
 
                 f4 = 0.6F;
             }

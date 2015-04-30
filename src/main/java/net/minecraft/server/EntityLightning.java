@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
@@ -63,7 +64,8 @@ public class EntityLightning extends EntityWeather {
         this.isSilent = isSilent;
     }
     // Spigot end
-
+    
+    //lambda parallel
     public void t_() {
         super.t_();
         if (!isSilent && this.lifeTicks == 2) { // Spigot
@@ -71,6 +73,24 @@ public class EntityLightning extends EntityWeather {
             //this.world.makeSound(this.locX, this.locY, this.locZ, "ambient.weather.thunder", 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
             float pitch = 0.8F + this.random.nextFloat() * 0.2F;
             int viewDistance = ((WorldServer) this.world).getServer().getViewDistance() * 16;
+            
+            this.world.players.parallelStream().forEach(
+                    pl -> {
+                        double deltaX = this.locX - ((EntityPlayer)pl).locX;
+                        double deltaZ = this.locZ - ((EntityPlayer)pl).locZ;
+                        double distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+                        if (distanceSquared > viewDistance * viewDistance) {
+                            double deltaLength = Math.sqrt(distanceSquared);
+                            double relativeX = ((EntityPlayer)pl).locX + (deltaX / deltaLength) * viewDistance;
+                            double relativeZ = ((EntityPlayer)pl).locZ + (deltaZ / deltaLength) * viewDistance;
+                            ((EntityPlayer)pl).playerConnection.sendPacket(new PacketPlayOutNamedSoundEffect("ambient.weather.thunder", relativeX, this.locY, relativeZ, 10000.0F, pitch));
+                        } else {
+                            ((EntityPlayer)pl).playerConnection.sendPacket(new PacketPlayOutNamedSoundEffect("ambient.weather.thunder", this.locX, this.locY, this.locZ, 10000.0F, pitch));
+                        }
+                    }
+            );
+                    
+            /*
             for (EntityPlayer player : (List<EntityPlayer>) (List) this.world.players) {
                 double deltaX = this.locX - player.locX;
                 double deltaZ = this.locZ - player.locZ;
@@ -83,7 +103,7 @@ public class EntityLightning extends EntityWeather {
                 } else {
                     player.playerConnection.sendPacket(new PacketPlayOutNamedSoundEffect("ambient.weather.thunder", this.locX, this.locY, this.locZ, 10000.0F, pitch));
                 }
-            }
+            }*/
             // CraftBukkit end
             this.world.makeSound(this.locX, this.locY, this.locZ, "random.explode", 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
         }
@@ -115,12 +135,19 @@ public class EntityLightning extends EntityWeather {
             } else {
                 double d0 = 3.0D;
                 List list = this.world.getEntities(this, new AxisAlignedBB(this.locX - d0, this.locY - d0, this.locZ - d0, this.locX + d0, this.locY + 6.0D + d0, this.locZ + d0));
+                
+                //HSA
+                Aparapi.range(list.size()).forEach(gid_i -> {
+                    Entity entity = (Entity) list.get(gid_i);
 
+                    entity.onLightningStrike(this);
+                });
+                /*
                 for (int i = 0; i < list.size(); ++i) {
                     Entity entity = (Entity) list.get(i);
 
                     entity.onLightningStrike(this);
-                }
+                }*/
             }
         }
 

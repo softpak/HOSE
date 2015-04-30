@@ -22,14 +22,38 @@ public class PathfinderGoalHurtByTarget extends PathfinderGoalTarget {
         return i != this.b && this.a(this.e.getLastDamager(), false);
     }
 
+    //lambda parallel
     public void c() {
         this.e.setGoalTarget(this.e.getLastDamager(), org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, true); // CraftBukkit - reason
         this.b = this.e.be();
         if (this.a) {
             double d0 = this.f();
             List list = this.e.world.a(this.e.getClass(), (new AxisAlignedBB(this.e.locX, this.e.locY, this.e.locZ, this.e.locX + 1.0D, this.e.locY + 1.0D, this.e.locZ + 1.0D)).grow(d0, 10.0D, d0));
-            Iterator iterator = list.iterator();
+            //Iterator iterator = list.iterator();
+            
+            list.parallelStream().filter(
+                    ec -> this.e != (EntityCreature)ec && ((EntityCreature)ec).getGoalTarget() == null && ! ((EntityCreature)ec).c(this.e.getLastDamager())).forEach(
+                    ec -> {
+                        boolean flag = false;
+                        Class[] aclass = this.c;
+                        int i = aclass.length;
 
+                        for (int j = 0; j < i; ++j) {
+                            Class oclass = aclass[j];
+
+                            if (ec.getClass() == oclass) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!flag) {
+                            this.a((EntityCreature)ec, this.e.getLastDamager());
+                        }
+                    });
+                            
+                    
+            /*
             while (iterator.hasNext()) {
                 EntityCreature entitycreature = (EntityCreature) iterator.next();
 
@@ -51,7 +75,7 @@ public class PathfinderGoalHurtByTarget extends PathfinderGoalTarget {
                         this.a(entitycreature, this.e.getLastDamager());
                     }
                 }
-            }
+            }*/
         }
 
         super.c();

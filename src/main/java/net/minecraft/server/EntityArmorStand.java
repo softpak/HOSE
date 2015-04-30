@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 // CraftBukkit start
@@ -102,11 +103,22 @@ public class EntityArmorStand extends EntityLiving {
             return true;
         }
     }
-
+    
+    //HSA
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         NBTTagList nbttaglist = new NBTTagList();
+        
+        Aparapi.range(this.items.length).forEach(gid_i -> {
+            NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
+            if (this.items[gid_i] != null) {
+                this.items[gid_i].save(nbttagcompound1);
+            }
+
+            nbttaglist.add(nbttagcompound1);
+        });
+        /*
         for (int i = 0; i < this.items.length; ++i) {
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
@@ -115,7 +127,7 @@ public class EntityArmorStand extends EntityLiving {
             }
 
             nbttaglist.add(nbttagcompound1);
-        }
+        }*/
 
         nbttagcompound.set("Equipment", nbttaglist);
         if (this.getCustomNameVisible() && (this.getCustomName() == null || this.getCustomName().length() == 0)) {
@@ -134,15 +146,20 @@ public class EntityArmorStand extends EntityLiving {
 
         nbttagcompound.set("Pose", this.z());
     }
-
+    
+    //HSA
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
         if (nbttagcompound.hasKeyOfType("Equipment", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("Equipment", 10);
-
+            
+            Aparapi.range(this.items.length).forEach(gid_i -> {
+                this.items[gid_i] = ItemStack.createStack(nbttaglist.get(gid_i));
+            });
+            /*
             for (int i = 0; i < this.items.length; ++i) {
                 this.items[i] = ItemStack.createStack(nbttaglist.get(i));
-            }
+            }*/
         }
 
         this.setInvisible(nbttagcompound.getBoolean("Invisible"));
@@ -245,18 +262,27 @@ public class EntityArmorStand extends EntityLiving {
     }
 
     protected void s(Entity entity) {}
-
+    
+    //HSA
     protected void bL() {
         List list = this.world.getEntities(this, this.getBoundingBox());
 
         if (list != null && !list.isEmpty()) {
+            Aparapi.range(list.size()).forEach(gid_i -> {
+                Entity entity = (Entity) list.get(gid_i);
+
+                if (entity instanceof EntityMinecartAbstract && ((EntityMinecartAbstract) entity).s() == EntityMinecartAbstract.EnumMinecartType.RIDEABLE && this.h(entity) <= 0.2D) {
+                    entity.collide(this);
+                }
+            });
+            /*
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity = (Entity) list.get(i);
 
                 if (entity instanceof EntityMinecartAbstract && ((EntityMinecartAbstract) entity).s() == EntityMinecartAbstract.EnumMinecartType.RIDEABLE && this.h(entity) <= 0.2D) {
                     entity.collide(this);
                 }
-            }
+            }*/
         }
 
     }
@@ -466,8 +492,18 @@ public class EntityArmorStand extends EntityLiving {
         Block.a(this.world, new BlockPosition(this), new ItemStack(Items.ARMOR_STAND));
         this.D();
     }
-
+    
+    //HSA
     private void D() {
+        Aparapi.range(this.items.length).forEach(gid_i -> {
+            if (this.items[gid_i] != null && this.items[gid_i].count > 0) {
+                if (this.items[gid_i] != null) {
+                    Block.a(this.world, (new BlockPosition(this)).up(), this.items[gid_i]);
+                }
+                this.items[gid_i] = null;
+            }
+        });
+        /*
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null && this.items[i].count > 0) {
                 if (this.items[i] != null) {
@@ -476,7 +512,7 @@ public class EntityArmorStand extends EntityLiving {
 
                 this.items[i] = null;
             }
-        }
+        }*/
 
     }
 
