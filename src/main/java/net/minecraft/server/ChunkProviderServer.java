@@ -1,15 +1,9 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
-import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,14 +73,20 @@ public class ChunkProviderServer implements IChunkProvider {
 
     }
 
+    //lambda parallel
     public void b() {
+        this.chunks.values().parallelStream().forEach(
+              ic -> this.queueUnload(((Chunk)ic).locX, ((Chunk)ic).locZ)  
+        );
+        /*
         Iterator iterator = this.chunks.values().iterator();
 
+        
         while (iterator.hasNext()) {
             Chunk chunk = (Chunk) iterator.next();
 
             this.queueUnload(chunk.locX, chunk.locZ);
-        }
+        }*/
 
     }
 
@@ -260,6 +260,7 @@ public class ChunkProviderServer implements IChunkProvider {
         }
     }
 
+    //lambda parallel
     public void getChunkAt(IChunkProvider ichunkprovider, int i, int j) {
         Chunk chunk = this.getOrCreateChunk(i, j);
 
@@ -288,9 +289,13 @@ public class ChunkProviderServer implements IChunkProvider {
                 if (world != null) {
                     this.world.populating = true;
                     try {
+                        world.getPopulators().parallelStream().forEach(
+                                wp -> ((org.bukkit.generator.BlockPopulator)wp).populate(world, random, chunk.bukkitChunk)
+                        );
+                        /*
                         for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
                             populator.populate(world, random, chunk.bukkitChunk);
-                        }
+                        }*/
                     } finally {
                         this.world.populating = false;
                     }

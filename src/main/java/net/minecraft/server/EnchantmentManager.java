@@ -28,6 +28,7 @@ public class EnchantmentManager {
             if (nbttaglist == null) {
                 return 0;
             } else {
+                //lambda
                 for (int j = 0; j < nbttaglist.size(); ++j) {
                     short short0 = nbttaglist.get(j).getShort("id");
                     short short1 = nbttaglist.get(j).getShort("lvl");

@@ -149,6 +149,7 @@ public class ActivationRange
      *
      * @param chunk
      */
+    //lambda parallel
     private static void activateChunkEntities(Chunk chunk)
     {
         for ( List<Entity> slice : chunk.entitySlices )

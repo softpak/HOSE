@@ -206,7 +206,10 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
         }
 
     }
-
+    
+    //HSA, lambda parallel
+    NBTTagList nbttaglist1;
+    NBTTagCompound nbttagcompound1;
     private void a(Chunk chunk, World world, NBTTagCompound nbttagcompound) {
         nbttagcompound.setByte("V", (byte) 1);
         nbttagcompound.setInt("xPos", chunk.locX);
@@ -222,7 +225,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
         ChunkSection[] achunksection1 = achunksection;
         int i = achunksection.length;
 
-        NBTTagCompound nbttagcompound1;
+        //NBTTagCompound nbttagcompound1;
 
         for (int j = 0; j < i; ++j) {
             ChunkSection chunksection = achunksection1[j];
@@ -272,13 +275,22 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
         nbttagcompound.set("Sections", nbttaglist);
         nbttagcompound.setByteArray("Biomes", chunk.getBiomeIndex());
         chunk.g(false);
-        NBTTagList nbttaglist1 = new NBTTagList();
+        //NBTTagList nbttaglist1 = new NBTTagList();
+        nbttaglist1 = new NBTTagList();
 
-        Iterator iterator;
+        //Iterator iterator;
 
         for (i = 0; i < chunk.getEntitySlices().length; ++i) {
-            iterator = chunk.getEntitySlices()[i].iterator();
-
+            //iterator = chunk.getEntitySlices()[i].iterator();
+            
+            chunk.getEntitySlices()[i].parallelStream().filter(
+                    ce -> ((Entity)ce).d(nbttagcompound1 = new NBTTagCompound())).forEach(
+                    ce -> {
+                        chunk.g(true);
+                        nbttaglist1.add(nbttagcompound1);
+                    });
+            
+            /*
             while (iterator.hasNext()) {
                 Entity entity = (Entity) iterator.next();
 
@@ -287,21 +299,28 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
                     chunk.g(true);
                     nbttaglist1.add(nbttagcompound1);
                 }
-            }
+            }*/
         }
 
         nbttagcompound.set("Entities", nbttaglist1);
         NBTTagList nbttaglist2 = new NBTTagList();
 
-        iterator = chunk.getTileEntities().values().iterator();
-
+        //iterator = chunk.getTileEntities().values().iterator();
+        
+        chunk.getTileEntities().values().parallelStream().forEach(
+                it -> {
+                    nbttagcompound1 = new NBTTagCompound();
+                    ((TileEntity)it).b(nbttagcompound1);
+                    nbttaglist2.add(nbttagcompound1);
+                });
+        /*
         while (iterator.hasNext()) {
             TileEntity tileentity = (TileEntity) iterator.next();
 
             nbttagcompound1 = new NBTTagCompound();
             tileentity.b(nbttagcompound1);
             nbttaglist2.add(nbttagcompound1);
-        }
+        }*/
 
         nbttagcompound.set("TileEntities", nbttaglist2);
         List list = world.a(chunk, false);

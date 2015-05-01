@@ -56,7 +56,7 @@ public class EntityCow extends EntityAnimal {
         int j = this.random.nextInt(3) + this.random.nextInt(1 + i);
 
         int k;
-
+        
         for (k = 0; k < j; ++k) {
             this.a(Items.LEATHER, 1);
         }

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
@@ -62,7 +63,11 @@ public abstract class EntityFireball extends Entity {
         this.dirY = d1 / d3 * 0.1D;
         this.dirZ = d2 / d3 * 0.1D;
     }
-
+    
+    //HSA
+    Vec3D vec3d, vec3d1;
+    double d0;
+    Entity entity;
     public void t_() {
         if (!this.world.isClientSide && (this.shooter != null && this.shooter.dead || !this.world.isLoaded(new BlockPosition(this)))) {
             this.die();
@@ -89,8 +94,10 @@ public abstract class EntityFireball extends Entity {
                 ++this.as;
             }
 
-            Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
-            Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+            //Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+            //Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+            vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+            vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
             MovingObjectPosition movingobjectposition = this.world.rayTrace(vec3d, vec3d1);
 
             vec3d = new Vec3D(this.locX, this.locY, this.locZ);
@@ -99,10 +106,31 @@ public abstract class EntityFireball extends Entity {
                 vec3d1 = new Vec3D(movingobjectposition.pos.a, movingobjectposition.pos.b, movingobjectposition.pos.c);
             }
 
-            Entity entity = null;
+            //Entity entity = null;
+            entity = null;
             List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
-            double d0 = 0.0D;
+            //double d0 = 0.0D;
+            d0 = 0.0D;
+            
+            Aparapi.range(list.size()).forEach(gid_i -> {
+                Entity entity1 = (Entity) list.get(gid_i);
 
+                if (entity1.ad() && (!entity1.k(this.shooter) || this.as >= 25)) {
+                    float f = 0.3F;
+                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow((double) f, (double) f, (double) f);
+                    MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
+
+                    if (movingobjectposition1 != null) {
+                        double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
+
+                        if (d1 < d0 || d0 == 0.0D) {
+                            entity = entity1;
+                            d0 = d1;
+                        }
+                    }
+                }
+            });
+            /*
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity1 = (Entity) list.get(i);
 
@@ -120,7 +148,7 @@ public abstract class EntityFireball extends Entity {
                         }
                     }
                 }
-            }
+            }*/
 
             if (entity != null) {
                 movingobjectposition = new MovingObjectPosition(entity);

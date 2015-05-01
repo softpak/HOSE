@@ -518,11 +518,29 @@ public abstract class EntityLiving extends Entity {
     private List<Object> effectsToProcess = Lists.newArrayList();
     // CraftBukkit end
     
-    //lambda parallel
+    //lambda
     protected void bi() {
         Iterator iterator = this.effects.keySet().iterator();
 
         isTickingEffects = true; // CraftBukkit
+        /*
+        iterator.forEachRemaining(
+                it -> {
+                    MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
+
+                    if (!mobeffect.tick(this)) {
+                        if (!this.world.isClientSide) {
+                            ((Iterator)it).remove();
+                            this.b(mobeffect);
+                        }
+                    } else if (mobeffect.getDuration() % 600 == 0) {
+                        this.a(mobeffect, false);
+                    }
+                    
+                }
+        
+        );*/
+        
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -538,6 +556,18 @@ public abstract class EntityLiving extends Entity {
         }
         // CraftBukkit start
         isTickingEffects = false;
+        
+        /*
+        effectsToProcess.parallelStream().forEach(
+                e -> {
+                    if (e instanceof MobEffect) {
+                        addEffect((MobEffect) e);
+                    } else {
+                        removeEffect((Integer) e);
+                    }
+                }
+        );*/
+        
         for (Object e : effectsToProcess) {
             if (e instanceof MobEffect) {
                 addEffect((MobEffect) e);
@@ -601,9 +631,22 @@ public abstract class EntityLiving extends Entity {
         this.datawatcher.watch(7, Integer.valueOf(0));
     }
 
+    //lambda
     public void removeAllEffects() {
         Iterator iterator = this.effects.keySet().iterator();
+        
+        /*
+        iterator.forEachRemaining(
+                it -> {
+                    MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
 
+                    if (!this.world.isClientSide) {
+                        (Iterator)it.remove();
+                        this.b(mobeffect);
+                    }
+                }
+        );*/
+        
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -880,6 +923,20 @@ public abstract class EntityLiving extends Entity {
     public void b(ItemStack itemstack) {
         this.makeSound("random.break", 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
         
+        Aparapi.range(5).forEach(gid_i -> {
+            Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+
+            vec3d = vec3d.a(-this.pitch * 3.1415927F / 180.0F);
+            vec3d = vec3d.b(-this.yaw * 3.1415927F / 180.0F);
+            double d0 = (double) (-this.random.nextFloat()) * 0.6D - 0.3D;
+            Vec3D vec3d1 = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
+
+            vec3d1 = vec3d1.a(-this.pitch * 3.1415927F / 180.0F);
+            vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
+            vec3d1 = vec3d1.add(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
+            this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
+        });
+        /*
         for (int i = 0; i < 5; ++i) {
             Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 
@@ -892,7 +949,7 @@ public abstract class EntityLiving extends Entity {
             vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
             vec3d1 = vec3d1.add(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
             this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
-        }
+        }*/
 
     }
 
@@ -1014,12 +1071,25 @@ public abstract class EntityLiving extends Entity {
     protected String n(int i) {
         return i > 4 ? "game.neutral.hurt.fall.big" : "game.neutral.hurt.fall.small";
     }
-
+    
+    //HSA
+    int hi;
     public int br() {
-        int i = 0;
+        //int i = 0;
+        hi = 0;
         ItemStack[] aitemstack = this.getEquipment();
         int j = aitemstack.length;
+        
+        Aparapi.range(j).forEach(gid_k -> {
+            ItemStack itemstack = aitemstack[gid_k];
 
+            if (itemstack != null && itemstack.getItem() instanceof ItemArmor) {
+                int l = ((ItemArmor) itemstack.getItem()).c;
+
+                hi += l;
+            }
+        });
+        /*
         for (int k = 0; k < j; ++k) {
             ItemStack itemstack = aitemstack[k];
 
@@ -1028,9 +1098,9 @@ public abstract class EntityLiving extends Entity {
 
                 i += l;
             }
-        }
+        }*/
 
-        return i;
+        return hi;
     }
 
     protected void damageArmor(float f) {}
@@ -1499,6 +1569,7 @@ public abstract class EntityLiving extends Entity {
         return false;
     }
 
+    //HSA
     public void t_() {
         SpigotTimings.timerEntityBaseTick.startTiming(); // Spigot
         super.t_();
@@ -1517,6 +1588,24 @@ public abstract class EntityLiving extends Entity {
             }
             
             //HSA
+            Aparapi.range(5).forEach(gid_j -> {
+                ItemStack itemstack = this.h[gid_j];
+                ItemStack itemstack1 = this.getEquipment(gid_j);
+
+                if (!ItemStack.matches(itemstack1, itemstack)) {
+                    ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutEntityEquipment(this.getId(), gid_j, itemstack1)));
+                    if (itemstack != null) {
+                        this.c.a(itemstack.B());
+                    }
+
+                    if (itemstack1 != null) {
+                        this.c.b(itemstack1.B());
+                    }
+
+                    this.h[gid_j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
+                }
+            });
+            /*
             for (int j = 0; j < 5; ++j) {
                 ItemStack itemstack = this.h[j];
                 ItemStack itemstack1 = this.getEquipment(j);
@@ -1533,7 +1622,7 @@ public abstract class EntityLiving extends Entity {
 
                     this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
                 }
-            }
+            }*/
 
             if (this.ticksLived % 20 == 0) {
                 this.bs().g();

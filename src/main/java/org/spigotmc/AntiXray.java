@@ -18,17 +18,29 @@ public class AntiXray
     private final boolean[] obfuscateBlocks = new boolean[ Short.MAX_VALUE ];
     // Used to select a random replacement ore
     private final byte[] replacementOres;
-
+    
+    //lambda parallel
     public AntiXray(SpigotWorldConfig config)
     {
         // Set all listed blocks as true to be obfuscated
+        (( config.engineMode == 1 ) ? config.hiddenBlocks : config.replaceBlocks).parallelStream().forEach(
+                id -> obfuscateBlocks[id] = true
+        );
+        
+        /*
         for ( int id : ( config.engineMode == 1 ) ? config.hiddenBlocks : config.replaceBlocks )
         {
             obfuscateBlocks[id] = true;
-        }
+        }*/
 
         // For every block
         TByteSet blocks = new TByteHashSet();
+        
+        config.hiddenBlocks.parallelStream().filter(
+                i -> Block.getById(i) != null && !Block.getById(i).isTileEntity()).forEach(
+                i1 -> blocks.add((byte)(int)i1));
+        
+        /*
         for ( Integer i : config.hiddenBlocks )
         {
             Block block = Block.getById( i );
@@ -38,7 +50,7 @@ public class AntiXray
                 // Add it to the set of replacement blocks
                 blocks.add( (byte) (int) i );
             }
-        }
+        }*/
         // Bake it to a flat array of replacements
         replacementOres = blocks.toArray();
     }

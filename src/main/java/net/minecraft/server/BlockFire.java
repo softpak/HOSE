@@ -2,8 +2,11 @@ package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Maps;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -280,19 +283,25 @@ public class BlockFire extends Block {
 
     }
 
+    //lambda parallel
     private boolean f(World world, BlockPosition blockposition) {
-        EnumDirection[] aenumdirection = EnumDirection.values();
-        int i = aenumdirection.length;
-
+        //EnumDirection[] aenumdirection = EnumDirection.values();
+        //int i = aenumdirection.length;
+        
+        
+        /*
         for (int j = 0; j < i; ++j) {
             EnumDirection enumdirection = aenumdirection[j];
 
             if (this.e((IBlockAccess) world, blockposition.shift(enumdirection))) {
                 return true;
             }
-        }
-
-        return false;
+        }*/
+        return Stream.of(EnumDirection.values()).parallel().filter(
+            ae -> this.e((IBlockAccess) world, blockposition.shift(ae))).anyMatch(
+            ae -> true);
+        
+        //return false;
     }
     int hhi;
     private int m(World world, BlockPosition blockposition) {

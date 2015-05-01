@@ -162,7 +162,7 @@ public class CraftChunk implements Chunk {
     float[] hdat;
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTempRain) {
         net.minecraft.server.Chunk chunk = getHandle();
-
+        hdat = null;
         ChunkSection[] cs = chunk.getSections();
         short[][] sectionBlockIDs = new short[cs.length][];
         byte[][] sectionBlockData = new byte[cs.length][];
@@ -253,7 +253,7 @@ public class CraftChunk implements Chunk {
                     biomeTemp[i] = dat[i];
                 }*/
 
-                hdat = wcm.getWetness(null, getX() << 4, getZ() << 4, 16, 16);
+                hdat = wcm.getWetness(null, (int)(getX() << 4), (int)(getZ() << 4), 16, 16);
 
                 Aparapi.range(256).forEach(gid_i -> {
                     hbiomeRain[gid_i] = hdat[gid_i];
@@ -272,7 +272,7 @@ public class CraftChunk implements Chunk {
     static BiomeBase[] hebiome;
     static double[] hebiomeTemp;
     static double[] hebiomeRain;
-    static float[] hedat;
+    static float[] hedat = null;
     public static ChunkSnapshot getEmptyChunkSnapshot(int x, int z, CraftWorld world, boolean includeBiome, boolean includeBiomeTempRain) {
         /*BiomeBase[] biome = null;
         double[] biomeTemp = null;
@@ -288,7 +288,7 @@ public class CraftChunk implements Chunk {
             if (includeBiome) {
                 hebiome = new BiomeBase[256];
                 Aparapi.range(256).forEach(gid_i -> {
-                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition((x << 4) + (gid_i & 0xF), 0, (z << 4) + (gid_i >> 4)));
+                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition((int)(x << 4) + (gid_i & 0xF), 0, (int)(z << 4) + (gid_i >> 4)));
                 });
                 /*
                 for (int i = 0; i < 256; i++) {
@@ -300,7 +300,7 @@ public class CraftChunk implements Chunk {
                 hebiomeTemp = new double[256];
                 hebiomeRain = new double[256];
                 //float[] dat = getTemperatures(wcm, x << 4, z << 4);
-                hedat = getTemperatures(wcm, x << 4, z << 4);
+                hedat = getTemperatures(wcm, (int)(x << 4), (int)(z << 4));
                 
                 Aparapi.range(256).forEach(gid_i -> {
                     hebiomeTemp[gid_i] = hedat[gid_i];
@@ -310,7 +310,7 @@ public class CraftChunk implements Chunk {
                     biomeTemp[i] = dat[i];
                 }*/
 
-                hedat = wcm.getWetness(null, x << 4, z << 4, 16, 16);
+                hedat = wcm.getWetness(null, (int)(x << 4), (int)(z << 4), 16, 16);
                 
                 Aparapi.range(256).forEach(gid_i -> {
                     hebiomeRain[gid_i] = hedat[gid_i];
@@ -345,7 +345,7 @@ public class CraftChunk implements Chunk {
             blockData[i] = emptyData;
             empty[i] = true;
         }*/
-
+        hedat = null;
         return new CraftChunkSnapshot(x, z, world.getName(), world.getFullTime(), blockIDs, blockData, skyLight, emitLight, empty, new int[256], hebiome, hebiomeTemp, hebiomeRain);
     }
 
