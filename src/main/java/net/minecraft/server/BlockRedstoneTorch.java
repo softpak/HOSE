@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
@@ -14,6 +15,8 @@ public class BlockRedstoneTorch extends BlockTorch {
     private static Map<World, List<BlockRedstoneTorch.RedstoneUpdateInfo>> b = new java.util.WeakHashMap(); // Spigot
     private final boolean isOn;
 
+    //lambda
+    int i;
     private boolean a(World world, BlockPosition blockposition, boolean flag) {
         if (!BlockRedstoneTorch.b.containsKey(world)) {
             BlockRedstoneTorch.b.put(world, Lists.<BlockRedstoneTorch.RedstoneUpdateInfo>newArrayList()); // CraftBukkit - fix decompile error
@@ -25,8 +28,16 @@ public class BlockRedstoneTorch extends BlockTorch {
             list.add(new BlockRedstoneTorch.RedstoneUpdateInfo(blockposition, world.getTime()));
         }
 
-        int i = 0;
-
+        //int i = 0;
+        i = 0;
+        /*
+        list.parallelStream().filter(
+            li -> ((BlockRedstoneTorch.RedstoneUpdateInfo)li).a.equals(blockposition)).forEach(
+            lli -> {
+                ++i;
+            }
+        );*/
+        
         for (int j = 0; j < list.size(); ++j) {
             BlockRedstoneTorch.RedstoneUpdateInfo blockredstonetorch_redstoneupdateinfo = (BlockRedstoneTorch.RedstoneUpdateInfo) list.get(j);
 
@@ -37,7 +48,12 @@ public class BlockRedstoneTorch extends BlockTorch {
                 }
             }
         }
-
+        /*
+        if (i >= 8) {
+            return true;
+        }else {
+            return false;  
+        }*/
         return false;
     }
 
@@ -51,30 +67,40 @@ public class BlockRedstoneTorch extends BlockTorch {
         return 2;
     }
 
+    //lambda
     public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
         if (this.isOn) {
-            EnumDirection[] aenumdirection = EnumDirection.values();
-            int i = aenumdirection.length;
+            //EnumDirection[] aenumdirection = EnumDirection.values();
+            //int i = aenumdirection.length;
 
+            Stream.of(EnumDirection.values()).forEach(
+                ae -> world.applyPhysics(blockposition.shift(ae), this)
+            );
+            /*
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }
+            }*/
         }
 
     }
-
+    
+    //lambda
     public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
         if (this.isOn) {
-            EnumDirection[] aenumdirection = EnumDirection.values();
-            int i = aenumdirection.length;
-
+            //EnumDirection[] aenumdirection = EnumDirection.values();
+            //int i = aenumdirection.length;
+            
+            Stream.of(EnumDirection.values()).forEach(
+                ae -> world.applyPhysics(blockposition.shift(ae), this)
+            );
+            /*
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }
+            }*/
         }
 
     }
