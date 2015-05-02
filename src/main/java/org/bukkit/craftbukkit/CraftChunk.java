@@ -300,7 +300,7 @@ public class CraftChunk implements Chunk {
                 hebiomeTemp = new double[256];
                 hebiomeRain = new double[256];
                 //float[] dat = getTemperatures(wcm, x << 4, z << 4);
-                hedat = getTemperatures(wcm, (int)(x << 4), (int)(z << 4));
+                hedat = getTemperatures(wcm, x << 4, z << 4);
                 
                 Aparapi.range(256).forEach(gid_i -> {
                     hebiomeTemp[gid_i] = hedat[gid_i];

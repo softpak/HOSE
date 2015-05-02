@@ -36,11 +36,13 @@ public class AntiXray
         // For every block
         TByteSet blocks = new TByteHashSet();
         
+        /*
         config.hiddenBlocks.parallelStream().filter(
                 i -> Block.getById(i) != null && !Block.getById(i).isTileEntity()).forEach(
                 i1 -> blocks.add((byte)(int)i1));
+        */
         
-        /*
+        
         for ( Integer i : config.hiddenBlocks )
         {
             Block block = Block.getById( i );
@@ -50,7 +52,7 @@ public class AntiXray
                 // Add it to the set of replacement blocks
                 blocks.add( (byte) (int) i );
             }
-        }*/
+        }
         // Bake it to a flat array of replacements
         replacementOres = blocks.toArray();
     }

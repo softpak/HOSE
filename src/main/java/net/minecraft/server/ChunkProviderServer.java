@@ -73,15 +73,19 @@ public class ChunkProviderServer implements IChunkProvider {
 
     }
 
-    //lambda parallel
+    //lambda
     public void b() {
-        this.chunks.values().parallelStream().forEach(
-              ic -> this.queueUnload(((Chunk)ic).locX, ((Chunk)ic).locZ)  
-        );
-        /*
         Iterator iterator = this.chunks.values().iterator();
-
         
+        iterator.forEachRemaining(
+                it->{
+                    Chunk chunk = (Chunk) it;
+
+                    this.queueUnload(chunk.locX, chunk.locZ);
+                }
+        );
+
+        /*
         while (iterator.hasNext()) {
             Chunk chunk = (Chunk) iterator.next();
 

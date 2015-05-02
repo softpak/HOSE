@@ -775,71 +775,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         }
         SpigotTimings.timeUpdateTimer.stopTiming(); // Spigot
 
-        //int i;
-        Aparapi.range(this.worlds.size()).forEach(gid_i -> {
-            long j = System.nanoTime();
-
-            // if (i == 0 || this.getAllowNether()) {
-                WorldServer worldserver = this.worlds.get(gid_i);
-
-                this.methodProfiler.a(worldserver.getWorldData().getName());
-                // Drop global time updates
-                if (this.ticks % 20 == 0) {
-                    this.methodProfiler.a("timeSync");
-                    this.v.a(new PacketPlayOutUpdateTime(worldserver.getTime(), worldserver.getDayTime(), worldserver.getGameRules().getBoolean("doDaylightCycle")), worldserver.worldProvider.getDimension());
-                    this.methodProfiler.b();
-                }
-                // CraftBukkit end
-
-                this.methodProfiler.a("tick");
-
-                CrashReport crashreport;
-
-                try {
-                    worldserver.timings.doTick.startTiming(); // Spigot
-                    worldserver.doTick();
-                    worldserver.timings.doTick.stopTiming(); // Spigot
-                } catch (Throwable throwable) {
-                    // Spigot Start
-                    try {
-                    crashreport = CrashReport.a(throwable, "Exception ticking world");
-                    } catch (Throwable t){
-                        throw new RuntimeException("Error generating crash report", t);
-                    }
-                    // Spigot End
-                    worldserver.a(crashreport);
-                    throw new ReportedException(crashreport);
-                }
-
-                try {
-                    worldserver.timings.tickEntities.startTiming(); // Spigot
-                    worldserver.tickEntities();
-                    worldserver.timings.tickEntities.stopTiming(); // Spigot
-                } catch (Throwable throwable1) {
-                    // Spigot Start
-                    try {
-                    crashreport = CrashReport.a(throwable1, "Exception ticking world entities");
-                    } catch (Throwable t){
-                        throw new RuntimeException("Error generating crash report", t);
-                    }
-                    // Spigot End
-                    worldserver.a(crashreport);
-                    throw new ReportedException(crashreport);
-                }
-
-                this.methodProfiler.b();
-                this.methodProfiler.a("tracker");
-                worldserver.timings.tracker.startTiming(); // Spigot
-                worldserver.getTracker().updatePlayers();
-                worldserver.timings.tracker.stopTiming(); // Spigot
-                this.methodProfiler.b();
-                this.methodProfiler.b();
-            // } // CraftBukkit
-
-            // this.i[i][this.ticks % 100] = System.nanoTime() - j; // CraftBukkit
-        });
+        int i;
         
-        /*
         for (i = 0; i < this.worlds.size(); ++i) {
             long j = System.nanoTime();
 
@@ -901,7 +838,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             // } // CraftBukkit
 
             // this.i[i][this.ticks % 100] = System.nanoTime() - j; // CraftBukkit
-        }*/
+        }
 
         this.methodProfiler.c("connection");
         SpigotTimings.connectionTimer.startTiming(); // Spigot
