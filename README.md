@@ -1,6 +1,8 @@
 #HOSE
 `A flexible tube conveying data.`
 
+#Find some critical bugs in actual test. DO NOT use in your main servers for a short time.
+
 ####Minecraft Server with HSA.
 MPI failed. Now I use HSA instead. Please see HSAFoundation for further information.
 
