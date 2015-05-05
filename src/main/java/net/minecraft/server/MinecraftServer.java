@@ -127,7 +127,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private static final int TPS = 20;
     private static final int TICK_TIME = 1000000000 / TPS;
     private static final int SAMPLE_INTERVAL = 100;
-    public final double[] recentTps = new double[ 3 ];
+    public final double[] recentTps = new double[3];
     // Spigot end
 
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
@@ -553,7 +553,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 // Spigot start
                 //HSA
                 //Arrays.fill( recentTps, 20 );
-                HSA_Arrays.fill( recentTps, 20 );
+                HSA_Arrays.fill(recentTps, 20 );
                 long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                 while (this.isRunning) {
                     curTime = System.nanoTime();

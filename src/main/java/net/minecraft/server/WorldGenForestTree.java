@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class WorldGenForestTree extends WorldGenTreeAbstract {
 
@@ -87,7 +88,26 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                     }
                 }*/
                 
+                IntStream.range(-2, 1).forEach( j2 -> {
+                    IntStream.range(-2, 1).forEach( k2 -> {
+                        byte b0 = -1;
+
+                        this.a(world, k1 + j2, i2 + b0, l1 + k2);
+                        this.a(world, 1 + k1 - j2, i2 + b0, l1 + k2);
+                        this.a(world, k1 + j2, i2 + b0, 1 + l1 - k2);
+                        this.a(world, 1 + k1 - j2, i2 + b0, 1 + l1 - k2);
+                        if ((j2 > -2 || k2 > -1) && (j2 != -1 || k2 != -2)) {
+                            byte b1 = 1;
+
+                            this.a(world, k1 + j2, i2 + b1, l1 + k2);
+                            this.a(world, 1 + k1 - j2, i2 + b1, l1 + k2);
+                            this.a(world, k1 + j2, i2 + b1, 1 + l1 - k2);
+                            this.a(world, 1 + k1 - j2, i2 + b1, 1 + l1 - k2);
+                        }
+                    });
+                });
                 
+                /*
                 for (j2 = -2; j2 <= 0; ++j2) {
                     for (k2 = -2; k2 <= 0; ++k2) {
                         byte b0 = -1;
@@ -105,7 +125,7 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                             this.a(world, 1 + k1 - j2, i2 + b1, 1 + l1 - k2);
                         }
                     }
-                }
+                }*/
 
                 if (random.nextBoolean()) {
                     this.a(world, k1, i2 + 2, l1);
@@ -114,13 +134,21 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                     this.a(world, k1, i2 + 2, l1 + 1);
                 }
 
+                IntStream.range(-3, 5).parallel().forEach( j2 -> {
+                    IntStream.range(-3, 5).parallel().forEach( k2 -> {
+                        if ((j2 != -3 || k2 != -3) && (j2 != -3 || k2 != 4) && (j2 != 4 || k2 != -3) && (j2 != 4 || k2 != 4) && (Math.abs(j2) < 3 || Math.abs(k2) < 3)) {
+                            this.a(world, k1 + j2, i2, l1 + k2);
+                        }
+                    });
+                });
+                /*
                 for (j2 = -3; j2 <= 4; ++j2) {
                     for (k2 = -3; k2 <= 4; ++k2) {
                         if ((j2 != -3 || k2 != -3) && (j2 != -3 || k2 != 4) && (j2 != 4 || k2 != -3) && (j2 != 4 || k2 != 4) && (Math.abs(j2) < 3 || Math.abs(k2) < 3)) {
                             this.a(world, k1 + j2, i2, l1 + k2);
                         }
                     }
-                }
+                }*/
 
                 for (j2 = -1; j2 <= 2; ++j2) {
                     for (k2 = -1; k2 <= 2; ++k2) {

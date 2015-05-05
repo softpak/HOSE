@@ -196,7 +196,7 @@ public class EntityArrow extends Entity implements IProjectile {
             int j;
             //float f1;
             
-            list.parallelStream().filter( 
+            list.stream().filter( 
                 e1 -> ((Entity)e1).ad() && ((Entity)e1 != this.shooter || this.as >= 5)).forEach(
                 e1 -> {
                     f1 = 0.3F;

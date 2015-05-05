@@ -52,9 +52,25 @@ public class WorldManager implements IWorldAccess {
         this.a.getPlayerList().sendAll(new PacketPlayOutWorldEvent(i, blockposition, j, true));
     }
 
+    //lambda
     public void b(int i, BlockPosition blockposition, int j) {
         Iterator iterator = this.a.getPlayerList().v().iterator();
+        
+        iterator.forEachRemaining(
+            it -> {
+                if ((EntityPlayer) it != null && ((EntityPlayer)it).world == this.world && ((EntityPlayer)it).getId() != i) {
+                    double d0 = (double) blockposition.getX() - ((EntityPlayer)it).locX;
+                    double d1 = (double) blockposition.getY() - ((EntityPlayer)it).locY;
+                    double d2 = (double) blockposition.getZ() - ((EntityPlayer)it).locZ;
 
+                    if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
+                        ((EntityPlayer)it).playerConnection.sendPacket(new PacketPlayOutBlockBreakAnimation(i, blockposition, j));
+                    }
+                }
+            }
+        
+        );
+        /*
         while (iterator.hasNext()) {
             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
 
@@ -67,7 +83,7 @@ public class WorldManager implements IWorldAccess {
                     entityplayer.playerConnection.sendPacket(new PacketPlayOutBlockBreakAnimation(i, blockposition, j));
                 }
             }
-        }
+        }*/
 
     }
 }

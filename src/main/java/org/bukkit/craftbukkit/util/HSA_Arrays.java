@@ -6,6 +6,7 @@
 package org.bukkit.craftbukkit.util;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 
 /**
  *
@@ -14,44 +15,33 @@ import com.amd.aparapi.Aparapi;
 public class HSA_Arrays {
     
     public static void fill(Object[] a, Object val) {
-        Aparapi.range(a.length).forEach(gid_i -> {
-            a[gid_i] = val;
-        });
+        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     
     public static void fill(byte[] a, byte val) {
-        Aparapi.range(a.length).forEach(gid_i -> {
-            a[gid_i] = val;
-        });
+        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     
     public static void fill(int[] a, int val) {
-        Aparapi.range(a.length).forEach(gid_i -> {
-            a[gid_i] = val;
-        });
+        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     public static void fill(double[] a, double val) {
-        Aparapi.range(a.length).forEach(gid_i -> {
-            a[gid_i] = val;
-        });
+        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     public static void fill(long[] a, long val) {
-        Aparapi.range(a.length).forEach(gid_i -> {
-            a[gid_i] = val;
-        });
+        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     //Aparapi.range(size).parallel().forEach(gid -> squares[gid] = values[gid]*values[gid]);
     
     public static void fill(long[] a, int fromIndex, int toIndex, long val) {
         rangeCheck(a.length, fromIndex, toIndex);
-        Aparapi.range(toIndex-fromIndex).forEach(gid_i -> {
-            a[gid_i+fromIndex] = val;
-        });
+
+        Aparapi.range(toIndex-fromIndex).forEach(gid_i -> a[gid_i+fromIndex] = val);
         /*for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;*/
     }

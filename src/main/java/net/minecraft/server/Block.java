@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;

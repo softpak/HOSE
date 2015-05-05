@@ -394,6 +394,7 @@ public abstract class EntityInsentient extends EntityLiving {
         this.n(f);
     }
 
+    //lambda
     public void m() {
         super.m();
         this.world.methodProfiler.a("looting");
@@ -401,13 +402,22 @@ public abstract class EntityInsentient extends EntityLiving {
             List list = this.world.a(EntityItem.class, this.getBoundingBox().grow(1.0D, 0.0D, 1.0D));
             Iterator iterator = list.iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    if (!((EntityItem)it).dead && ((EntityItem)it).getItemStack() != null && !((EntityItem)it).s()) {
+                        this.a((EntityItem)it);
+                    }
+                }
+            );
+            
+            /*
             while (iterator.hasNext()) {
                 EntityItem entityitem = (EntityItem) iterator.next();
 
                 if (!entityitem.dead && entityitem.getItemStack() != null && !entityitem.s()) {
                     this.a(entityitem);
                 }
-            }
+            }*/
         }
 
         this.world.methodProfiler.b();

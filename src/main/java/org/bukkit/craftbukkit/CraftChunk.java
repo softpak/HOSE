@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import java.lang.ref.WeakReference;
 import java.util.stream.IntStream;
 //import java.util.Arrays;
@@ -85,7 +86,8 @@ public class CraftChunk implements Chunk {
         int index = 0;
         hcount = 0;
         net.minecraft.server.Chunk chunk = getHandle();
-        //
+               
+        
         Aparapi.range(16).forEach(gid_i -> {
             hcount += chunk.entitySlices[gid_i].size();
         });
@@ -162,7 +164,6 @@ public class CraftChunk implements Chunk {
     float[] hdat;
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTempRain) {
         net.minecraft.server.Chunk chunk = getHandle();
-        hdat = null;
         ChunkSection[] cs = chunk.getSections();
         short[][] sectionBlockIDs = new short[cs.length][];
         byte[][] sectionBlockData = new byte[cs.length][];
@@ -231,9 +232,13 @@ public class CraftChunk implements Chunk {
             if (includeBiome) {
                 hbiome = new BiomeBase[256];
                 //HSA
-                Aparapi.range(256).forEach(gid_i -> {
+                Device.hsa().forEach(0,256,gid_i -> {
                     hbiome[gid_i] = chunk.getBiome(new BlockPosition(gid_i & 0xF, 0, gid_i >> 4), wcm);
                 });
+                /*
+                Aparapi.range(256).forEach(gid_i -> {
+                    hbiome[gid_i] = chunk.getBiome(new BlockPosition(gid_i & 0xF, 0, gid_i >> 4), wcm);
+                });*/
                 /*
                 for (int i = 0; i < 256; i++) {
                     biome[i] = chunk.getBiome(new BlockPosition(i & 0xF, 0, i >> 4), wcm);
@@ -266,6 +271,7 @@ public class CraftChunk implements Chunk {
         }
 
         World world = getWorld();
+        
         return new CraftChunkSnapshot(getX(), getZ(), world.getName(), world.getFullTime(), sectionBlockIDs, sectionBlockData, sectionSkyLights, sectionEmitLights, sectionEmpty, hmap, hbiome, hbiomeTemp, hbiomeRain);
     }
     
@@ -330,13 +336,21 @@ public class CraftChunk implements Chunk {
         byte[][] blockData = new byte[hSection][];
         boolean[] empty = new boolean[hSection];
         
-        Aparapi.range(hSection).forEach(gid_i -> {
+        Device.hsa().forEach(0, hSection, gid_i -> {
             blockIDs[gid_i] = emptyBlockIDs;
             skyLight[gid_i] = emptySkyLight;
             emitLight[gid_i] = emptyData;
             blockData[gid_i] = emptyData;
             empty[gid_i] = true;
         });
+        /*
+        Aparapi.range(hSection).forEach(gid_i -> {
+            blockIDs[gid_i] = emptyBlockIDs;
+            skyLight[gid_i] = emptySkyLight;
+            emitLight[gid_i] = emptyData;
+            blockData[gid_i] = emptyData;
+            empty[gid_i] = true;
+        });*/
         /*
         for (int i = 0; i < hSection; i++) {
             blockIDs[i] = emptyBlockIDs;

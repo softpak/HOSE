@@ -209,13 +209,21 @@ public class UserCache {
             list = Lists.reverse(list);
             Iterator iterator = list.iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    if ((UserCache.UserCacheEntry) it != null) {
+                        this.a(((UserCache.UserCacheEntry) it).a(), ((UserCache.UserCacheEntry) it).b());
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 UserCache.UserCacheEntry usercache_usercacheentry = (UserCache.UserCacheEntry) iterator.next();
 
                 if (usercache_usercacheentry != null) {
                     this.a(usercache_usercacheentry.a(), usercache_usercacheentry.b());
                 }
-            }
+            }*/
         }
 
     }
@@ -237,7 +245,8 @@ public class UserCache {
         }
 
     }
-
+    
+    //lambda
     private List<UserCache.UserCacheEntry> a(int i) {
         ArrayList arraylist = Lists.newArrayList();
         ArrayList arraylist1 = Lists.newArrayList(Iterators.limit(this.e.iterator(), i));

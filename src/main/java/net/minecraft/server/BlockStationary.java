@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import java.util.stream.Stream;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory;  // CraftBukkit
 
@@ -79,10 +80,16 @@ public class BlockStationary extends BlockFluids {
         }
     }
 
+    //lambda
     protected boolean f(World world, BlockPosition blockposition) {
         EnumDirection[] aenumdirection = EnumDirection.values();
-        int i = aenumdirection.length;
-
+        //int i = aenumdirection.length;
+        
+        return Stream.of(EnumDirection.values()).filter(
+            ae -> this.m(world, blockposition.shift(ae))).anyMatch(
+            ae -> true);
+        
+        /*
         for (int j = 0; j < i; ++j) {
             EnumDirection enumdirection = aenumdirection[j];
 
@@ -91,7 +98,7 @@ public class BlockStationary extends BlockFluids {
             }
         }
 
-        return false;
+        return false;*/
     }
 
     private boolean m(World world, BlockPosition blockposition) {

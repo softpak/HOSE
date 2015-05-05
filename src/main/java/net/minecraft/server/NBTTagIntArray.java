@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public class NBTTagIntArray extends NBTBase {
 
@@ -20,9 +21,18 @@ public class NBTTagIntArray extends NBTBase {
     //HSA
     void write(DataOutput dataoutput) throws IOException {
         dataoutput.writeInt(this.data.length);
+        /*
         Aparapi.range(this.data.length).forEach(gid_i -> {
             try {
                 dataoutput.writeInt(this.data[gid_i]);
+            } catch (IOException ex) {
+                Logger.getLogger(NBTTagIntArray.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });*/
+        IntStream.range(0, this.data.length).forEach(
+            i -> {
+            try {
+                dataoutput.writeInt(this.data[i]);
             } catch (IOException ex) {
                 Logger.getLogger(NBTTagIntArray.class.getName()).log(Level.SEVERE, null, ex);
             }

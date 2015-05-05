@@ -61,7 +61,7 @@ public class PathfinderGoalBreed extends PathfinderGoal {
         d0 = Double.MAX_VALUE;
         
         
-        list.parallelStream().filter(
+        list.stream().filter(
                 ea -> this.d.mate((EntityAnimal)ea)&& this.d.h((EntityAnimal)ea) < d0).forEach(
                 ea -> {entityanimal = (EntityAnimal)ea;
                         d0 = this.d.h((EntityAnimal)ea);

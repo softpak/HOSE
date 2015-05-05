@@ -67,6 +67,8 @@ public class PacketStatusListener implements PacketStatusInListener {
                             return true;
                         }
                         final Object[] currentPlayers = players;
+                        
+                        //lambda
                         for (int length = currentPlayers.length, i = this.i; i < length; i++) {
                             final EntityPlayer player = (EntityPlayer) currentPlayers[i];
                             if (player != null) {

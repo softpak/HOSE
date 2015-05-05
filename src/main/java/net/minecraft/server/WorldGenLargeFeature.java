@@ -26,13 +26,21 @@ public class WorldGenLargeFeature extends StructureGenerator {
         this();
         Iterator iterator = map.entrySet().iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                if (((String) ((Entry) it).getKey()).equals("distance")) {
+                    this.g = MathHelper.a((String) ((Entry) it).getValue(), this.g, this.h + 1);
+                }
+            }        
+        );
+        /*
         while (iterator.hasNext()) {
             Entry entry = (Entry) iterator.next();
 
             if (((String) entry.getKey()).equals("distance")) {
                 this.g = MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
             }
-        }
+        }*/
 
     }
 

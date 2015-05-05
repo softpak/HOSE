@@ -94,7 +94,7 @@ public class BlockPiston extends Block {
         boolean fin;
         //int j;
         
-        fin = Stream.of(EnumDirection.values()).parallel().filter(
+        fin = Stream.of(EnumDirection.values()).filter(
                 ae -> ae != enumdirection && world.isBlockFacePowered(blockposition.shift(ae), ae)).anyMatch(
                 ae -> true);
         
@@ -118,7 +118,7 @@ public class BlockPiston extends Block {
 
             //j = aenumdirection1.length;
             
-            return Stream.of(EnumDirection.values()).parallel().filter(
+            return Stream.of(EnumDirection.values()).filter(
                 ae1 -> ae1 != EnumDirection.DOWN && world.isBlockFacePowered(blockposition1.shift(ae1), ae1)).anyMatch(
                 ae1 -> true);
             /*

@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public abstract class WorldGenMegaTreeAbstract extends WorldGenTreeAbstract {
 
@@ -73,10 +74,27 @@ public abstract class WorldGenMegaTreeAbstract extends WorldGenTreeAbstract {
     protected boolean a(World world, Random random, BlockPosition blockposition, int i) {
         return this.c(world, blockposition, i) && this.a(blockposition, world);
     }
-
+    
+    //lambda
     protected void a(World world, BlockPosition blockposition, int i) {
         int j = i * i;
 
+        IntStream.range(-i, i+2).forEach(k -> {
+            IntStream.range(-i, i+2).forEach(l -> {
+                int i1 = k - 1;
+                int j1 = l - 1;
+
+                if (k * k + l * l <= j || i1 * i1 + j1 * j1 <= j || k * k + j1 * j1 <= j || i1 * i1 + l * l <= j) {
+                    BlockPosition blockposition1 = blockposition.a(k, 0, l);
+                    Material material = world.getType(blockposition1).getBlock().getMaterial();
+
+                    if (material == Material.AIR || material == Material.LEAVES) {
+                        this.a(world, blockposition1, this.c);
+                    }
+                }
+            });
+        });
+        /*
         for (int k = -i; k <= i + 1; ++k) {
             for (int l = -i; l <= i + 1; ++l) {
                 int i1 = k - 1;
@@ -91,13 +109,28 @@ public abstract class WorldGenMegaTreeAbstract extends WorldGenTreeAbstract {
                     }
                 }
             }
-        }
+        }*/
 
     }
 
+    //lambda
     protected void b(World world, BlockPosition blockposition, int i) {
         int j = i * i;
 
+        IntStream.range(-i, i+1).forEach(k -> {
+            IntStream.range(-i, i+1).forEach(l -> {
+                if (k * k + l * l <= j) {
+                    BlockPosition blockposition1 = blockposition.a(k, 0, l);
+                    Material material = world.getType(blockposition1).getBlock().getMaterial();
+
+                    if (material == Material.AIR || material == Material.LEAVES) {
+                        this.a(world, blockposition1, this.c);
+                    }
+                }
+            
+            });
+        });
+        /*
         for (int k = -i; k <= i; ++k) {
             for (int l = -i; l <= i; ++l) {
                 if (k * k + l * l <= j) {
@@ -109,7 +142,7 @@ public abstract class WorldGenMegaTreeAbstract extends WorldGenTreeAbstract {
                     }
                 }
             }
-        }
+        }*/
 
     }
 }

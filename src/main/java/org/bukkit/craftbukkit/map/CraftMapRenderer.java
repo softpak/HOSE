@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.map;
 
+import com.amd.aparapi.Aparapi;
 import net.minecraft.server.WorldMap;
 import net.minecraft.server.MapIcon;
 
@@ -19,14 +20,21 @@ public class CraftMapRenderer extends MapRenderer {
         this.worldMap = worldMap;
     }
 
+    //HSA
     @Override
     public void render(MapView map, MapCanvas canvas, Player player) {
         // Map
+        Aparapi.range(128).forEach(gid_x -> {
+            Aparapi.range(128).forEach(gid_y -> {
+                canvas.setPixel(gid_x, gid_y, worldMap.colors[gid_y * 128 + gid_x]);
+            });
+        });
+        /*
         for (int x = 0; x < 128; ++x) {
             for (int y = 0; y < 128; ++y) {
                 canvas.setPixel(x, y, worldMap.colors[y * 128 + x]);
             }
-        }
+        }*/
 
         // Cursors
         MapCursorCollection cursors = canvas.getCursors();

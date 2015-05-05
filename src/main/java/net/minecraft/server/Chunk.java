@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists; // CraftBukkit
+import java.util.stream.IntStream;
 import org.bukkit.Bukkit; // CraftBukkit
 import org.bukkit.craftbukkit.util.HSA_Arrays;
 
@@ -270,10 +271,16 @@ public class Chunk {
                         this.c(l, i1, j1);
                         iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
+                        iterator.forEachRemaining(
+                            it -> {
+                                this.c(l + ((EnumDirection)it).getAdjacentX(), i1 + ((EnumDirection)it).getAdjacentZ(), k);
+                            }
+                        );
+                        /*
                         while (iterator.hasNext()) {
                             enumdirection = (EnumDirection) iterator.next();
                             this.c(l + enumdirection.getAdjacentX(), i1 + enumdirection.getAdjacentZ(), k);
-                        }
+                        }*/
 
                         if (flag) {
                             this.world.methodProfiler.b();
@@ -950,7 +957,8 @@ public class Chunk {
     
     //HSA
     int hi, hj;
-    Entity hentity1;
+    //Entity hentity1;
+    Entity iit;
     public void a(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate) {
         //int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
         //int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
@@ -964,7 +972,32 @@ public class Chunk {
         Aparapi.range(hj-hi+1).forEach(gid_k -> {
             if (!this.entitySlices[gid_k+hi].isEmpty()) {
                 Iterator iterator = this.entitySlices[gid_k+hi].iterator();
+                
+                iterator.forEachRemaining(
+                    it -> {
+                        //Entity entity1 = (Entity) iterator.next();
+                        //hentity1 = (Entity) iterator.next();
 
+                        if (((Entity)it).getBoundingBox().b(axisalignedbb) && (Entity)it != entity) {
+                            if (predicate == null || predicate.apply((Entity)it)) {
+                                list.add((Entity)it);
+                            }
+
+                            Entity[] aentity = ((Entity)it).aB();
+                            iit = (Entity)it;
+                            if (aentity != null) {
+
+                                Aparapi.range(aentity.length).forEach(gid_l -> {
+                                    iit = aentity[gid_l];
+                                    if ((Entity)it != entity && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((Entity)it))) {
+                                        list.add((Entity)it);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     //Entity entity1 = (Entity) iterator.next();
                     hentity1 = (Entity) iterator.next();
@@ -986,7 +1019,7 @@ public class Chunk {
                             });
                         }
                     }
-                }
+                }*/
             }
             
         });
@@ -1021,7 +1054,7 @@ public class Chunk {
     }
     
     
-    //HSA
+    //lambda
     public <T extends Entity> void a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, List<T> list, Predicate<? super T> predicate) {
         int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
         int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
@@ -1030,17 +1063,40 @@ public class Chunk {
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
         
         //HSA
+        IntStream.range(i, j+1).forEach(
+            kk -> {
+                Iterator iterator = this.entitySlices[kk].iterator(); // Spigot
+            
+                iterator.forEachRemaining(
+                    it -> {
+                        if (oclass.isInstance((Entity)it) && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) (Entity)it))) { // CraftBukkit - fix decompile error // Spigot
+                            list.add((T) (Entity)it); // Fix decompile error
+                        }
+                    }
+                );
+            }
+                
+        );
+        /*
         for (int k = i; k <= j; ++k) {
             Iterator iterator = this.entitySlices[k].iterator(); // Spigot
-
+            
+            iterator.forEachRemaining(
+                it -> {
+                    if (oclass.isInstance((Entity)it) && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) (Entity)it))) { // CraftBukkit - fix decompile error // Spigot
+                        list.add((T) (Entity)it); // Fix decompile error
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 Entity entity = (Entity) iterator.next();
 
                 if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
                     list.add((T) entity); // Fix decompile error
                 }
-            }
-        }
+            }*/
+        //}
 
     }
 
@@ -1342,12 +1398,20 @@ public class Chunk {
                 if (this.lit) {
                     Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
+                    iterator.forEachRemaining(
+                        it -> {
+                            int k = ((EnumDirection)it).c() == EnumDirection.EnumAxisDirection.POSITIVE ? 16 : 1;
+
+                            this.world.getChunkAtWorldCoords(blockposition.shift((EnumDirection)it, k)).a(((EnumDirection)it).opposite());
+                        }
+                    );
+                    /*
                     while (iterator.hasNext()) {
                         EnumDirection enumdirection = (EnumDirection) iterator.next();
                         int k = enumdirection.c() == EnumDirection.EnumAxisDirection.POSITIVE ? 16 : 1;
 
                         this.world.getChunkAtWorldCoords(blockposition.shift(enumdirection, k)).a(enumdirection.opposite());
-                    }
+                    }*/
 
                     this.y();
                 }

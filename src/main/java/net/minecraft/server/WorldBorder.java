@@ -119,16 +119,23 @@ public class WorldBorder {
         return this.c;
     }
 
+    //lambda
     public void setCenter(double d0, double d1) {
         this.b = d0;
         this.c = d1;
         Iterator iterator = this.k().iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                ((IWorldBorderListener) it).a(this, d0, d1);
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             IWorldBorderListener iworldborderlistener = (IWorldBorderListener) iterator.next();
 
             iworldborderlistener.a(this, d0, d1);
-        }
+        }*/
 
     }
 
@@ -154,6 +161,7 @@ public class WorldBorder {
         return this.e;
     }
 
+    //lambda
     public void setSize(double d0) {
         this.d = d0;
         this.e = d0;
@@ -161,11 +169,17 @@ public class WorldBorder {
         this.g = this.f;
         Iterator iterator = this.k().iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                ((IWorldBorderListener) it).a(this, d0);
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             IWorldBorderListener iworldborderlistener = (IWorldBorderListener) iterator.next();
 
             iworldborderlistener.a(this, d0);
-        }
+        }*/
 
     }
     

@@ -268,15 +268,22 @@ public class WorldMap extends PersistentBase {
         return worldmap_worldmaphumantracker == null ? null : worldmap_worldmaphumantracker.a(itemstack);
     }
 
+    //lambda
     public void flagDirty(int i, int j) {
         super.c();
         Iterator iterator = this.g.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                ((WorldMap.WorldMapHumanTracker) it).a(i, j);
+            }        
+        );
+        /*
         while (iterator.hasNext()) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker = (WorldMap.WorldMapHumanTracker) iterator.next();
 
             worldmap_worldmaphumantracker.a(i, j);
-        }
+        }*/
 
     }
 

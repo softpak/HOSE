@@ -115,7 +115,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
                     if (tileEntities != null) {
                         //HSA may make some mistakes...ob it.
                         
-                        IntStream.range(0, tileEntities.size()).parallel().forEach(
+                        IntStream.range(0, tileEntities.size()).forEach(
                                 te->{
                                     NBTTagCompound tileEntity = (NBTTagCompound) tileEntities.get(te);
                                     int x = tileEntity.getInt("x") - chunk.locX * 16;
@@ -256,7 +256,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
                 //NibbleArray nibblearray1 = null;
                 nibblearray1 = null;
 
-                IntStream.range(0, chunksection.getIdArray().length).parallel().forEach(
+                IntStream.range(0, chunksection.getIdArray().length).forEach(
                         cs->{
                             char c0 = chunksection.getIdArray()[cs];
                             int l = cs & 15;
@@ -436,7 +436,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
             char[] achar = new char[abyte.length];
             
             
-            IntStream.range(0, achar.length).parallel().forEach(
+            IntStream.range(0, achar.length).forEach(
                     l->{
                         int i1 = l & 15;
                         int j1 = l >> 8 & 15;
@@ -546,7 +546,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
 
         if (nbttaglist2 != null) {
             
-            IntStream.range(0, nbttaglist2.size()).parallel().forEach(
+            IntStream.range(0, nbttaglist2.size()).forEach(
                     j2-> {
                         NBTTagCompound nbttagcompound4 = nbttaglist2.get(j2);
                         TileEntity tileentity = TileEntity.c(nbttagcompound4);

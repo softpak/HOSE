@@ -73,7 +73,7 @@ public class PathfinderGoalNearestAttackableTarget<T extends EntityLiving> exten
             
             List list = this.e.world.a(this.a, this.e.getBoundingBox().grow(d0, 4.0D, d0), Predicates.and(this.c, IEntitySelector.d));
             
-            list.parallelStream().sorted(this.b);
+            list.stream().sorted(this.b);
             //Collections.sort(list, this.b);
             if (list.isEmpty()) {
                 return false;

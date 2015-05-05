@@ -297,7 +297,7 @@ public class BlockFire extends Block {
                 return true;
             }
         }*/
-        return Stream.of(EnumDirection.values()).parallel().filter(
+        return Stream.of(EnumDirection.values()).filter(
             ae -> this.e((IBlockAccess) world, blockposition.shift(ae))).anyMatch(
             ae -> true);
         

@@ -322,6 +322,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
     public T getSkipQueue(P parameter, Iterable<C> callbacks) throws E {
         final CallBackProvider<P, T, C, E> provider = this.provider;
         final T object = skipQueue(parameter);
+        
         for (C callback : callbacks) {
             provider.callStage3(parameter, object, callback);
         }

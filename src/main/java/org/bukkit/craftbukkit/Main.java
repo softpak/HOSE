@@ -30,14 +30,12 @@ public class Main {
         
         for (int i=0;i<10;i++){
             final float[] sum = new float[size];
-            long st = System.nanoTime();
-            Aparapi.range(size).forEach(gid -> {
-                a[gid] = (float)(Math.random()*100);
-                
-            });
+            
+            Aparapi.range(size).forEach(gid -> a[gid] = (float)(Math.random()*100));
 
             Aparapi.range(size).forEach(gid -> b[gid] = (float)(Math.random()*100));
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]*b[gid]*b[gid]);
+            long st = System.nanoTime();
             Device.hsa().forEach(0, size, gid-> {
                 sum[gid] = a[gid] + b[gid]*b[gid]*b[gid];
             });
