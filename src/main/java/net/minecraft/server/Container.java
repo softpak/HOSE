@@ -138,13 +138,18 @@ public abstract class Container {
 
         return slot != null ? slot.getItem() : null;
     }
-
+    
+    //lambda
+    ItemStack itemstack1;
+    int l;
     public ItemStack clickItem(int i, int j, int k, EntityHuman entityhuman) {
         ItemStack itemstack = null;
         PlayerInventory playerinventory = entityhuman.inventory;
-        int l;
-        ItemStack itemstack1;
-
+        //int l;
+        //ItemStack itemstack1;
+        itemstack1 = null;
+        l = 0;
+        
         if (k == 5) {
             int i1 = this.g;
 
@@ -174,6 +179,29 @@ public abstract class Container {
                     Iterator iterator = this.h.iterator();
 
                     Map<Integer, ItemStack> draggedSlots = new HashMap<Integer, ItemStack>(); // CraftBukkit - Store slots from drag in map (raw slot id -> new stack)
+                    
+                    iterator.forEachRemaining(
+                        it -> {
+                            if ((Slot) it != null && a((Slot) it, playerinventory.getCarried(), true) && ((Slot) it).isAllowed(playerinventory.getCarried()) && playerinventory.getCarried().count >= this.h.size() && this.b((Slot) it)) {
+                                ItemStack itemstack2 = itemstack1.cloneItemStack();
+                                int j1 = ((Slot) it).hasItem() ? ((Slot) it).getItem().count : 0;
+
+                                a(this.h, this.dragType, itemstack2, j1);
+                                if (itemstack2.count > itemstack2.getMaxStackSize()) {
+                                    itemstack2.count = itemstack2.getMaxStackSize();
+                                }
+
+                                if (itemstack2.count > ((Slot) it).getMaxStackSize(itemstack2)) {
+                                    itemstack2.count = ((Slot) it).getMaxStackSize(itemstack2);
+                                }
+
+                                l -= itemstack2.count - j1;
+                                // slot1.set(itemstack2);
+                                draggedSlots.put(((Slot) it).rawSlotIndex, itemstack2); // CraftBukkit - Put in map instead of setting
+                            }
+                        }
+                    );
+                    /*
                     while (iterator.hasNext()) {
                         Slot slot1 = (Slot) iterator.next();
 
@@ -194,7 +222,7 @@ public abstract class Container {
                             // slot1.set(itemstack2);
                             draggedSlots.put(slot1.rawSlotIndex, itemstack2); // CraftBukkit - Put in map instead of setting
                         }
-                    }
+                    }*/
 
                     // CraftBukkit start - InventoryDragEvent
                     InventoryView view = getBukkitView();

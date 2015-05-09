@@ -219,7 +219,6 @@ public class BlockFlowing extends BlockFluids {
         
         iterator.forEachRemaining(
             it -> {
-                //EnumDirection enumdirection = (EnumDirection) iterator.next();
                 BlockPosition blockposition1 = blockposition.shift((EnumDirection)it);
                 IBlockData iblockdata = world.getType(blockposition1);
 

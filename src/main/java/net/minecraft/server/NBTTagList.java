@@ -194,18 +194,25 @@ public class NBTTagList extends NBTBase {
         return this.list.size();
     }
 
+    //lambda
     public NBTBase clone() {
         NBTTagList nbttaglist = new NBTTagList();
 
         nbttaglist.type = this.type;
         Iterator iterator = this.list.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                nbttaglist.list.add(((NBTBase) it).clone());
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             NBTBase nbtbase = (NBTBase) iterator.next();
             NBTBase nbtbase1 = nbtbase.clone();
 
             nbttaglist.list.add(nbtbase1);
-        }
+        }*/
 
         return nbttaglist;
     }

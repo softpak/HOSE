@@ -134,8 +134,8 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                     this.a(world, k1, i2 + 2, l1 + 1);
                 }
 
-                IntStream.range(-3, 5).parallel().forEach( j2 -> {
-                    IntStream.range(-3, 5).parallel().forEach( k2 -> {
+                IntStream.range(-3, 5).forEach( j2 -> {
+                    IntStream.range(-3, 5).forEach( k2 -> {
                         if ((j2 != -3 || k2 != -3) && (j2 != -3 || k2 != 4) && (j2 != 4 || k2 != -3) && (j2 != 4 || k2 != 4) && (Math.abs(j2) < 3 || Math.abs(k2) < 3)) {
                             this.a(world, k1 + j2, i2, l1 + k2);
                         }

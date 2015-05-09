@@ -523,14 +523,14 @@ public abstract class EntityLiving extends Entity {
         Iterator iterator = this.effects.keySet().iterator();
 
         isTickingEffects = true; // CraftBukkit
-        /*
+        
         iterator.forEachRemaining(
                 it -> {
                     MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
 
                     if (!mobeffect.tick(this)) {
                         if (!this.world.isClientSide) {
-                            ((Iterator)it).remove();
+                            iterator.remove();
                             this.b(mobeffect);
                         }
                     } else if (mobeffect.getDuration() % 600 == 0) {
@@ -539,8 +539,8 @@ public abstract class EntityLiving extends Entity {
                     
                 }
         
-        );*/
-        
+        );
+        /*
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -553,7 +553,7 @@ public abstract class EntityLiving extends Entity {
             } else if (mobeffect.getDuration() % 600 == 0) {
                 this.a(mobeffect, false);
             }
-        }
+        }*/
         // CraftBukkit start
         isTickingEffects = false;
         
@@ -635,18 +635,18 @@ public abstract class EntityLiving extends Entity {
     public void removeAllEffects() {
         Iterator iterator = this.effects.keySet().iterator();
         
-        /*
+       
         iterator.forEachRemaining(
                 it -> {
                     MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
 
                     if (!this.world.isClientSide) {
-                        (Iterator)it.remove();
+                        iterator.remove();
                         this.b(mobeffect);
                     }
                 }
-        );*/
-        
+        );
+        /*
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -655,7 +655,7 @@ public abstract class EntityLiving extends Entity {
                 iterator.remove();
                 this.b(mobeffect);
             }
-        }
+        }*/
 
     }
 

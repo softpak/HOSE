@@ -3,8 +3,6 @@ package org.bukkit.craftbukkit;
 import com.amd.aparapi.Aparapi;
 import com.amd.aparapi.Device;
 import java.lang.ref.WeakReference;
-import java.util.stream.IntStream;
-//import java.util.Arrays;
 
 import net.minecraft.server.*;
 
@@ -170,7 +168,7 @@ public class CraftChunk implements Chunk {
         byte[][] sectionSkyLights = new byte[cs.length][];
         byte[][] sectionEmitLights = new byte[cs.length][];
         boolean[] sectionEmpty = new boolean[cs.length];
-
+        
         for (int i = 0; i < cs.length; i++) {
             if (cs[i] == null) { // Section is empty?
                 sectionBlockIDs[i] = emptyBlockIDs;
@@ -250,7 +248,7 @@ public class CraftChunk implements Chunk {
                 hbiomeRain = new double[256];
                 hdat = getTemperatures(wcm, getX() << 4, getZ() << 4);
 
-                Aparapi.range(256).forEach(gid_i -> {
+                Device.hsa().forEach(0,256, gid_i -> {
                     hbiomeTemp[gid_i] = hdat[gid_i];
                 });
                 
@@ -258,9 +256,9 @@ public class CraftChunk implements Chunk {
                     biomeTemp[i] = dat[i];
                 }*/
 
-                hdat = wcm.getWetness(null, (int)(getX() << 4), (int)(getZ() << 4), 16, 16);
+                hdat = wcm.getWetness(null, getX() << 4, getZ() << 4, 16, 16);
 
-                Aparapi.range(256).forEach(gid_i -> {
+                Device.hsa().forEach(0,256, gid_i -> {
                     hbiomeRain[gid_i] = hdat[gid_i];
                 });
                 /*
@@ -271,14 +269,13 @@ public class CraftChunk implements Chunk {
         }
 
         World world = getWorld();
-        
         return new CraftChunkSnapshot(getX(), getZ(), world.getName(), world.getFullTime(), sectionBlockIDs, sectionBlockData, sectionSkyLights, sectionEmitLights, sectionEmpty, hmap, hbiome, hbiomeTemp, hbiomeRain);
     }
     
     static BiomeBase[] hebiome;
     static double[] hebiomeTemp;
     static double[] hebiomeRain;
-    static float[] hedat = null;
+    static float[] hedat;
     public static ChunkSnapshot getEmptyChunkSnapshot(int x, int z, CraftWorld world, boolean includeBiome, boolean includeBiomeTempRain) {
         /*BiomeBase[] biome = null;
         double[] biomeTemp = null;
@@ -286,15 +283,15 @@ public class CraftChunk implements Chunk {
         hebiome = null;
         hebiomeTemp = null;
         hebiomeRain = null;
-        hedat = null;
-
+        hedat = new float[0];
+        
         if (includeBiome || includeBiomeTempRain) {
             WorldChunkManager wcm = world.getHandle().getWorldChunkManager();
 
             if (includeBiome) {
                 hebiome = new BiomeBase[256];
                 Aparapi.range(256).forEach(gid_i -> {
-                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition((int)(x << 4) + (gid_i & 0xF), 0, (int)(z << 4) + (gid_i >> 4)));
+                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition(x << 4 + (gid_i & 0xF), 0, (int)(z << 4) + (gid_i >> 4)));
                 });
                 /*
                 for (int i = 0; i < 256; i++) {
@@ -308,7 +305,7 @@ public class CraftChunk implements Chunk {
                 //float[] dat = getTemperatures(wcm, x << 4, z << 4);
                 hedat = getTemperatures(wcm, x << 4, z << 4);
                 
-                Aparapi.range(256).forEach(gid_i -> {
+                Device.hsa().forEach(0, 256, gid_i -> {
                     hebiomeTemp[gid_i] = hedat[gid_i];
                 });
                 /*
@@ -316,9 +313,9 @@ public class CraftChunk implements Chunk {
                     biomeTemp[i] = dat[i];
                 }*/
 
-                hedat = wcm.getWetness(null, (int)(x << 4), (int)(z << 4), 16, 16);
+                hedat = wcm.getWetness(null, x << 4, z << 4, 16, 16);
                 
-                Aparapi.range(256).forEach(gid_i -> {
+                Device.hsa().forEach(0, 256, gid_i -> {
                     hebiomeRain[gid_i] = hedat[gid_i];
                 });
                 /*
@@ -359,7 +356,6 @@ public class CraftChunk implements Chunk {
             blockData[i] = emptyData;
             empty[i] = true;
         }*/
-        hedat = null;
         return new CraftChunkSnapshot(x, z, world.getName(), world.getFullTime(), blockIDs, blockData, skyLight, emitLight, empty, new int[256], hebiome, hebiomeTemp, hebiomeRain);
     }
 

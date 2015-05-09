@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import net.minecraft.server.*;
 
@@ -134,14 +135,18 @@ public class CraftWorld implements World {
         return world.chunkProviderServer.isChunkLoaded(x, z);
     }
 
+    //lambda
     public Chunk[] getLoadedChunks() {
         Object[] chunks = world.chunkProviderServer.chunks.values().toArray();
         org.bukkit.Chunk[] craftChunks = new CraftChunk[chunks.length];
 
+        IntStream.range(0, chunks.length).forEach(
+            i -> craftChunks[i] = ((net.minecraft.server.Chunk) chunks[i]).bukkitChunk);
+        /*
         for (int i = 0; i < chunks.length; i++) {
             net.minecraft.server.Chunk chunk = (net.minecraft.server.Chunk) chunks[i];
             craftChunks[i] = chunk.bukkitChunk;
-        }
+        }*/
 
         return craftChunks;
     }
@@ -394,6 +399,7 @@ public class CraftWorld implements World {
         return new CraftLightningStrike(server, lightning);
     }
 
+    //decompile
     public boolean generateTree(Location loc, TreeType type) {
         net.minecraft.server.WorldGenerator gen;
         switch (type) {
@@ -624,9 +630,21 @@ public class CraftWorld implements World {
         return this.world.getBiome(new BlockPosition(x, 0, z)).humidity;
     }
 
+    //lambda
     public List<Entity> getEntities() {
         List<Entity> list = new ArrayList<Entity>();
 
+        world.entityList.stream().filter(
+            li -> (Object)li instanceof net.minecraft.server.Entity).forEach(
+            li -> {
+                Entity bukkitEntity = ((net.minecraft.server.Entity)li).getBukkitEntity();
+                // Assuming that bukkitEntity isn't null
+                if (bukkitEntity != null) {
+                    list.add(bukkitEntity);
+                }
+            });
+        
+        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -637,7 +655,7 @@ public class CraftWorld implements World {
                     list.add(bukkitEntity);
                 }
             }
-        }
+        }*/
 
         return list;
     }

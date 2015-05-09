@@ -249,18 +249,30 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
                 Iterator iterator2 = arraylist1.iterator();
 
+                iterator2.forEachRemaining(
+                    it -> {
+                        this.a((TileEntity) it);
+                    }
+                );
+                /*
                 while (iterator2.hasNext()) {
                     TileEntity tileentity = (TileEntity) iterator2.next();
 
                     this.a(tileentity);
-                }
+                }*/
 
                 iterator2 = arraylist.iterator();
 
+                iterator2.forEachRemaining(
+                    it -> {
+                        this.u().getTracker().a(this, (Chunk) it);
+                    }
+                );
+                /*
                 while (iterator2.hasNext()) {
                     chunk = (Chunk) iterator2.next();
                     this.u().getTracker().a(this, chunk);
-                }
+                }*/
             }
         }
 
@@ -309,11 +321,17 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 Collection collection = this.getScoreboard().getObjectivesForCriteria(IScoreboardCriteria.g);
                 Iterator iterator = collection.iterator();
 
+                iterator.forEachRemaining(
+                    it -> {
+                        this.getScoreboard().getPlayerScoreForObjective(this.getName(), (ScoreboardObjective) it).updateForList(Arrays.asList(new EntityHuman[] { this}));
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     ScoreboardObjective scoreboardobjective = (ScoreboardObjective) iterator.next();
 
                     this.getScoreboard().getPlayerScoreForObjective(this.getName(), scoreboardobjective).updateForList(Arrays.asList(new EntityHuman[] { this}));
-                }
+                }*/
                 // CraftBukkit - Update ALL the scores!
                 this.world.getServer().getScoreboardManager().updateAllScoresForList(IScoreboardCriteria.g, this.getName(), com.google.common.collect.ImmutableList.of(this));
             }
@@ -369,13 +387,21 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 String s1 = (String) iterator.next();
                 Iterator iterator1 = hashset.iterator();
 
+                iterator1.forEachRemaining(
+                    it -> {
+                        if (((BiomeBase) it).ah.equals(s1)) {
+                            iterator1.remove();
+                        }
+                    }
+                );
+                /*
                 while (iterator1.hasNext()) {
                     BiomeBase biomebase1 = (BiomeBase) iterator1.next();
 
                     if (biomebase1.ah.equals(s1)) {
                         iterator1.remove();
                     }
-                }
+                }*/
 
                 if (hashset.isEmpty()) {
                     break;

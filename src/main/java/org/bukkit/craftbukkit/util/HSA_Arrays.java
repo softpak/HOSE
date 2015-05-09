@@ -6,7 +6,6 @@
 package org.bukkit.craftbukkit.util;
 
 import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
 
 /**
  *

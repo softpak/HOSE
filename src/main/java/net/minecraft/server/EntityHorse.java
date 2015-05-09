@@ -382,12 +382,28 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         return super.bR();
     }
 
+    //lambda
+    double d1;
+    Entity entity1;
     protected EntityHorse a(Entity entity, double d0) {
-        double d1 = Double.MAX_VALUE;
-        Entity entity1 = null;
+        //double d1 = Double.MAX_VALUE;
+        d1 = Double.MAX_VALUE;
+        //Entity entity1 = null;
+        entity1 = null;
         List list = this.world.a(entity, entity.getBoundingBox().a(d0, d0, d0), EntityHorse.bs);
         Iterator iterator = list.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                double d2 = ((Entity) it).e(entity.locX, entity.locY, entity.locZ);
+
+                if (d2 < d1) {
+                    entity1 = (Entity) it;
+                    d1 = d2;
+                }
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             Entity entity2 = (Entity) iterator.next();
             double d2 = entity2.e(entity.locX, entity.locY, entity.locZ);
@@ -396,7 +412,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
                 entity1 = entity2;
                 d1 = d2;
             }
-        }
+        }*/
 
         return (EntityHorse) entity1;
     }
@@ -873,8 +889,10 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         this.cE();
     }
 
+    //lambda
     private void a(Entity entity, InventoryHorseChest inventoryhorsechest) {
         if (inventoryhorsechest != null && !this.world.isClientSide) {
+            
             for (int i = 0; i < inventoryhorsechest.getSize(); ++i) {
                 ItemStack itemstack = inventoryhorsechest.getItem(i);
 

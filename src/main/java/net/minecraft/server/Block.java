@@ -99,8 +99,11 @@ public class Block {
     public static IBlockData getByCombinedId(int i) {
         int j = i & 4095;
         int k = i >> 12 & 15;
+        
+        //System.out.println("getByCombinedId");
 
         return getById(j).fromLegacyData(k);
+        //return getById(hj[0]).fromLegacyData(hk[0]);
     }
 
     public static Block asBlock(Item item) {
@@ -370,7 +373,7 @@ public class Block {
     public static void a(World world, BlockPosition blockposition, ItemStack itemstack) {
         if (!world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
             double[] d = new double[3];
-            
+            //double[] wrn = new double[3];
             float f = 0.5F;
             Aparapi.range(3).forEach(gid -> d[gid] = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D);
             /*

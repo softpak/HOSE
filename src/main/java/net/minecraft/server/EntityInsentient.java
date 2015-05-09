@@ -240,8 +240,9 @@ public abstract class EntityInsentient extends EntityLiving {
     }
     
     //HSA
-    protected ItemStack headDrop = null; // CraftBukkit
+    protected ItemStack headDrop; // CraftBukkit
     protected void dropDeathLoot(boolean flag, int i) {
+        headDrop = null;
         Item item = this.getLoot();
 
         if (item != null) {
@@ -335,7 +336,7 @@ public abstract class EntityInsentient extends EntityLiving {
     NBTTagList hanbttaglist;
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
-        
+        hanbttaglist = null;
         // CraftBukkit start - If looting or persistence is false only use it if it was set after we started using it
         if (nbttagcompound.hasKeyOfType("CanPickUpLoot", 1)) {
             boolean data = nbttagcompound.getBoolean("CanPickUpLoot");

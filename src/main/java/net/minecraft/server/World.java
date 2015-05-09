@@ -889,6 +889,7 @@ public abstract class World implements IBlockAccess {
                     double d3 = 999.0D;
                     double d4 = 999.0D;
                     double d5 = 999.0D;
+                    
                     double d6 = vec3d1.a - vec3d.a;
                     double d7 = vec3d1.b - vec3d.b;
                     double d8 = vec3d1.c - vec3d.c;
@@ -2126,15 +2127,6 @@ public abstract class World implements IBlockAccess {
                 tileentity.a(blockposition);
                 Iterator iterator = this.b.iterator();
 
-                iterator.forEachRemaining(
-                    it -> {
-                        if (((TileEntity) it).getPosition().equals(blockposition)) {
-                            ((TileEntity) it).y();
-                            iterator.remove();
-                        }
-                    }
-                );
-                /*
                 while (iterator.hasNext()) {
                     TileEntity tileentity1 = (TileEntity) iterator.next();
 
@@ -2142,7 +2134,7 @@ public abstract class World implements IBlockAccess {
                         tileentity1.y();
                         iterator.remove();
                     }
-                }*/
+                }
 
                 tileentity.a(this); // Spigot - No null worlds
                 this.b.add(tileentity);

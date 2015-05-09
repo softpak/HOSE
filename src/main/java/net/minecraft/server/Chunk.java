@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-//import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -66,12 +66,18 @@ public class Chunk {
         }
     }
 
+    //HSA
+    int[] snl = new int[1];
     public void setNeighborLoaded(final int x, final int z) {
+        //Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
         this.neighbors |= 0x1 << (x * 5 + 12 + z);
+        //this.neighbors |= 0x1 << snl[0];
     }
 
     public void setNeighborUnloaded(final int x, final int z) {
-        this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
+        Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
+        //this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
+        this.neighbors &= ~(0x1 << snl[0]);
     }
     // CraftBukkit end
     
@@ -113,11 +119,12 @@ public class Chunk {
     public boolean mustSave;
     // CraftBukkit end
 
+    //HSA
     public Chunk(World world, ChunkSnapshot chunksnapshot, int i, int j) {
         this(world, i, j);
         short short0 = 256;
         boolean flag = !world.worldProvider.o();
-        //HSA
+        
         Aparapi.range(16).forEach(gid_k -> {
             Aparapi.range(16).forEach(gid_l -> {
                 Aparapi.range(short0).forEach(gid_i1 -> {
@@ -249,9 +256,17 @@ public class Chunk {
         this.k = true;
     }
 
+    //HSA
+    int[] bp = new int[2];
+    int[] xz = new int[2];
     private void h(boolean flag) {
         this.world.methodProfiler.a("recheckGaps");
-        if (this.world.areChunksLoaded(new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8), 16)) {
+        xz[0] = this.locX;
+        xz[1] = this.locZ;
+        Device.hsa().forEach(0, 2, i -> bp[i] = xz[i] * 16 + 8);
+        
+        if (this.world.areChunksLoaded(new BlockPosition(bp[0], 0, bp[1]), 16)) {
+        //if (this.world.areChunksLoaded(new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8), 16)) {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
                     if (this.g[i + j * 16]) {
@@ -339,10 +354,17 @@ public class Chunk {
         }
 
         if (hi1 != l) {
-            this.world.a(i + this.locX * 16, k + this.locZ * 16, hi1, l);
+            xz[0] = this.locX;
+            xz[1] = this.locZ;
+            Device.hsa().forEach(0, 2, ii -> bp[ii] = xz[ii] * 16);
+            
+            //this.world.a(i + this.locX * 16, k + this.locZ * 16, hi1, l);
+            this.world.a(i + bp[0], k + bp[1], hi1, l);
             this.heightMap[k << 4 | i] = hi1;
-            int j1 = this.locX * 16 + i;
-            int k1 = this.locZ * 16 + k;
+            //int j1 = this.locX * 16 + i;
+            //int k1 = this.locZ * 16 + k;
+            int j1 = bp[0] + i;
+            int k1 = bp[1] + k;
             int l1;
             int i2;
 
@@ -1112,6 +1134,7 @@ public class Chunk {
         return this.q;
     }
 
+    //HSA
     public Random a(long i) {
         return new Random(this.world.getSeed() + (long) (this.locX * this.locX * 4987142) + (long) (this.locX * 5947611) + (long) (this.locZ * this.locZ) * 4392871L + (long) (this.locZ * 389711) ^ i);
     }
@@ -1424,7 +1447,7 @@ public class Chunk {
     
     //HSA
     private void y() {
-        Aparapi.range(this.g.length).forEach(gid_i -> {
+        Device.hsa().forEach(0 , this.g.length, gid_i -> {
             this.g[gid_i] = true;
         });
         /*

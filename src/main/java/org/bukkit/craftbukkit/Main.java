@@ -37,7 +37,7 @@ public class Main {
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]*b[gid]*b[gid]);
             long st = System.nanoTime();
             Device.hsa().forEach(0, size, gid-> {
-                sum[gid] = a[gid] + b[gid]*b[gid]*b[gid];
+                sum[gid] = a[gid] + b[gid]*b[gid]*b[gid]+20;
             });
             long et = System.nanoTime();
             //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]);

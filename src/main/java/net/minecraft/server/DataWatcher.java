@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.ObjectUtils;
 
 public class DataWatcher {
@@ -126,15 +128,26 @@ public class DataWatcher {
         return this.e;
     }
 
+    //lambda
     public static void a(List<DataWatcher.WatchableObject> list, PacketDataSerializer packetdataserializer) throws IOException {
         if (list != null) {
             Iterator iterator = list.iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    try {
+                        a(packetdataserializer, (DataWatcher.WatchableObject) it);
+                    } catch (IOException ex) {
+                        Logger.getLogger(DataWatcher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 DataWatcher.WatchableObject datawatcher_watchableobject = (DataWatcher.WatchableObject) iterator.next();
 
                 a(packetdataserializer, datawatcher_watchableobject);
-            }
+            }*/
         }
 
         packetdataserializer.writeByte(127);

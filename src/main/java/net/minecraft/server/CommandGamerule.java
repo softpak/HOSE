@@ -57,11 +57,17 @@ public class CommandGamerule extends CommandAbstract {
             int i = gamerules.getBoolean(s) ? 22 : 23;
             Iterator iterator = MinecraftServer.getServer().getPlayerList().v().iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    ((EntityPlayer) it).playerConnection.sendPacket(new PacketPlayOutEntityStatus((EntityPlayer) it, (byte) i));
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 EntityPlayer entityplayer = (EntityPlayer) iterator.next();
 
                 entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityStatus(entityplayer, (byte) i));
-            }
+            }*/
         }
 
     }

@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -103,10 +104,21 @@ public class ServerConnection {
         }
     }
 
+    //lambda
     public void b() {
         this.d = false;
         Iterator iterator = this.g.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                try {
+                    ((ChannelFuture) it).channel().close().sync();
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(ServerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             ChannelFuture channelfuture = (ChannelFuture) iterator.next();
 
@@ -115,7 +127,7 @@ public class ServerConnection {
             } catch (InterruptedException interruptedexception) {
                 ServerConnection.e.error("Interrupted whilst closing channel");
             }
-        }
+        }*/
 
     }
 

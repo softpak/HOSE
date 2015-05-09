@@ -38,6 +38,7 @@ public class BlockMushroom extends BlockPlant implements IBlockFragilePlantEleme
 
             BlockPosition blockposition2 = blockposition.a(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
 
+            
             for (int j = 0; j < 4; ++j) {
                 if (world.isEmpty(blockposition2) && this.f(world, blockposition2, this.getBlockData())) {
                     blockposition = blockposition2;

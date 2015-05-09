@@ -688,7 +688,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             for (int k = 0; k < agameprofile.length; ++k) {
                 agameprofile[k] = ((EntityPlayer) this.v.v().get(j + k)).getProfile();
             }*/
-
+                    
             Collections.shuffle(Arrays.asList(agameprofile));
             this.r.b().a(agameprofile);
         }

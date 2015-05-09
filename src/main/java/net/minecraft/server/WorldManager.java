@@ -62,7 +62,7 @@ public class WorldManager implements IWorldAccess {
                     double d0 = (double) blockposition.getX() - ((EntityPlayer)it).locX;
                     double d1 = (double) blockposition.getY() - ((EntityPlayer)it).locY;
                     double d2 = (double) blockposition.getZ() - ((EntityPlayer)it).locZ;
-
+                    
                     if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
                         ((EntityPlayer)it).playerConnection.sendPacket(new PacketPlayOutBlockBreakAnimation(i, blockposition, j));
                     }

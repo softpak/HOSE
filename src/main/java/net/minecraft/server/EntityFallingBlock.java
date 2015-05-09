@@ -101,6 +101,16 @@ public class EntityFallingBlock extends Entity {
                                         tileentity.b(nbttagcompound);
                                         Iterator iterator = this.tileEntityData.c().iterator();
 
+                                        iterator.forEachRemaining(
+                                            it -> {
+                                                NBTBase nbtbase = this.tileEntityData.get((String) it);
+
+                                                if (!((String) it).equals("x") && !((String) it).equals("y") && !((String) it).equals("z")) {
+                                                    nbttagcompound.set((String) it, nbtbase.clone());
+                                                }
+                                            }
+                                        );
+                                        /*
                                         while (iterator.hasNext()) {
                                             String s = (String) iterator.next();
                                             NBTBase nbtbase = this.tileEntityData.get(s);
@@ -108,7 +118,7 @@ public class EntityFallingBlock extends Entity {
                                             if (!s.equals("x") && !s.equals("y") && !s.equals("z")) {
                                                 nbttagcompound.set(s, nbtbase.clone());
                                             }
-                                        }
+                                        }*/
 
                                         tileentity.a(nbttagcompound);
                                         tileentity.update();
@@ -131,6 +141,7 @@ public class EntityFallingBlock extends Entity {
         }
     }
 
+    //lambda
     public void e(float f, float f1) {
         Block block = this.block.getBlock();
 
@@ -143,13 +154,21 @@ public class EntityFallingBlock extends Entity {
                 DamageSource damagesource = flag ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
                 Iterator iterator = arraylist.iterator();
 
+                iterator.forEachRemaining(
+                    it -> {
+                        CraftEventFactory.entityDamage = this; // CraftBukkit
+                        ((Entity) it).damageEntity(damagesource, (float) Math.min(MathHelper.d((float) i * this.fallHurtAmount), this.fallHurtMax));
+                        CraftEventFactory.entityDamage = null; // CraftBukkit
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     Entity entity = (Entity) iterator.next();
 
                     CraftEventFactory.entityDamage = this; // CraftBukkit
                     entity.damageEntity(damagesource, (float) Math.min(MathHelper.d((float) i * this.fallHurtAmount), this.fallHurtMax));
                     CraftEventFactory.entityDamage = null; // CraftBukkit
-                }
+                }*/
 
                 if (flag && (double) this.random.nextFloat() < 0.05000000074505806D + (double) i * 0.05D) {
                     int j = ((Integer) this.block.get(BlockAnvil.DAMAGE)).intValue();

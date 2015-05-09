@@ -926,6 +926,19 @@ public abstract class PlayerList {
             Collection collection = scoreboardteambase.getPlayerNameSet();
             Iterator iterator = collection.iterator();
 
+            //lambda
+            iterator.forEachRemaining(
+                it -> {
+                    EntityPlayer entityplayer = this.getPlayer((String) it);
+
+                    if (entityplayer != null && entityplayer != entityhuman) {
+                        entityplayer.sendMessage(ichatbasecomponent);
+                    }
+                }
+            );
+            
+            
+            /*
             while (iterator.hasNext()) {
                 String s = (String) iterator.next();
                 EntityPlayer entityplayer = this.getPlayer(s);
@@ -933,7 +946,7 @@ public abstract class PlayerList {
                 if (entityplayer != null && entityplayer != entityhuman) {
                     entityplayer.sendMessage(ichatbasecomponent);
                 }
-            }
+            }*/
 
         }
     }
@@ -1180,17 +1193,26 @@ public abstract class PlayerList {
         this.hasWhitelist = flag;
     }
 
+    //lambda
     public List<EntityPlayer> b(String s) {
         ArrayList arraylist = Lists.newArrayList();
         Iterator iterator = this.players.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                if (((EntityPlayer) it).w().equals(s)) {
+                    arraylist.add((EntityPlayer) it);
+                }
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
 
             if (entityplayer.w().equals(s)) {
                 arraylist.add(entityplayer);
             }
-        }
+        }*/
 
         return arraylist;
     }
