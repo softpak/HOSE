@@ -97,6 +97,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
 
         if (networkManager.spoofedProfile != null)
         {
+            
             for ( com.mojang.authlib.properties.Property property : networkManager.spoofedProfile )
             {
                 this.i.getProperties().put( property.getName(), property );

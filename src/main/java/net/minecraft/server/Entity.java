@@ -404,6 +404,7 @@ public abstract class Entity implements ICommandListener {
     }
     
     //HSA
+    /*
     double[] hd0 = new double[1],
              hd1 = new double[1],
              hd2 = new double[1],
@@ -412,19 +413,19 @@ public abstract class Entity implements ICommandListener {
              hd17 = new double[1],
              hd18 = new double[1], 
              hd19 = new double[1],
-             hd20 = new double[1];
+             hd20 = new double[1];*/
     public void move(double d0, double d1, double d2) {
         //HSA
-        hd0[0] = d0;
+        /*hd0[0] = d0;
         hd1[0] = d1;
-        hd2[0] = d2;
+        hd2[0] = d2;*/
 
         
         
         org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.startTiming(); // Spigot
         if (this.noclip) {
-            //this.a(this.getBoundingBox().c(d0, d1, d2));
-            this.a(this.getBoundingBox().c(hd0[0], hd1[0], hd2[0]));
+            this.a(this.getBoundingBox().c(d0, d1, d2));
+            //this.a(this.getBoundingBox().c(hd0[0], hd1[0], hd2[0]));
             this.recalcPosition();
         } else {
             // CraftBukkit start - Don't do anything if we aren't moving
@@ -439,13 +440,11 @@ public abstract class Entity implements ICommandListener {
                 throw new ReportedException(crashreport);
             }
             // Check if we're moving
-            /*
+            
             if (d0 == 0 && d1 == 0 && d2 == 0 && this.vehicle == null && this.passenger == null) {
                 return;
-            }*/
-            if (hd0[0] == 0 && hd1[0] == 0 && hd2[0] == 0 && this.vehicle == null && this.passenger == null) {
-                return;
             }
+
             // CraftBukkit end
             this.world.methodProfiler.a("move");
             double d3 = this.locX;
@@ -455,120 +454,110 @@ public abstract class Entity implements ICommandListener {
             if (this.H) {
                 this.H = false;
                 //HOSE HSA
-                Aparapi.range(1).forEach(gid -> hd0[gid] *= 0.25D);
+                /*Aparapi.range(1).forEach(gid -> hd0[gid] *= 0.25D);
                 Aparapi.range(1).forEach(gid -> hd1[gid] *= 0.05000000074505806D);
-                Aparapi.range(1).forEach(gid -> hd2[gid] *= 0.25D);
-                /*d0 *= 0.25D;
+                Aparapi.range(1).forEach(gid -> hd2[gid] *= 0.25D);*/
+                d0 *= 0.25D;
                 d1 *= 0.05000000074505806D;
-                d2 *= 0.25D;*/
+                d2 *= 0.25D;
                 this.motX = 0.0D;
                 this.motY = 0.0D;
                 this.motZ = 0.0D;
             }
-            /*
+            
             double d6 = d0;
             double d7 = d1;
-            double d8 = d2;*/
-            double d6 = hd0[0];
+            double d8 = d2;
+            /*double d6 = hd0[0];
             double d7 = hd1[0];
-            double d8 = hd2[0];
+            double d8 = hd2[0];*/
             boolean flag = this.onGround && this.isSneaking() && this instanceof EntityHuman;
             
             if (flag) {
                 double d9;
 
-                for (d9 = 0.05D; hd0[0] != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(hd0[0], -1.0D, 0.0D)).isEmpty(); d6 = hd0[0]) {
-                    if (hd0[0] < d9 && hd0[0] >= -d9) {
-                        hd0[0] = 0.0D;
-                    } else if (hd0[0] > 0.0D) {
-                        hd0[0] -= d9;
+                for (d9 = 0.05D; d0 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, 0.0D)).isEmpty(); d6 = d0) {
+                    if (d0 < d9 && d0 >= -d9) {
+                        d0 = 0.0D;
+                    } else if (d0 > 0.0D) {
+                        d0 -= d9;
                     } else {
-                        hd0[0] += d9;
+                        d0 += d9;
                     }
                 }
 
-                for (; hd2[0] != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(0.0D, -1.0D, hd2[0])).isEmpty(); d8 = hd2[0]) {
-                    if (hd2[0] < d9 && hd2[0] >= -d9) {
-                        hd2[0] = 0.0D;
-                    } else if (hd2[0] > 0.0D) {
-                        hd2[0] -= d9;
+                for (; d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(0.0D, -1.0D, d2)).isEmpty(); d8 = d2) {
+                    if (d2 < d9 && d2 >= -d9) {
+                        d2 = 0.0D;
+                    } else if (d2 > 0.0D) {
+                        d2 -= d9;
                     } else {
-                        hd2[0] += d9;
+                        d2 += d9;
                     }
                 }
 
-                for (; hd0[0] != 0.0D && hd2[0] != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(hd0[0], -1.0D, hd2[0])).isEmpty(); d8 = hd2[0]) {
-                    if (hd0[0] < d9 && hd0[0] >= -d9) {
-                        hd0[0] = 0.0D;
-                    } else if (hd0[0] > 0.0D) {
-                        hd0[0] -= d9;
+                for (; d0 != 0.0D && d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, d2)).isEmpty(); d8 = d2) {
+                    if (d0 < d9 && d0 >= -d9) {
+                        d0 = 0.0D;
+                    } else if (d0 > 0.0D) {
+                        d0 -= d9;
                     } else {
-                        hd0[0] += d9;
+                        d0 += d9;
                     }
 
-                    d6 = hd0[0];
-                    if (hd2[0] < d9 && hd2[0] >= -d9) {
-                        hd2[0] = 0.0D;
-                    } else if (hd2[0] > 0.0D) {
-                        hd2[0] -= d9;
+                    d6 = d0;
+                    if (d2 < d9 && d2 >= -d9) {
+                        d2 = 0.0D;
+                    } else if (d2 > 0.0D) {
+                        d2 -= d9;
                     } else {
-                        hd2[0] += d9;
+                        d2 += d9;
                     }
                 }
             }
-            //List list = this.world.getCubes(this, this.getBoundingBox().a(d0, d1, d2));
-            List list = this.world.getCubes(this, this.getBoundingBox().a(hd0[0], hd1[0], hd2[0]));
+            List list = this.world.getCubes(this, this.getBoundingBox().a(d0, d1, d2));
             AxisAlignedBB axisalignedbb = this.getBoundingBox();
-            
             AxisAlignedBB axisalignedbb1;
-            for (Iterator iterator = list.iterator(); iterator.hasNext(); hd1[0] = axisalignedbb1.b(this.getBoundingBox(), hd1[0])) {
-                axisalignedbb1 = (AxisAlignedBB) iterator.next();
-            }
-            /*
+            
+            
             for (Iterator iterator = list.iterator(); iterator.hasNext(); d1 = axisalignedbb1.b(this.getBoundingBox(), d1)) {
                 axisalignedbb1 = (AxisAlignedBB) iterator.next();
-            }*/
+            }
 
-            //this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
-            this.a(this.getBoundingBox().c(0.0D, hd1[0], 0.0D));
-            //boolean flag1 = this.onGround || d7 != d1 && d7 < 0.0D;
-            boolean flag1 = this.onGround || d7 != hd1[0] && d7 < 0.0D;
+            this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
+            
+            boolean flag1 = this.onGround || d7 != d1 && d7 < 0.0D;
+            
 
             AxisAlignedBB axisalignedbb2;
             Iterator iterator1;
 
-            /*for (iterator1 = list.iterator(); iterator1.hasNext(); d0 = axisalignedbb2.a(this.getBoundingBox(), d0)) {
-                axisalignedbb2 = (AxisAlignedBB) iterator1.next();
-            }*/
-            for (iterator1 = list.iterator(); iterator1.hasNext(); hd0[0] = axisalignedbb2.a(this.getBoundingBox(), hd0[0])) {
-                axisalignedbb2 = (AxisAlignedBB) iterator1.next();
-            }
-
-            //this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
-            this.a(this.getBoundingBox().c(hd0[0], 0.0D, 0.0D));
-
-            /*for (iterator1 = list.iterator(); iterator1.hasNext(); d2 = axisalignedbb2.c(this.getBoundingBox(), d2)) {
-                axisalignedbb2 = (AxisAlignedBB) iterator1.next();
-            }*/
-            for (iterator1 = list.iterator(); iterator1.hasNext(); hd2[0] = axisalignedbb2.c(this.getBoundingBox(), hd2[0])) {
+            for (iterator1 = list.iterator(); iterator1.hasNext(); d0 = axisalignedbb2.a(this.getBoundingBox(), d0)) {
                 axisalignedbb2 = (AxisAlignedBB) iterator1.next();
             }
             
-            //this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
-            this.a(this.getBoundingBox().c(0.0D, 0.0D, hd2[0]));
+
+            this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
             
-            if (this.S > 0.0F && flag1 && (d6 != hd0[0] || d8 != hd2[0])) {
-                double d10 = hd0[0];
-                double d11 = hd1[0];
-                double d12 = hd2[0];
+            for (iterator1 = list.iterator(); iterator1.hasNext(); d2 = axisalignedbb2.c(this.getBoundingBox(), d2)) {
+                axisalignedbb2 = (AxisAlignedBB) iterator1.next();
+            }
+
+            
+            this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
+                        
+            if (this.S > 0.0F && flag1 && (d6 != d0 || d8 != d2)) {
+                double d10 = d0;
+                double d11 = d1;
+                double d12 = d2;
                 AxisAlignedBB axisalignedbb3 = this.getBoundingBox();
 
                 this.a(axisalignedbb);
-                hd1[0] = (double) this.S;
-                List list1 = this.world.getCubes(this, this.getBoundingBox().a(d6, hd1[0], d8));
+                d1 = (double) this.S;
+                List list1 = this.world.getCubes(this, this.getBoundingBox().a(d6, d1, d8));
                 AxisAlignedBB axisalignedbb4 = this.getBoundingBox();
                 AxisAlignedBB axisalignedbb5 = axisalignedbb4.a(d6, 0.0D, d8);
-                double d13 = hd1[0];
+                double d13 = d1;
 
                 AxisAlignedBB axisalignedbb6;
 
@@ -577,26 +566,26 @@ public abstract class Entity implements ICommandListener {
                 }
 
                 axisalignedbb4 = axisalignedbb4.c(0.0D, d13, 0.0D);
-                hd14[0] = d6;
+                double d14 = d6;
 
                 AxisAlignedBB axisalignedbb7;
 
-                for (Iterator iterator3 = list1.iterator(); iterator3.hasNext(); hd14[0] = axisalignedbb7.a(axisalignedbb4, hd14[0])) {
+                for (Iterator iterator3 = list1.iterator(); iterator3.hasNext(); d14 = axisalignedbb7.a(axisalignedbb4, d14)) {
                     axisalignedbb7 = (AxisAlignedBB) iterator3.next();
                 }
 
-                axisalignedbb4 = axisalignedbb4.c(hd14[0], 0.0D, 0.0D);
-                hd15[0] = d8;
+                axisalignedbb4 = axisalignedbb4.c(d14, 0.0D, 0.0D);
+                double d15 = d8;
 
                 AxisAlignedBB axisalignedbb8;
 
-                for (Iterator iterator4 = list1.iterator(); iterator4.hasNext(); hd15[0] = axisalignedbb8.c(axisalignedbb4, hd15[0])) {
+                for (Iterator iterator4 = list1.iterator(); iterator4.hasNext(); d15 = axisalignedbb8.c(axisalignedbb4, d15)) {
                     axisalignedbb8 = (AxisAlignedBB) iterator4.next();
                 }
 
-                axisalignedbb4 = axisalignedbb4.c(0.0D, 0.0D, hd15[0]);
+                axisalignedbb4 = axisalignedbb4.c(0.0D, 0.0D, d15);
                 AxisAlignedBB axisalignedbb9 = this.getBoundingBox();
-                double d16 = hd1[0];
+                double d16 = d1;
 
                 AxisAlignedBB axisalignedbb10;
 
@@ -605,53 +594,50 @@ public abstract class Entity implements ICommandListener {
                 }
 
                 axisalignedbb9 = axisalignedbb9.c(0.0D, d16, 0.0D);
-                hd17[0] = d6;
+                double d17 = d6;
 
                 AxisAlignedBB axisalignedbb11;
 
-                for (Iterator iterator6 = list1.iterator(); iterator6.hasNext(); hd17[0] = axisalignedbb11.a(axisalignedbb9, hd17[0])) {
+                for (Iterator iterator6 = list1.iterator(); iterator6.hasNext(); d17 = axisalignedbb11.a(axisalignedbb9, d17)) {
                     axisalignedbb11 = (AxisAlignedBB) iterator6.next();
                 }
 
-                axisalignedbb9 = axisalignedbb9.c(hd17[0], 0.0D, 0.0D);
-                hd18[0] = d8;
+                axisalignedbb9 = axisalignedbb9.c(d17, 0.0D, 0.0D);
+                double d18 = d8;
 
                 AxisAlignedBB axisalignedbb12;
 
-                for (Iterator iterator7 = list1.iterator(); iterator7.hasNext(); hd18[0] = axisalignedbb12.c(axisalignedbb9, hd18[0])) {
+                for (Iterator iterator7 = list1.iterator(); iterator7.hasNext(); d18 = axisalignedbb12.c(axisalignedbb9, d18)) {
                     axisalignedbb12 = (AxisAlignedBB) iterator7.next();
                 }
 
-                axisalignedbb9 = axisalignedbb9.c(0.0D, 0.0D, hd18[0]);
-                Aparapi.range(1).forEach(gid -> hd19[gid] = hd14[gid] * hd14[gid] + hd15[gid] * hd15[gid]);
-                Aparapi.range(1).forEach(gid -> hd20[gid] = hd17[gid] * hd17[gid] + hd18[gid] * hd18[gid]);
-                /*
-                d19 = d14 * d14 + d15 * d15;
-                d20 = d17 * d17 + d18 * d18;*/
+                axisalignedbb9 = axisalignedbb9.c(0.0D, 0.0D, d18);
+                double d19 = d14 * d14 + d15 * d15;
+                double d20 = d17 * d17 + d18 * d18;
 
-                if (hd19[0] > hd20[0]) {
-                    hd0[0] = hd14[0];
-                    hd2[0] = hd15[0];
-                    hd1[0] = -d13;
+                if (d19 > d20) {
+                    d0 = d14;
+                    d2 = d15;
+                    d1 = -d13;
                     this.a(axisalignedbb4);
                 } else {
-                    hd0[0] = hd17[0];
-                    hd2[0] = hd18[0];
-                    hd1[0] = -d16;
+                    d0 = d17;
+                    d2 = d18;
+                    d1 = -d16;
                     this.a(axisalignedbb9);
                 }
 
                 AxisAlignedBB axisalignedbb13;
 
-                for (Iterator iterator8 = list1.iterator(); iterator8.hasNext(); hd1[0] = axisalignedbb13.b(this.getBoundingBox(), hd1[0])) {
+                for (Iterator iterator8 = list1.iterator(); iterator8.hasNext(); d1 = axisalignedbb13.b(this.getBoundingBox(), d1)) {
                     axisalignedbb13 = (AxisAlignedBB) iterator8.next();
                 }
 
-                this.a(this.getBoundingBox().c(0.0D, hd1[0], 0.0D));
-                if (d10 * d10 + d12 * d12 >= hd0[0] * hd0[0] + hd2[0] * hd2[0]) {
-                    hd0[0] = d10;
-                    hd1[0] = d11;
-                    hd2[0] = d12;
+                this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
+                if (d10 * d10 + d12 * d12 >= d0 * d0 + d2 * d2) {
+                    d0 = d10;
+                    d1 = d11;
+                    d2 = d12;
                     this.a(axisalignedbb3);
                 }
             }
@@ -659,8 +645,8 @@ public abstract class Entity implements ICommandListener {
             this.world.methodProfiler.b();
             this.world.methodProfiler.a("rest");
             this.recalcPosition();
-            this.positionChanged = d6 != hd0[0] || d8 != hd2[0];
-            this.E = d7 != hd1[0];
+            this.positionChanged = d6 != d0 || d8 != d2;
+            this.E = d7 != d1;
             this.onGround = this.E && d7 < 0.0D;
             this.F = this.positionChanged || this.E;
             int i = MathHelper.floor(this.locX);
@@ -679,15 +665,15 @@ public abstract class Entity implements ICommandListener {
             }
 
             this.a(d1, this.onGround, block, blockposition);
-            if (d6 != hd0[0]) {
+            if (d6 != d0) {
                 this.motX = 0.0D;
             }
 
-            if (d8 != hd2[0]) {
+            if (d8 != d2) {
                 this.motZ = 0.0D;
             }
 
-            if (d7 != hd1[0]) {
+            if (d7 != d1) {
                 block.a(this.world, this);
             }
 
@@ -696,13 +682,13 @@ public abstract class Entity implements ICommandListener {
                 Vehicle vehicle = (Vehicle) this.getBukkitEntity();
                 org.bukkit.block.Block bl = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
 
-                if (d6 > hd0[0]) {
+                if (d6 > d0) {
                     bl = bl.getRelative(BlockFace.EAST);
-                } else if (d6 < hd0[0]) {
+                } else if (d6 < d0) {
                     bl = bl.getRelative(BlockFace.WEST);
-                } else if (d8 > hd2[0]) {
+                } else if (d8 > d2) {
                     bl = bl.getRelative(BlockFace.SOUTH);
-                } else if (d8 < hd2[0]) {
+                } else if (d8 < d2) {
                     bl = bl.getRelative(BlockFace.NORTH);
                 }
 
@@ -729,17 +715,13 @@ public abstract class Entity implements ICommandListener {
                 if (this.N > (float) this.h && block.getMaterial() != Material.AIR) {
                     this.h = (int) this.N + 1;
                     if (this.V()) {
-                        //float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.35F;
-                        float f[] = new float[1];
-                        Aparapi.range(1).forEach(gid -> f[gid] = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.35F);
-                        if (f[0] > 1.0F) {
-                            f[0] = 1.0F;
-                        }
-                        /*if (f > 1.0F) {
-                            f = 1.0F;
-                        }*/
+                        float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.35F;
 
-                        this.makeSound(this.P(), f[0], 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+                        if (f > 1.0F) {
+                            f = 1.0F;
+                        }
+
+                        this.makeSound(this.P(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
                     }
 
                     this.a(blockposition, block);
@@ -950,20 +932,13 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected void X() {
-        //HSA
-        float f[] = new float[1];
-        Aparapi.range(1).forEach(gid -> f[gid] = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F);
-        if (f[0] > 1.0F) {
-            f[0] = 1.0F;
-        }
-        /*
         float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
 
         if (f > 1.0F) {
             f = 1.0F;
-        }*/
+        }
         
-        this.makeSound(this.aa(), f[0], 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+        this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
         //int i;
@@ -1048,36 +1023,20 @@ public abstract class Entity implements ICommandListener {
     
     
     public void a(float f, float f1, float f2) {
-        //HSA
-        //float f3 = f * f + f1 * f1;
-        float[] f3 = new float[1];
-        float[] hf = new float[1];
-        float[] hf1 = new float[1];
-        hf[0] = f;
-        hf1[0] = f1;
-        
-        Aparapi.range(1).forEach(gid -> f3[gid] = hf[gid] * hf[gid] + hf1[gid] * hf1[gid]);
-        
-        
-        if (f3[0] >= 1.0E-4F) {
-            f3[0] = MathHelper.c(f3[0]);
-            if (f3[0] < 1.0F) {
-                f3[0] = 1.0F;
+        float f3 = f * f + f1 * f1;
+        if (f3 >= 1.0E-4F) {
+            f3 = MathHelper.c(f3);
+            if (f3 < 1.0F) {
+                f3 = 1.0F;
             }
 
-            f3[0] = f2 / f3[0];
-            hf[0] *= f3[0];
-            hf1[0] *= f3[0];
-            float[] hf4 = new float[1];
-            float[] hf5 = new float[1];
-            //float f4 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
-            //float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
-            Aparapi.range(1).forEach(gid -> hf4[gid] = MathHelper.sin(this.yaw * 3.1415927F / 180.0F));
-            Aparapi.range(1).forEach(gid -> hf5[gid] = MathHelper.cos(this.yaw * 3.1415927F / 180.0F));
-            //this.motX += (double) (f * f5 - f1 * f4);
-            //this.motZ += (double) (f1 * f5 + f * f4);
-            this.motX += (double) (hf[0] * hf5[0] - hf1[0] * hf4[0]);
-            this.motZ += (double) (hf1[0] * hf5[0] + hf[0] * hf4[0]);
+            f3 = f2 / f3;
+            f *= f3;
+            f1 *= f3;
+            float f4 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
+            float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
+            this.motX += (double) (f * f5 - f1 * f4);
+            this.motZ += (double) (f1 * f5 + f * f4);
         }
     }
 
@@ -1141,22 +1100,14 @@ public abstract class Entity implements ICommandListener {
 
     //HSA
     public double e(double d0, double d1, double d2) {
-        /*
+        
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
-        */
-        double[] d3 = new double[1];
-        double[] d4 = new double[1];
-        double[] d5 = new double[1];
-        double[] re = new double[1];
-        d3[0] = this.locX - d0;
-        d4[0] = this.locY - d1;
-        d5[0] = this.locZ - d2;
-        Aparapi.range(1).forEach(gid -> re[gid] = d3[gid] * d3[gid] + d4[gid] * d4[gid] + d5[gid] * d5[gid]);
         
-        //return d3 * d3 + d4 * d4 + d5 * d5;
-        return re[0];
+        
+        return d3 * d3 + d4 * d4 + d5 * d5;
+        
     }
 
     public double b(BlockPosition blockposition) {
@@ -1169,22 +1120,11 @@ public abstract class Entity implements ICommandListener {
     
     //HSA
     public double f(double d0, double d1, double d2) {
-        /*
+
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
-        */
-        double[] d3 = new double[1];
-        double[] d4 = new double[1];
-        double[] d5 = new double[1];
-        double[] re = new double[1];
-        d3[0] = this.locX - d0;
-        d4[0] = this.locY - d1;
-        d5[0] = this.locZ - d2;
-        Aparapi.range(1).forEach(gid -> re[gid] = (double) MathHelper.sqrt(d3[gid] * d3[gid] + d4[gid] * d4[gid] + d5[gid] * d5[gid]));
-        
-        return re[0];
-        //return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+        return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
     }
 
     public double h(Entity entity) {
@@ -1267,22 +1207,13 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected final Vec3D f(float f, float f1) {
-        //HSA
-        float f2[] = new float[1];
-        float f3[] = new float[1];
-        float f4[] = new float[1];
-        float f5[] = new float[1];
-        Aparapi.range(1).forEach(gid -> f2[gid] = MathHelper.cos(-f1 * 0.017453292F - 3.1415927F));
-        Aparapi.range(1).forEach(gid -> f3[gid] = MathHelper.sin(-f1 * 0.017453292F - 3.1415927F));
-        Aparapi.range(1).forEach(gid -> f4[gid] = -MathHelper.cos(-f * 0.017453292F));
-        Aparapi.range(1).forEach(gid -> f5[gid] = MathHelper.sin(-f * 0.017453292F));
-        /*
+
         float f2 = MathHelper.cos(-f1 * 0.017453292F - 3.1415927F);
         float f3 = MathHelper.sin(-f1 * 0.017453292F - 3.1415927F);
         float f4 = -MathHelper.cos(-f * 0.017453292F);
-        float f5 = MathHelper.sin(-f * 0.017453292F);*/
+        float f5 = MathHelper.sin(-f * 0.017453292F);
 
-        return new Vec3D((double) (f3[0] * f4[0]), (double) f5[0], (double) (f2[0] * f4[0]));
+        return new Vec3D((double) (f3 * f4), (double) f5, (double) (f2 * f4));
     }
 
     public boolean ad() {

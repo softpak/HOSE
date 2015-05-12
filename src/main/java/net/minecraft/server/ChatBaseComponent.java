@@ -31,11 +31,17 @@ public abstract class ChatBaseComponent implements IChatBaseComponent {
         this.b = chatmodifier;
         Iterator iterator = this.a.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                ((IChatBaseComponent) it).getChatModifier().setChatModifier(this.getChatModifier());
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             IChatBaseComponent ichatbasecomponent = (IChatBaseComponent) iterator.next();
 
             ichatbasecomponent.getChatModifier().setChatModifier(this.getChatModifier());
-        }
+        }*/
 
         return this;
     }
@@ -63,11 +69,17 @@ public abstract class ChatBaseComponent implements IChatBaseComponent {
         StringBuilder stringbuilder = new StringBuilder();
         Iterator iterator = this.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                stringbuilder.append(((IChatBaseComponent) it).getText());
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             IChatBaseComponent ichatbasecomponent = (IChatBaseComponent) iterator.next();
 
             stringbuilder.append(ichatbasecomponent.getText());
-        }
+        }*/
 
         return stringbuilder.toString();
     }

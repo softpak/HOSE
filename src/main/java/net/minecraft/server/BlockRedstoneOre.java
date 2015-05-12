@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -123,7 +124,7 @@ public class BlockRedstoneOre extends Block {
         double[] d3 = new double[6];
         
         //HSA this may wrong...observe it.
-        Aparapi.range(6).forEach(gid -> {
+        IntStream.range(0, 6).parallel().forEach(gid -> {
             d1[gid] = (double) ((float) blockposition.getX() + random.nextFloat());
             d2[gid] = (double) ((float) blockposition.getY() + random.nextFloat());
             d3[gid] = (double) ((float) blockposition.getZ() + random.nextFloat());

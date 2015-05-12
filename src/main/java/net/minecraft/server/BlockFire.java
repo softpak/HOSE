@@ -2,10 +2,8 @@ package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Maps;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 // CraftBukkit start
@@ -310,12 +308,12 @@ public class BlockFire extends Block {
         } else {
             hhi = 0;
             EnumDirection[] aenumdirection = EnumDirection.values();
-            int j = aenumdirection.length;
+            //int j = aenumdirection.length;
             
             //HSA
-            Aparapi.range(j).forEach(gid_k -> {
-                EnumDirection enumdirection = aenumdirection[gid_k];
-                hhi = Math.max(this.d(world.getType(blockposition.shift(enumdirection)).getBlock()), hhi);
+            Aparapi.range(aenumdirection.length).forEach(gid_k -> {
+                //EnumDirection enumdirection = aenumdirection[gid_k];
+                hhi = Math.max(this.d(world.getType(blockposition.shift(aenumdirection[gid_k])).getBlock()), hhi);
             });
             /*
             for (int k = 0; k < j; ++k) {

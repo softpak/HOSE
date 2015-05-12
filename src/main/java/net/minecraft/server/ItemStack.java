@@ -8,6 +8,7 @@ import java.util.Random;
 // CraftBukkit start
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.bukkit.Location;
 import org.bukkit.TreeType;
@@ -139,9 +140,11 @@ public final class ItemStack {
                     this.count = newCount;
                 }
                 //HSA
+                blocks.stream().forEach( bl -> ((BlockState)bl).update(true));
+                /*
                 for (BlockState blockstate : blocks) {
                     blockstate.update(true);
-                }
+                }*/
             }
 
             return flag;
@@ -161,9 +164,11 @@ public final class ItemStack {
             if (placeEvent != null && (placeEvent.isCancelled() || !placeEvent.canBuild())) {
                 flag = false; // cancel placement
                 // revert back all captured blocks
+                blocks.stream().forEach( bl -> ((BlockState)bl).update(true, false));
+                /*
                 for (BlockState blockstate : blocks) {
                     blockstate.update(true, false);
-                }
+                }*/
             } else {
                 // Change the stack to its new contents if it hasn't been tampered with.
                 if (this.count == count && this.getData() == data) {
@@ -671,6 +676,14 @@ public final class ItemStack {
             object = HashMultimap.create();
             NBTTagList nbttaglist = this.tag.getList("AttributeModifiers", 10);
 
+            IntStream.range(0, nbttaglist.size()).forEach( i -> {
+                AttributeModifier attributemodifier = GenericAttributes.a(nbttaglist.get(i));
+
+                if (attributemodifier != null && attributemodifier.a().getLeastSignificantBits() != 0L && attributemodifier.a().getMostSignificantBits() != 0L) {
+                    ((Multimap) object).put(((NBTTagCompound)nbttaglist.get(i)).getString("AttributeName"), attributemodifier);
+                }
+            });
+            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 NBTTagCompound nbttagcompound = nbttaglist.get(i);
                 AttributeModifier attributemodifier = GenericAttributes.a(nbttagcompound);
@@ -678,7 +691,7 @@ public final class ItemStack {
                 if (attributemodifier != null && attributemodifier.a().getLeastSignificantBits() != 0L && attributemodifier.a().getMostSignificantBits() != 0L) {
                     ((Multimap) object).put(nbttagcompound.getString("AttributeName"), attributemodifier);
                 }
-            }
+            }*/
         } else {
             object = this.getItem().i();
         }

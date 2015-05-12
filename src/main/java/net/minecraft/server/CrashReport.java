@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -98,13 +99,27 @@ public class CrashReport {
             }
         });
         this.d.a("JVM Flags", new Callable() {
+            int i;
             public String a() {
                 RuntimeMXBean runtimemxbean = ManagementFactory.getRuntimeMXBean();
                 List list = runtimemxbean.getInputArguments();
-                int i = 0;
+                //int i = 0;
+                i = 0;
                 StringBuilder stringbuilder = new StringBuilder();
                 Iterator iterator = list.iterator();
 
+                iterator.forEachRemaining(
+                    it -> {
+                        if (((String) it).startsWith("-X")) {
+                            if (i++ > 0) {
+                                stringbuilder.append(" ");
+                            }
+
+                            stringbuilder.append((String) it);
+                        }
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     String s = (String) iterator.next();
 
@@ -115,7 +130,7 @@ public class CrashReport {
 
                         stringbuilder.append(s);
                     }
-                }
+                }*/
 
                 return String.format("%d total; %s", new Object[] { Integer.valueOf(i), stringbuilder.toString()});
             }
@@ -155,24 +170,36 @@ public class CrashReport {
             StackTraceElement[] astacktraceelement = this.h;
             int i = astacktraceelement.length;
 
+            IntStream.range(0, i).forEach(j -> {
+                stringbuilder.append("\t").append("at ").append(((StackTraceElement)astacktraceelement[j]).toString());
+                stringbuilder.append("\n");
+            });
+            /*
             for (int j = 0; j < i; ++j) {
                 StackTraceElement stacktraceelement = astacktraceelement[j];
 
                 stringbuilder.append("\t").append("at ").append(stacktraceelement.toString());
                 stringbuilder.append("\n");
-            }
+            }*/
 
             stringbuilder.append("\n");
         }
 
         Iterator iterator = this.e.iterator();
 
+        iterator.forEachRemaining(
+            it -> {
+                ((CrashReportSystemDetails) it).a(stringbuilder);
+                stringbuilder.append("\n\n");
+            }
+        );
+        /*
         while (iterator.hasNext()) {
             CrashReportSystemDetails crashreportsystemdetails = (CrashReportSystemDetails) iterator.next();
 
             crashreportsystemdetails.a(stringbuilder);
             stringbuilder.append("\n\n");
-        }
+        }*/
 
         this.d.a(stringbuilder);
     }

@@ -99,17 +99,22 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // CraftBukkit start - TODO: handle command-line logging arguments
         java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
         global.setUseParentHandlers(false);
+        
         for (java.util.logging.Handler handler : global.getHandlers()) {
             global.removeHandler(handler);
         }
         global.addHandler(new org.bukkit.craftbukkit.util.ForwardLogHandler());
 
         final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
+        
+        logger.getAppenders().values().stream().filter( app -> app instanceof org.apache.logging.log4j.core.appender.ConsoleAppender).forEach(
+            app -> logger.removeAppender(app));
+        /*
         for (org.apache.logging.log4j.core.Appender appender : logger.getAppenders().values()) {
             if (appender instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
                 logger.removeAppender(appender);
             }
-        }
+        }*/
 
         new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 

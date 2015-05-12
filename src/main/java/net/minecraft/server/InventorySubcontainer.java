@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -215,9 +216,8 @@ public class InventorySubcontainer implements IInventory {
     
     //HSA
     public void l() {
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = null;
-        });
+        
+        Device.hsa().forEach(0, this.items.length, gid_i -> this.items[gid_i] = null);
         /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;

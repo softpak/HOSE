@@ -67,7 +67,7 @@ public class Chunk {
     }
 
     //HSA
-    int[] snl = new int[1];
+    //int[] snl = new int[1];
     public void setNeighborLoaded(final int x, final int z) {
         //Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
         this.neighbors |= 0x1 << (x * 5 + 12 + z);
@@ -75,9 +75,9 @@ public class Chunk {
     }
 
     public void setNeighborUnloaded(final int x, final int z) {
-        Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
-        //this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
-        this.neighbors &= ~(0x1 << snl[0]);
+        //Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
+        this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
+        //this.neighbors &= ~(0x1 << snl[0]);
     }
     // CraftBukkit end
     
@@ -257,16 +257,16 @@ public class Chunk {
     }
 
     //HSA
-    int[] bp = new int[2];
-    int[] xz = new int[2];
+    //int[] bp = new int[2];
+    //int[] xz = new int[2];
     private void h(boolean flag) {
         this.world.methodProfiler.a("recheckGaps");
-        xz[0] = this.locX;
+        /*xz[0] = this.locX;
         xz[1] = this.locZ;
-        Device.hsa().forEach(0, 2, i -> bp[i] = xz[i] * 16 + 8);
+        Device.hsa().forEach(0, 2, i -> bp[i] = xz[i] * 16 + 8);*/
         
-        if (this.world.areChunksLoaded(new BlockPosition(bp[0], 0, bp[1]), 16)) {
-        //if (this.world.areChunksLoaded(new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8), 16)) {
+        //if (this.world.areChunksLoaded(new BlockPosition(bp[0], 0, bp[1]), 16)) {
+        if (this.world.areChunksLoaded(new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8), 16)) {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
                     if (this.g[i + j * 16]) {
@@ -341,6 +341,8 @@ public class Chunk {
     ChunkSection hchunksection;
     int hi1;
     //HSA
+    
+    int j1, k1, i2, j2;
     private void d(int i, int j, int k) {
         int l = this.heightMap[k << 4 | i] & 255;
         //int i1 = l;
@@ -354,19 +356,21 @@ public class Chunk {
         }
 
         if (hi1 != l) {
-            xz[0] = this.locX;
+            /*xz[0] = this.locX;
             xz[1] = this.locZ;
-            Device.hsa().forEach(0, 2, ii -> bp[ii] = xz[ii] * 16);
+            Device.hsa().forEach(0, 2, ii -> bp[ii] = xz[ii] * 16);*/
             
-            //this.world.a(i + this.locX * 16, k + this.locZ * 16, hi1, l);
-            this.world.a(i + bp[0], k + bp[1], hi1, l);
+            this.world.a(i + this.locX * 16, k + this.locZ * 16, hi1, l);
+            //this.world.a(i + bp[0], k + bp[1], hi1, l);
             this.heightMap[k << 4 | i] = hi1;
             //int j1 = this.locX * 16 + i;
             //int k1 = this.locZ * 16 + k;
-            int j1 = bp[0] + i;
-            int k1 = bp[1] + k;
+            j1 = this.locX * 16 + i;
+            k1 = this.locZ * 16 + k;
+            /*int j1 = bp[0] + i;
+            int k1 = bp[1] + k;*/
             int l1;
-            int i2;
+            //int i2;
 
             if (!this.world.worldProvider.o()) {
                 //ChunkSection chunksection;
@@ -431,7 +435,8 @@ public class Chunk {
 
             l1 = this.heightMap[k << 4 | i];
             i2 = l;
-            int j2 = l1;
+            //int j2 = l1;
+            j2 = l1;
 
             if (l1 < l) {
                 i2 = l1;
@@ -445,11 +450,17 @@ public class Chunk {
             if (!this.world.worldProvider.o()) {
                 Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
+                iterator.forEachRemaining( 
+                    it -> {
+                        this.a(j1 + ((EnumDirection) it).getAdjacentX(), k1 + ((EnumDirection) it).getAdjacentZ(), i2, j2);
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     EnumDirection enumdirection = (EnumDirection) iterator.next();
 
                     this.a(j1 + enumdirection.getAdjacentX(), k1 + enumdirection.getAdjacentZ(), i2, j2);
-                }
+                }*/
 
                 this.a(j1, k1, i2, j2);
             }

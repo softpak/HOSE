@@ -275,7 +275,7 @@ public class ChunkProviderHell implements IChunkProvider {
     double[] hadouble;
     private double[] a(double[] adouble, int i, int j, int k, int l, int i1, int j1) {
         if (adouble == null) {
-            adouble = new double[l * i1 * j1];
+            hadouble = new double[l * i1 * j1];
         }else {
             hadouble = new double[adouble.length];
         }
@@ -400,7 +400,8 @@ public class ChunkProviderHell implements IChunkProvider {
             }
         }*/
 
-        return adouble;
+        //return adouble;
+        return hadouble;
     }
 
     public boolean isChunkLoaded(int i, int j) {

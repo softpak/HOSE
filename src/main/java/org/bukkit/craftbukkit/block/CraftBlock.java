@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import net.minecraft.server.*;
 
@@ -415,8 +416,11 @@ public class CraftBlock implements Block {
         }
     }
 
+    //lambda
+    List<ItemStack> drops;
     public Collection<ItemStack> getDrops() {
-        List<ItemStack> drops = new ArrayList<ItemStack>();
+        //List<ItemStack> drops = new ArrayList<ItemStack>();
+        drops = new ArrayList<ItemStack>();
 
         net.minecraft.server.Block block = this.getNMSBlock();
         if (block != Blocks.AIR) {
@@ -444,9 +448,13 @@ public class CraftBlock implements Block {
                     } else if (Blocks.COCOA == block) {
                         int age = (Integer) block.fromLegacyData(data).get(BlockCocoa.AGE);
                         int dropAmount = (age >= 2 ? 3 : 1);
+                        
+                        
+                        IntStream.range(0, dropAmount).forEach( jj -> drops.add(new ItemStack(Material.INK_SACK, 1, (short) 3)));
+                        /*
                         for (int j = 0; j < dropAmount; ++j) {
                             drops.add(new ItemStack(Material.INK_SACK, 1, (short) 3));
-                        }
+                        }*/
                     } else {
                         drops.add(new ItemStack(org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(item), 1, (short) block.getDropData(block.fromLegacyData(data))));
                     }
@@ -534,14 +542,25 @@ public class CraftBlock implements Block {
 
         /* Sanity check - we should have a record for each record in the BiomeBase.a table */
         /* Helps avoid missed biomes when we upgrade bukkit to new code with new biomes */
+        
+        IntStream.range(0, BIOME_MAPPING.length).forEach( i -> {
+            if ((BiomeBase.getBiome(i) != null) && (BIOME_MAPPING[i] == null)) {
+                throw new IllegalArgumentException("Missing Biome mapping for BiomeBase[" + i + ", " + BiomeBase.getBiome(i) + "]");
+            }
+            if (BIOME_MAPPING[i] != null) {  //Build reverse mapping for setBiome
+                BIOMEBASE_MAPPING[BIOME_MAPPING[i].ordinal()] = BiomeBase.getBiome(i);
+            }
+        });
+        
+        /*
         for (int i = 0; i < BIOME_MAPPING.length; i++) {
             if ((BiomeBase.getBiome(i) != null) && (BIOME_MAPPING[i] == null)) {
                 throw new IllegalArgumentException("Missing Biome mapping for BiomeBase[" + i + ", " + BiomeBase.getBiome(i) + "]");
             }
-            if (BIOME_MAPPING[i] != null) {  /* Build reverse mapping for setBiome */
+            if (BIOME_MAPPING[i] != null) {  //Build reverse mapping for setBiome
                 BIOMEBASE_MAPPING[BIOME_MAPPING[i].ordinal()] = BiomeBase.getBiome(i);
             }
-        }
+        }*/
     }
 
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {

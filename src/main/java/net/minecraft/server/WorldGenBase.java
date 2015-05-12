@@ -1,0 +1,45 @@
+package net.minecraft.server;
+
+import java.util.Random;
+import java.util.stream.IntStream;
+
+public class WorldGenBase {
+
+    protected int a = 8;
+    protected Random b = new Random();
+    protected World c;
+
+    public WorldGenBase() {}
+
+    public void a(IChunkProvider ichunkprovider, World world, int i, int j, ChunkSnapshot chunksnapshot) {
+        int k = this.a;
+
+        this.c = world;
+        this.b.setSeed(world.getSeed());
+        long l = this.b.nextLong();
+        long i1 = this.b.nextLong();
+
+        IntStream.range(i - k, i + k+1).forEach( j1 -> {
+            IntStream.range(j - k, j + k+1).forEach( k1 -> {
+                long l1 = (long) j1 * l;
+                long i2 = (long) k1 * i1;
+
+                this.b.setSeed(l1 ^ i2 ^ world.getSeed());
+                this.a(world, j1, k1, i, j, chunksnapshot);
+            });
+        });
+        /*
+        for (int j1 = i - k; j1 <= i + k; ++j1) {
+            for (int k1 = j - k; k1 <= j + k; ++k1) {
+                long l1 = (long) j1 * l;
+                long i2 = (long) k1 * i1;
+
+                this.b.setSeed(l1 ^ i2 ^ world.getSeed());
+                this.a(world, j1, k1, i, j, chunksnapshot);
+            }
+        }*/
+
+    }
+
+    protected void a(World world, int i, int j, int k, int l, ChunkSnapshot chunksnapshot) {}
+}

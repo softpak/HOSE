@@ -239,7 +239,7 @@ public class CraftWorld implements World {
         // This flags 65 blocks distributed across all the sections of the chunk, so that everything is sent, including biomes
         int height = getMaxHeight() / 16;
         
-        Aparapi.range(64).forEach(gid_idx -> {
+        IntStream.range(0, 64).parallel().forEach(gid_idx -> {
             world.notify(new BlockPosition(px + (gid_idx / height), ((gid_idx % height) * 16), pz));
         });
         /*for (int idx = 0; idx < 64; idx++) {
@@ -660,9 +660,20 @@ public class CraftWorld implements World {
         return list;
     }
 
+    //lambda
     public List<LivingEntity> getLivingEntities() {
         List<LivingEntity> list = new ArrayList<LivingEntity>();
 
+        world.entityList.stream().filter(
+            li -> (Object)li instanceof net.minecraft.server.Entity).forEach(
+            li -> {
+                Entity bukkitEntity = ((net.minecraft.server.Entity)li).getBukkitEntity();
+                // Assuming that bukkitEntity isn't null
+                if (bukkitEntity != null && bukkitEntity instanceof LivingEntity) {
+                    list.add((LivingEntity) bukkitEntity);
+                }
+            });
+        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -673,7 +684,7 @@ public class CraftWorld implements World {
                     list.add((LivingEntity) bukkitEntity);
                 }
             }
-        }
+        }*/
 
         return list;
     }
@@ -741,15 +752,30 @@ public class CraftWorld implements World {
         AxisAlignedBB bb = new AxisAlignedBB(location.getX() - x, location.getY() - y, location.getZ() - z, location.getX() + x, location.getY() + y, location.getZ() + z);
         List<net.minecraft.server.Entity> entityList = getHandle().getEntities(null, bb);
         List<Entity> bukkitEntityList = new ArrayList<org.bukkit.entity.Entity>(entityList.size());
+        
+        entityList.stream().forEach( en -> bukkitEntityList.add(((net.minecraft.server.Entity) en).getBukkitEntity()));
+        /*
         for (Object entity : entityList) {
             bukkitEntityList.add(((net.minecraft.server.Entity) entity).getBukkitEntity());
-        }
+        }*/
         return bukkitEntityList;
     }
 
+    //lambda
     public List<Player> getPlayers() {
         List<Player> list = new ArrayList<Player>();
 
+        world.entityList.stream().filter( o -> (Object)o instanceof net.minecraft.server.Entity).forEach(
+            o -> {
+                net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
+                Entity bukkitEntity = mcEnt.getBukkitEntity();
+
+                if ((bukkitEntity != null) && (bukkitEntity instanceof Player)) {
+                    list.add((Player) bukkitEntity);
+                }
+            }
+        );
+        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -759,7 +785,7 @@ public class CraftWorld implements World {
                     list.add((Player) bukkitEntity);
                 }
             }
-        }
+        }*/
 
         return list;
     }
@@ -1176,13 +1202,33 @@ public class CraftWorld implements World {
         return world.keepSpawnInMemory;
     }
 
+    //lambda
+    //int chunkCoordX, chunkCoordZ;
     public void setKeepSpawnInMemory(boolean keepLoaded) {
         world.keepSpawnInMemory = keepLoaded;
         // Grab the worlds spawn chunk
         BlockPosition chunkcoordinates = this.world.getSpawn();
         int chunkCoordX = chunkcoordinates.getX() >> 4;
         int chunkCoordZ = chunkcoordinates.getZ() >> 4;
+        //chunkCoordX = chunkcoordinates.getX() >> 4;
+        //chunkCoordZ = chunkcoordinates.getZ() >> 4;
         // Cycle through the 25x25 Chunks around it to load/unload the chunks.
+        IntStream.range(-12, 13).forEach( xx -> {
+            IntStream.range(-12, 13).forEach( zz -> {
+                if (keepLoaded) {
+                    loadChunk(chunkCoordX + xx, chunkCoordZ + zz);
+                } else {
+                    if (isChunkLoaded(chunkCoordX + xx, chunkCoordZ + zz)) {
+                        if (this.getHandle().getChunkAt(chunkCoordX + xx, chunkCoordZ + zz) instanceof EmptyChunk) {
+                            unloadChunk(chunkCoordX + xx, chunkCoordZ + zz, false);
+                        } else {
+                            unloadChunk(chunkCoordX + xx, chunkCoordZ + zz);
+                        }
+                    }
+                }
+            });
+        });
+        /*
         for (int x = -12; x <= 12; x++) {
             for (int z = -12; z <= 12; z++) {
                 if (keepLoaded) {
@@ -1197,7 +1243,7 @@ public class CraftWorld implements World {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Override

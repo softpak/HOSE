@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import com.google.common.base.Joiner;
 import java.util.logging.Level;
+import java.util.stream.IntStream;
 // CraftBukkit end
 
 public abstract class CommandBlockListenerAbstract implements ICommandListener {
@@ -188,6 +189,7 @@ public abstract class CommandBlockListenerAbstract implements ICommandListener {
         }
         try {
             ArrayList<String[]> newCommands = new ArrayList<String[]>();
+            
             for (int i = 0; i < args.length; i++) {
                 if (PlayerSelector.isPattern(args[i])) {
                     for (int j = 0; j < commands.size(); j++) {

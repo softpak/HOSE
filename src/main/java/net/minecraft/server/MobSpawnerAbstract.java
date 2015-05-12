@@ -4,6 +4,7 @@ import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -125,19 +126,29 @@ public abstract class MobSpawnerAbstract {
         }
     }
 
+    NBTTagCompound nbttagcompound, nbttagcompound1, nbttagcompound2;
     private Entity a(Entity entity, boolean flag) {
         if (this.i() != null) {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-
+            //NBTTagCompound nbttagcompound = new NBTTagCompound();
+            nbttagcompound = new NBTTagCompound();
+            
             entity.d(nbttagcompound);
             Iterator iterator = this.i().c.c().iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    NBTBase nbtbase = this.i().c.get((String) it);
+
+                    nbttagcompound.set((String) it, nbtbase.clone());
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 String s = (String) iterator.next();
                 NBTBase nbtbase = this.i().c.get(s);
 
                 nbttagcompound.set(s, nbtbase.clone());
-            }
+            }*/
 
             entity.f(nbttagcompound);
             if (entity.world != null && flag) {
@@ -155,24 +166,33 @@ public abstract class MobSpawnerAbstract {
                 // CraftBukkit end
             }
 
-            NBTTagCompound nbttagcompound1;
+            //NBTTagCompound nbttagcompound1;
 
             for (Entity entity1 = entity; nbttagcompound.hasKeyOfType("Riding", 10); nbttagcompound = nbttagcompound1) {
                 nbttagcompound1 = nbttagcompound.getCompound("Riding");
                 Entity entity2 = EntityTypes.createEntityByName(nbttagcompound1.getString("id"), entity.world);
 
                 if (entity2 != null) {
-                    NBTTagCompound nbttagcompound2 = new NBTTagCompound();
+                    //NBTTagCompound nbttagcompound2 = new NBTTagCompound();
+                    nbttagcompound2 = new NBTTagCompound();
 
                     entity2.d(nbttagcompound2);
                     Iterator iterator1 = nbttagcompound1.c().iterator();
 
+                    iterator1.forEachRemaining(
+                        it -> {
+                            NBTBase nbtbase1 = nbttagcompound1.get((String) it);
+
+                            nbttagcompound2.set((String) it, nbtbase1.clone());
+                        }
+                    );
+                    /*
                     while (iterator1.hasNext()) {
                         String s1 = (String) iterator1.next();
                         NBTBase nbtbase1 = nbttagcompound1.get(s1);
 
                         nbttagcompound2.set(s1, nbtbase1.clone());
-                    }
+                    }*/
 
                     entity2.f(nbttagcompound2);
                     entity2.setPositionRotation(entity1.locX, entity1.locY, entity1.locZ, entity1.yaw, entity1.pitch);
@@ -234,9 +254,8 @@ public abstract class MobSpawnerAbstract {
         if (nbttagcompound.hasKeyOfType("SpawnPotentials", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("SpawnPotentials", 10);
             
-            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-                this.mobs.add(new MobSpawnerAbstract.a(nbttaglist.get(gid_i)));
-            });
+            IntStream.range(0, nbttaglist.size()).parallel().forEach(gid_i -> 
+                this.mobs.add(new MobSpawnerAbstract.a(nbttaglist.get(gid_i))));
             /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 this.mobs.add(new MobSpawnerAbstract.a(nbttaglist.get(i)));
@@ -289,11 +308,13 @@ public abstract class MobSpawnerAbstract {
             if (this.mobs.size() > 0) {
                 Iterator iterator = this.mobs.iterator();
 
+                iterator.forEachRemaining(it -> nbttaglist.add(((MobSpawnerAbstract.a) it).a()));
+                /*
                 while (iterator.hasNext()) {
                     MobSpawnerAbstract.a mobspawnerabstract_a = (MobSpawnerAbstract.a) iterator.next();
 
                     nbttaglist.add(mobspawnerabstract_a.a());
-                }
+                }*/
             } else {
                 nbttaglist.add(this.i().a());
             }

@@ -16,9 +16,12 @@
 
 package org.bukkit.craftbukkit.util;
 
+import com.amd.aparapi.Device;
 import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class LongHashSet {
     private final static int INITIAL_SIZE = 3;
@@ -153,16 +156,22 @@ public class LongHashSet {
         }
     }
 
+    //HSA
     public void clear() {
         elements = 0;
+        
+        //Device.hsa().forEach(0, values.length, ix -> values[ix] = FREE);
+        IntStream.range(0, values.length).parallel().forEach( ix -> values[ix] = FREE);
+        /*
         for (int ix = 0; ix < values.length; ix++) {
             values[ix] = FREE;
-        }
+        }*/
 
         freeEntries = values.length;
         modCount++;
     }
 
+    //lambda
     public long[] toArray() {
         long[] result = new long[elements];
         long[] values = Java15Compat.Arrays_copyOf(this.values, this.values.length);

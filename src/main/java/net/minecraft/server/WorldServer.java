@@ -718,8 +718,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         return this.a(new StructureBoundingBox(i, 0, k, j, 256, l), flag);
     }
 
+    ArrayList arraylist;
     public List<NextTickListEntry> a(StructureBoundingBox structureboundingbox, boolean flag) {
-        ArrayList arraylist = null;
+        //ArrayList arraylist = null;
+        arraylist = null;
 
         for (int i = 0; i < 2; ++i) {
             Iterator iterator;
@@ -733,6 +735,25 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 }
             }
 
+            iterator.forEachRemaining(
+                it -> {
+                    BlockPosition blockposition = ((NextTickListEntry) it).a;
+
+                    if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
+                        if (flag) {
+                            // CraftBukkit - use M
+                            iterator.remove();
+                        }
+
+                        if (arraylist == null) {
+                            arraylist = Lists.newArrayList();
+                        }
+
+                        arraylist.add((NextTickListEntry) it);
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
                 BlockPosition blockposition = nextticklistentry.a;
@@ -749,7 +770,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
                     arraylist.add(nextticklistentry);
                 }
-            }
+            }*/
         }
 
         return arraylist;
@@ -808,25 +829,19 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 if (chunk == null) {
                     continue;
                 }
+                
+                chunk.tileEntities.values().stream().filter(
+                    te -> (((TileEntity) te).position.getX() >= i) && (((TileEntity) te).position.getY() >= j) && (((TileEntity) te).position.getZ() >= k) && (((TileEntity) te).position.getX() < l) && (((TileEntity) te).position.getY() < i1) && (((TileEntity) te).position.getZ() < j1)).forEach(
+                    te -> arraylist.add((TileEntity) te));
+                /*
                 for (Object te : chunk.tileEntities.values()) {
                     TileEntity tileentity = (TileEntity) te;
                     if ((tileentity.position.getX() >= i) && (tileentity.position.getY() >= j) && (tileentity.position.getZ() >= k) && (tileentity.position.getX() < l) && (tileentity.position.getY() < i1) && (tileentity.position.getZ() < j1)) {
                         arraylist.add(tileentity);
                     }
-                }
+                }*/
             }
         }
-        /*
-        for (int k1 = 0; k1 < this.h.size(); ++k1) {
-            TileEntity tileentity = (TileEntity) this.h.get(k1);
-            BlockPosition blockposition = tileentity.getPosition();
-
-            if (blockposition.getX() >= i && blockposition.getY() >= j && blockposition.getZ() >= k && blockposition.getX() < l && blockposition.getY() < i1 && blockposition.getZ() < j1) {
-                arraylist.add(tileentity);
-            }
-        }
-        */
-        // CraftBukkit end
 
         return arraylist;
     }
@@ -970,13 +985,21 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             Collection arraylist = this.chunkProviderServer.a();
             Iterator iterator = arraylist.iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    if ((Chunk) it != null && !this.manager.a(((Chunk) it).locX, ((Chunk) it).locZ)) {
+                        this.chunkProviderServer.queueUnload(((Chunk) it).locX, ((Chunk) it).locZ);
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 Chunk chunk = (Chunk) iterator.next();
 
                 if (chunk != null && !this.manager.a(chunk.locX, chunk.locZ)) {
                     this.chunkProviderServer.queueUnload(chunk.locX, chunk.locZ);
                 }
-            }
+            }*/
 
         }
     }
@@ -1114,6 +1137,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
     }
 
+    
     private void ak() {
         while (!this.S[this.T].isEmpty()) {
             int i = this.T;
@@ -1121,6 +1145,15 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             this.T ^= 1;
             Iterator iterator = this.S[i].iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    if (this.a((BlockActionData) it)) {
+                        // CraftBukkit - this.worldProvider.dimension -> this.dimension
+                        this.server.getPlayerList().sendPacketNearby((double) ((BlockActionData) it).a().getX(), (double) ((BlockActionData) it).a().getY(), (double) ((BlockActionData) it).a().getZ(), 64.0D, dimension, new PacketPlayOutBlockAction(((BlockActionData) it).a(), ((BlockActionData) it).d(), ((BlockActionData) it).b(), ((BlockActionData) it).c()));
+                    }
+                }
+            );
+            /*
             while (iterator.hasNext()) {
                 BlockActionData blockactiondata = (BlockActionData) iterator.next();
 
@@ -1128,7 +1161,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                     // CraftBukkit - this.worldProvider.dimension -> this.dimension
                     this.server.getPlayerList().sendPacketNearby((double) blockactiondata.a().getX(), (double) blockactiondata.a().getY(), (double) blockactiondata.a().getZ(), 64.0D, dimension, new PacketPlayOutBlockAction(blockactiondata.a(), blockactiondata.d(), blockactiondata.b(), blockactiondata.c()));
                 }
-            }
+            }*/
 
             this.S[i].clear();
         }

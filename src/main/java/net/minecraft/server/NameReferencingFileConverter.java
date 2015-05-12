@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -167,6 +168,18 @@ public class NameReferencingFileConverter {
                 a(NameReferencingFileConverter.a, (Map) hashmap);
                 Iterator iterator = hashmap.keySet().iterator();
 
+                iterator.forEachRemaining(
+                    it -> {
+                        String[] astring = (String[]) hashmap.get((String) it);
+                        Date date = astring.length > 1 ? b(astring[1], (Date) null) : null;
+                        String s1 = astring.length > 2 ? astring[2] : null;
+                        Date date1 = astring.length > 3 ? b(astring[3], (Date) null) : null;
+                        String s2 = astring.length > 4 ? astring[4] : null;
+
+                        ipbanlist.add(new IpBanEntry((String) it, date, s1, date1, s2));
+                    }
+                );
+                /*
                 while (iterator.hasNext()) {
                     String s = (String) iterator.next();
                     String[] astring = (String[]) hashmap.get(s);
@@ -176,7 +189,7 @@ public class NameReferencingFileConverter {
                     String s2 = astring.length > 4 ? astring[4] : null;
 
                     ipbanlist.add(new IpBanEntry(s, date, s1, date1, s2));
-                }
+                }*/
 
                 ipbanlist.save();
                 c(NameReferencingFileConverter.a);
@@ -321,6 +334,16 @@ public class NameReferencingFileConverter {
             File[] afile1 = afile;
             int i = afile.length;
 
+            IntStream.range(0, i).filter( j -> ((String)((File)afile1[j]).getName()).toLowerCase(Locale.ROOT).endsWith(".dat")).forEach(
+                j -> {
+                    String s1 = ((String)((File)afile1[j]).getName()).substring(0, ((String)((File)afile1[j]).getName()).length() - ".dat".length());
+
+                    if (s1.length() > 0) {
+                        arraylist.add(s1);
+                    }
+                }
+            );
+            /*
             for (int j = 0; j < i; ++j) {
                 File file3 = afile1[j];
                 String s = file3.getName();
@@ -332,7 +355,7 @@ public class NameReferencingFileConverter {
                         arraylist.add(s1);
                     }
                 }
-            }
+            }*/
 
             try {
                 final String[] astring = (String[]) arraylist.toArray(new String[arraylist.size()]);

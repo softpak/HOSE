@@ -78,6 +78,10 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.i = 0;
     }
 
+    //lambda
+    Vec3D vec3d, vec3d1;
+    double d0;
+    Entity entity;
     public void t_() {
         this.P = this.locX;
         this.Q = this.locY;
@@ -107,8 +111,10 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             ++this.ar;
         }
 
-        Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
-        Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+        //Vec3D vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+        vec3d = new Vec3D(this.locX, this.locY, this.locZ);
+        //Vec3D vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
+        vec3d1 = new Vec3D(this.locX + this.motX, this.locY + this.motY, this.locZ + this.motZ);
         MovingObjectPosition movingobjectposition = this.world.rayTrace(vec3d, vec3d1);
 
         vec3d = new Vec3D(this.locX, this.locY, this.locZ);
@@ -118,11 +124,31 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         }
 
         if (!this.world.isClientSide) {
-            Entity entity = null;
+            //Entity entity = null;
+            entity = null;
             List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
-            double d0 = 0.0D;
+            //double d0 = 0.0D;
+            d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
 
+            list.stream().filter(
+                li -> ((Entity) li).ad() && ((Entity) li != entityliving || this.ar >= 5)).forEach( 
+                    li -> {
+                        float f = 0.3F;
+                        AxisAlignedBB axisalignedbb = ((Entity) li).getBoundingBox().grow((double) f, (double) f, (double) f);
+                        MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
+
+                        if (movingobjectposition1 != null) {
+                            double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
+
+                            if (d1 < d0 || d0 == 0.0D) {
+                                entity = (Entity) li;
+                                d0 = d1;
+                            }
+                        }
+                    });
+            
+            /*
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity1 = (Entity) list.get(i);
 
@@ -140,7 +166,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                         }
                     }
                 }
-            }
+            }*/
 
             if (entity != null) {
                 movingobjectposition = new MovingObjectPosition(entity);

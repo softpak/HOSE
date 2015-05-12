@@ -46,7 +46,7 @@ public class NBTTagIntArray extends NBTBase {
 
     void load(DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException {
         int j = datainput.readInt();
-       com.google.common.base.Preconditions.checkArgument( j < 1 << 24);
+        com.google.common.base.Preconditions.checkArgument( j < 1 << 24);
 
         nbtreadlimiter.a((long) (32 * j));
         this.data = new int[j];
@@ -77,11 +77,7 @@ public class NBTTagIntArray extends NBTBase {
         int[] aint = this.data;
         int i = aint.length;
         
-        Aparapi.range(i).forEach(gid_j -> {
-            int k = aint[gid_j];
-
-            hs = hs + k + ",";
-        });
+        Aparapi.range(i).forEach(gid_j -> hs = hs + aint[gid_j] + ",");
         /*
         for (int j = 0; j < i; ++j) {
             int k = aint[j];

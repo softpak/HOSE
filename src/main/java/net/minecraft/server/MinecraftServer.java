@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
@@ -533,9 +534,11 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     }
 
     // Spigot Start
-    private static double calcTps(double avg, double exp, double tps)
-    {
+    //static double[] htps = new double[1];
+    private static double calcTps(double avg, double exp, double tps){
+        //Device.hsa().forEach(0, 1, i -> htps[i] = (avg * exp) + (tps * (1 - exp)));
         return ( avg * exp ) + ( tps * ( 1 - exp ) );
+        //return htps[0];
     }
     // Spigot End
     
@@ -688,7 +691,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             for (int k = 0; k < agameprofile.length; ++k) {
                 agameprofile[k] = ((EntityPlayer) this.v.v().get(j + k)).getProfile();
             }*/
-                    
             Collections.shuffle(Arrays.asList(agameprofile));
             this.r.b().a(agameprofile);
         }
@@ -1446,9 +1448,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     //HSA
     public void setGamemode(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
         // CraftBukkit start
-        Aparapi.range(this.worlds.size()).forEach(gid_i -> {
-            getServer().worlds.get(gid_i).getWorldData().setGameType(worldsettings_enumgamemode);
-        });
+        Aparapi.range(this.worlds.size()).forEach(gid_i -> 
+            getServer().worlds.get(gid_i).getWorldData().setGameType(worldsettings_enumgamemode)
+        );
         /*
         for (int i = 0; i < this.worlds.size(); ++i) {
             getServer().worlds.get(i).getWorldData().setGameType(worldsettings_enumgamemode);

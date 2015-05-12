@@ -205,13 +205,22 @@ public class JsonList<K, V extends JsonListEntry<K>> {
             this.d.clear();
             Iterator iterator = collection.iterator();
 
+            iterator.forEachRemaining(
+                it -> {
+                    if (((JsonListEntry) it).getKey() != null) {
+                        this.d.put(this.a((K) ((JsonListEntry) it).getKey()), (V) (JsonListEntry) it); // CraftBukkit - fix decompile error
+                    }
+                }       
+            );
+                  
+            /*
             while (iterator.hasNext()) {
                 JsonListEntry jsonlistentry = (JsonListEntry) iterator.next();
 
                 if (jsonlistentry.getKey() != null) {
                     this.d.put(this.a((K) jsonlistentry.getKey()), (V) jsonlistentry); // CraftBukkit - fix decompile error
                 }
-            }
+            }*/
         }
 
     }

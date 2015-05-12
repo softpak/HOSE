@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import java.util.stream.IntStream;
 
 import net.minecraft.server.*;
 
@@ -91,6 +92,8 @@ public class CraftEventFactory {
     /**
      * Block place methods
      */
+    //lambda
+    static boolean canBuild;
     public static BlockMultiPlaceEvent callBlockMultiPlaceEvent(World world, EntityHuman who, List<BlockState> blockStates, int clickedX, int clickedY, int clickedZ) {
         CraftWorld craftWorld = world.getWorld();
         CraftServer craftServer = world.getServer();
@@ -98,14 +101,19 @@ public class CraftEventFactory {
 
         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
 
-        boolean canBuild = true;
-        //HSA
+        //boolean canBuild = true;
+        canBuild = true;
+        
+        IntStream.range(0, blockStates.size()).filter( 
+            i -> !canBuild(craftWorld, player, blockStates.get(i).getX(), blockStates.get(i).getZ())).anyMatch(
+            i -> canBuild = false);
+        /*
         for (int i = 0; i < blockStates.size(); i++) {
             if (!canBuild(craftWorld, player, blockStates.get(i).getX(), blockStates.get(i).getZ())) {
                 canBuild = false;
                 break;
             }
-        }
+        }*/
 
         BlockMultiPlaceEvent event = new BlockMultiPlaceEvent(blockStates, blockClicked, player.getItemInHand(), player, canBuild);
         craftServer.getPluginManager().callEvent(event);

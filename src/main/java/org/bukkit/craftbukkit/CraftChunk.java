@@ -3,6 +3,7 @@ package org.bukkit.craftbukkit;
 import com.amd.aparapi.Aparapi;
 import com.amd.aparapi.Device;
 import java.lang.ref.WeakReference;
+import java.util.stream.IntStream;
 
 import net.minecraft.server.*;
 
@@ -78,7 +79,7 @@ public class CraftChunk implements Chunk {
     }
     
     //HSA
-    int hcount;
+    int hcount = 0;
     public Entity[] getEntities() {
         //int count = 0, index = 0;
         int index = 0;
@@ -159,7 +160,7 @@ public class CraftChunk implements Chunk {
     BiomeBase[] hbiome;
     double[] hbiomeTemp;
     double[] hbiomeRain;
-    float[] hdat;
+    float[] hdat = null;
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTempRain) {
         net.minecraft.server.Chunk chunk = getHandle();
         ChunkSection[] cs = chunk.getSections();
@@ -230,13 +231,10 @@ public class CraftChunk implements Chunk {
             if (includeBiome) {
                 hbiome = new BiomeBase[256];
                 //HSA
-                Device.hsa().forEach(0,256,gid_i -> {
-                    hbiome[gid_i] = chunk.getBiome(new BlockPosition(gid_i & 0xF, 0, gid_i >> 4), wcm);
-                });
-                /*
+                
                 Aparapi.range(256).forEach(gid_i -> {
                     hbiome[gid_i] = chunk.getBiome(new BlockPosition(gid_i & 0xF, 0, gid_i >> 4), wcm);
-                });*/
+                });
                 /*
                 for (int i = 0; i < 256; i++) {
                     biome[i] = chunk.getBiome(new BlockPosition(i & 0xF, 0, i >> 4), wcm);
@@ -283,7 +281,7 @@ public class CraftChunk implements Chunk {
         hebiome = null;
         hebiomeTemp = null;
         hebiomeRain = null;
-        hedat = new float[0];
+        hedat = null;
         
         if (includeBiome || includeBiomeTempRain) {
             WorldChunkManager wcm = world.getHandle().getWorldChunkManager();
@@ -291,7 +289,7 @@ public class CraftChunk implements Chunk {
             if (includeBiome) {
                 hebiome = new BiomeBase[256];
                 Aparapi.range(256).forEach(gid_i -> {
-                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition(x << 4 + (gid_i & 0xF), 0, (int)(z << 4) + (gid_i >> 4)));
+                    hebiome[gid_i] = world.getHandle().getBiome(new BlockPosition(x << 4 + (gid_i & 0xF), 0, z << 4 + (gid_i >> 4)));
                 });
                 /*
                 for (int i = 0; i < 256; i++) {
@@ -364,7 +362,7 @@ public class CraftChunk implements Chunk {
         BiomeBase[] biomes = chunkmanager.getBiomes(null, chunkX, chunkZ, 16, 16);
         float[] temps = new float[biomes.length];
         
-        Aparapi.range(biomes.length).forEach(gid_i -> {
+        IntStream.range(0, biomes.length).forEach(gid_i -> {
             float temp = biomes[gid_i].temperature; // Vanilla of olde: ((int) biomes[i].temperature * 65536.0F) / 65536.0F
             if (temp > 1F) {
                 temp = 1F;

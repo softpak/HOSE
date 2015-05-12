@@ -7,7 +7,7 @@ public class Vec3D {
     public final double a;
     public final double b;
     public final double c;
-
+    
     public Vec3D(double d0, double d1, double d2) {
         if (d0 == -0.0D) {
             d0 = 0.0D;
@@ -20,7 +20,7 @@ public class Vec3D {
         if (d2 == -0.0D) {
             d2 = 0.0D;
         }
-
+        
         this.a = d0;
         this.b = d1;
         this.c = d2;
@@ -31,7 +31,7 @@ public class Vec3D {
     }
 
     //HSA
-    double[] hd0 = new double[1];
+    //double[] hd0 = new double[1];
     public Vec3D a() {
         
         double d0 = (double) MathHelper.sqrt(this.a * this.a + this.b * this.b + this.c * this.c);
@@ -65,22 +65,10 @@ public class Vec3D {
     }
 
     //HSA
-    /*double[] d0 = new double[1];
-    double[] d1 = new double[1];
-    double[] d2 = new double[1];
-    double[] hds = new double[1];*/
     public double distanceSquared(Vec3D vec3d) {
-        /*
-        d0[0] = vec3d.a - this.a;
-        d1[0] = vec3d.b - this.b;
-        d2[0] = vec3d.c - this.c;
-        Device.hsa().forEach(0, 1, i -> hds[i] = d0[i] * d0[i] + d1[i] * d1[i] + d2[i] * d2[i]);
-        return hds[0];*/
-        
         double d0 = vec3d.a - this.a;
         double d1 = vec3d.b - this.b;
         double d2 = vec3d.c - this.c;
-
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 

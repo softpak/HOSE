@@ -50,10 +50,13 @@ public class BlockStateListPopulator {
         list.add(state);
     }
 
+    //lambda
     public void updateList() {
+        list.stream().parallel().forEach( st -> st.update(true));
+        /*
         for (BlockState state : list) {
             state.update(true);
-        }
+        }*/
     }
 
     public List<BlockState> getList() {

@@ -21,13 +21,23 @@ public final class WeakCollection<T> implements Collection<T> {
         return collection.add(new WeakReference<T>(value));
     }
 
+    Collection<WeakReference<T>> values;
+    boolean ret;
     public boolean addAll(Collection<? extends T> collection) {
-        Collection<WeakReference<T>> values = this.collection;
-        boolean ret = false;
+        //Collection<WeakReference<T>> values = this.collection;
+        values = this.collection;
+        //boolean ret = false;
+        ret = false;
+        
+        collection.stream().forEach( val -> {
+            Validate.notNull((T)val, "Cannot add null value");
+            ret |= values.add(new WeakReference<T>((T)val));
+        });
+        /*
         for (T value : collection) {
             Validate.notNull(value, "Cannot add null value");
             ret |= values.add(new WeakReference<T>(value));
-        }
+        }*/
         return ret;
     }
 

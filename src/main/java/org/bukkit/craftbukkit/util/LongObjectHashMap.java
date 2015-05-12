@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.bukkit.craftbukkit.util.Java15Compat.Arrays_copyOf;
 
@@ -50,14 +51,18 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         return get(key) != null;
     }
 
+    //lambda
     public boolean containsValue(V value) {
+        
+        return Stream.of(values()).filter(val -> val == value || val.equals(value)).anyMatch( val -> true);
+        /*
         for (V val : values()) {
             if (val == value || val.equals(value)) {
                 return true;
             }
         }
 
-        return false;
+        return false;*/
     }
 
     public V get(long key) {
@@ -161,10 +166,14 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         return null;
     }
 
+    //lambda
     public void putAll(Map<? extends Long, ? extends V> map) {
+        map.entrySet().stream().forEach(en -> put((Long) en.getKey(), (V) en.getValue()));
+        
+        /*
         for (Map.Entry entry : map.entrySet()) {
             put((Long) entry.getKey(), (V) entry.getValue());
-        }
+        }*/
     }
 
     public void clear() {

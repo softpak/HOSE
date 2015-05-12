@@ -6,6 +6,8 @@
 package org.bukkit.craftbukkit.util;
 
 import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -14,7 +16,7 @@ import com.amd.aparapi.Aparapi;
 public class HSA_Arrays {
     
     public static void fill(Object[] a, Object val) {
-        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
+        IntStream.range(0, a.length).forEach(gid_i -> a[gid_i] = val);
     }
     
     
@@ -24,15 +26,15 @@ public class HSA_Arrays {
     
     
     public static void fill(int[] a, int val) {
-        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
+        Device.hsa().forEach(0, a.length, gid_i -> a[gid_i] = val);
     }
     
     public static void fill(double[] a, double val) {
-        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
+        Device.hsa().forEach(0, a.length, gid_i -> a[gid_i] = val);
     }
     
     public static void fill(long[] a, long val) {
-        Aparapi.range(a.length).forEach(gid_i -> a[gid_i] = val);
+        Device.hsa().forEach(0, a.length, gid_i -> a[gid_i] = val);
     }
     
     //Aparapi.range(size).parallel().forEach(gid -> squares[gid] = values[gid]*values[gid]);

@@ -330,7 +330,8 @@ public abstract class World implements IBlockAccess {
             k >>= 4;
             l >>= 4;
             j1 >>= 4;
-
+            
+            //lambda
             for (int k1 = i; k1 <= l; ++k1) {
                 for (int l1 = k; l1 <= j1; ++l1) {
                     if (!this.isChunkLoaded(k1, l1, flag)) {
@@ -1072,6 +1073,15 @@ public abstract class World implements IBlockAccess {
             if (radius > 0) {
                 List<Entity> entities = this.getEntities(entity, entity.getBoundingBox().grow(radius, radius, radius));
                 
+                entities.stream().filter( e -> e instanceof EntityExperienceOrb).forEach(
+                    e -> {
+                        if (!((EntityExperienceOrb) e).dead) {
+                            xp.value += ((EntityExperienceOrb) e).value;
+                            ((EntityExperienceOrb) e).die();
+                        }
+                    }
+                );
+                /*
                 for (Entity e : entities) {
                     if (e instanceof EntityExperienceOrb) {
                         EntityExperienceOrb loopItem = (EntityExperienceOrb) e;
@@ -1080,7 +1090,7 @@ public abstract class World implements IBlockAccess {
                             loopItem.die();
                         }
                     }
-                }
+                }*/
             }
         } // Spigot end
 
@@ -1376,7 +1386,7 @@ public abstract class World implements IBlockAccess {
     //HSA
     public int a(float f) {
         float f1 = this.c(f);
-        float[] f2 = new float[1];
+        /*float[] f2 = new float[1];
         Aparapi.range(1).forEach(gid -> {
             f2[gid] = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
             f2[gid] = MathHelper.a(f2[gid], 0.0F, 1.0F);
@@ -1384,9 +1394,9 @@ public abstract class World implements IBlockAccess {
             f2[gid] = (float) ((double) f2[gid] * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
             f2[gid] = (float) ((double) f2[gid] * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
             f2[gid] = 1.0F - f2[gid];
-        });
+        });*/
         
-        /*
+        
         float f2 = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
 
         f2 = MathHelper.a(f2, 0.0F, 1.0F);
@@ -1394,8 +1404,8 @@ public abstract class World implements IBlockAccess {
         f2 = (float) ((double) f2 * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
         f2 = (float) ((double) f2 * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
         f2 = 1.0F - f2;
-        return (int) (f2 * 11.0F);*/
-        return (int) (f2[0] * 11.0F);
+        return (int) (f2 * 11.0F);
+        //return (int) (f2[0] * 11.0F);
     }
 
     public float c(float f) {
@@ -1409,10 +1419,10 @@ public abstract class World implements IBlockAccess {
     //HSA
     public float d(float f) {
         float f1 = this.c(f);
-        float[] hd = new float[1];
-        Aparapi.range(1).forEach(gid -> hd[gid] = f1 * 3.1415927F * 2.0F);
-        //return f1 * 3.1415927F * 2.0F;
-        return hd[0];
+        //float[] hd = new float[1];
+        //Aparapi.range(1).forEach(gid -> hd[gid] = f1 * 3.1415927F * 2.0F);
+        return f1 * 3.1415927F * 2.0F;
+        //return hd[0];
     }
 
     public BlockPosition q(BlockPosition blockposition) {
@@ -1954,7 +1964,9 @@ public abstract class World implements IBlockAccess {
         }
     }
 
+    boolean fin;
     public boolean a(AxisAlignedBB axisalignedbb, Material material) {
+        fin = false;
         int i = MathHelper.floor(axisalignedbb.a);
         int j = MathHelper.floor(axisalignedbb.d + 1.0D);
         int k = MathHelper.floor(axisalignedbb.b);
@@ -1963,6 +1975,16 @@ public abstract class World implements IBlockAccess {
         int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
+        IntStream.range(i, j).forEach( k1 -> {
+            IntStream.range(k, l).forEach( l1 -> {
+                IntStream.range(i1, j1).filter(
+                    i2 -> this.getType(blockposition_mutableblockposition.c(k1, l1, i2)).getBlock().getMaterial() == material).anyMatch(
+                    i2 -> fin = true);
+            });
+        });
+        
+        
+        /*
         for (int k1 = i; k1 < j; ++k1) {
             for (int l1 = k; l1 < l; ++l1) {
                 for (int i2 = i1; i2 < j1; ++i2) {
@@ -1973,7 +1995,8 @@ public abstract class World implements IBlockAccess {
             }
         }
 
-        return false;
+        return false;*/
+        return fin;
     }
 
     public boolean b(AxisAlignedBB axisalignedbb, Material material) {

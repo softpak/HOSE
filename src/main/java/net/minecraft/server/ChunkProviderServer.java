@@ -278,16 +278,17 @@ public class ChunkProviderServer implements IChunkProvider {
                 Random random = new Random();
                 random.setSeed(world.getSeed());
                 //HOSE HSA
+                /*
                 final long[] Xrnd = new long[1];
                 final long[] Zrnd = new long[1];
                 final long[] SEED = new long[1];
                 Aparapi.range(1).forEach(gid -> Xrnd[gid] = random.nextLong() / 2L * 2L + 1L);
                 Aparapi.range(1).forEach(gid -> Zrnd[gid] = random.nextLong() / 2L * 2L + 1L);
-                Aparapi.range(1).forEach(gid -> SEED[gid] = (long) i * Xrnd[gid] + (long) j * Zrnd[gid] ^ world.getSeed());
-                //long xRand = random.nextLong() / 2L * 2L + 1L;
-                //long zRand = random.nextLong() / 2L * 2L + 1L;
-                //random.setSeed((long) i * xRand + (long) j * zRand ^ world.getSeed());
-                random.setSeed(SEED[0]);
+                Aparapi.range(1).forEach(gid -> SEED[gid] = (long) i * Xrnd[gid] + (long) j * Zrnd[gid] ^ world.getSeed());*/
+                long xRand = random.nextLong() / 2L * 2L + 1L;
+                long zRand = random.nextLong() / 2L * 2L + 1L;
+                random.setSeed((long) i * xRand + (long) j * zRand ^ world.getSeed());
+                //random.setSeed(SEED[0]);
 
                 org.bukkit.World world = this.world.getWorld();
                 if (world != null) {
