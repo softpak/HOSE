@@ -144,7 +144,7 @@ public class CraftContainer extends Container {
             break;
         }
     }
-    //HSA
+
     private void setupChest(IInventory top, IInventory bottom) {
         int rows = top.getSize() / 9;
         int row;

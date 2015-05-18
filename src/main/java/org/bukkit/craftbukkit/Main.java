@@ -12,42 +12,31 @@ import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
+import org.HOSE.HRandom;
 import org.fusesource.jansi.AnsiConsole;
 
 public class Main {
     public static boolean useJline = true;
     public static boolean useConsole = true;
+    public static HRandom hrnd = new HRandom();
+    
 
     public static void main(String[] args) {
-        
-        //run HSA test
-        System.out.println("Run HSA tests.");
-        final int size = 100000;
-        final float[] a = new float[size];
-        final float[] b = new float[size];
-        //Runnable r2 = () -> System.out.println("Hello world two!");
-        
-        
-        for (int i=0;i<10;i++){
-            final float[] sum = new float[size];
-            
-            Aparapi.range(size).forEach(gid -> a[gid] = (float)(Math.random()*100));
-
-            Aparapi.range(size).forEach(gid -> b[gid] = (float)(Math.random()*100));
-            //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]*b[gid]*b[gid]);
-            long st = System.nanoTime();
-            Device.hsa().forEach(0, size, gid-> {
-                sum[gid] = a[gid] + b[gid]*b[gid]*b[gid]+20;
-            });
-            long et = System.nanoTime();
-            //Aparapi.range(size).parallel().forEach(gid -> sum[gid] = a[gid]+b[gid]);
-            //Aparapi.range(size).forEach(id -> System.out.printf("%6.2f + %6.2f = %8.2f\n", a[id], b[id], sum[id]));
-            System.out.println("Time"+i+" use:"+(et-st)+"ns.");
-            
-        }
-        System.out.println("HSA passed.");
-        
         // Todo: Installation script
+        double a[] = new double[1000];
+        System.out.println("HSA test.");
+        for (int i = 0; i < 10; i++) {
+            long st = System.nanoTime();
+            //Aparapi.range(1000).forEach(g -> a[g] = hrnd.nextDouble());
+            
+            System.out.println(hrnd.nextDouble());
+            long et = System.nanoTime();
+
+            System.out.println("Time use:"+(et-st)+"ns.");
+        }
+        //Aparapi.range(1000).forEach(kk -> System.out.print(a[kk]+".")); 
+        
+        System.out.println("Done!");
         OptionParser parser = new OptionParser() {
             {
                 acceptsAll(asList("?", "help"), "Show the help");

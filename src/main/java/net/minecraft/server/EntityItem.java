@@ -143,20 +143,18 @@ public class EntityItem extends Entity {
         }
     }
     // Spigot end
-    
-    //lambda
+
     private void w() {
         // Spigot start
         double radius = world.spigotConfig.itemMerge;
         Iterator iterator = this.world.a(EntityItem.class, this.getBoundingBox().grow(radius, radius, radius)).iterator();
         // Spigot end
-        iterator.forEachRemaining(it -> this.a((EntityItem)it));
-        /*
+
         while (iterator.hasNext()) {
             EntityItem entityitem = (EntityItem) iterator.next();
 
             this.a(entityitem);
-        }*/
+        }
 
     }
 

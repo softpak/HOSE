@@ -22,7 +22,7 @@ public class WorldGenVillage extends StructureGenerator {
     public WorldGenVillage(Map<String, String> map) {
         this();
         Iterator iterator = map.entrySet().iterator();
-        
+
         while (iterator.hasNext()) {
             Entry entry = (Entry) iterator.next();
 

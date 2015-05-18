@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 // CraftBukkit start
 import java.util.List;
-import java.util.stream.IntStream;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
 // CraftBukkit end
@@ -53,26 +52,13 @@ public class InventoryEnderChest extends InventorySubcontainer {
         this.a = tileentityenderchest;
     }
 
-    int i;
     public void a(NBTTagList nbttaglist) {
-        //int i;
-        i = 0;
+        int i;
 
-        IntStream.range(0, this.getSize()).forEach(i -> this.setItem(i, (ItemStack) null));
-        /*
         for (i = 0; i < this.getSize(); ++i) {
             this.setItem(i, (ItemStack) null);
-        }*/
-        
-        i = 0;
-        IntStream.range(0, nbttaglist.size()).forEach(i -> {
-            int j = ((NBTTagCompound)nbttaglist.get(i)).getByte("Slot") & 255;
+        }
 
-            if (j >= 0 && j < this.getSize()) {
-                this.setItem(j, ItemStack.createStack(nbttaglist.get(i)));
-            }
-        });
-        /*
         for (i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound = nbttaglist.get(i);
             int j = nbttagcompound.getByte("Slot") & 255;
@@ -80,25 +66,13 @@ public class InventoryEnderChest extends InventorySubcontainer {
             if (j >= 0 && j < this.getSize()) {
                 this.setItem(j, ItemStack.createStack(nbttagcompound));
             }
-        }*/
+        }
 
     }
 
     public NBTTagList h() {
         NBTTagList nbttaglist = new NBTTagList();
 
-        IntStream.range(0, this.getSize()).forEach(
-            i -> {
-                if (this.getItem(i) != null) {
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
-
-                    nbttagcompound.setByte("Slot", (byte) i);
-                    ((ItemStack)this.getItem(i)).save(nbttagcompound);
-                    nbttaglist.add(nbttagcompound);
-                }
-            }
-        );
-        /*
         for (int i = 0; i < this.getSize(); ++i) {
             ItemStack itemstack = this.getItem(i);
 
@@ -109,7 +83,7 @@ public class InventoryEnderChest extends InventorySubcontainer {
                 itemstack.save(nbttagcompound);
                 nbttaglist.add(nbttagcompound);
             }
-        }*/
+        }
 
         return nbttaglist;
     }

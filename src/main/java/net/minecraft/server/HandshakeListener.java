@@ -21,7 +21,6 @@ public class HandshakeListener implements PacketHandshakingInListener {
         this.b = networkmanager;
     }
 
-    //lambda
     public void a(PacketHandshakingInSetProtocol packethandshakinginsetprotocol) {
         switch (HandshakeListener.SyntheticClass_1.a[packethandshakinginsetprotocol.a().ordinal()]) {
         case 1:
@@ -50,21 +49,12 @@ public class HandshakeListener implements PacketHandshakingInListener {
 
                         // Cleanup stale entries
                         java.util.Iterator iter = throttleTracker.entrySet().iterator();
-                        
-                        iter.forEachRemaining(
-                            it -> {
-                                if (((java.util.Map.Entry<InetAddress, Long>)it).getValue() > connectionThrottle) {
-                                    iter.remove();
-                                }
-                            }
-                        );
-                        /*
                         while (iter.hasNext()) {
                             java.util.Map.Entry<InetAddress, Long> entry = (java.util.Map.Entry) iter.next();
                             if (entry.getValue() > connectionThrottle) {
                                 iter.remove();
                             }
-                        }*/
+                        }
                     }
                 }
             } catch (Throwable t) {

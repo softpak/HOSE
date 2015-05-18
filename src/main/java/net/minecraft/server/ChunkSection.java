@@ -1,8 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
-
 public class ChunkSection {
 
     private int yPos;
@@ -100,26 +97,10 @@ public class ChunkSection {
         return this.emittedLight.a(i, j, k);
     }
 
-    //HSA
     public void recalcBlockCounts() {
         this.nonEmptyBlockCount = 0;
         this.tickingBlockCount = 0;
-        
-        Aparapi.range(16).forEach(gid_i -> {
-            Aparapi.range(16).forEach(gid_j -> {
-                Aparapi.range(16).forEach(gid_k -> {
-                    Block block = this.b(gid_i, gid_j, gid_k);
-                    if (block != Blocks.AIR) {
-                        ++this.nonEmptyBlockCount;
-                        if (block.isTicking()) {
-                            ++this.tickingBlockCount;
-                        }
-                    }
-                });
-            });
-        });
-        
-        /*
+
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 for (int k = 0; k < 16; ++k) {
@@ -133,7 +114,8 @@ public class ChunkSection {
                     }
                 }
             }
-        }*/
+        }
+
     }
 
     public char[] getIdArray() {

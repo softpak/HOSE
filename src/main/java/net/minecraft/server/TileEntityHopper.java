@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,8 +44,7 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
     // CraftBukkit end
 
     public TileEntityHopper() {}
-    
-    //HSA
+
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
         NBTTagList nbttaglist = nbttagcompound.getList("Items", 10);
@@ -57,16 +55,7 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
         }
 
         this.g = nbttagcompound.getInt("TransferCooldown");
-        
-        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-            NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
-            byte b0 = nbttagcompound1.getByte("Slot");
 
-            if (b0 >= 0 && b0 < this.items.length) {
-                this.items[b0] = ItemStack.createStack(nbttagcompound1);
-            }
-        });
-        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
             byte b0 = nbttagcompound1.getByte("Slot");
@@ -74,25 +63,14 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
             if (b0 >= 0 && b0 < this.items.length) {
                 this.items[b0] = ItemStack.createStack(nbttagcompound1);
             }
-        }*/
+        }
 
     }
-    
-    //HSA
+
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         NBTTagList nbttaglist = new NBTTagList();
-        
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            if (this.items[gid_i] != null) {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
-                nbttagcompound1.setByte("Slot", (byte) gid_i);
-                this.items[gid_i].save(nbttagcompound1);
-                nbttaglist.add(nbttagcompound1);
-            }
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
@@ -101,7 +79,7 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
                 this.items[i].save(nbttagcompound1);
                 nbttaglist.add(nbttagcompound1);
             }
-        }*/
+        }
 
         nbttagcompound.set("Items", nbttaglist);
         nbttagcompound.setInt("TransferCooldown", this.g);
@@ -482,13 +460,12 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
             return flag;
         }
     }
-    
-    //HSA
+
     public static ItemStack addItem(IInventory iinventory, ItemStack itemstack, EnumDirection enumdirection) {
         if (iinventory instanceof IWorldInventory && enumdirection != null) {
             IWorldInventory iworldinventory = (IWorldInventory) iinventory;
             int[] aint = iworldinventory.getSlotsForFace(enumdirection);
-            
+
             for (int i = 0; i < aint.length && itemstack != null && itemstack.count > 0; ++i) {
                 itemstack = c(iinventory, itemstack, aint[i], enumdirection);
             }
@@ -642,16 +619,11 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
     public int g() {
         return 0;
     }
-    
-    //HSA
+
     public void l() {
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = null;
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
-        }*/
+        }
 
     }
 }

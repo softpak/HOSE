@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
-
 public class OldChunkLoader {
 
     public static OldChunkLoader.OldChunk a(NBTTagCompound nbttagcompound) {
@@ -27,23 +25,16 @@ public class OldChunkLoader {
 
         return oldchunkloader_oldchunk;
     }
-    
-    static int hj2;
-    static int hhl;
+
     public static void a(OldChunkLoader.OldChunk oldchunkloader_oldchunk, NBTTagCompound nbttagcompound, WorldChunkManager worldchunkmanager) {
         nbttagcompound.setInt("xPos", oldchunkloader_oldchunk.k);
         nbttagcompound.setInt("zPos", oldchunkloader_oldchunk.l);
         nbttagcompound.setLong("LastUpdate", oldchunkloader_oldchunk.a);
         int[] aint = new int[oldchunkloader_oldchunk.c.length];
-        
-        //HSA
-        Aparapi.range(oldchunkloader_oldchunk.c.length).forEach(gid_i -> {
-            aint[gid_i] = oldchunkloader_oldchunk.c[gid_i];
-        });
-        /*
+
         for (int i = 0; i < oldchunkloader_oldchunk.c.length; ++i) {
             aint[i] = oldchunkloader_oldchunk.c[i];
-        }*/
+        }
 
         nbttagcompound.setIntArray("HeightMap", aint);
         nbttagcompound.setBoolean("TerrainPopulated", oldchunkloader_oldchunk.b);
@@ -52,7 +43,7 @@ public class OldChunkLoader {
         int j;
         int k;
 
-        for (hhl = 0; hhl < 8; ++hhl) {
+        for (int l = 0; l < 8; ++l) {
             boolean flag = true;
 
             for (j = 0; j < 16 && flag; ++j) {
@@ -63,7 +54,7 @@ public class OldChunkLoader {
 
                     while (true) {
                         if (i1 < 16) {
-                            int j1 = j << 11 | i1 << 7 | k + (hhl << 4);
+                            int j1 = j << 11 | i1 << 7 | k + (l << 4);
                             byte b0 = oldchunkloader_oldchunk.g[j1];
 
                             if (b0 == 0) {
@@ -85,22 +76,7 @@ public class OldChunkLoader {
                 NibbleArray nibblearray = new NibbleArray();
                 NibbleArray nibblearray1 = new NibbleArray();
                 NibbleArray nibblearray2 = new NibbleArray();
-                //HSA
-                Aparapi.range(16).forEach(gid_k1 -> {
-                    Aparapi.range(16).forEach(gid_l1 -> {
-                        Aparapi.range(16).forEach(gid_i2 -> {
-                            hj2 = gid_k1 << 11 | gid_i2 << 7 | gid_l1 + (hhl << 4);
-                            byte b1 = oldchunkloader_oldchunk.g[hj2];
 
-                            abyte[gid_l1 << 8 | gid_i2 << 4 | gid_k1] = (byte) (b1 & 255);
-                            nibblearray.a(gid_k1, gid_l1, gid_i2, oldchunkloader_oldchunk.f.a(gid_k1, gid_l1 + (hhl << 4), gid_i2));
-                            nibblearray1.a(gid_k1, gid_l1, gid_i2, oldchunkloader_oldchunk.e.a(gid_k1, gid_l1 + (hhl << 4), gid_i2));
-                            nibblearray2.a(gid_k1, gid_l1, gid_i2, oldchunkloader_oldchunk.d.a(gid_k1, gid_l1 + (hhl << 4), gid_i2));
-                        });
-                    });
-                });
-                
-                /*
                 for (int k1 = 0; k1 < 16; ++k1) {
                     for (int l1 = 0; l1 < 16; ++l1) {
                         for (int i2 = 0; i2 < 16; ++i2) {
@@ -113,11 +89,11 @@ public class OldChunkLoader {
                             nibblearray2.a(k1, l1, i2, oldchunkloader_oldchunk.d.a(k1, l1 + (l << 4), i2));
                         }
                     }
-                }*/
+                }
 
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
-                nbttagcompound1.setByte("Y", (byte) (hhl & 255));
+                nbttagcompound1.setByte("Y", (byte) (l & 255));
                 nbttagcompound1.setByteArray("Blocks", abyte);
                 nbttagcompound1.setByteArray("Data", nibblearray.a());
                 nbttagcompound1.setByteArray("SkyLight", nibblearray1.a());
@@ -129,23 +105,13 @@ public class OldChunkLoader {
         nbttagcompound.set("Sections", nbttaglist);
         byte[] abyte1 = new byte[256];
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
-        
-        
-        //HSA
-        Aparapi.range(16).forEach(gid_j -> {
-            Aparapi.range(16).forEach(gid_k -> {
-                blockposition_mutableblockposition.c(oldchunkloader_oldchunk.k << 4 | gid_j, 0, oldchunkloader_oldchunk.l << 4 | gid_k);
-                abyte1[gid_k << 4 | gid_j] = (byte) (worldchunkmanager.getBiome(blockposition_mutableblockposition, BiomeBase.ad).id & 255);
-            });
-        });
-        
-        /*
+
         for (j = 0; j < 16; ++j) {
             for (k = 0; k < 16; ++k) {
                 blockposition_mutableblockposition.c(oldchunkloader_oldchunk.k << 4 | j, 0, oldchunkloader_oldchunk.l << 4 | k);
                 abyte1[k << 4 | j] = (byte) (worldchunkmanager.getBiome(blockposition_mutableblockposition, BiomeBase.ad).id & 255);
             }
-        }*/
+        }
 
         nbttagcompound.setByteArray("Biomes", abyte1);
         nbttagcompound.set("Entities", oldchunkloader_oldchunk.h);

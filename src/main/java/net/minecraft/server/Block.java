@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.amd.aparapi.Device;
 import java.util.Iterator;
 import java.util.List;
@@ -99,11 +98,8 @@ public class Block {
     public static IBlockData getByCombinedId(int i) {
         int j = i & 4095;
         int k = i >> 12 & 15;
-        
-        //System.out.println("getByCombinedId");
 
         return getById(j).fromLegacyData(k);
-        //return getById(hj[0]).fromLegacyData(hk[0]);
     }
 
     public static Block asBlock(Item item) {
@@ -303,7 +299,12 @@ public class Block {
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         this.b(world, blockposition, iblockdata, random);
     }
+    /*
+    public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
+        this.b(world, blockposition, iblockdata, random);
+    }*/
 
+    //public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
 
     public void postBreak(World world, BlockPosition blockposition, IBlockData iblockdata) {}
@@ -343,18 +344,7 @@ public class Block {
     public void dropNaturally(World world, BlockPosition blockposition, IBlockData iblockdata, float f, int i) {
         if (!world.isClientSide) {
             int j = this.getDropCount(i, world.random);
-            //HSA
-            Aparapi.range(j).forEach(gid_k -> {
-                if (world.random.nextFloat() < f) {
-                    Item item = this.getDropType(iblockdata, world.random, i);
-                    if (item != null) {
-                        a(world, blockposition, new ItemStack(item, 1, this.getDropData(iblockdata)));
-                    }
-                }
-            });
-            
-            
-            /*
+
             for (int k = 0; k < j; ++k) {
                 // CraftBukkit - <= to < to allow for plugins to completely disable block drops from explosions
                 if (world.random.nextFloat() < f) {
@@ -364,25 +354,18 @@ public class Block {
                         a(world, blockposition, new ItemStack(item, 1, this.getDropData(iblockdata)));
                     }
                 }
-            }*/
+            }
 
         }
     }
-    
-    //HSA
+
     public static void a(World world, BlockPosition blockposition, ItemStack itemstack) {
         if (!world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
-            double[] d = new double[3];
-            //double[] wrn = new double[3];
             float f = 0.5F;
-            Aparapi.range(3).forEach(gid -> d[gid] = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D);
-            /*
             double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            */
-            //EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack);
-            EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d[0], (double) blockposition.getY() + d[1], (double) blockposition.getZ() + d[2], itemstack);
+            EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack);
 
             entityitem.p();
             world.addEntity(entityitem);
@@ -622,6 +605,10 @@ public class Block {
     public int getDropCount(int i, Random random) {
         return this.a(random);
     }
+    /*
+    public int getDropCount(int i, Random random) {
+        return this.a(random);
+    }*/
 
     public void postPlace(World world, BlockPosition blockposition, IBlockData iblockdata, EntityLiving entityliving, ItemStack itemstack) {}
 
@@ -723,9 +710,7 @@ public class Block {
     public String toString() {
         return "Block{" + Block.REGISTRY.c(this) + "}";
     }
-    
-    //lambda
-    static Block block13;
+
     public static void S() {
         a(0, Block.a, (new BlockAir()).c("air"));
         a(1, "stone", (new BlockStone()).c(1.5F).b(10.0F).a(Block.i).c("stone"));
@@ -954,31 +939,8 @@ public class Block {
         Block.REGISTRY.a();
         Iterator iterator = Block.REGISTRY.iterator();
 
-        //Block block13;
-        
-        iterator.forEachRemaining( it -> {
-            block13 = (Block) it;
-            if (block13.material == Material.AIR) {
-                block13.v = false;
-            } else {
-                boolean flag = false;
-                boolean flag1 = block13 instanceof BlockStairs;
-                boolean flag2 = block13 instanceof BlockStepAbstract;
-                boolean flag3 = block13 == block6;
-                boolean flag4 = block13.t;
-                boolean flag5 = block13.s == 0;
+        Block block13;
 
-                if (flag1 || flag2 || flag3 || flag4 || flag5) {
-                    flag = true;
-                }
-
-                block13.v = flag;
-            }
-        });
-        
-        
-        
-        /*
         while (iterator.hasNext()) {
             block13 = (Block) iterator.next();
             if (block13.material == Material.AIR) {
@@ -997,23 +959,10 @@ public class Block {
 
                 block13.v = flag;
             }
-        }*/
+        }
 
         iterator = Block.REGISTRY.iterator();
-        
-        iterator.forEachRemaining( it -> {
-            block13 = (Block) it;
-            Iterator iterator1 = block13.P().a().iterator();
-            
-            iterator1.forEachRemaining( it1 -> {
-                IBlockData iblockdata = (IBlockData) it1;
-                int i = Block.REGISTRY.b(block13) << 4 | block13.toLegacyData(iblockdata);
 
-                Block.d.a(iblockdata, i); 
-            });
-        });
-        
-        /*
         while (iterator.hasNext()) {
             block13 = (Block) iterator.next();
             Iterator iterator1 = block13.P().a().iterator();
@@ -1024,7 +973,7 @@ public class Block {
 
                 Block.d.a(iblockdata, i);
             }
-        }*/
+        }
 
     }
 

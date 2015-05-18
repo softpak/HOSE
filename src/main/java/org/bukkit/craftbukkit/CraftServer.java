@@ -120,7 +120,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
-import java.util.stream.IntStream;
 import jline.console.ConsoleReader;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -827,7 +826,6 @@ public final class CraftServer implements Server {
         return WorldCreator.name(name).environment(environment).seed(seed).generator(generator).createWorld();
     }
 
-    //HSA
     @Override
     public World createWorld(WorldCreator creator) {
         Validate.notNull(creator, "Creator may not be null");
@@ -913,11 +911,9 @@ public final class CraftServer implements Server {
         pluginManager.callEvent(new WorldInitEvent(internal.getWorld()));
         System.out.print("Preparing start region for level " + (console.worlds.size() - 1) + " (Seed: " + internal.getSeed() + ")");
 
-        //lambda
         if (internal.getWorld().getKeepSpawnInMemory()) {
             short short1 = 196;
             long i = System.currentTimeMillis();
-            
             for (int j = -short1; j <= short1; j += 16) {
                 for (int k = -short1; k <= short1; k += 16) {
                     long l = System.currentTimeMillis();
@@ -1503,7 +1499,7 @@ public final class CraftServer implements Server {
     @Override
     public Set<String> getListeningPluginChannels() {
         Set<String> result = new HashSet<String>();
-        
+
         for (Player player : getOnlinePlayers()) {
             result.addAll(player.getListeningPluginChannels());
         }
@@ -1629,8 +1625,7 @@ public final class CraftServer implements Server {
                 it.remove();
             }
         }
-        completions.stream().sorted(String.CASE_INSENSITIVE_ORDER);
-        //Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);
+        Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);
         return completions;
     }
 

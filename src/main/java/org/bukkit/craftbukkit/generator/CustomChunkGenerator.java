@@ -1,6 +1,5 @@
 package org.bukkit.craftbukkit.generator;
 
-import com.amd.aparapi.Aparapi;
 import java.util.List;
 import java.util.Random;
 
@@ -39,12 +38,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
     public boolean isChunkLoaded(int x, int z) {
         return true;
     }
-    
-    Block hb;
-    byte[][] hbtypes;
-    int hsec;
-    ChunkSection hcs = null; // Add sections when needed
-    char[] hcsbytes = null;
+
     public Chunk getOrCreateChunk(int x, int z) {
         random.setSeed((long) x * 341873128712L + (long) z * 132897987541L);
 
@@ -70,47 +64,34 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
                 }
                 char[] secBlkID = new char[4096]; // Allocate blk ID bytes
                 short[] bdata = xbtypes[sec];
-                //HSA
-                Aparapi.range(bdata.length).forEach(gid_i -> {
-                    Block b = Block.getById(bdata[gid_i]);
-                    secBlkID[gid_i] = (char) Block.d.b(b.getBlockData());
-                });
-                /*
                 for (int i = 0; i < bdata.length; i++) {
                     Block b = Block.getById(bdata[i]);
                     secBlkID[i] = (char) Block.d.b(b.getBlockData());
-                }*/
+                }
                 // Build chunk section
                 csect[sec] = new ChunkSection(sec << 4, true, secBlkID);
             }
         }
         else { // Else check for byte-per-block section data
-            //byte[][] btypes = generator.generateBlockSections(this.world.getWorld(), this.random, x, z, biomegrid);
-            hbtypes = generator.generateBlockSections(this.world.getWorld(), this.random, x, z, biomegrid);
-            
-            if (hbtypes != null) {
+            byte[][] btypes = generator.generateBlockSections(this.world.getWorld(), this.random, x, z, biomegrid);
+
+            if (btypes != null) {
                 chunk = new Chunk(this.world, x, z);
 
                 ChunkSection[] csect = chunk.getSections();
-                int scnt = Math.min(csect.length, hbtypes.length);
+                int scnt = Math.min(csect.length, btypes.length);
 
-                for (hsec = 0; hsec < scnt; hsec++) {
-                    if (hbtypes[hsec] == null) {
+                for (int sec = 0; sec < scnt; sec++) {
+                    if (btypes[sec] == null) {
                         continue;
                     }
                     
                     char[] secBlkID = new char[4096]; // Allocate block ID bytes
-                    //HSA
-                    Aparapi.range(secBlkID.length).forEach(gid_i -> {
-                        hb = Block.getById(hbtypes[hsec][gid_i]);
-                        secBlkID[gid_i] = (char) Block.d.b(hb.getBlockData());
-                    });
-                    /*
                     for (int i = 0; i < secBlkID.length; i++) {
                         Block b = Block.getById(btypes[sec][i]);
                         secBlkID[i] = (char) Block.d.b(b.getBlockData());
-                    }*/
-                    csect[hsec] = new ChunkSection(hsec << 4, true, secBlkID);
+                    }
+                    csect[sec] = new ChunkSection(sec << 4, true, secBlkID);
                 }
             }
             else { // Else, fall back to pre 1.2 method
@@ -125,39 +106,10 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
 
                 scnt = Math.min(scnt, csect.length);
                 // Loop through sections
-                
-                //HSA
-                Aparapi.range(scnt).forEach(gid_sec -> {
-                    Aparapi.range(16).forEach(gid_cy -> {
-                        int cyoff = gid_cy | (gid_sec << 4);
-                        Aparapi.range(16).forEach(gid_cx -> {
-                            int cxyoff = (gid_cx * ydim * 16) + cyoff;
-                            Aparapi.range(16).forEach(gid_cz -> {
-                                byte blk = types[cxyoff + (gid_cz * ydim)];
-
-                                if (blk != 0) { // If non-empty
-                                    if (hcs == null) { // If no section yet, get one
-                                        hcs = csect[gid_sec] = new ChunkSection(gid_sec << 4, true);
-                                        hcsbytes = hcs.getIdArray();
-                                    }
-
-                                    Block b = Block.getById(blk);
-                                    hcsbytes[(gid_cy << 8) | (gid_cz << 4) | gid_cx] = (char) Block.d.b(b.getBlockData());
-                                }
-                            });
-                        });
-                    });
-                    // If section built, finish prepping its state
-                    if (hcs != null) {
-                        hcs.recalcBlockCounts();
-                    }
-                });
-                
-                
-                /*
                 for (int sec = 0; sec < scnt; sec++) {
                     ChunkSection cs = null; // Add sections when needed
                     char[] csbytes = null;
+
                     for (int cy = 0; cy < 16; cy++) {
                         int cyoff = cy | (sec << 4);
 
@@ -183,20 +135,14 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
                     if (cs != null) {
                         cs.recalcBlockCounts();
                     }
-                }*/
+                }
             }
         }
         // Set biome grid
         byte[] biomeIndex = chunk.getBiomeIndex();
-        
-        Aparapi.range(biomeIndex.length).forEach(gid_i -> {
-            biomeIndex[gid_i] = (byte) (biomegrid.biome[gid_i].id & 0xFF);
-        });
-        
-        /*
         for (int i = 0; i < biomeIndex.length; i++) {
             biomeIndex[i] = (byte) (biomegrid.biome[i].id & 0xFF);
-        }*/
+        }
         // Initialize lighting
         chunk.initLighting();
 

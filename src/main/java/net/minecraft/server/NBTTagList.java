@@ -1,13 +1,11 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,18 +26,10 @@ public class NBTTagList extends NBTBase {
 
         dataoutput.writeByte(this.type);
         dataoutput.writeInt(this.list.size());
-        
-        Aparapi.range(this.list.size()).forEach(gid_i -> {
-            try {
-                ((NBTBase) this.list.get(gid_i)).write(dataoutput);
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(NBTTagList.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        /*
+
         for (int i = 0; i < this.list.size(); ++i) {
             ((NBTBase) this.list.get(i)).write(dataoutput);
-        }*/
+        }
 
     }
 
@@ -53,24 +43,13 @@ public class NBTTagList extends NBTBase {
             nbtreadlimiter.a(j * 8); // CraftBukkit
 
             this.list = Lists.newArrayList();
-            
-            Aparapi.range(j).forEach(gid_k -> {
-                try {
-                    NBTBase nbtbase = NBTBase.createTag(this.type);
-                    
-                    nbtbase.load(datainput, i + 1, nbtreadlimiter);
-                    this.list.add(nbtbase);
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(NBTTagList.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            /*
+
             for (int k = 0; k < j; ++k) {
                 NBTBase nbtbase = NBTBase.createTag(this.type);
 
                 nbtbase.load(datainput, i + 1, nbtreadlimiter);
                 this.list.add(nbtbase);
-            }*/
+            }
 
         }
     }
@@ -78,26 +57,17 @@ public class NBTTagList extends NBTBase {
     public byte getTypeId() {
         return (byte) 9;
     }
-    
-    //HSA
+
     public String toString() {
         StringBuilder stringbuilder = new StringBuilder("[");
-        
-        Aparapi.range(this.list.size()).forEach(gid_i -> {
-            if (gid_i != 0) {
-                stringbuilder.append(',');
-            }
 
-            stringbuilder.append(gid_i).append(':').append(this.list.get(gid_i));
-        });
-        /*
         for (int i = 0; i < this.list.size(); ++i) {
             if (i != 0) {
                 stringbuilder.append(',');
             }
 
             stringbuilder.append(i).append(':').append(this.list.get(i));
-        }*/
+        }
 
         return stringbuilder.append(']').toString();
     }
@@ -194,25 +164,18 @@ public class NBTTagList extends NBTBase {
         return this.list.size();
     }
 
-    //lambda
     public NBTBase clone() {
         NBTTagList nbttaglist = new NBTTagList();
 
         nbttaglist.type = this.type;
         Iterator iterator = this.list.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                nbttaglist.list.add(((NBTBase) it).clone());
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             NBTBase nbtbase = (NBTBase) iterator.next();
             NBTBase nbtbase1 = nbtbase.clone();
 
             nbttaglist.list.add(nbtbase1);
-        }*/
+        }
 
         return nbttaglist;
     }

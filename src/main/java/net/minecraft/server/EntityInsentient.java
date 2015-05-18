@@ -1,10 +1,11 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import java.lang.ref.WeakReference; // Spigot
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.craftbukkit.Main;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -35,6 +36,7 @@ public abstract class EntityInsentient extends EntityLiving {
     private boolean bo;
     private Entity bp;
     private NBTTagCompound bq;
+    Device dev = Device.hsa();
 
     public EntityInsentient(World world) {
         super(world);
@@ -46,13 +48,8 @@ public abstract class EntityInsentient extends EntityLiving {
         this.b = new EntityAIBodyControl(this);
         this.navigation = this.b(world);
         this.bk = new EntitySenses(this);
-        
-        
-        //HSA
-        
-        Aparapi.range(this.dropChances.length).forEach(gid_i -> {
-            this.dropChances[gid_i] = 0.085F;
-        });
+
+        dev.forEach(this.dropChances.length, i -> this.dropChances[i] = 0.085F);
         /*
         for (int i = 0; i < this.dropChances.length; ++i) {
             this.dropChances[i] = 0.085F;
@@ -157,53 +154,39 @@ public abstract class EntityInsentient extends EntityLiving {
     public void K() {
         super.K();
         this.world.methodProfiler.a("mobBaseTick");
-        if (this.isAlive() && this.random.nextInt(1000) < this.a_++) {
+        //System.out.println("mobBaseTick");
+        if (this.isAlive() && Main.hrnd.nextInt(1000) < this.a_++) {
             this.a_ = -this.w();
             this.x();
         }
+        /*
+        if (this.isAlive() && this.random.nextInt(1000) < this.a_++) {
+            this.a_ = -this.w();
+            this.x();
+        }*/
 
         this.world.methodProfiler.b();
     }
-    
-    //HSA
-    int hi;
+
     protected int getExpValue(EntityHuman entityhuman) {
         if (this.b_ > 0) {
-            //int i = this.b_;
-            hi = this.b_;
+            int i = this.b_;
             ItemStack[] aitemstack = this.getEquipment();
-            
-            Aparapi.range(aitemstack.length).forEach(gid_j -> {
-                if (aitemstack[gid_j] != null && this.dropChances[gid_j] <= 1.0F) {
-                    hi += 1 + this.random.nextInt(3);
-                }
-            });
-            /*
+
             for (int j = 0; j < aitemstack.length; ++j) {
                 if (aitemstack[j] != null && this.dropChances[j] <= 1.0F) {
                     i += 1 + this.random.nextInt(3);
                 }
-            }*/
+            }
 
-            return hi;
+            return i;
         } else {
             return this.b_;
         }
     }
-    
-    //HSA
+
     public void y() {
         if (this.world.isClientSide) {
-            
-            Aparapi.range(20).forEach(gid_i -> {
-                double d0 = this.random.nextGaussian() * 0.02D;
-                double d1 = this.random.nextGaussian() * 0.02D;
-                double d2 = this.random.nextGaussian() * 0.02D;
-                double d3 = 10.0D;
-
-                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (this.random.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2, new int[0]);
-            });
-            /*
             for (int i = 0; i < 20; ++i) {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -211,7 +194,7 @@ public abstract class EntityInsentient extends EntityLiving {
                 double d3 = 10.0D;
 
                 this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (this.random.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2, new int[0]);
-            }*/
+            }
         } else {
             this.world.broadcastEntityEffect(this, (byte) 20);
         }
@@ -238,11 +221,9 @@ public abstract class EntityInsentient extends EntityLiving {
     protected Item getLoot() {
         return null;
     }
-    
-    //HSA
-    protected ItemStack headDrop; // CraftBukkit
+
+    protected ItemStack headDrop = null; // CraftBukkit
     protected void dropDeathLoot(boolean flag, int i) {
-        headDrop = null;
         Item item = this.getLoot();
 
         if (item != null) {
@@ -251,14 +232,10 @@ public abstract class EntityInsentient extends EntityLiving {
             if (i > 0) {
                 j += this.random.nextInt(i + 1);
             }
-            
-            Aparapi.range(j).forEach(gid_k -> {
-                this.a(item, 1);
-            });
-            /*
+
             for (int k = 0; k < j; ++k) {
                 this.a(item, 1);
-            }*/
+            }
         }
 
         // CraftBukkit start
@@ -268,26 +245,15 @@ public abstract class EntityInsentient extends EntityLiving {
         }
         // CraftBukkit end
     }
-    
-    //HSA
-    NBTTagCompound hnbttagcompound1;
+
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         nbttagcompound.setBoolean("CanPickUpLoot", this.bY());
         nbttagcompound.setBoolean("PersistenceRequired", this.persistent);
         NBTTagList nbttaglist = new NBTTagList();
 
-        //NBTTagCompound nbttagcompound1;
-        
-        Aparapi.range(this.equipment.length).forEach(gid_i -> {
-            hnbttagcompound1 = new NBTTagCompound();
-            if (this.equipment[gid_i] != null) {
-                this.equipment[gid_i].save(hnbttagcompound1);
-            }
+        NBTTagCompound nbttagcompound1;
 
-            nbttaglist.add(hnbttagcompound1);
-        });
-        /*
         for (int i = 0; i < this.equipment.length; ++i) {
             nbttagcompound1 = new NBTTagCompound();
             if (this.equipment[i] != null) {
@@ -295,35 +261,31 @@ public abstract class EntityInsentient extends EntityLiving {
             }
 
             nbttaglist.add(nbttagcompound1);
-        }*/
+        }
 
         nbttagcompound.set("Equipment", nbttaglist);
         NBTTagList nbttaglist1 = new NBTTagList();
 
-        Aparapi.range(this.dropChances.length).forEach(gid_j -> {
-            nbttaglist1.add(new NBTTagFloat(this.dropChances[gid_j]));
-        });
-        /*
         for (int j = 0; j < this.dropChances.length; ++j) {
             nbttaglist1.add(new NBTTagFloat(this.dropChances[j]));
-        }*/
+        }
 
         nbttagcompound.set("DropChances", nbttaglist1);
         nbttagcompound.setBoolean("Leashed", this.bo);
         if (this.bp != null) {
-            hnbttagcompound1 = new NBTTagCompound();
+            nbttagcompound1 = new NBTTagCompound();
             if (this.bp instanceof EntityLiving) {
-                hnbttagcompound1.setLong("UUIDMost", this.bp.getUniqueID().getMostSignificantBits());
-                hnbttagcompound1.setLong("UUIDLeast", this.bp.getUniqueID().getLeastSignificantBits());
+                nbttagcompound1.setLong("UUIDMost", this.bp.getUniqueID().getMostSignificantBits());
+                nbttagcompound1.setLong("UUIDLeast", this.bp.getUniqueID().getLeastSignificantBits());
             } else if (this.bp instanceof EntityHanging) {
                 BlockPosition blockposition = ((EntityHanging) this.bp).getBlockPosition();
 
-                hnbttagcompound1.setInt("X", blockposition.getX());
-                hnbttagcompound1.setInt("Y", blockposition.getY());
-                hnbttagcompound1.setInt("Z", blockposition.getZ());
+                nbttagcompound1.setInt("X", blockposition.getX());
+                nbttagcompound1.setInt("Y", blockposition.getY());
+                nbttagcompound1.setInt("Z", blockposition.getZ());
             }
 
-            nbttagcompound.set("Leash", hnbttagcompound1);
+            nbttagcompound.set("Leash", nbttagcompound1);
         }
 
         if (this.ce()) {
@@ -331,12 +293,10 @@ public abstract class EntityInsentient extends EntityLiving {
         }
 
     }
-    
-    
-    NBTTagList hanbttaglist;
+
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
-        hanbttaglist = null;
+        
         // CraftBukkit start - If looting or persistence is false only use it if it was set after we started using it
         if (nbttagcompound.hasKeyOfType("CanPickUpLoot", 1)) {
             boolean data = nbttagcompound.getBoolean("CanPickUpLoot");
@@ -350,32 +310,23 @@ public abstract class EntityInsentient extends EntityLiving {
             this.persistent = data;
         }
         // CraftBukkit end
-        //NBTTagList nbttaglist;
-        //int i;
+        NBTTagList nbttaglist;
+        int i;
 
         if (nbttagcompound.hasKeyOfType("Equipment", 9)) {
-            hanbttaglist = nbttagcompound.getList("Equipment", 10);
-            
-            //HSA
-            Aparapi.range(this.equipment.length).forEach(gid_i -> {
-                this.equipment[gid_i] = ItemStack.createStack(hanbttaglist.get(gid_i));
-            });
-            /*
+            nbttaglist = nbttagcompound.getList("Equipment", 10);
+
             for (i = 0; i < this.equipment.length; ++i) {
                 this.equipment[i] = ItemStack.createStack(nbttaglist.get(i));
-            }*/
+            }
         }
 
         if (nbttagcompound.hasKeyOfType("DropChances", 9)) {
-            hanbttaglist = nbttagcompound.getList("DropChances", 5);
-            
-            Aparapi.range(hanbttaglist.size()).forEach(gid_i -> {
-                this.dropChances[gid_i] = hanbttaglist.e(gid_i);
-            });
-            /*
+            nbttaglist = nbttagcompound.getList("DropChances", 5);
+
             for (i = 0; i < nbttaglist.size(); ++i) {
                 this.dropChances[i] = nbttaglist.e(i);
-            }*/
+            }
         }
 
         this.bo = nbttagcompound.getBoolean("Leashed");
@@ -395,7 +346,6 @@ public abstract class EntityInsentient extends EntityLiving {
         this.n(f);
     }
 
-    //lambda
     public void m() {
         super.m();
         this.world.methodProfiler.a("looting");
@@ -403,22 +353,13 @@ public abstract class EntityInsentient extends EntityLiving {
             List list = this.world.a(EntityItem.class, this.getBoundingBox().grow(1.0D, 0.0D, 1.0D));
             Iterator iterator = list.iterator();
 
-            iterator.forEachRemaining(
-                it -> {
-                    if (!((EntityItem)it).dead && ((EntityItem)it).getItemStack() != null && !((EntityItem)it).s()) {
-                        this.a((EntityItem)it);
-                    }
-                }
-            );
-            
-            /*
             while (iterator.hasNext()) {
                 EntityItem entityitem = (EntityItem) iterator.next();
 
                 if (!entityitem.dead && entityitem.getItemStack() != null && !entityitem.s()) {
                     this.a(entityitem);
                 }
-            }*/
+            }
         }
 
         this.world.methodProfiler.b();
@@ -647,33 +588,8 @@ public abstract class EntityInsentient extends EntityLiving {
     public ItemStack[] getEquipment() {
         return this.equipment;
     }
-    
-    //HSA
+
     protected void dropEquipment(boolean flag, int i) {
-        Aparapi.range(this.getEquipment().length).forEach(gid_j -> {
-            ItemStack itemstack = this.getEquipment(gid_j);
-            boolean flag1 = this.dropChances[gid_j] > 1.0F;
-
-            if (itemstack != null && (flag || flag1) && this.random.nextFloat() - (float) i * 0.01F < this.dropChances[gid_j]) {
-                if (!flag1 && itemstack.e()) {
-                    int k = Math.max(itemstack.j() - 25, 1);
-                    int l = itemstack.j() - this.random.nextInt(this.random.nextInt(k) + 1);
-
-                    if (l > k) {
-                        l = k;
-                    }
-
-                    if (l < 1) {
-                        l = 1;
-                    }
-
-                    itemstack.setData(l);
-                }
-
-                this.a(itemstack, 0.0F);
-            }
-        });
-        /*
         for (int j = 0; j < this.getEquipment().length; ++j) {
             ItemStack itemstack = this.getEquipment(j);
             boolean flag1 = this.dropChances[j] > 1.0F;
@@ -696,7 +612,7 @@ public abstract class EntityInsentient extends EntityLiving {
 
                 this.a(itemstack, 0.0F);
             }
-        }*/
+        }
 
     }
 
@@ -818,29 +734,21 @@ public abstract class EntityInsentient extends EntityLiving {
             return null;
         }
     }
-    //HSA
+
     protected void b(DifficultyDamageScaler difficultydamagescaler) {
         float f = difficultydamagescaler.c();
 
         if (this.bA() != null && this.random.nextFloat() < 0.25F * f) {
             EnchantmentManager.a(this.random, this.bA(), (int) (5.0F + f * (float) this.random.nextInt(18)));
         }
-        
-        Aparapi.range(4).forEach(gid_i -> {
-            ItemStack itemstack = this.q(gid_i);
 
-            if (itemstack != null && this.random.nextFloat() < 0.5F * f) {
-                EnchantmentManager.a(this.random, itemstack, (int) (5.0F + f * (float) this.random.nextInt(18)));
-            }
-        });
-        /*
         for (int i = 0; i < 4; ++i) {
             ItemStack itemstack = this.q(i);
 
             if (itemstack != null && this.random.nextFloat() < 0.5F * f) {
                 EnchantmentManager.a(this.random, itemstack, (int) (5.0F + f * (float) this.random.nextInt(18)));
             }
-        }*/
+        }
 
     }
 

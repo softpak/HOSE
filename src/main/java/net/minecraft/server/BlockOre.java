@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import org.HOSE.HRandom;
+import org.bukkit.craftbukkit.Main;
 
 public class BlockOre extends Block {
 
@@ -18,7 +20,8 @@ public class BlockOre extends Block {
     }
 
     public int a(Random random) {
-        return this == Blocks.LAPIS_ORE ? 4 + random.nextInt(5) : 1;
+        //return this == Blocks.LAPIS_ORE ? 4 + random.nextInt(5) : 1;
+        return this == Blocks.LAPIS_ORE ? 4 + Main.hrnd.nextInt(5) : 1;
     }
 
     public int getDropCount(int i, Random random) {
@@ -59,6 +62,35 @@ public class BlockOre extends Block {
 
     }
 
+    //HSA rnd
+    public static int nextInt(HRandom random, int i, int j) {
+        return i >= j ? i : random.nextInt(j - i + 1) + i;
+    }
+    
+    @Override
+    public int getExpDrop(World world, IBlockData iblockdata, int i) {
+        if (this.getDropType(iblockdata, world.random, i) != Item.getItemOf(this)) {
+            int j = 0;
+
+            if (this == Blocks.COAL_ORE) {
+                j = nextInt(Main.hrnd, 0, 2);
+            } else if (this == Blocks.DIAMOND_ORE) {
+                j = nextInt(Main.hrnd, 3, 7);
+            } else if (this == Blocks.EMERALD_ORE) {
+                j = nextInt(Main.hrnd, 3, 7);
+            } else if (this == Blocks.LAPIS_ORE) {
+                j = nextInt(Main.hrnd, 2, 5);
+            } else if (this == Blocks.QUARTZ_ORE) {
+                j = nextInt(Main.hrnd, 2, 5);
+            }
+
+            return j;
+        }
+
+        return 0;
+        // CraftBukkit end
+    }
+    /*
     @Override
     public int getExpDrop(World world, IBlockData iblockdata, int i) {
         if (this.getDropType(iblockdata, world.random, i) != Item.getItemOf(this)) {
@@ -81,7 +113,7 @@ public class BlockOre extends Block {
 
         return 0;
         // CraftBukkit end
-    }
+    }*/
 
     public int getDropData(World world, BlockPosition blockposition) {
         return 0;

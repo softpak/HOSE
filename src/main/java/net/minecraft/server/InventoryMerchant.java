@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
 import java.util.List;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftVillager;
@@ -207,15 +205,11 @@ public class InventoryMerchant implements IInventory {
     public int g() {
         return 0;
     }
-    
-    //HSA
+
     public void l() {
-        
-        Device.hsa().forEach(0, this.itemsInSlots.length, gid_i -> this.itemsInSlots[gid_i] = null);
-        /*
         for (int i = 0; i < this.itemsInSlots.length; ++i) {
             this.itemsInSlots[i] = null;
-        }*/
+        }
 
     }
 }

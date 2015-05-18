@@ -1,12 +1,10 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
@@ -15,8 +13,6 @@ public class BlockRedstoneTorch extends BlockTorch {
     private static Map<World, List<BlockRedstoneTorch.RedstoneUpdateInfo>> b = new java.util.WeakHashMap(); // Spigot
     private final boolean isOn;
 
-    //lambda
-    int i;
     private boolean a(World world, BlockPosition blockposition, boolean flag) {
         if (!BlockRedstoneTorch.b.containsKey(world)) {
             BlockRedstoneTorch.b.put(world, Lists.<BlockRedstoneTorch.RedstoneUpdateInfo>newArrayList()); // CraftBukkit - fix decompile error
@@ -28,16 +24,8 @@ public class BlockRedstoneTorch extends BlockTorch {
             list.add(new BlockRedstoneTorch.RedstoneUpdateInfo(blockposition, world.getTime()));
         }
 
-        //int i = 0;
-        i = 0;
-        /*
-        list.parallelStream().filter(
-            li -> ((BlockRedstoneTorch.RedstoneUpdateInfo)li).a.equals(blockposition)).forEach(
-            lli -> {
-                ++i;
-            }
-        );*/
-        
+        int i = 0;
+
         for (int j = 0; j < list.size(); ++j) {
             BlockRedstoneTorch.RedstoneUpdateInfo blockredstonetorch_redstoneupdateinfo = (BlockRedstoneTorch.RedstoneUpdateInfo) list.get(j);
 
@@ -48,12 +36,7 @@ public class BlockRedstoneTorch extends BlockTorch {
                 }
             }
         }
-        /*
-        if (i >= 8) {
-            return true;
-        }else {
-            return false;  
-        }*/
+
         return false;
     }
 
@@ -67,40 +50,30 @@ public class BlockRedstoneTorch extends BlockTorch {
         return 2;
     }
 
-    //lambda
     public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
         if (this.isOn) {
-            //EnumDirection[] aenumdirection = EnumDirection.values();
-            //int i = aenumdirection.length;
+            EnumDirection[] aenumdirection = EnumDirection.values();
+            int i = aenumdirection.length;
 
-            Stream.of(EnumDirection.values()).forEach(
-                ae -> world.applyPhysics(blockposition.shift(ae), this)
-            );
-            /*
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }*/
+            }
         }
 
     }
-    
-    //lambda
+
     public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
         if (this.isOn) {
-            //EnumDirection[] aenumdirection = EnumDirection.values();
-            //int i = aenumdirection.length;
-            
-            Stream.of(EnumDirection.values()).forEach(
-                ae -> world.applyPhysics(blockposition.shift(ae), this)
-            );
-            /*
+            EnumDirection[] aenumdirection = EnumDirection.values();
+            int i = aenumdirection.length;
+
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }*/
+            }
         }
 
     }
@@ -147,24 +120,14 @@ public class BlockRedstoneTorch extends BlockTorch {
                 world.setTypeAndData(blockposition, Blocks.UNLIT_REDSTONE_TORCH.getBlockData().set(BlockRedstoneTorch.FACING, iblockdata.get(BlockRedstoneTorch.FACING)), 3);
                 if (this.a(world, blockposition, true)) {
                     world.makeSound((double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-                    //HSA
-                    double[] d0 = new double[5];
-                    double[] d1 = new double[5];
-                    double[] d2 = new double[5];
-                    Aparapi.range(5).forEach(gid -> {
-                        d0[gid] = (double) blockposition.getX() + random.nextDouble() * 0.6D + 0.2D;
-                        d1[gid] = (double) blockposition.getY() + random.nextDouble() * 0.6D + 0.2D;
-                        d2[gid] = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;
-                        world.addParticle(EnumParticle.SMOKE_NORMAL, d0[gid], d1[gid], d2[gid], 0.0D, 0.0D, 0.0D, new int[0]);
-                    });
-                    /*
+
                     for (int i = 0; i < 5; ++i) {
                         double d0 = (double) blockposition.getX() + random.nextDouble() * 0.6D + 0.2D;
                         double d1 = (double) blockposition.getY() + random.nextDouble() * 0.6D + 0.2D;
                         double d2 = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;
 
                         world.addParticle(EnumParticle.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
-                    }*/
+                    }
 
                     world.a(blockposition, world.getType(blockposition).getBlock(), 160);
                 }

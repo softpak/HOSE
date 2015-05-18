@@ -17,33 +17,12 @@ public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
         this.b = i;
     }
 
-    //lambda
-    int i;
     protected int f(World world, BlockPosition blockposition) {
         // CraftBukkit start
         //int i = Math.min(world.a(Entity.class, this.a(blockposition)).size(), this.b);
-        //int i = 0;
-        i = 0;
+        int i = 0;
         java.util.Iterator iterator = world.a(Entity.class, this.a(blockposition)).iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                org.bukkit.event.Cancellable cancellable;
-
-                if ((Entity) it instanceof EntityHuman) {
-                    cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) (Entity) it, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null);
-                } else {
-                    cancellable = new EntityInteractEvent(((Entity) it).getBukkitEntity(), world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
-                    world.getServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
-                }
-
-                // We only want to block turning the plate on if all events are cancelled
-                if (!cancellable.isCancelled()) {
-                    i++;
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Entity entity = (Entity) iterator.next();
 
@@ -60,7 +39,7 @@ public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
             if (!cancellable.isCancelled()) {
                 i++;
             }
-        }*/
+        }
 
         i = Math.min(i, this.b);
         // CraftBukkit end

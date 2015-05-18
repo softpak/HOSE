@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -118,23 +117,13 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
     public void a(String s) {
         this.m = s;
     }
-    
-    //HSA
+
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
         NBTTagList nbttaglist = nbttagcompound.getList("Items", 10);
 
         this.items = new ItemStack[this.getSize()];
-        
-        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-            NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
-            byte b0 = nbttagcompound1.getByte("Slot");
 
-            if (b0 >= 0 && b0 < this.items.length) {
-                this.items[b0] = ItemStack.createStack(nbttagcompound1);
-            }
-        });
-        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
             byte b0 = nbttagcompound1.getByte("Slot");
@@ -142,7 +131,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
             if (b0 >= 0 && b0 < this.items.length) {
                 this.items[b0] = ItemStack.createStack(nbttagcompound1);
             }
-        }*/
+        }
 
         this.burnTime = nbttagcompound.getShort("BurnTime");
         this.cookTime = nbttagcompound.getShort("CookTime");
@@ -153,8 +142,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
         }
 
     }
-    
-    //HSA
+
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         nbttagcompound.setShort("BurnTime", (short) this.burnTime);
@@ -162,16 +150,6 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
         nbttagcompound.setShort("CookTimeTotal", (short) this.cookTimeTotal);
         NBTTagList nbttaglist = new NBTTagList();
 
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            if (this.items[gid_i] != null) {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-
-                nbttagcompound1.setByte("Slot", (byte) gid_i);
-                this.items[gid_i].save(nbttagcompound1);
-                nbttaglist.add(nbttagcompound1);
-            }
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
@@ -180,7 +158,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
                 this.items[i].save(nbttagcompound1);
                 nbttaglist.add(nbttagcompound1);
             }
-        }*/
+        }
 
         nbttagcompound.set("Items", nbttaglist);
         if (this.hasCustomName()) {
@@ -459,16 +437,11 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
     public int g() {
         return 4;
     }
-    
-    //HSA
+
     public void l() {
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = null;
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
-        }*/
+        }
 
     }
 }

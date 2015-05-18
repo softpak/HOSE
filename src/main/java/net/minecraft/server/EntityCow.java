@@ -50,13 +50,12 @@ public class EntityCow extends EntityAnimal {
     protected Item getLoot() {
         return Items.LEATHER;
     }
-    
-    //HSA
+
     protected void dropDeathLoot(boolean flag, int i) {
         int j = this.random.nextInt(3) + this.random.nextInt(1 + i);
 
         int k;
-        
+
         for (k = 0; k < j; ++k) {
             this.a(Items.LEATHER, 1);
         }

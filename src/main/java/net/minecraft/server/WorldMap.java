@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
@@ -89,19 +88,7 @@ public class WorldMap extends PersistentBase {
             this.colors = new byte[16384];
             int i = (128 - short0) / 2;
             int j = (128 - short1) / 2;
-            //HSA
-            Aparapi.range(short1).forEach(gid_k -> {
-                int l = gid_k + j;
-                if (l >= 0 || l < 128) {
-                    Aparapi.range(short0).forEach(gid_i1 -> {
-                        int j1 = gid_i1 + i;
-                        if (j1 >= 0 || j1 < 128) {
-                            this.colors[j1 + l * 128] = abyte[gid_i1 + gid_k * short0];
-                        }
-                    });
-                }
-            });
-            /*
+
             for (int k = 0; k < short1; ++k) {
                 int l = k + j;
 
@@ -114,7 +101,7 @@ public class WorldMap extends PersistentBase {
                         }
                     }
                 }
-            }*/
+            }
         }
 
     }
@@ -147,8 +134,7 @@ public class WorldMap extends PersistentBase {
         nbttagcompound.setShort("height", (short) 128);
         nbttagcompound.setByteArray("colors", this.colors);
     }
-    
-    //HSA
+
     public void a(EntityHuman entityhuman, ItemStack itemstack) {
         if (!this.i.containsKey(entityhuman)) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker = new WorldMap.WorldMapHumanTracker(entityhuman);
@@ -160,20 +146,7 @@ public class WorldMap extends PersistentBase {
         if (!entityhuman.inventory.c(itemstack)) {
             this.decorations.remove(entityhuman.getName());
         }
-        
-        Aparapi.range(this.g.size()).forEach(gid_i -> {
-            WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker1 = (WorldMap.WorldMapHumanTracker) this.g.get(gid_i);
 
-            if (!worldmap_worldmaphumantracker1.trackee.dead && (worldmap_worldmaphumantracker1.trackee.inventory.c(itemstack) || itemstack.y())) {
-                if (!itemstack.y() && worldmap_worldmaphumantracker1.trackee.dimension == this.map) {
-                    this.a(0, worldmap_worldmaphumantracker1.trackee.world, worldmap_worldmaphumantracker1.trackee.getName(), worldmap_worldmaphumantracker1.trackee.locX, worldmap_worldmaphumantracker1.trackee.locZ, (double) worldmap_worldmaphumantracker1.trackee.yaw);
-                }
-            } else {
-                this.i.remove(worldmap_worldmaphumantracker1.trackee);
-                this.g.remove(worldmap_worldmaphumantracker1);
-            }
-        });
-        /*
         for (int i = 0; i < this.g.size(); ++i) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker1 = (WorldMap.WorldMapHumanTracker) this.g.get(i);
 
@@ -185,7 +158,7 @@ public class WorldMap extends PersistentBase {
                 this.i.remove(worldmap_worldmaphumantracker1.trackee);
                 this.g.remove(worldmap_worldmaphumantracker1);
             }
-        }*/
+        }
 
         if (itemstack.y()) {
             EntityItemFrame entityitemframe = itemstack.z();
@@ -196,23 +169,14 @@ public class WorldMap extends PersistentBase {
 
         if (itemstack.hasTag() && itemstack.getTag().hasKeyOfType("Decorations", 9)) {
             NBTTagList nbttaglist = itemstack.getTag().getList("Decorations", 10);
-            
-            Aparapi.range(nbttaglist.size()).forEach(gid_j -> {
-                NBTTagCompound nbttagcompound = nbttaglist.get(gid_j);
 
-                if (!this.decorations.containsKey(nbttagcompound.getString("id"))) {
-                    this.a(nbttagcompound.getByte("type"), entityhuman.world, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
-                }
-            });
-            
-            /*
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 NBTTagCompound nbttagcompound = nbttaglist.get(j);
 
                 if (!this.decorations.containsKey(nbttagcompound.getString("id"))) {
                     this.a(nbttagcompound.getByte("type"), entityhuman.world, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
                 }
-            }*/
+            }
         }
 
     }
@@ -268,22 +232,15 @@ public class WorldMap extends PersistentBase {
         return worldmap_worldmaphumantracker == null ? null : worldmap_worldmaphumantracker.a(itemstack);
     }
 
-    //lambda
     public void flagDirty(int i, int j) {
         super.c();
         Iterator iterator = this.g.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                ((WorldMap.WorldMapHumanTracker) it).a(i, j);
-            }        
-        );
-        /*
         while (iterator.hasNext()) {
             WorldMap.WorldMapHumanTracker worldmap_worldmaphumantracker = (WorldMap.WorldMapHumanTracker) iterator.next();
 
             worldmap_worldmaphumantracker.a(i, j);
-        }*/
+        }
 
     }
 

@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.concurrent.Callable;
 
 // CraftBukkit start
@@ -87,7 +86,6 @@ public class PlayerInventory implements IInventory {
     // CraftBukkit start - Watch method above! :D
     public int canHold(ItemStack itemstack) {
         int remains = itemstack.count;
-        
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] == null) return itemstack.count;
 
@@ -223,19 +221,13 @@ public class PlayerInventory implements IInventory {
             }
         }
     }
-    //HSA
+
     public void k() {
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            if (this.items[gid_i] != null) {
-                this.items[gid_i].a(this.player.world, this.player, gid_i, this.itemInHandIndex == gid_i);
-            }
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 this.items[i].a(this.player.world, this.player, i, this.itemInHandIndex == i);
             }
-        }*/
+        }
 
     }
 
@@ -378,32 +370,11 @@ public class PlayerInventory implements IInventory {
 
         return f;
     }
-    
-    //HSA
-    NBTTagCompound hnbttagcompound;
+
     public NBTTagList a(NBTTagList nbttaglist) {
-        //int i;
-        //NBTTagCompound nbttagcompound;
-        
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            if (this.items[gid_i] != null) {
-                hnbttagcompound = new NBTTagCompound();
-                hnbttagcompound.setByte("Slot", (byte) gid_i);
-                this.items[gid_i].save(hnbttagcompound);
-                nbttaglist.add(hnbttagcompound);
-            }
-        });
-        
-        Aparapi.range(this.armor.length).forEach(gid_i -> {
-            if (this.armor[gid_i] != null) {
-                hnbttagcompound = new NBTTagCompound();
-                hnbttagcompound.setByte("Slot", (byte) (gid_i + 100));
-                this.armor[gid_i].save(hnbttagcompound);
-                nbttaglist.add(hnbttagcompound);
-            }
-        });
-        
-        /*
+        int i;
+        NBTTagCompound nbttagcompound;
+
         for (i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 nbttagcompound = new NBTTagCompound();
@@ -420,32 +391,15 @@ public class PlayerInventory implements IInventory {
                 this.armor[i].save(nbttagcompound);
                 nbttaglist.add(nbttagcompound);
             }
-        }*/
+        }
 
         return nbttaglist;
     }
-    
-    //HSA
+
     public void b(NBTTagList nbttaglist) {
         this.items = new ItemStack[36];
         this.armor = new ItemStack[4];
-        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-            NBTTagCompound nbttagcompound = nbttaglist.get(gid_i);
-            int j = nbttagcompound.getByte("Slot") & 255;
-            ItemStack itemstack = ItemStack.createStack(nbttagcompound);
 
-            if (itemstack != null) {
-                if (j >= 0 && j < this.items.length) {
-                    this.items[j] = itemstack;
-                }
-
-                if (j >= 100 && j < this.armor.length + 100) {
-                    this.armor[j - 100] = itemstack;
-                }
-            }
-        });
-        
-        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound = nbttaglist.get(i);
             int j = nbttagcompound.getByte("Slot") & 255;
@@ -460,7 +414,7 @@ public class PlayerInventory implements IInventory {
                     this.armor[j - 100] = itemstack;
                 }
             }
-        }*/
+        }
 
     }
 
@@ -508,48 +462,27 @@ public class PlayerInventory implements IInventory {
     public ItemStack e(int i) {
         return this.armor[i];
     }
-    
-    //HSA
-    int hi;
-    public int m() {
-        //int i = 0;
-        hi = 0;
-        Aparapi.range(this.armor.length).forEach(gid_j -> {
-            if (this.armor[gid_j] != null && this.armor[gid_j].getItem() instanceof ItemArmor) {
-                int k = ((ItemArmor) this.armor[gid_j].getItem()).c;
 
-                hi += k;
-            }
-        });
-        
-        /*
+    public int m() {
+        int i = 0;
+
         for (int j = 0; j < this.armor.length; ++j) {
             if (this.armor[j] != null && this.armor[j].getItem() instanceof ItemArmor) {
                 int k = ((ItemArmor) this.armor[j].getItem()).c;
 
                 i += k;
             }
-        }*/
+        }
 
-        return hi;
+        return i;
     }
-    
-    //HSA
+
     public void a(float f) {
         f /= 4.0F;
         if (f < 1.0F) {
             f = 1.0F;
         }
-        float hf = f;
-        Aparapi.range(this.armor.length).forEach(gid_i -> {
-            if (this.armor[gid_i] != null && this.armor[gid_i].getItem() instanceof ItemArmor) {
-                this.armor[gid_i].damage((int) hf, this.player);
-                if (this.armor[gid_i].count == 0) {
-                    this.armor[gid_i] = null;
-                }
-            }
-        });
-        /*
+
         for (int i = 0; i < this.armor.length; ++i) {
             if (this.armor[i] != null && this.armor[i].getItem() instanceof ItemArmor) {
                 this.armor[i].damage((int) f, this.player);
@@ -557,28 +490,13 @@ public class PlayerInventory implements IInventory {
                     this.armor[i] = null;
                 }
             }
-        }*/
+        }
 
     }
-    
-    //HSA
+
     public void n() {
-        //int i;
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            if (this.items[gid_i] != null) {
-                this.player.a(this.items[gid_i], true, false);
-                this.items[gid_i] = null;
-            }
-        });
-        
-        Aparapi.range(this.armor.length).forEach(gid_i -> {
-            if (this.armor[gid_i] != null) {
-                this.player.a(this.armor[gid_i], true, false);
-                this.armor[gid_i] = null;
-            }
-        });
-        
-        /*
+        int i;
+
         for (i = 0; i < this.items.length; ++i) {
             if (this.items[i] != null) {
                 this.player.a(this.items[i], true, false);
@@ -591,7 +509,7 @@ public class PlayerInventory implements IInventory {
                 this.player.a(this.armor[i], true, false);
                 this.armor[i] = null;
             }
-        }*/
+        }
 
     }
 
@@ -641,25 +559,17 @@ public class PlayerInventory implements IInventory {
     public boolean b(int i, ItemStack itemstack) {
         return true;
     }
-    
-    //HSA
+
     public void b(PlayerInventory playerinventory) {
-        //int i;
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = ItemStack.b(playerinventory.items[gid_i]);
-        });
-        
-        Aparapi.range(this.armor.length).forEach(gid_i -> {
-            this.armor[gid_i] = ItemStack.b(playerinventory.armor[gid_i]);
-        });
-        /*
+        int i;
+
         for (i = 0; i < this.items.length; ++i) {
             this.items[i] = ItemStack.b(playerinventory.items[i]);
         }
 
         for (i = 0; i < this.armor.length; ++i) {
             this.armor[i] = ItemStack.b(playerinventory.armor[i]);
-        }*/
+        }
 
         this.itemInHandIndex = playerinventory.itemInHandIndex;
     }
@@ -673,26 +583,17 @@ public class PlayerInventory implements IInventory {
     public int g() {
         return 0;
     }
-    
-    //HSA
+
     public void l() {
-        //int i;
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = null;
-        });
-        
-        Aparapi.range(this.armor.length).forEach(gid_i -> {
-            this.armor[gid_i] = null;
-        });
-        
-        /*
+        int i;
+
         for (i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
         }
 
         for (i = 0; i < this.armor.length; ++i) {
             this.armor[i] = null;
-        }*/
+        }
 
     }
 }

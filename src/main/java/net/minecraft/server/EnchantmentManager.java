@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 
 public class EnchantmentManager {
 
@@ -28,7 +28,6 @@ public class EnchantmentManager {
             if (nbttaglist == null) {
                 return 0;
             } else {
-                //lambda
                 for (int j = 0; j < nbttaglist.size(); ++j) {
                     short short0 = nbttaglist.get(j).getShort("id");
                     short short1 = nbttaglist.get(j).getShort("lvl");
@@ -42,26 +41,18 @@ public class EnchantmentManager {
             }
         }
     }
-    
-    //HSA
+
     public static Map<Integer, Integer> a(ItemStack itemstack) {
         LinkedHashMap linkedhashmap = Maps.newLinkedHashMap();
         NBTTagList nbttaglist = itemstack.getItem() == Items.ENCHANTED_BOOK ? Items.ENCHANTED_BOOK.h(itemstack) : itemstack.getEnchantments();
 
         if (nbttaglist != null) {
-            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-                short short0 = nbttaglist.get(gid_i).getShort("id");
-                short short1 = nbttaglist.get(gid_i).getShort("lvl");
-
-                linkedhashmap.put(Integer.valueOf(short0), Integer.valueOf(short1));
-            });
-            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 short short0 = nbttaglist.get(i).getShort("id");
                 short short1 = nbttaglist.get(i).getShort("lvl");
 
                 linkedhashmap.put(Integer.valueOf(short0), Integer.valueOf(short1));
-            }*/
+            }
         }
 
         return linkedhashmap;
@@ -97,26 +88,14 @@ public class EnchantmentManager {
 
     }
 
-    //HSA
-    static int hj;
     public static int a(int i, ItemStack[] aitemstack) {
         if (aitemstack == null) {
             return 0;
         } else {
-            //int j = 0;
-            hj = 0;
+            int j = 0;
             ItemStack[] aitemstack1 = aitemstack;
             int k = aitemstack.length;
-            
-            Aparapi.range(k).forEach(gid_l -> {
-                ItemStack itemstack = aitemstack1[gid_l];
-                int i1 = getEnchantmentLevel(i, itemstack);
 
-                if (i1 > hj) {
-                    hj = i1;
-                }
-            });
-            /*
             for (int l = 0; l < k; ++l) {
                 ItemStack itemstack = aitemstack1[l];
                 int i1 = getEnchantmentLevel(i, itemstack);
@@ -124,27 +103,17 @@ public class EnchantmentManager {
                 if (i1 > j) {
                     j = i1;
                 }
-            }*/
+            }
 
-            return hj;
+            return j;
         }
     }
-    
-    //HSA
+
     private static void a(EnchantmentManager.EnchantmentModifier enchantmentmanager_enchantmentmodifier, ItemStack itemstack) {
         if (itemstack != null) {
             NBTTagList nbttaglist = itemstack.getEnchantments();
 
             if (nbttaglist != null) {
-                Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-                    short short0 = nbttaglist.get(gid_i).getShort("id");
-                    short short1 = nbttaglist.get(gid_i).getShort("lvl");
-
-                    if (Enchantment.getById(short0) != null) {
-                        enchantmentmanager_enchantmentmodifier.a(Enchantment.getById(short0), short1);
-                    }
-                });
-                /*
                 for (int i = 0; i < nbttaglist.size(); ++i) {
                     short short0 = nbttaglist.get(i).getShort("id");
                     short short1 = nbttaglist.get(i).getShort("lvl");
@@ -152,27 +121,21 @@ public class EnchantmentManager {
                     if (Enchantment.getById(short0) != null) {
                         enchantmentmanager_enchantmentmodifier.a(Enchantment.getById(short0), short1);
                     }
-                }*/
+                }
 
             }
         }
     }
-    
-    //HSA
+
     private static void a(EnchantmentManager.EnchantmentModifier enchantmentmanager_enchantmentmodifier, ItemStack[] aitemstack) {
         ItemStack[] aitemstack1 = aitemstack;
         int i = aitemstack.length;
-        Aparapi.range(i).forEach(gid_j -> {
-            ItemStack itemstack = aitemstack1[gid_j];
 
-            a(enchantmentmanager_enchantmentmodifier, itemstack);
-        });
-        /*
         for (int j = 0; j < i; ++j) {
             ItemStack itemstack = aitemstack1[j];
 
             a(enchantmentmanager_enchantmentmodifier, itemstack);
-        }*/
+        }
 
     }
 
@@ -314,7 +277,7 @@ public class EnchantmentManager {
 
         if (list != null) {
             Iterator iterator = list.iterator();
-            
+
             while (iterator.hasNext()) {
                 WeightedRandomEnchant weightedrandomenchant = (WeightedRandomEnchant) iterator.next();
 
@@ -394,15 +357,14 @@ public class EnchantmentManager {
             return arraylist;
         }
     }
-    
-    //HSA
+
     public static Map<Integer, WeightedRandomEnchant> b(int i, ItemStack itemstack) {
         Item item = itemstack.getItem();
         HashMap hashmap = null;
         boolean flag = itemstack.getItem() == Items.BOOK;
         Enchantment[] aenchantment = Enchantment.b;
         int j = aenchantment.length;
-        
+
         for (int k = 0; k < j; ++k) {
             Enchantment enchantment = aenchantment[k];
 

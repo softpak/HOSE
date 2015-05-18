@@ -97,7 +97,6 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
 
         if (networkManager.spoofedProfile != null)
         {
-            
             for ( com.mojang.authlib.properties.Property property : networkManager.spoofedProfile )
             {
                 this.i.getProperties().put( property.getName(), property );
@@ -164,13 +163,19 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.P().getPublic(), this.e));
         } else {
             // Spigot start
-            try {
-                initUUID();
-                new LoginHandler().fireEvents();
-            } catch (Exception ex) {
-                disconnect("Failed to verify username!");
-                server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + i.getName(), ex);
-            }
+            initUUID();
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try{
+                        new LoginHandler().fireEvents();
+                    } catch (Exception ex) {
+                        disconnect("Failed to verify username!");
+                        server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + i.getName(), ex);
+                    }
+                }
+            }).start();
             // Spigot end
         }
 

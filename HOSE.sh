@@ -1,5 +1,5 @@
 #!/bin/sh
-. ../env.sh
+. env/env.sh
 export JARS="${JARS}:spigot-1.8.3-R0.1-SNAPSHOT.jar"
 
 export JVM_OPTS="${JVM_OPTS} -Dcom.amd.aparapi.useAgent=true" \

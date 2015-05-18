@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
@@ -15,6 +14,7 @@ import java.util.UUID;
 import java.util.ArrayList;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
@@ -195,25 +195,14 @@ public abstract class EntityLiving extends Entity {
                     this.setAirTicks(this.j(this.getAirTicks()));
                     if (this.getAirTicks() == -20) {
                         this.setAirTicks(0);
-                        //HSA
-                        float[] hf = new float[8];
-                        float[] hf1 = new float[8];
-                        float[] hf2 = new float[8];
-                        
-                        Aparapi.range(8).forEach(gid_i -> {
-                            hf[gid_i] = this.random.nextFloat() - this.random.nextFloat();
-                            hf1[gid_i] = this.random.nextFloat() - this.random.nextFloat();
-                            hf2[gid_i] = this.random.nextFloat() - this.random.nextFloat();
-                            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) hf[gid_i], this.locY + (double) hf1[gid_i], this.locZ + (double) hf2[gid_i], this.motX, this.motY, this.motZ, new int[0]);
-                        });
-                        /*
+
                         for (int i = 0; i < 8; ++i) {
                             float f = this.random.nextFloat() - this.random.nextFloat();
                             float f1 = this.random.nextFloat() - this.random.nextFloat();
                             float f2 = this.random.nextFloat() - this.random.nextFloat();
 
                             this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f, this.locY + (double) f1, this.locZ + (double) f2, this.motX, this.motY, this.motZ, new int[0]);
-                        }*/
+                        }
 
                         this.damageEntity(DamageSource.DROWN, 2.0F);
                     }
@@ -307,25 +296,14 @@ public abstract class EntityLiving extends Entity {
             // CraftBukkit end
 
             this.die();
-            //HSA
-            double[] hd0 = new double[20];
-            double[] hd1 = new double[20];
-            double[] hd2 = new double[20];
-                        
-            Aparapi.range(20).forEach(gid_i -> {
-                hd0[gid_i] = this.random.nextGaussian() * 0.02D;
-                hd1[gid_i] = this.random.nextGaussian() * 0.02D;
-                hd2[gid_i] = this.random.nextGaussian() * 0.02D;
-                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, hd0[gid_i], hd1[gid_i], hd2[gid_i], new int[0]);
-            });
-            /*
+
             for (i = 0; i < 20; ++i) {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
 
                 this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
-            }*/
+            }
         }
 
     }
@@ -337,7 +315,8 @@ public abstract class EntityLiving extends Entity {
     protected int j(int i) {
         int j = EnchantmentManager.getOxygenEnchantmentLevel(this);
 
-        return j > 0 && this.random.nextInt(j + 1) > 0 ? i : i - 1;
+        //return j > 0 && this.random.nextInt(j + 1) > 0 ? i : i - 1;
+        return j > 0 && Main.hrnd.nextInt(j + 1) > 0 ? i : i - 1;
     }
 
     protected int getExpValue(EntityHuman entityhuman) {
@@ -386,10 +365,7 @@ public abstract class EntityLiving extends Entity {
     public int bh() {
         return this.ticksFarFromPlayer;
     }
-    
-    //HSA
-    ItemStack[] aitemstack;
-    ItemStack itemstack;
+
     public void b(NBTTagCompound nbttagcompound) {
         nbttagcompound.setFloat("HealF", this.getHealth());
         nbttagcompound.setShort("Health", (short) ((int) Math.ceil((double) this.getHealth())));
@@ -397,64 +373,45 @@ public abstract class EntityLiving extends Entity {
         nbttagcompound.setInt("HurtByTimestamp", this.hurtTimestamp);
         nbttagcompound.setShort("DeathTime", (short) this.deathTicks);
         nbttagcompound.setFloat("AbsorptionAmount", this.getAbsorptionHearts());
-        //ItemStack[] aitemstack = this.getEquipment();
-        aitemstack = this.getEquipment();
+        ItemStack[] aitemstack = this.getEquipment();
         int i = aitemstack.length;
 
         int j;
-        //ItemStack itemstack;
-        
-        Aparapi.range(i).forEach(gid_j -> {
-            itemstack = aitemstack[gid_j];
-            if (itemstack != null) {
-                this.c.a(itemstack.B());
-            }
-        });
-        /*
+        ItemStack itemstack;
+
         for (j = 0; j < i; ++j) {
             itemstack = aitemstack[j];
             if (itemstack != null) {
                 this.c.a(itemstack.B());
             }
-        }*/
+        }
 
         nbttagcompound.set("Attributes", GenericAttributes.a(this.getAttributeMap()));
         aitemstack = this.getEquipment();
         i = aitemstack.length;
 
-        Aparapi.range(i).forEach(gid_j -> {
-            itemstack = aitemstack[gid_j];
-            if (itemstack != null) {
-                this.c.b(itemstack.B());
-            }
-        });
-        /*
         for (j = 0; j < i; ++j) {
             itemstack = aitemstack[j];
             if (itemstack != null) {
                 this.c.b(itemstack.B());
             }
-        }*/
+        }
 
         if (!this.effects.isEmpty()) {
             NBTTagList nbttaglist = new NBTTagList();
             Iterator iterator = this.effects.values().iterator();
 
-            //lambda
-            iterator.forEachRemaining(it -> nbttaglist.add(((MobEffect)it).a(new NBTTagCompound())));
-            /*
             while (iterator.hasNext()) {
                 MobEffect mobeffect = (MobEffect) iterator.next();
 
                 nbttaglist.add(mobeffect.a(new NBTTagCompound()));
-            }*/
+            }
 
             nbttagcompound.set("ActiveEffects", nbttaglist);
         }
 
     }
-    
-    //HSA
+
     public void a(NBTTagCompound nbttagcompound) {
         this.setAbsorptionHearts(nbttagcompound.getFloat("AbsorptionAmount"));
         if (nbttagcompound.hasKeyOfType("Attributes", 9) && this.world != null && !this.world.isClientSide) {
@@ -463,16 +420,7 @@ public abstract class EntityLiving extends Entity {
 
         if (nbttagcompound.hasKeyOfType("ActiveEffects", 9)) {
             NBTTagList nbttaglist = nbttagcompound.getList("ActiveEffects", 10);
-            
-            Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-                NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
-                MobEffect mobeffect = MobEffect.b(nbttagcompound1);
 
-                if (mobeffect != null) {
-                    this.effects.put(Integer.valueOf(mobeffect.getEffectId()), mobeffect);
-                }
-            });
-            /*
             for (int i = 0; i < nbttaglist.size(); ++i) {
                 NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
                 MobEffect mobeffect = MobEffect.b(nbttagcompound1);
@@ -480,7 +428,7 @@ public abstract class EntityLiving extends Entity {
                 if (mobeffect != null) {
                     this.effects.put(Integer.valueOf(mobeffect.getEffectId()), mobeffect);
                 }
-            }*/
+            }
         }
 
         // CraftBukkit start
@@ -517,30 +465,11 @@ public abstract class EntityLiving extends Entity {
     private boolean isTickingEffects = false;
     private List<Object> effectsToProcess = Lists.newArrayList();
     // CraftBukkit end
-    
-    //lambda
+
     protected void bi() {
         Iterator iterator = this.effects.keySet().iterator();
 
         isTickingEffects = true; // CraftBukkit
-        
-        iterator.forEachRemaining(
-                it -> {
-                    MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
-
-                    if (!mobeffect.tick(this)) {
-                        if (!this.world.isClientSide) {
-                            iterator.remove();
-                            this.b(mobeffect);
-                        }
-                    } else if (mobeffect.getDuration() % 600 == 0) {
-                        this.a(mobeffect, false);
-                    }
-                    
-                }
-        
-        );
-        /*
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -553,21 +482,9 @@ public abstract class EntityLiving extends Entity {
             } else if (mobeffect.getDuration() % 600 == 0) {
                 this.a(mobeffect, false);
             }
-        }*/
+        }
         // CraftBukkit start
         isTickingEffects = false;
-        
-        /*
-        effectsToProcess.parallelStream().forEach(
-                e -> {
-                    if (e instanceof MobEffect) {
-                        addEffect((MobEffect) e);
-                    } else {
-                        removeEffect((Integer) e);
-                    }
-                }
-        );*/
-        
         for (Object e : effectsToProcess) {
             if (e instanceof MobEffect) {
                 addEffect((MobEffect) e);
@@ -592,13 +509,16 @@ public abstract class EntityLiving extends Entity {
             boolean flag1 = false;
 
             if (!this.isInvisible()) {
-                flag1 = this.random.nextBoolean();
+                //flag1 = this.random.nextBoolean();
+                flag1 = Main.hrnd.nextBoolean();
             } else {
-                flag1 = this.random.nextInt(15) == 0;
+                //flag1 = this.random.nextInt(15) == 0;
+                flag1 = Main.hrnd.nextInt(15) == 0;
             }
 
             if (flag) {
-                flag1 &= this.random.nextInt(5) == 0;
+                //flag1 &= this.random.nextInt(5) == 0;
+                flag1 &= Main.hrnd.nextInt(5) == 0;
             }
 
             if (flag1 && i > 0) {
@@ -631,22 +551,9 @@ public abstract class EntityLiving extends Entity {
         this.datawatcher.watch(7, Integer.valueOf(0));
     }
 
-    //lambda
     public void removeAllEffects() {
         Iterator iterator = this.effects.keySet().iterator();
-        
-       
-        iterator.forEachRemaining(
-                it -> {
-                    MobEffect mobeffect = (MobEffect) this.effects.get((Integer)it);
 
-                    if (!this.world.isClientSide) {
-                        iterator.remove();
-                        this.b(mobeffect);
-                    }
-                }
-        );
-        /*
         while (iterator.hasNext()) {
             Integer integer = (Integer) iterator.next();
             MobEffect mobeffect = (MobEffect) this.effects.get(integer);
@@ -655,7 +562,7 @@ public abstract class EntityLiving extends Entity {
                 iterator.remove();
                 this.b(mobeffect);
             }
-        }*/
+        }
 
     }
 
@@ -918,25 +825,10 @@ public abstract class EntityLiving extends Entity {
             }
         }
     }
-    
-    //HSA
+
     public void b(ItemStack itemstack) {
         this.makeSound("random.break", 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
-        
-        Aparapi.range(5).forEach(gid_i -> {
-            Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 
-            vec3d = vec3d.a(-this.pitch * 3.1415927F / 180.0F);
-            vec3d = vec3d.b(-this.yaw * 3.1415927F / 180.0F);
-            double d0 = (double) (-this.random.nextFloat()) * 0.6D - 0.3D;
-            Vec3D vec3d1 = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
-
-            vec3d1 = vec3d1.a(-this.pitch * 3.1415927F / 180.0F);
-            vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
-            vec3d1 = vec3d1.add(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
-            this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
-        });
-        /*
         for (int i = 0; i < 5; ++i) {
             Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 
@@ -949,7 +841,7 @@ public abstract class EntityLiving extends Entity {
             vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
             vec3d1 = vec3d1.add(this.locX, this.locY + (double) this.getHeadHeight(), this.locZ);
             this.world.addParticle(EnumParticle.ITEM_CRACK, vec3d1.a, vec3d1.b, vec3d1.c, vec3d.a, vec3d.b + 0.05D, vec3d.c, new int[] { Item.getId(itemstack.getItem())});
-        }*/
+        }
 
     }
 
@@ -1071,25 +963,12 @@ public abstract class EntityLiving extends Entity {
     protected String n(int i) {
         return i > 4 ? "game.neutral.hurt.fall.big" : "game.neutral.hurt.fall.small";
     }
-    
-    //HSA
-    int hi;
+
     public int br() {
-        //int i = 0;
-        hi = 0;
+        int i = 0;
         ItemStack[] aitemstack = this.getEquipment();
         int j = aitemstack.length;
-        
-        Aparapi.range(j).forEach(gid_k -> {
-            ItemStack itemstack = aitemstack[gid_k];
 
-            if (itemstack != null && itemstack.getItem() instanceof ItemArmor) {
-                int l = ((ItemArmor) itemstack.getItem()).c;
-
-                hi += l;
-            }
-        });
-        /*
         for (int k = 0; k < j; ++k) {
             ItemStack itemstack = aitemstack[k];
 
@@ -1098,9 +977,9 @@ public abstract class EntityLiving extends Entity {
 
                 i += l;
             }
-        }*/
+        }
 
-        return hi;
+        return i;
     }
 
     protected void damageArmor(float f) {}
@@ -1373,8 +1252,7 @@ public abstract class EntityLiving extends Entity {
     protected boolean bD() {
         return this.getHealth() <= 0.0F;
     }
-    
-    //HSA
+
     public void q(Entity entity) {
         double d0 = entity.locX;
         double d1 = entity.getBoundingBox().b + (double) entity.length;
@@ -1569,7 +1447,6 @@ public abstract class EntityLiving extends Entity {
         return false;
     }
 
-    //HSA
     public void t_() {
         SpigotTimings.timerEntityBaseTick.startTiming(); // Spigot
         super.t_();
@@ -1586,26 +1463,7 @@ public abstract class EntityLiving extends Entity {
                     this.o(i - 1);
                 }
             }
-            
-            //HSA
-            Aparapi.range(5).forEach(gid_j -> {
-                ItemStack itemstack = this.h[gid_j];
-                ItemStack itemstack1 = this.getEquipment(gid_j);
 
-                if (!ItemStack.matches(itemstack1, itemstack)) {
-                    ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutEntityEquipment(this.getId(), gid_j, itemstack1)));
-                    if (itemstack != null) {
-                        this.c.a(itemstack.B());
-                    }
-
-                    if (itemstack1 != null) {
-                        this.c.b(itemstack1.B());
-                    }
-
-                    this.h[gid_j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
-                }
-            });
-            /*
             for (int j = 0; j < 5; ++j) {
                 ItemStack itemstack = this.h[j];
                 ItemStack itemstack1 = this.getEquipment(j);
@@ -1622,7 +1480,7 @@ public abstract class EntityLiving extends Entity {
 
                     this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
                 }
-            }*/
+            }
 
             if (this.ticksLived % 20 == 0) {
                 this.bs().g();

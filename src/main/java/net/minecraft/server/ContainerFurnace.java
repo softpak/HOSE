@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -29,8 +28,7 @@ public class ContainerFurnace extends Container {
         return bukkitEntity;
     }
     // CraftBukkit end
-    
-    //HSA
+
     public ContainerFurnace(PlayerInventory playerinventory, IInventory iinventory) {
         this.furnace = iinventory;
         this.a(new Slot(iinventory, 0, 56, 17));
@@ -38,18 +36,8 @@ public class ContainerFurnace extends Container {
         this.a((Slot) (new SlotFurnaceResult(playerinventory.player, iinventory, 2, 116, 35)));
         this.player = playerinventory; // CraftBukkit - save player
 
-        //int i;
-        
-        Aparapi.range(3).forEach(gid_i -> {
-            Aparapi.range(9).forEach(gid_j -> {
-                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, 84 + gid_i * 18));
-            }); 
-        });
-        
-        Aparapi.range(9).forEach(gid_i -> {
-            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
-        }); 
-        /*
+        int i;
+
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.a(new Slot(playerinventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -58,7 +46,7 @@ public class ContainerFurnace extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }*/
+        }
 
     }
 
@@ -66,31 +54,10 @@ public class ContainerFurnace extends Container {
         super.addSlotListener(icrafting);
         icrafting.setContainerData(this, this.furnace);
     }
-    
-    //HSA
+
     public void b() {
         super.b();
-        
-        Aparapi.range(this.listeners.size()).forEach(gid_i -> {
-            ICrafting icrafting = (ICrafting) this.listeners.get(gid_i);
 
-            if (this.f != this.furnace.getProperty(2)) {
-                icrafting.setContainerData(this, 2, this.furnace.getProperty(2));
-            }
-
-            if (this.h != this.furnace.getProperty(0)) {
-                icrafting.setContainerData(this, 0, this.furnace.getProperty(0));
-            }
-
-            if (this.i != this.furnace.getProperty(1)) {
-                icrafting.setContainerData(this, 1, this.furnace.getProperty(1));
-            }
-
-            if (this.g != this.furnace.getProperty(3)) {
-                icrafting.setContainerData(this, 3, this.furnace.getProperty(3));
-            }
-        });
-        /*
         for (int i = 0; i < this.listeners.size(); ++i) {
             ICrafting icrafting = (ICrafting) this.listeners.get(i);
 
@@ -109,7 +76,7 @@ public class ContainerFurnace extends Container {
             if (this.g != this.furnace.getProperty(3)) {
                 icrafting.setContainerData(this, 3, this.furnace.getProperty(3));
             }
-        }*/
+        }
 
         this.f = this.furnace.getProperty(2);
         this.h = this.furnace.getProperty(0);

@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 import com.google.common.collect.ImmutableList;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -86,42 +84,29 @@ public class BlockPiston extends Block {
         }
 
     }
-    
-    //lambda parallel
+
     private boolean a(World world, BlockPosition blockposition, EnumDirection enumdirection) {
-        //EnumDirection[] aenumdirection = EnumDirection.values();
-        //int i = aenumdirection.length;
-        boolean fin;
-        //int j;
-        
-        fin = Stream.of(EnumDirection.values()).filter(
-                ae -> ae != enumdirection && world.isBlockFacePowered(blockposition.shift(ae), ae)).anyMatch(
-                ae -> true);
-        
-        if (fin) return true;
-                
-        /*
+        EnumDirection[] aenumdirection = EnumDirection.values();
+        int i = aenumdirection.length;
+
+        int j;
+
         for (j = 0; j < i; ++j) {
             EnumDirection enumdirection1 = aenumdirection[j];
 
             if (enumdirection1 != enumdirection && world.isBlockFacePowered(blockposition.shift(enumdirection1), enumdirection1)) {
                 return true;
             }
-        }*/
-        
+        }
+
         if (world.isBlockFacePowered(blockposition, EnumDirection.DOWN)) {
             return true;
-            //return true;
         } else {
             BlockPosition blockposition1 = blockposition.up();
             EnumDirection[] aenumdirection1 = EnumDirection.values();
 
-            //j = aenumdirection1.length;
-            
-            return Stream.of(EnumDirection.values()).filter(
-                ae1 -> ae1 != EnumDirection.DOWN && world.isBlockFacePowered(blockposition1.shift(ae1), ae1)).anyMatch(
-                ae1 -> true);
-            /*
+            j = aenumdirection1.length;
+
             for (int k = 0; k < j; ++k) {
                 EnumDirection enumdirection2 = aenumdirection1[k];
 
@@ -130,10 +115,8 @@ public class BlockPiston extends Block {
                 }
             }
 
-            return false;*/
+            return false;
         }
-        //System.out.println(fin);
-        //return fin;
     }
 
     public boolean a(World world, BlockPosition blockposition, IBlockData iblockdata, int i, int j) {

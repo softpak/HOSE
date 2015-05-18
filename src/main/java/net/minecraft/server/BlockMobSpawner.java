@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import org.bukkit.craftbukkit.Main;
 
 public class BlockMobSpawner extends BlockContainer {
 
@@ -31,7 +32,8 @@ public class BlockMobSpawner extends BlockContainer {
 
     @Override
     public int getExpDrop(World world, IBlockData iblockdata, int enchantmentLevel) {
-        int j = 15 + world.random.nextInt(15) + world.random.nextInt(15);
+        //int j = 15 + world.random.nextInt(15) + world.random.nextInt(15);
+        int j = 15 + Main.hrnd.nextInt(15) + Main.hrnd.nextInt(15);
 
         return j;
         // CraftBukkit end

@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.List;
 
 public class ItemBoat extends Item {
@@ -9,9 +8,7 @@ public class ItemBoat extends Item {
         this.maxStackSize = 1;
         this.a(CreativeModeTab.e);
     }
-    
-    //HSA
-    boolean hflag;
+
     public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
         float f = 1.0F;
         float f1 = entityhuman.lastPitch + (entityhuman.pitch - entityhuman.lastPitch) * f;
@@ -34,24 +31,10 @@ public class ItemBoat extends Item {
             return itemstack;
         } else {
             Vec3D vec3d2 = entityhuman.d(f);
-            //boolean flag = false;
-            hflag = false;
+            boolean flag = false;
             float f9 = 1.0F;
             List list = world.getEntities(entityhuman, entityhuman.getBoundingBox().a(vec3d2.a * d3, vec3d2.b * d3, vec3d2.c * d3).grow((double) f9, (double) f9, (double) f9));
-            
-            Aparapi.range(list.size()).forEach(gid_i -> {
-                Entity entity = (Entity) list.get(gid_i);
 
-                if (entity.ad()) {
-                    float f10 = entity.ao();
-                    AxisAlignedBB axisalignedbb = entity.getBoundingBox().grow((double) f10, (double) f10, (double) f10);
-
-                    if (axisalignedbb.a(vec3d)) {
-                        hflag = true;
-                    }
-                }
-            });
-            /*
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity = (Entity) list.get(i);
 
@@ -63,9 +46,9 @@ public class ItemBoat extends Item {
                         flag = true;
                     }
                 }
-            }*/
+            }
 
-            if (hflag) {
+            if (flag) {
                 return itemstack;
             } else {
                 if (movingobjectposition.type == MovingObjectPosition.EnumMovingObjectType.BLOCK) {

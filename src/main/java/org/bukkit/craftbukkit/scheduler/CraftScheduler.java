@@ -229,15 +229,11 @@ public class CraftScheduler implements BukkitScheduler {
                 taskPending.cancel0();
             }
         }
-        
-        runners.values().stream().filter( ru -> ru.getOwner().equals(plugin)).forEach(
-            ru -> ru.cancel0());
-        /*
         for (CraftTask runner : runners.values()) {
             if (runner.getOwner().equals(plugin)) {
                 runner.cancel0();
             }
-        }*/
+        }
     }
 
     public void cancelAllTasks() {
@@ -310,7 +306,6 @@ public class CraftScheduler implements BukkitScheduler {
 
     public List<BukkitTask> getPendingTasks() {
         final ArrayList<CraftTask> truePending = new ArrayList<CraftTask>();
-
         for (CraftTask task = head.getNext(); task != null; task = task.getNext()) {
             if (task.getTaskId() != -1) {
                 // -1 is special code
@@ -319,24 +314,17 @@ public class CraftScheduler implements BukkitScheduler {
         }
 
         final ArrayList<BukkitTask> pending = new ArrayList<BukkitTask>();
-        
-        runners.values().stream().filter( ta -> ta.getPeriod() >= -1l).forEach(
-            ta -> pending.add(ta));
-        /*
         for (CraftTask task : runners.values()) {
             if (task.getPeriod() >= -1l) {
                 pending.add(task);
             }
-        }*/
+        }
 
-        truePending.stream().filter( ta -> ta.getPeriod() >= -1l && !pending.contains(ta)).forEach(
-            ta ->  pending.add(ta));
-        /*
         for (final CraftTask task : truePending) {
             if (task.getPeriod() >= -1l && !pending.contains(task)) {
                 pending.add(task);
             }
-        }*/
+        }
         return pending;
     }
 

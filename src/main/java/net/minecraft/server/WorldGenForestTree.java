@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenForestTree extends WorldGenTreeAbstract {
 
@@ -12,15 +10,11 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
     public WorldGenForestTree(boolean flag) {
         super(flag);
     }
-    
-    //HSA
-    int i1, j1, k1, l1, k, k2, j2;
-    
+
     public boolean generate(World world, Random random, BlockPosition blockposition) {
         int i = random.nextInt(3) + random.nextInt(2) + 6;
         int j = blockposition.getX();
-        //int k = blockposition.getY();
-        k = blockposition.getY();
+        int k = blockposition.getY();
         int l = blockposition.getZ();
 
         if (k >= 1 && k + i + 1 < 256) {
@@ -37,38 +31,15 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                 this.a(world, blockposition1.south());
                 this.a(world, blockposition1.south().east());
                 EnumDirection enumdirection = EnumDirection.EnumDirectionLimit.HORIZONTAL.a(random);
-                //int i1 = i - random.nextInt(4);
-                //int j1 = 2 - random.nextInt(3);
-                i1 = i - random.nextInt(4);
-                j1 = 2 - random.nextInt(3);
-                //int k1 = j;
-                k1 = j;
-                //int l1 = l;
-                l1 = l;
+                int i1 = i - random.nextInt(4);
+                int j1 = 2 - random.nextInt(3);
+                int k1 = j;
+                int l1 = l;
                 int i2 = k + i - 1;
 
-                //int j2;
-                //int k2;
-                
-                Aparapi.range(i).forEach(gid_j2 -> {
-                    if (gid_j2 >= i1 && j1 > 0) {
-                        k1 += enumdirection.getAdjacentX();
-                        l1 += enumdirection.getAdjacentZ();
-                        --j1;
-                    }
+                int j2;
+                int k2;
 
-                    k2 = k + gid_j2;
-                    BlockPosition blockposition2 = new BlockPosition(k1, k2, l1);
-                    Material material = world.getType(blockposition2).getBlock().getMaterial();
-
-                    if (material == Material.AIR || material == Material.LEAVES) {
-                        this.b(world, blockposition2);
-                        this.b(world, blockposition2.east());
-                        this.b(world, blockposition2.south());
-                        this.b(world, blockposition2.east().south());
-                    }
-                });
-                /*
                 for (j2 = 0; j2 < i; ++j2) {
                     if (j2 >= i1 && j1 > 0) {
                         k1 += enumdirection.getAdjacentX();
@@ -86,28 +57,8 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                         this.b(world, blockposition2.south());
                         this.b(world, blockposition2.east().south());
                     }
-                }*/
-                
-                IntStream.range(-2, 1).forEach( j2 -> {
-                    IntStream.range(-2, 1).forEach( k2 -> {
-                        byte b0 = -1;
+                }
 
-                        this.a(world, k1 + j2, i2 + b0, l1 + k2);
-                        this.a(world, 1 + k1 - j2, i2 + b0, l1 + k2);
-                        this.a(world, k1 + j2, i2 + b0, 1 + l1 - k2);
-                        this.a(world, 1 + k1 - j2, i2 + b0, 1 + l1 - k2);
-                        if ((j2 > -2 || k2 > -1) && (j2 != -1 || k2 != -2)) {
-                            byte b1 = 1;
-
-                            this.a(world, k1 + j2, i2 + b1, l1 + k2);
-                            this.a(world, 1 + k1 - j2, i2 + b1, l1 + k2);
-                            this.a(world, k1 + j2, i2 + b1, 1 + l1 - k2);
-                            this.a(world, 1 + k1 - j2, i2 + b1, 1 + l1 - k2);
-                        }
-                    });
-                });
-                
-                /*
                 for (j2 = -2; j2 <= 0; ++j2) {
                     for (k2 = -2; k2 <= 0; ++k2) {
                         byte b0 = -1;
@@ -125,7 +76,7 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                             this.a(world, 1 + k1 - j2, i2 + b1, 1 + l1 - k2);
                         }
                     }
-                }*/
+                }
 
                 if (random.nextBoolean()) {
                     this.a(world, k1, i2 + 2, l1);
@@ -134,21 +85,13 @@ public class WorldGenForestTree extends WorldGenTreeAbstract {
                     this.a(world, k1, i2 + 2, l1 + 1);
                 }
 
-                IntStream.range(-3, 5).forEach( j2 -> {
-                    IntStream.range(-3, 5).forEach( k2 -> {
-                        if ((j2 != -3 || k2 != -3) && (j2 != -3 || k2 != 4) && (j2 != 4 || k2 != -3) && (j2 != 4 || k2 != 4) && (Math.abs(j2) < 3 || Math.abs(k2) < 3)) {
-                            this.a(world, k1 + j2, i2, l1 + k2);
-                        }
-                    });
-                });
-                /*
                 for (j2 = -3; j2 <= 4; ++j2) {
                     for (k2 = -3; k2 <= 4; ++k2) {
                         if ((j2 != -3 || k2 != -3) && (j2 != -3 || k2 != 4) && (j2 != 4 || k2 != -3) && (j2 != 4 || k2 != 4) && (Math.abs(j2) < 3 || Math.abs(k2) < 3)) {
                             this.a(world, k1 + j2, i2, l1 + k2);
                         }
                     }
-                }*/
+                }
 
                 for (j2 = -1; j2 <= 2; ++j2) {
                     for (k2 = -1; k2 <= 2; ++k2) {

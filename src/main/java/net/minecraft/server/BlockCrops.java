@@ -1,7 +1,8 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.Random;
+import org.HOSE.HRandom;
+import org.bukkit.craftbukkit.Main;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -42,7 +43,24 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
         }
 
     }
+    
+    //HSA rnd
+    public static int nextInt(HRandom random, int i, int j) {
+        return i >= j ? i : random.nextInt(j - i + 1) + i;
+    }
+    
+    public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
+        int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue() + nextInt(Main.hrnd, 2, 5);
+        if (i > 7) {
+            i = 7;
+        }
 
+        // CraftBukkit start
+        IBlockData data = iblockdata.set(AGE, Integer.valueOf(i));
+        CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, toLegacyData(data));
+        // CraftBukkit end
+    }
+    /*
     public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
         int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue() + MathHelper.nextInt(world.random, 2, 5);
 
@@ -54,7 +72,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
         IBlockData data = iblockdata.set(AGE, Integer.valueOf(i));
         CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, toLegacyData(data));
         // CraftBukkit end
-    }
+    }*/
 
     protected static float a(Block block, World world, BlockPosition blockposition) {
         float f = 1.0F;
@@ -119,20 +137,12 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
 
             if (j >= 7) {
                 int k = 3 + i;
-                
-                //HSA
-                Aparapi.range(k).forEach(gid_l -> {
-                    if (world.random.nextInt(15) <= j) {
-                        a(world, blockposition, new ItemStack(this.l(), 1, 0));
-                    }
-                });
-                
-                /*
+
                 for (int l = 0; l < k; ++l) {
                     if (world.random.nextInt(15) <= j) {
                         a(world, blockposition, new ItemStack(this.l(), 1, 0));
                     }
-                }*/
+                }
             }
 
         }

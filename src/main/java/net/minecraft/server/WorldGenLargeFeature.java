@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
+
 
 public class WorldGenLargeFeature extends StructureGenerator {
 
@@ -26,21 +27,13 @@ public class WorldGenLargeFeature extends StructureGenerator {
         this();
         Iterator iterator = map.entrySet().iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                if (((String) ((Entry) it).getKey()).equals("distance")) {
-                    this.g = MathHelper.a((String) ((Entry) it).getValue(), this.g, this.h + 1);
-                }
-            }        
-        );
-        /*
         while (iterator.hasNext()) {
             Entry entry = (Entry) iterator.next();
 
             if (((String) entry.getKey()).equals("distance")) {
                 this.g = MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
             }
-        }*/
+        }
 
     }
 

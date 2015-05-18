@@ -325,21 +325,13 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
 
             Iterator iterator = this.world.getEntities(this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D)).iterator();
 
-            iterator.forEachRemaining(
-                it -> {
-                    if ((Entity) it != this.passenger && ((Entity) it).ae() && (Entity) it instanceof EntityMinecartAbstract) {
-                        ((Entity) it).collide(this);
-                    }
-                }
-            );
-            /*
             while (iterator.hasNext()) {
                 Entity entity = (Entity) iterator.next();
 
                 if (entity != this.passenger && entity.ae() && entity instanceof EntityMinecartAbstract) {
                     entity.collide(this);
                 }
-            }*/
+            }
 
             if (this.passenger != null && this.passenger.dead) {
                 if (this.passenger.vehicle == this) {

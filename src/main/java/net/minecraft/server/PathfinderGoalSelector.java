@@ -28,22 +28,6 @@ public class PathfinderGoalSelector {
     public void a(PathfinderGoal pathfindergoal) {
         Iterator iterator = this.b.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                PathfinderGoal pathfindergoal1 = ((PathfinderGoalSelector.PathfinderGoalSelectorItem) it).a;
-
-            if (pathfindergoal1 == pathfindergoal) {
-                if (this.c.contains((PathfinderGoalSelector.PathfinderGoalSelectorItem) it)) {
-                    pathfindergoal1.d();
-                    this.c.remove((PathfinderGoalSelector.PathfinderGoalSelectorItem) it);
-                }
-
-                iterator.remove();
-            }
-            }
-        );
-        
-        /*
         while (iterator.hasNext()) {
             PathfinderGoalSelector.PathfinderGoalSelectorItem pathfindergoalselector_pathfindergoalselectoritem = (PathfinderGoalSelector.PathfinderGoalSelectorItem) iterator.next();
             PathfinderGoal pathfindergoal1 = pathfindergoalselector_pathfindergoalselectoritem.a;
@@ -56,16 +40,13 @@ public class PathfinderGoalSelector {
 
                 iterator.remove();
             }
-        }*/
+        }
 
     }
 
-    //lambda
-    //Iterator iterator;
     public void a() {
         this.d.a("goalSetup");
         Iterator iterator;
-        //iterator = null;
         PathfinderGoalSelector.PathfinderGoalSelectorItem pathfindergoalselector_pathfindergoalselectoritem;
 
         if (this.e++ % this.f == 0) {
@@ -91,7 +72,7 @@ public class PathfinderGoalSelector {
             }
         } else {
             iterator = this.c.iterator();
-            
+
             while (iterator.hasNext()) {
                 pathfindergoalselector_pathfindergoalselectoritem = (PathfinderGoalSelector.PathfinderGoalSelectorItem) iterator.next();
                 if (!this.a(pathfindergoalselector_pathfindergoalselectoritem)) {

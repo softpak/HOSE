@@ -18,24 +18,17 @@ public class EntitySlice<T> extends AbstractSet<T> {
     private final Class<T> d;
     private final List<T> e = Lists.newArrayList();
 
-    //lambda
     public EntitySlice(Class<T> oclass) {
         this.d = oclass;
         this.c.add(oclass);
         this.b.put(oclass, this.e);
         Iterator iterator = EntitySlice.a.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                this.a((Class) it);
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Class oclass1 = (Class) iterator.next();
 
             this.a(oclass1);
-        }*/
+        }
 
     }
 

@@ -62,8 +62,7 @@ public final class SpawnerCreature {
                     b0 = ( b0 > worldserver.spigotConfig.viewDistance ) ? (byte) worldserver.spigotConfig.viewDistance : b0;
                     b0 = ( b0 > 8 ) ? 8 : b0;
                     // Spigot End
-                    
-                    //HSA
+
                     for (int i1 = -b0; i1 <= b0; ++i1) {
                         for (k = -b0; k <= b0; ++k) {
                             boolean flag3 = i1 == -b0 || i1 == b0 || k == -b0 || k == b0;

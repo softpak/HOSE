@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -25,28 +24,15 @@ public class ContainerHopper extends Container {
         return bukkitEntity;
     }
     // CraftBukkit end
-    //HSA
+
     public ContainerHopper(PlayerInventory playerinventory, IInventory iinventory, EntityHuman entityhuman) {
         this.hopper = iinventory;
         this.player = playerinventory; // CraftBukkit - save player
         iinventory.startOpen(entityhuman);
         byte b0 = 51;
 
-        //int i;
-        Aparapi.range(iinventory.getSize()).forEach(gid_i -> {
-            this.a(new Slot(iinventory, gid_i, 44 + gid_i * 18, 20));
-        });
-        
-        Aparapi.range(3).forEach(gid_i -> {
-            Aparapi.range(9).forEach(gid_j -> {
-                this.a(new Slot(playerinventory, gid_j + gid_i * 9 + 9, 8 + gid_j * 18, gid_i * 18 + b0));
-            });
-        });
-        
-        Aparapi.range(9).forEach(gid_i -> {
-            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 58 + b0));
-        });
-        /*
+        int i;
+
         for (i = 0; i < iinventory.getSize(); ++i) {
             this.a(new Slot(iinventory, i, 44 + i * 18, 20));
         }
@@ -59,7 +45,7 @@ public class ContainerHopper extends Container {
 
         for (i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 58 + b0));
-        }*/
+        }
 
     }
 

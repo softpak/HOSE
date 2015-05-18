@@ -1,9 +1,13 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
+import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +16,7 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.Server;
+import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.craftbukkit.util.LongHashSet;
@@ -73,24 +78,14 @@ public class ChunkProviderServer implements IChunkProvider {
 
     }
 
-    //lambda
     public void b() {
         Iterator iterator = this.chunks.values().iterator();
-        
-        iterator.forEachRemaining(
-                it->{
-                    Chunk chunk = (Chunk) it;
 
-                    this.queueUnload(chunk.locX, chunk.locZ);
-                }
-        );
-
-        /*
         while (iterator.hasNext()) {
             Chunk chunk = (Chunk) iterator.next();
 
             this.queueUnload(chunk.locX, chunk.locZ);
-        }*/
+        }
 
     }
 
@@ -264,7 +259,6 @@ public class ChunkProviderServer implements IChunkProvider {
         }
     }
 
-    //lambda parallel
     public void getChunkAt(IChunkProvider ichunkprovider, int i, int j) {
         Chunk chunk = this.getOrCreateChunk(i, j);
 
@@ -277,30 +271,19 @@ public class ChunkProviderServer implements IChunkProvider {
                 BlockSand.instaFall = true;
                 Random random = new Random();
                 random.setSeed(world.getSeed());
-                //HOSE HSA
-                /*
-                final long[] Xrnd = new long[1];
-                final long[] Zrnd = new long[1];
-                final long[] SEED = new long[1];
-                Aparapi.range(1).forEach(gid -> Xrnd[gid] = random.nextLong() / 2L * 2L + 1L);
-                Aparapi.range(1).forEach(gid -> Zrnd[gid] = random.nextLong() / 2L * 2L + 1L);
-                Aparapi.range(1).forEach(gid -> SEED[gid] = (long) i * Xrnd[gid] + (long) j * Zrnd[gid] ^ world.getSeed());*/
-                long xRand = random.nextLong() / 2L * 2L + 1L;
-                long zRand = random.nextLong() / 2L * 2L + 1L;
+                /*long xRand = random.nextLong() / 2L * 2L + 1L;
+                long zRand = random.nextLong() / 2L * 2L + 1L;*/
+                long xRand = Main.hrnd.nextLong() / 2L * 2L + 1L;
+                long zRand = Main.hrnd.nextLong() / 2L * 2L + 1L;
                 random.setSeed((long) i * xRand + (long) j * zRand ^ world.getSeed());
-                //random.setSeed(SEED[0]);
 
                 org.bukkit.World world = this.world.getWorld();
                 if (world != null) {
                     this.world.populating = true;
                     try {
-                        world.getPopulators().parallelStream().forEach(
-                                wp -> ((org.bukkit.generator.BlockPopulator)wp).populate(world, random, chunk.bukkitChunk)
-                        );
-                        /*
                         for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
                             populator.populate(world, random, chunk.bukkitChunk);
-                        }*/
+                        }
                     } finally {
                         this.world.populating = false;
                     }

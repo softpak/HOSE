@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -47,30 +46,14 @@ public class PathfinderGoalBreed extends PathfinderGoal {
         }
 
     }
-    
-    //lambda parallel
-    EntityAnimal entityanimal;
-    double d0;
+
     private EntityAnimal f() {
         float f = 8.0F;
         List list = this.a.a(this.d.getClass(), this.d.getBoundingBox().grow((double) f, (double) f, (double) f));
-        //double d0 = Double.MAX_VALUE;
-        //EntityAnimal entityanimal = null;
-        //Iterator iterator = list.iterator();
-        entityanimal = null;
-        d0 = Double.MAX_VALUE;
-        
-        
-        list.stream().filter(
-                ea -> this.d.mate((EntityAnimal)ea)&& this.d.h((EntityAnimal)ea) < d0).forEach(
-                ea -> {entityanimal = (EntityAnimal)ea;
-                        d0 = this.d.h((EntityAnimal)ea);
-                });
-        //System.out.println("go bread!!");
-        
-        //staff -> staff.getServiceOfYear() > 5).forEach(
-        //staff -> staff.setSalary(staff.getSalary() * 1.1)) ;        
-             /*   
+        double d0 = Double.MAX_VALUE;
+        EntityAnimal entityanimal = null;
+        Iterator iterator = list.iterator();
+
         while (iterator.hasNext()) {
             EntityAnimal entityanimal1 = (EntityAnimal) iterator.next();
 
@@ -78,7 +61,7 @@ public class PathfinderGoalBreed extends PathfinderGoal {
                 entityanimal = entityanimal1;
                 d0 = this.d.h(entityanimal1);
             }
-        }*/
+        }
 
         return entityanimal;
     }
@@ -113,18 +96,7 @@ public class PathfinderGoalBreed extends PathfinderGoal {
             entityageable.setPositionRotation(this.d.locX, this.d.locY, this.d.locZ, 0.0F, 0.0F);
             this.a.addEntity(entityageable, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); // CraftBukkit - added SpawnReason
             Random random = this.d.bc();
-            //HSA
-            Aparapi.range(7).forEach(gid_i -> {
-                double d0 = random.nextGaussian() * 0.02D;
-                double d1 = random.nextGaussian() * 0.02D;
-                double d2 = random.nextGaussian() * 0.02D;
-                double d3 = random.nextDouble() * (double) this.d.width * 2.0D - (double) this.d.width;
-                double d4 = 0.5D + random.nextDouble() * (double) this.d.length;
-                double d5 = random.nextDouble() * (double) this.d.width * 2.0D - (double) this.d.width;
 
-                this.a.addParticle(EnumParticle.HEART, this.d.locX + d3, this.d.locY + d4, this.d.locZ + d5, d0, d1, d2, new int[0]);
-            });
-            /*
             for (int i = 0; i < 7; ++i) {
                 double d0 = random.nextGaussian() * 0.02D;
                 double d1 = random.nextGaussian() * 0.02D;
@@ -134,7 +106,7 @@ public class PathfinderGoalBreed extends PathfinderGoal {
                 double d5 = random.nextDouble() * (double) this.d.width * 2.0D - (double) this.d.width;
 
                 this.a.addParticle(EnumParticle.HEART, this.d.locX + d3, this.d.locY + d4, this.d.locZ + d5, d0, d1, d2, new int[0]);
-            }*/
+            }
 
             if (this.a.getGameRules().getBoolean("doMobLoot")) {
                 this.a.addEntity(new EntityExperienceOrb(this.a, this.d.locX, this.d.locY, this.d.locZ, random.nextInt(7) + 1));

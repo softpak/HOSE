@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 
@@ -123,26 +122,17 @@ public class RecipeArmorDye extends ShapelessRecipes implements IRecipe { // Cra
     public ItemStack b() {
         return null;
     }
-    
-    //HSA
+
     public ItemStack[] b(InventoryCrafting inventorycrafting) {
         ItemStack[] aitemstack = new ItemStack[inventorycrafting.getSize()];
-        
-        Aparapi.range(aitemstack.length).forEach(gid_i -> {
-            ItemStack itemstack = inventorycrafting.getItem(gid_i);
 
-            if (itemstack != null && itemstack.getItem().r()) {
-                aitemstack[gid_i] = new ItemStack(itemstack.getItem().q());
-            }
-        });
-        /*
         for (int i = 0; i < aitemstack.length; ++i) {
             ItemStack itemstack = inventorycrafting.getItem(i);
 
             if (itemstack != null && itemstack.getItem().r()) {
                 aitemstack[i] = new ItemStack(itemstack.getItem().q());
             }
-        }*/
+        }
 
         return aitemstack;
     }

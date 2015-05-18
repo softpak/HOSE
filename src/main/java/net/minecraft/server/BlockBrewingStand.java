@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.List;
 import java.util.Random;
 
@@ -91,42 +90,27 @@ public class BlockBrewingStand extends BlockContainer {
     public int l(World world, BlockPosition blockposition) {
         return Container.a(world.getTileEntity(blockposition));
     }
-    
-    //HSA
-    IBlockData hiblockdata;
+
     public IBlockData fromLegacyData(int i) {
-        hiblockdata = this.getBlockData();
-        
-        Aparapi.range(3).forEach(gid_j -> {
-            hiblockdata = hiblockdata.set(BlockBrewingStand.HAS_BOTTLE[gid_j], Boolean.valueOf((i & 1 << gid_j) > 0));
-        });
-        /*
+        IBlockData iblockdata = this.getBlockData();
+
         for (int j = 0; j < 3; ++j) {
             iblockdata = iblockdata.set(BlockBrewingStand.HAS_BOTTLE[j], Boolean.valueOf((i & 1 << j) > 0));
-        }*/
+        }
 
-        return hiblockdata;
+        return iblockdata;
     }
-    
-    
-    //HSA
-    int hi;
+
     public int toLegacyData(IBlockData iblockdata) {
-        //int i = 0;
-        hi = 0;
-        Aparapi.range(3).forEach(gid_j -> {
-           if (((Boolean) iblockdata.get(BlockBrewingStand.HAS_BOTTLE[gid_j])).booleanValue()) {
-                hi |= 1 << gid_j;
-            } 
-        });
-        /*
+        int i = 0;
+
         for (int j = 0; j < 3; ++j) {
             if (((Boolean) iblockdata.get(BlockBrewingStand.HAS_BOTTLE[j])).booleanValue()) {
                 i |= 1 << j;
             }
-        }*/
+        }
 
-        return hi;
+        return i;
     }
 
     protected BlockStateList getStateList() {

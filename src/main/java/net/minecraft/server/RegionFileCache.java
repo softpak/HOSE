@@ -12,7 +12,6 @@ public class RegionFileCache {
 
     public static final Map<File, RegionFile> a = Maps.newHashMap(); // Spigot - private -> public
 
-    //primary lag situation
     public static synchronized RegionFile a(File file, int i, int j) {
         File file1 = new File(file, "region");
         File file2 = new File(file1, "r." + (i >> 5) + "." + (j >> 5) + ".mca");
@@ -36,22 +35,9 @@ public class RegionFileCache {
         }
     }
 
-    //lambda
     public static synchronized void a() {
         Iterator iterator = RegionFileCache.a.values().iterator();
-        
-        iterator.forEachRemaining(
-            it -> {
-                try {
-                    if ((RegionFile) it != null) {
-                        ((RegionFile) it).c();
-                    }
-                } catch (IOException ioexception) {
-                    ioexception.printStackTrace();
-                }
-            }
-        );
-        /*
+
         while (iterator.hasNext()) {
             RegionFile regionfile = (RegionFile) iterator.next();
 
@@ -62,7 +48,7 @@ public class RegionFileCache {
             } catch (IOException ioexception) {
                 ioexception.printStackTrace();
             }
-        }*/
+        }
 
         RegionFileCache.a.clear();
     }

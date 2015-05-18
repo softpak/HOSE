@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
@@ -64,28 +63,22 @@ public class BlockRedstoneWire extends Block {
         return World.a((IBlockAccess) world, blockposition.down()) || world.getType(blockposition.down()).getBlock() == Blocks.GLOWSTONE;
     }
 
-    //lamdba
     private IBlockData e(World world, BlockPosition blockposition, IBlockData iblockdata) {
         iblockdata = this.a(world, blockposition, blockposition, iblockdata);
         ArrayList arraylist = Lists.newArrayList(this.R);
 
         this.R.clear();
         Iterator iterator = arraylist.iterator();
-        
-        iterator.forEachRemaining(
-                it-> world.applyPhysics((BlockPosition)it, this));
-        /*
+
         while (iterator.hasNext()) {
             BlockPosition blockposition1 = (BlockPosition) iterator.next();
 
             world.applyPhysics(blockposition1, this);
-        }*/
+        }
 
         return iblockdata;
     }
 
-    //lambda
-    int l;
     private IBlockData a(World world, BlockPosition blockposition, BlockPosition blockposition1, IBlockData iblockdata) {
         IBlockData iblockdata1 = iblockdata;
         int i = ((Integer) iblockdata.get(BlockRedstoneWire.POWER)).intValue();
@@ -100,29 +93,9 @@ public class BlockRedstoneWire extends Block {
             j = k;
         }
 
-        //int l = 0;
-        l = 0;
+        int l = 0;
         Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-        iterator.forEachRemaining(
-                it -> {
-                    BlockPosition blockposition2 = blockposition.shift((EnumDirection)it);
-                    boolean flag = blockposition2.getX() != blockposition1.getX() || blockposition2.getZ() != blockposition1.getZ();
-
-                    if (flag) {
-                        l = this.getPower(world, blockposition2, l);
-                    }
-
-                    if (world.getType(blockposition2).getBlock().isOccluding() && !world.getType(blockposition.up()).getBlock().isOccluding()) {
-                        if (flag && blockposition.getY() >= blockposition1.getY()) {
-                            l = this.getPower(world, blockposition2.up(), l);
-                        }
-                    } else if (!world.getType(blockposition2).getBlock().isOccluding() && flag && blockposition.getY() <= blockposition1.getY()) {
-                        l = this.getPower(world, blockposition2.down(), l);
-                    }
-                }
-        );
-        /*
         while (iterator.hasNext()) {
             EnumDirection enumdirection = (EnumDirection) iterator.next();
             BlockPosition blockposition2 = blockposition.shift(enumdirection);
@@ -139,7 +112,7 @@ public class BlockRedstoneWire extends Block {
             } else if (!world.getType(blockposition2).getBlock().isOccluding() && flag && blockposition.getY() <= blockposition1.getY()) {
                 l = this.getPower(world, blockposition2.down(), l);
             }
-        }*/
+        }
 
         if (l > j) {
             j = l - 1;
@@ -169,91 +142,55 @@ public class BlockRedstoneWire extends Block {
             }
 
             this.R.add(blockposition);
-            //EnumDirection[] aenumdirection = EnumDirection.values();
-            //int i1 = aenumdirection.length;
+            EnumDirection[] aenumdirection = EnumDirection.values();
+            int i1 = aenumdirection.length;
 
-            Stream.of(EnumDirection.values()).forEach(
-                    ae-> this.R.add(blockposition.shift(ae)));            
-                    
-            /*
             for (int j1 = 0; j1 < i1; ++j1) {
                 EnumDirection enumdirection1 = aenumdirection[j1];
 
                 this.R.add(blockposition.shift(enumdirection1));
-            }*/
+            }
         }
 
         return iblockdata;
     }
-    //lambda
+
     private void e(World world, BlockPosition blockposition) {
         if (world.getType(blockposition).getBlock() == this) {
             world.applyPhysics(blockposition, this);
-            //EnumDirection[] aenumdirection = EnumDirection.values();
-            //int i = aenumdirection.length;
+            EnumDirection[] aenumdirection = EnumDirection.values();
+            int i = aenumdirection.length;
 
-            Stream.of(EnumDirection.values()).forEach(
-                    ae-> world.applyPhysics(blockposition.shift(ae), this));  
-            /*
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }*/
+            }
 
         }
     }
-    
-    //lambda parallel
-    EnumDirection enumdirection;
+
     public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
         if (!world.isClientSide) {
             this.e(world, blockposition, iblockdata);
             Iterator iterator = EnumDirection.EnumDirectionLimit.VERTICAL.iterator();
 
-            //EnumDirection enumdirection;
+            EnumDirection enumdirection;
 
-            iterator.forEachRemaining(
-                it-> {
-                    enumdirection = (EnumDirection) it;
-                    world.applyPhysics(blockposition.shift(enumdirection), this);
-                }    
-            );
-            /*
             while (iterator.hasNext()) {
                 enumdirection = (EnumDirection) iterator.next();
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }*/
+            }
 
             iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-            iterator.forEachRemaining(
-                it-> {
-                    enumdirection = (EnumDirection) it;
-                    this.e(world, blockposition.shift(enumdirection));
-                }    
-            );
-            /*
             while (iterator.hasNext()) {
                 enumdirection = (EnumDirection) iterator.next();
                 this.e(world, blockposition.shift(enumdirection));
-            }*/
+            }
 
             iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-            
-            iterator.forEachRemaining(
-                it-> {
-                    enumdirection = (EnumDirection) it;
-                    BlockPosition blockposition1 = blockposition.shift(enumdirection);
 
-                    if (world.getType(blockposition1).getBlock().isOccluding()) {
-                        this.e(world, blockposition1.up());
-                    } else {
-                        this.e(world, blockposition1.down());
-                    }
-                }    
-            );
-            /*
             while (iterator.hasNext()) {
                 enumdirection = (EnumDirection) iterator.next();
                 BlockPosition blockposition1 = blockposition.shift(enumdirection);
@@ -263,54 +200,35 @@ public class BlockRedstoneWire extends Block {
                 } else {
                     this.e(world, blockposition1.down());
                 }
-            }*/
+            }
 
         }
     }
-    
-    //lambda
+
     public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
         super.remove(world, blockposition, iblockdata);
         if (!world.isClientSide) {
-            //EnumDirection[] aenumdirection = EnumDirection.values();
-            //int i = aenumdirection.length;
+            EnumDirection[] aenumdirection = EnumDirection.values();
+            int i = aenumdirection.length;
 
-            Stream.of(EnumDirection.values()).forEach(
-                    ae -> world.applyPhysics(blockposition.shift(ae), this)
-            );
-            /*
             for (int j = 0; j < i; ++j) {
                 EnumDirection enumdirection = aenumdirection[j];
 
                 world.applyPhysics(blockposition.shift(enumdirection), this);
-            }*/
+            }
 
             this.e(world, blockposition, iblockdata);
             Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-            //EnumDirection enumdirection1;
-            iterator.forEachRemaining(
-                it -> this.e(world, blockposition.shift((EnumDirection)it))
-            );
-            /*
+            EnumDirection enumdirection1;
+
             while (iterator.hasNext()) {
                 enumdirection1 = (EnumDirection) iterator.next();
                 this.e(world, blockposition.shift(enumdirection1));
-            }*/
+            }
 
             iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-            
-            iterator.forEachRemaining(
-                    it -> {
-                        if (world.getType(blockposition.shift((EnumDirection)it)).getBlock().isOccluding()) {
-                            this.e(world, blockposition.shift((EnumDirection)it).up());
-                        } else {
-                            this.e(world, blockposition.shift((EnumDirection)it).down());
-                        }
-                    }
-            );
-            /*
             while (iterator.hasNext()) {
                 enumdirection1 = (EnumDirection) iterator.next();
                 BlockPosition blockposition1 = blockposition.shift(enumdirection1);
@@ -320,7 +238,7 @@ public class BlockRedstoneWire extends Block {
                 } else {
                     this.e(world, blockposition1.down());
                 }
-            }*/
+            }
 
         }
     }
@@ -355,7 +273,6 @@ public class BlockRedstoneWire extends Block {
         return !this.Q ? 0 : this.a(iblockaccess, blockposition, iblockdata, enumdirection);
     }
 
-    //lambda
     public int a(IBlockAccess iblockaccess, BlockPosition blockposition, IBlockData iblockdata, EnumDirection enumdirection) {
         if (!this.Q) {
             return 0;
@@ -369,22 +286,14 @@ public class BlockRedstoneWire extends Block {
             } else {
                 EnumSet enumset = EnumSet.noneOf(EnumDirection.class);
                 Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-                
-                iterator.forEachRemaining(
-                        it -> {
-                            if (this.d(iblockaccess, blockposition, (EnumDirection)it)) {
-                                enumset.add((EnumDirection)it);
-                            }
-                        }
-                );
-                /*
+
                 while (iterator.hasNext()) {
                     EnumDirection enumdirection1 = (EnumDirection) iterator.next();
 
                     if (this.d(iblockaccess, blockposition, enumdirection1)) {
                         enumset.add(enumdirection1);
                     }
-                }*/
+                }
 
                 if (enumdirection.k().c() && enumset.isEmpty()) {
                     return i;

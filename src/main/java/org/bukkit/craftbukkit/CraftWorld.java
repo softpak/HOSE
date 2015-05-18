@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit;
 
-import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import net.minecraft.server.*;
 
@@ -83,7 +82,8 @@ public class CraftWorld implements World {
         environment = env;
 
         if (server.chunkGCPeriod > 0) {
-            chunkGCTickCount = rand.nextInt(server.chunkGCPeriod);
+            //chunkGCTickCount = rand.nextInt(server.chunkGCPeriod);
+            chunkGCTickCount = Main.hrnd.nextInt(server.chunkGCPeriod);
         }
     }
 
@@ -135,13 +135,15 @@ public class CraftWorld implements World {
         return world.chunkProviderServer.isChunkLoaded(x, z);
     }
 
-    //lambda
     public Chunk[] getLoadedChunks() {
         Object[] chunks = world.chunkProviderServer.chunks.values().toArray();
         org.bukkit.Chunk[] craftChunks = new CraftChunk[chunks.length];
 
-        IntStream.range(0, chunks.length).forEach(
-            i -> craftChunks[i] = ((net.minecraft.server.Chunk) chunks[i]).bukkitChunk);
+        System.out.println("CWgLC");
+        Device.hsa().forEach(chunks.length, i -> {
+            net.minecraft.server.Chunk chunk = (net.minecraft.server.Chunk) chunks[i];
+            craftChunks[i] = chunk.bukkitChunk;
+        });
         /*
         for (int i = 0; i < chunks.length; i++) {
             net.minecraft.server.Chunk chunk = (net.minecraft.server.Chunk) chunks[i];
@@ -238,13 +240,9 @@ public class CraftWorld implements World {
         // And will include biome data if all sections have been 'touched'
         // This flags 65 blocks distributed across all the sections of the chunk, so that everything is sent, including biomes
         int height = getMaxHeight() / 16;
-        
-        IntStream.range(0, 64).parallel().forEach(gid_idx -> {
-            world.notify(new BlockPosition(px + (gid_idx / height), ((gid_idx % height) * 16), pz));
-        });
-        /*for (int idx = 0; idx < 64; idx++) {
+        for (int idx = 0; idx < 64; idx++) {
             world.notify(new BlockPosition(px + (idx / height), ((idx % height) * 16), pz));
-        }*/
+        }
         world.notify(new BlockPosition(px + 15, (height * 16) - 1, pz + 15));
 
         return true;
@@ -399,7 +397,6 @@ public class CraftWorld implements World {
         return new CraftLightningStrike(server, lightning);
     }
 
-    //decompile
     public boolean generateTree(Location loc, TreeType type) {
         net.minecraft.server.WorldGenerator gen;
         switch (type) {
@@ -423,12 +420,14 @@ public class CraftWorld implements World {
         case SMALL_JUNGLE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
+            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
+            gen = new WorldGenTrees(true, 4 + Main.hrnd.nextInt(7), iblockdata1, iblockdata2, false);
             break;
         case COCOA_TREE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
+            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
+            gen = new WorldGenTrees(true, 4 + Main.hrnd.nextInt(7), iblockdata1, iblockdata2, true);
             break;
         case JUNGLE_BUSH:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
@@ -451,7 +450,8 @@ public class CraftWorld implements World {
             gen = new WorldGenForestTree(true);
             break;
         case MEGA_REDWOOD:
-            gen = new WorldGenMegaTree(false, rand.nextBoolean());
+            //gen = new WorldGenMegaTree(false, rand.nextBoolean());
+            gen = new WorldGenMegaTree(false, Main.hrnd.nextBoolean());
             break;
         case TALL_BIRCH:
             gen = new WorldGenForest(true, true);
@@ -630,21 +630,9 @@ public class CraftWorld implements World {
         return this.world.getBiome(new BlockPosition(x, 0, z)).humidity;
     }
 
-    //lambda
     public List<Entity> getEntities() {
         List<Entity> list = new ArrayList<Entity>();
 
-        world.entityList.stream().filter(
-            li -> (Object)li instanceof net.minecraft.server.Entity).forEach(
-            li -> {
-                Entity bukkitEntity = ((net.minecraft.server.Entity)li).getBukkitEntity();
-                // Assuming that bukkitEntity isn't null
-                if (bukkitEntity != null) {
-                    list.add(bukkitEntity);
-                }
-            });
-        
-        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -655,25 +643,14 @@ public class CraftWorld implements World {
                     list.add(bukkitEntity);
                 }
             }
-        }*/
+        }
 
         return list;
     }
 
-    //lambda
     public List<LivingEntity> getLivingEntities() {
         List<LivingEntity> list = new ArrayList<LivingEntity>();
 
-        world.entityList.stream().filter(
-            li -> (Object)li instanceof net.minecraft.server.Entity).forEach(
-            li -> {
-                Entity bukkitEntity = ((net.minecraft.server.Entity)li).getBukkitEntity();
-                // Assuming that bukkitEntity isn't null
-                if (bukkitEntity != null && bukkitEntity instanceof LivingEntity) {
-                    list.add((LivingEntity) bukkitEntity);
-                }
-            });
-        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -684,7 +661,7 @@ public class CraftWorld implements World {
                     list.add((LivingEntity) bukkitEntity);
                 }
             }
-        }*/
+        }
 
         return list;
     }
@@ -752,30 +729,15 @@ public class CraftWorld implements World {
         AxisAlignedBB bb = new AxisAlignedBB(location.getX() - x, location.getY() - y, location.getZ() - z, location.getX() + x, location.getY() + y, location.getZ() + z);
         List<net.minecraft.server.Entity> entityList = getHandle().getEntities(null, bb);
         List<Entity> bukkitEntityList = new ArrayList<org.bukkit.entity.Entity>(entityList.size());
-        
-        entityList.stream().forEach( en -> bukkitEntityList.add(((net.minecraft.server.Entity) en).getBukkitEntity()));
-        /*
         for (Object entity : entityList) {
             bukkitEntityList.add(((net.minecraft.server.Entity) entity).getBukkitEntity());
-        }*/
+        }
         return bukkitEntityList;
     }
 
-    //lambda
     public List<Player> getPlayers() {
         List<Player> list = new ArrayList<Player>();
 
-        world.entityList.stream().filter( o -> (Object)o instanceof net.minecraft.server.Entity).forEach(
-            o -> {
-                net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-                Entity bukkitEntity = mcEnt.getBukkitEntity();
-
-                if ((bukkitEntity != null) && (bukkitEntity instanceof Player)) {
-                    list.add((Player) bukkitEntity);
-                }
-            }
-        );
-        /*
         for (Object o : world.entityList) {
             if (o instanceof net.minecraft.server.Entity) {
                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
@@ -785,7 +747,7 @@ public class CraftWorld implements World {
                     list.add((Player) bukkitEntity);
                 }
             }
-        }*/
+        }
 
         return list;
     }
@@ -1174,6 +1136,7 @@ public class CraftWorld implements World {
         throw new IllegalArgumentException("Cannot spawn an entity for " + clazz.getName());
     }
 
+    ChunkSnapshot re;
     public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {
         return CraftChunk.getEmptyChunkSnapshot(x, z, this, includeBiome, includeBiomeTempRain);
     }
@@ -1202,33 +1165,13 @@ public class CraftWorld implements World {
         return world.keepSpawnInMemory;
     }
 
-    //lambda
-    //int chunkCoordX, chunkCoordZ;
     public void setKeepSpawnInMemory(boolean keepLoaded) {
         world.keepSpawnInMemory = keepLoaded;
         // Grab the worlds spawn chunk
         BlockPosition chunkcoordinates = this.world.getSpawn();
         int chunkCoordX = chunkcoordinates.getX() >> 4;
         int chunkCoordZ = chunkcoordinates.getZ() >> 4;
-        //chunkCoordX = chunkcoordinates.getX() >> 4;
-        //chunkCoordZ = chunkcoordinates.getZ() >> 4;
         // Cycle through the 25x25 Chunks around it to load/unload the chunks.
-        IntStream.range(-12, 13).forEach( xx -> {
-            IntStream.range(-12, 13).forEach( zz -> {
-                if (keepLoaded) {
-                    loadChunk(chunkCoordX + xx, chunkCoordZ + zz);
-                } else {
-                    if (isChunkLoaded(chunkCoordX + xx, chunkCoordZ + zz)) {
-                        if (this.getHandle().getChunkAt(chunkCoordX + xx, chunkCoordZ + zz) instanceof EmptyChunk) {
-                            unloadChunk(chunkCoordX + xx, chunkCoordZ + zz, false);
-                        } else {
-                            unloadChunk(chunkCoordX + xx, chunkCoordZ + zz);
-                        }
-                    }
-                }
-            });
-        });
-        /*
         for (int x = -12; x <= 12; x++) {
             for (int z = -12; z <= 12; z++) {
                 if (keepLoaded) {
@@ -1243,7 +1186,7 @@ public class CraftWorld implements World {
                     }
                 }
             }
-        }*/
+        }
     }
 
     @Override

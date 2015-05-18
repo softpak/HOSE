@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
-
 public class EntityRabbit extends EntityAnimal {
 
     private EntityRabbit.PathfinderGoalRabbitAvoidTarget<EntityWolf> bm;
@@ -235,38 +233,25 @@ public class EntityRabbit extends EntityAnimal {
     protected void getRareDrop() {
         this.a(new ItemStack(Items.RABBIT_FOOT, 1), 0.0F);
     }
-    
-    //HSA
+
     protected void dropDeathLoot(boolean flag, int i) {
         int j = this.random.nextInt(2) + this.random.nextInt(1 + i);
 
-        //int k;
-        
-        Aparapi.range(j).forEach(gid_k -> {
-            this.a(Items.RABBIT_HIDE, 1);
-        });
-        /*
+        int k;
+
         for (k = 0; k < j; ++k) {
             this.a(Items.RABBIT_HIDE, 1);
-        }*/
+        }
 
         j = this.random.nextInt(2);
-        
-        Aparapi.range(j).forEach(gid_k -> {
-            if (this.isBurning()) {
-                this.a(Items.COOKED_RABBIT, 1);
-            } else {
-                this.a(Items.RABBIT, 1);
-            }
-        });
-        /*
+
         for (k = 0; k < j; ++k) {
             if (this.isBurning()) {
                 this.a(Items.COOKED_RABBIT, 1);
             } else {
                 this.a(Items.RABBIT, 1);
             }
-        }*/
+        }
 
     }
 

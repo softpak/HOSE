@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,23 +52,13 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
         return j + k + l + i1;
     }
 
-    //lambda, HSA
-    static int j;
     public static PacketPlayOutMapChunk.ChunkMap a(Chunk chunk, boolean flag, boolean flag1, int i) {
         ChunkSection[] achunksection = chunk.getSections();
         PacketPlayOutMapChunk.ChunkMap packetplayoutmapchunk_chunkmap = new PacketPlayOutMapChunk.ChunkMap();
         ArrayList arraylist = Lists.newArrayList();
 
-        //int j;
-        Aparapi.range(achunksection.length).forEach(gid_j -> {
-            ChunkSection chunksection = achunksection[gid_j];
+        int j;
 
-            if (chunksection != null && (!flag || !chunksection.a()) && (i & 1 << gid_j) != 0) {
-                packetplayoutmapchunk_chunkmap.b |= 1 << gid_j;
-                arraylist.add(chunksection);
-            }
-        });
-        /*
         for (j = 0; j < achunksection.length; ++j) {
             ChunkSection chunksection = achunksection[j];
 
@@ -77,7 +66,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
                 packetplayoutmapchunk_chunkmap.b |= 1 << j;
                 arraylist.add(chunksection);
             }
-        }*/
+        }
 
         packetplayoutmapchunk_chunkmap.a = new byte[a(Integer.bitCount(packetplayoutmapchunk_chunkmap.b), flag1, flag)];
         j = 0;
@@ -85,39 +74,19 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
 
         ChunkSection chunksection1;
 
-        iterator.forEachRemaining(
-            it -> {
-                char[] achar = ((ChunkSection) it).getIdArray();
-                char[] achar1 = achar;
-                int k = achar.length;
-
-                Aparapi.range(k).forEach(gid_l -> {
-                    char c0 = achar1[gid_l];
-                    packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 & 255);
-                    packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 >> 8 & 255);
-                });
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             chunksection1 = (ChunkSection) iterator.next();
             char[] achar = chunksection1.getIdArray();
             char[] achar1 = achar;
             int k = achar.length;
 
-            Aparapi.range(k).forEach(gid_l -> {
-                char c0 = achar1[gid_l];
-                packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 & 255);
-                packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 >> 8 & 255);
-            });
-            /*
             for (int l = 0; l < k; ++l) {
                 char c0 = achar1[l];
 
                 packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 & 255);
                 packetplayoutmapchunk_chunkmap.a[j++] = (byte) (c0 >> 8 & 255);
-            }*/
-        //}
+            }
+        }
 
         for (iterator = arraylist.iterator(); iterator.hasNext(); j = a(chunksection1.getEmittedLightArray().a(), packetplayoutmapchunk_chunkmap.a, j)) {
             chunksection1 = (ChunkSection) iterator.next();

@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
-//import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
@@ -14,9 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.stream.Stream;
-
-import static org.bukkit.craftbukkit.util.Java15Compat.Arrays_copyOf;
 
 @SuppressWarnings("unchecked")
 public class LongObjectHashMap<V> implements Cloneable, Serializable {
@@ -51,18 +48,14 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         return get(key) != null;
     }
 
-    //lambda
     public boolean containsValue(V value) {
-        
-        return Stream.of(values()).filter(val -> val == value || val.equals(value)).anyMatch( val -> true);
-        /*
         for (V val : values()) {
             if (val == value || val.equals(value)) {
                 return true;
             }
         }
 
-        return false;*/
+        return false;
     }
 
     public V get(long key) {
@@ -91,8 +84,7 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         if (innerKeys == null) {
             // need to make a new chain
             keys[index] = innerKeys = new long[8];
-            //Arrays.fill(innerKeys, EMPTY_KEY);
-            HSA_Arrays.fill(innerKeys, EMPTY_KEY);
+            Arrays.fill(innerKeys, EMPTY_KEY);
             values[index] = innerValues = (V[]) new Object[8];
             innerKeys[0] = key;
             innerValues[0] = value;
@@ -118,10 +110,9 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
             }
 
             // chain is full, resize it and add our new entry
-            keys[index] = innerKeys = Arrays_copyOf(innerKeys, i << 1);
-            //Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
-            HSA_Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
-            values[index] = innerValues = Arrays_copyOf(innerValues, i << 1);
+            keys[index] = innerKeys = Arrays.copyOf(innerKeys, i << 1);
+            Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
+            values[index] = innerValues = Arrays.copyOf(innerValues, i << 1);
             innerKeys[i] = key;
             innerValues[i] = value;
             size++;
@@ -166,14 +157,10 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
         return null;
     }
 
-    //lambda
     public void putAll(Map<? extends Long, ? extends V> map) {
-        map.entrySet().stream().forEach(en -> put((Long) en.getKey(), (V) en.getValue()));
-        
-        /*
         for (Map.Entry entry : map.entrySet()) {
             put((Long) entry.getKey(), (V) entry.getValue());
-        }*/
+        }
     }
 
     public void clear() {
@@ -183,10 +170,8 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
 
         modCount++;
         size = 0;
-        //Arrays.fill(keys, null);
-        //Arrays.fill(values, null);
-        HSA_Arrays.fill(keys, null);
-        HSA_Arrays.fill(values, null);
+        Arrays.fill(keys, null);
+        Arrays.fill(values, null);
     }
 
     public Set<Long> keySet() {

@@ -4,7 +4,6 @@ import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
@@ -86,14 +85,12 @@ public class BlockTripwireHook extends Block {
         }
     }
 
-    boolean flag5;
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, boolean flag, boolean flag1, int i, IBlockData iblockdata1) {
         EnumDirection enumdirection = (EnumDirection) iblockdata.get(BlockTripwireHook.FACING);
         boolean flag2 = ((Boolean) iblockdata.get(BlockTripwireHook.ATTACHED)).booleanValue();
         boolean flag3 = ((Boolean) iblockdata.get(BlockTripwireHook.POWERED)).booleanValue();
         boolean flag4 = !World.a((IBlockAccess) world, blockposition.down());
-        //boolean flag5 = !flag;
-        flag5 = !flag;
+        boolean flag5 = !flag;
         boolean flag6 = false;
         int j = 0;
         IBlockData[] aiblockdata = new IBlockData[42];
@@ -166,16 +163,6 @@ public class BlockTripwireHook extends Block {
         }
 
         if (flag2 != flag5) {
-            
-            IntStream.range(1, j).forEach(l -> {
-                BlockPosition blockposition2 = blockposition.shift(enumdirection, l);
-                IBlockData iblockdata4 = aiblockdata[l];
-
-                if (iblockdata4 != null && world.getType(blockposition2).getBlock() != Blocks.AIR) {
-                    world.setTypeAndData(blockposition2, iblockdata4.set(BlockTripwireHook.ATTACHED, Boolean.valueOf(flag5)), 3);
-                }
-            });
-            /*
             for (int l = 1; l < j; ++l) {
                 BlockPosition blockposition2 = blockposition.shift(enumdirection, l);
                 IBlockData iblockdata4 = aiblockdata[l];
@@ -183,7 +170,7 @@ public class BlockTripwireHook extends Block {
                 if (iblockdata4 != null && world.getType(blockposition2).getBlock() != Blocks.AIR) {
                     world.setTypeAndData(blockposition2, iblockdata4.set(BlockTripwireHook.ATTACHED, Boolean.valueOf(flag5)), 3);
                 }
-            }*/
+            }
         }
 
     }

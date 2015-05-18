@@ -86,21 +86,13 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
         if (flag) {
             Iterator iterator = minecraftserver.getPlayerList().v().iterator();
 
-            iterator.forEachRemaining(
-                it -> {
-                    if ((EntityHuman) it != icommandlistener && minecraftserver.getPlayerList().isOp(((EntityHuman) it).getProfile()) && icommand.canUse(icommandlistener) && (!(icommandlistener instanceof RemoteControlCommandListener) || MinecraftServer.getServer().q())) {
-                        ((EntityHuman) it).sendMessage(chatmessage);
-                    }
-                }
-            );
-            /*
             while (iterator.hasNext()) {
                 EntityHuman entityhuman = (EntityHuman) iterator.next();
 
                 if (entityhuman != icommandlistener && minecraftserver.getPlayerList().isOp(entityhuman.getProfile()) && icommand.canUse(icommandlistener) && (!(icommandlistener instanceof RemoteControlCommandListener) || MinecraftServer.getServer().q())) {
                     entityhuman.sendMessage(chatmessage);
                 }
-            }*/
+            }
         }
 
         if (icommandlistener != minecraftserver && minecraftserver.worldServer[0].getGameRules().getBoolean("logAdminCommands") && !org.spigotmc.SpigotConfig.silentCommandBlocks) { // Spigot

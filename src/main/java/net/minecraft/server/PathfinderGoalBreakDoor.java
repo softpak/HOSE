@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import org.bukkit.craftbukkit.Main;
+
 public class PathfinderGoalBreakDoor extends PathfinderGoalDoorInteract {
 
     private int g;
@@ -50,7 +52,8 @@ public class PathfinderGoalBreakDoor extends PathfinderGoalDoorInteract {
 
     public void e() {
         super.e();
-        if (this.a.bc().nextInt(20) == 0) {
+        //if (this.a.bc().nextInt(20) == 0) {
+        if (Main.hrnd.nextInt(20) == 0) {
             this.a.world.triggerEffect(1010, this.b, 0);
         }
 

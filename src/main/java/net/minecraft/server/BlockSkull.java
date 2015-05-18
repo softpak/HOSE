@@ -3,7 +3,6 @@ package net.minecraft.server;
 import com.google.common.base.Predicate;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.util.BlockStateListPopulator;
@@ -199,28 +198,18 @@ public class BlockSkull extends BlockContainer {
                 // CraftBukkit start
                 if (world.addEntity(entitywither, SpawnReason.BUILD_WITHER)) {
                     blockList.updateList();
-                
-                    iterator.forEachRemaining(
-                        it -> {
-                            ((EntityHuman) it).b((Statistic) AchievementList.I);
-                        }
-                    );
-                /*
+                    
                 while (iterator.hasNext()) {
                     EntityHuman entityhuman = (EntityHuman) iterator.next();
 
                     entityhuman.b((Statistic) AchievementList.I);
-                }*/
+                }
 
                 int k;
 
-                IntStream.range(0, 120).forEach( kk ->
-                    world.addParticle(EnumParticle.SNOWBALL, (double) blockposition1.getX() + world.random.nextDouble(), (double) (blockposition1.getY() - 2) + world.random.nextDouble() * 3.9D, (double) blockposition1.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0])
-                );
-                /*
                 for (k = 0; k < 120; ++k) {
                     world.addParticle(EnumParticle.SNOWBALL, (double) blockposition1.getX() + world.random.nextDouble(), (double) (blockposition1.getY() - 2) + world.random.nextDouble() * 3.9D, (double) blockposition1.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
-                }*/
+                }
 
                 for (k = 0; k < shapedetector.c(); ++k) {
                     for (int l = 0; l < shapedetector.b(); ++l) {

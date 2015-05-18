@@ -583,8 +583,7 @@ public class WorldData {
     public EnumDifficulty y() {
         return this.z;
     }
-    
-    //lambda
+
     public void setDifficulty(EnumDifficulty enumdifficulty) {
         this.z = enumdifficulty;
         // CraftBukkit start

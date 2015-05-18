@@ -51,11 +51,9 @@ public class BlockSapling extends BlockPlant implements IBlockFragilePlantElemen
                         org.bukkit.Bukkit.getPluginManager().callEvent(event);
                     }
                     if (event == null || !event.isCancelled()) {
-                        blocks.stream().forEach( bl -> ((BlockState)bl).update(true));
-                        /*
                         for (BlockState blockstate : blocks) {
                             blockstate.update(true);
-                        }*/
+                        }
                     }
                 }
                 // CraftBukkit end

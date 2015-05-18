@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -366,22 +366,14 @@ public abstract class Entity implements ICommandListener {
             this.setOnFire(15);
         }
     }
-    
-    public void setOnFire(int i) {
-        //int j = i * 20;
-        //j = EnchantmentProtection.a(this, j);
-        
-        //HOSE HSA
-        int hj[] = new int[1];
-        Aparapi.range(1).forEach(gid -> hj[gid] = EnchantmentProtection.a(this, i * 20));
-        if (this.fireTicks < hj[0]) {
-            this.fireTicks = hj[0];
-        }
 
-        /*
+    public void setOnFire(int i) {
+        int j = i * 20;
+
+        j = EnchantmentProtection.a(this, j);
         if (this.fireTicks < j) {
             this.fireTicks = j;
-        }*/
+        }
 
     }
 
@@ -402,30 +394,11 @@ public abstract class Entity implements ICommandListener {
     private boolean b(AxisAlignedBB axisalignedbb) {
         return this.world.getCubes(this, axisalignedbb).isEmpty() && !this.world.containsLiquid(axisalignedbb);
     }
-    
-    //HSA
-    /*
-    double[] hd0 = new double[1],
-             hd1 = new double[1],
-             hd2 = new double[1],
-             hd14 = new double[1],
-             hd15 = new double[1],
-             hd17 = new double[1],
-             hd18 = new double[1], 
-             hd19 = new double[1],
-             hd20 = new double[1];*/
-    public void move(double d0, double d1, double d2) {
-        //HSA
-        /*hd0[0] = d0;
-        hd1[0] = d1;
-        hd2[0] = d2;*/
 
-        
-        
+    public void move(double d0, double d1, double d2) {
         org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.startTiming(); // Spigot
         if (this.noclip) {
             this.a(this.getBoundingBox().c(d0, d1, d2));
-            //this.a(this.getBoundingBox().c(hd0[0], hd1[0], hd2[0]));
             this.recalcPosition();
         } else {
             // CraftBukkit start - Don't do anything if we aren't moving
@@ -440,11 +413,9 @@ public abstract class Entity implements ICommandListener {
                 throw new ReportedException(crashreport);
             }
             // Check if we're moving
-            
             if (d0 == 0 && d1 == 0 && d2 == 0 && this.vehicle == null && this.passenger == null) {
                 return;
             }
-
             // CraftBukkit end
             this.world.methodProfiler.a("move");
             double d3 = this.locX;
@@ -453,10 +424,6 @@ public abstract class Entity implements ICommandListener {
 
             if (this.H) {
                 this.H = false;
-                //HOSE HSA
-                /*Aparapi.range(1).forEach(gid -> hd0[gid] *= 0.25D);
-                Aparapi.range(1).forEach(gid -> hd1[gid] *= 0.05000000074505806D);
-                Aparapi.range(1).forEach(gid -> hd2[gid] *= 0.25D);*/
                 d0 *= 0.25D;
                 d1 *= 0.05000000074505806D;
                 d2 *= 0.25D;
@@ -464,15 +431,12 @@ public abstract class Entity implements ICommandListener {
                 this.motY = 0.0D;
                 this.motZ = 0.0D;
             }
-            
+
             double d6 = d0;
             double d7 = d1;
             double d8 = d2;
-            /*double d6 = hd0[0];
-            double d7 = hd1[0];
-            double d8 = hd2[0];*/
             boolean flag = this.onGround && this.isSneaking() && this instanceof EntityHuman;
-            
+
             if (flag) {
                 double d9;
 
@@ -515,19 +479,18 @@ public abstract class Entity implements ICommandListener {
                     }
                 }
             }
+
             List list = this.world.getCubes(this, this.getBoundingBox().a(d0, d1, d2));
             AxisAlignedBB axisalignedbb = this.getBoundingBox();
+
             AxisAlignedBB axisalignedbb1;
-            
-            
+
             for (Iterator iterator = list.iterator(); iterator.hasNext(); d1 = axisalignedbb1.b(this.getBoundingBox(), d1)) {
                 axisalignedbb1 = (AxisAlignedBB) iterator.next();
             }
 
             this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
-            
             boolean flag1 = this.onGround || d7 != d1 && d7 < 0.0D;
-            
 
             AxisAlignedBB axisalignedbb2;
             Iterator iterator1;
@@ -535,17 +498,14 @@ public abstract class Entity implements ICommandListener {
             for (iterator1 = list.iterator(); iterator1.hasNext(); d0 = axisalignedbb2.a(this.getBoundingBox(), d0)) {
                 axisalignedbb2 = (AxisAlignedBB) iterator1.next();
             }
-            
 
             this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
-            
+
             for (iterator1 = list.iterator(); iterator1.hasNext(); d2 = axisalignedbb2.c(this.getBoundingBox(), d2)) {
                 axisalignedbb2 = (AxisAlignedBB) iterator1.next();
             }
 
-            
             this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
-                        
             if (this.S > 0.0F && flag1 && (d6 != d0 || d8 != d2)) {
                 double d10 = d0;
                 double d11 = d1;
@@ -787,35 +747,12 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected void checkBlockCollisions() {
-        //HSA
         BlockPosition blockposition = new BlockPosition(this.getBoundingBox().a + 0.001D, this.getBoundingBox().b + 0.001D, this.getBoundingBox().c + 0.001D);
         BlockPosition blockposition1 = new BlockPosition(this.getBoundingBox().d - 0.001D, this.getBoundingBox().e - 0.001D, this.getBoundingBox().f - 0.001D);
 
         if (this.world.areChunksLoadedBetween(blockposition, blockposition1)) {
             
-            Aparapi.range(blockposition1.getX()-blockposition.getX()+1).forEach(gid_i -> {
-                Aparapi.range(blockposition1.getY()-blockposition.getY()+1).forEach(gid_j -> {
-                    Aparapi.range(blockposition1.getZ()-blockposition.getZ()+1).forEach(gid_k -> {
-                        BlockPosition blockposition2 = new BlockPosition(gid_i+blockposition.getX(), gid_j+blockposition.getY(), gid_k+blockposition.getZ());
-                        IBlockData iblockdata = this.world.getType(blockposition2);
-
-                        try {
-                            iblockdata.getBlock().a(this.world, blockposition2, iblockdata, this);
-                        } catch (Throwable throwable) {
-                            CrashReport crashreport = CrashReport.a(throwable, "Colliding entity with block");
-                            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being collided with");
-
-                            CrashReportSystemDetails.a(crashreportsystemdetails, blockposition2, iblockdata);
-                            throw new ReportedException(crashreport);
-                        }
-                
-                    });
-                });
-            });
-            
-            
-            /*
-            for (int i = blockposition.getX(); i <= blockposition1.getX(); ++i) {
+             for (int i = blockposition.getX(); i <= blockposition1.getX(); ++i) {
                 for (int j = blockposition.getY(); j <= blockposition1.getY(); ++j) {
                     for (int k = blockposition.getZ(); k <= blockposition1.getZ(); ++k) {
                         BlockPosition blockposition2 = new BlockPosition(i, j, k);
@@ -832,7 +769,7 @@ public abstract class Entity implements ICommandListener {
                         }
                     }
                 }
-            }*/
+            }
         }
 
     }
@@ -937,41 +874,25 @@ public abstract class Entity implements ICommandListener {
         if (f > 1.0F) {
             f = 1.0F;
         }
-        
+
         this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
-        //int i;
-        //float f2;
-        //float f3;
-        int loopsize = (int)(1.0F + this.width * 20.0F);
-        float[] hf2 = new float[loopsize];
-        float[] hf3 = new float[loopsize];
-        Aparapi.range(loopsize).forEach(gid -> {
-            hf2[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            hf3[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) hf2[gid], (double) (f1 + 1.0F), this.locZ + (double) hf3[gid], this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
-        });
+        int i;
+        float f2;
+        float f3;
 
-        /*
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
-        }*/
-        
-        Aparapi.range(loopsize).forEach(gid -> {
-            hf2[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            hf3[gid] = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) hf2[gid], (double) (f1 + 1.0F), this.locZ + (double) hf3[gid], this.motX, this.motY, this.motZ, new int[0]);
-        });
-        
-        /*
+        }
+
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
-        }*/
+        }
 
     }
 
@@ -1020,10 +941,10 @@ public abstract class Entity implements ICommandListener {
     public boolean ab() {
         return this.world.a(this.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
     }
-    
-    
+
     public void a(float f, float f1, float f2) {
         float f3 = f * f + f1 * f1;
+
         if (f3 >= 1.0E-4F) {
             f3 = MathHelper.c(f3);
             if (f3 < 1.0F) {
@@ -1035,6 +956,7 @@ public abstract class Entity implements ICommandListener {
             f1 *= f3;
             float f4 = MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
             float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
+
             this.motX += (double) (f * f5 - f1 * f4);
             this.motZ += (double) (f1 * f5 + f * f4);
         }
@@ -1098,16 +1020,12 @@ public abstract class Entity implements ICommandListener {
         return MathHelper.c(f * f + f1 * f1 + f2 * f2);
     }
 
-    //HSA
     public double e(double d0, double d1, double d2) {
-        
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
-        
-        
+
         return d3 * d3 + d4 * d4 + d5 * d5;
-        
     }
 
     public double b(BlockPosition blockposition) {
@@ -1117,13 +1035,12 @@ public abstract class Entity implements ICommandListener {
     public double c(BlockPosition blockposition) {
         return blockposition.d(this.locX, this.locY, this.locZ);
     }
-    
-    //HSA
-    public double f(double d0, double d1, double d2) {
 
+    public double f(double d0, double d1, double d2) {
         double d3 = this.locX - d0;
         double d4 = this.locY - d1;
         double d5 = this.locZ - d2;
+
         return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
     }
 
@@ -1138,7 +1055,6 @@ public abstract class Entity implements ICommandListener {
     public void d(EntityHuman entityhuman) {}
 
     int numCollisions = 0; // Spigot
-    //HSA
     public void collide(Entity entity) {
         if (entity.passenger != this && entity.vehicle != this) {
             if (!entity.noclip && !this.noclip) {
@@ -1207,7 +1123,6 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected final Vec3D f(float f, float f1) {
-
         float f2 = MathHelper.cos(-f1 * 0.017453292F - 3.1415927F);
         float f3 = MathHelper.sin(-f1 * 0.017453292F - 3.1415927F);
         float f4 = -MathHelper.cos(-f * 0.017453292F);
@@ -1444,43 +1359,31 @@ public abstract class Entity implements ICommandListener {
     protected abstract void b(NBTTagCompound nbttagcompound);
 
     public void ah() {}
-    
-    //HSA
+
     protected NBTTagList a(double... adouble) {
         NBTTagList nbttaglist = new NBTTagList();
         double[] adouble1 = adouble;
         int i = adouble.length;
-        
-        Aparapi.range(i).forEach(gid_j -> {
-            double d0 = adouble1[gid_j];
-            nbttaglist.add(new NBTTagDouble(d0));
-        });
-        /*
+
         for (int j = 0; j < i; ++j) {
             double d0 = adouble1[j];
 
             nbttaglist.add(new NBTTagDouble(d0));
-        }*/
+        }
+
         return nbttaglist;
     }
-    
-    //HSA
+
     protected NBTTagList a(float... afloat) {
         NBTTagList nbttaglist = new NBTTagList();
         float[] afloat1 = afloat;
         int i = afloat.length;
-        
-        Aparapi.range(i).forEach(gid_j -> {
-            float f = afloat1[gid_j];
 
-            nbttaglist.add(new NBTTagFloat(f));
-        });
-        /*
         for (int j = 0; j < i; ++j) {
             float f = afloat1[j];
 
             nbttaglist.add(new NBTTagFloat(f));
-        }*/
+        }
 
         return nbttaglist;
     }
@@ -1520,7 +1423,7 @@ public abstract class Entity implements ICommandListener {
             return false;
         } else {
             BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-            //HSA
+
             for (int i = 0; i < 8; ++i) {
                 int j = MathHelper.floor(this.locY + (double) (((float) ((i >> 0) % 2) - 0.5F) * 0.1F) + (double) this.getHeadHeight());
                 int k = MathHelper.floor(this.locX + (double) (((float) ((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
@@ -1557,7 +1460,7 @@ public abstract class Entity implements ICommandListener {
             if (this.vehicle != null) {
                 this.vehicle.al();
                 this.as += (double) (this.vehicle.yaw - this.vehicle.lastYaw);
-                //HSA
+
                 for (this.ar += (double) (this.vehicle.pitch - this.vehicle.lastPitch); this.as >= 180.0D; this.as -= 360.0D) {
                     ;
                 }

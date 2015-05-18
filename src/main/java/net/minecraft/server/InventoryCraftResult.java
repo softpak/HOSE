@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
 // CraftBukkit end
@@ -108,16 +107,11 @@ public class InventoryCraftResult implements IInventory {
     public int g() {
         return 0;
     }
-    
-    //HSA
+
     public void l() {
-        Aparapi.range(this.items.length).forEach(gid_i -> {
-            this.items[gid_i] = null;
-        });
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
-        }*/
+        }
 
     }
 }

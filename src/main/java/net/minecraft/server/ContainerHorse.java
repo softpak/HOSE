@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.inventory.InventoryView;
@@ -26,7 +25,6 @@ public class ContainerHorse extends Container {
         return bukkitEntity = new CraftInventoryView(player.player.getBukkitEntity(), inventory, this);
     }
 
-    //HSA
     public ContainerHorse(IInventory iinventory, final IInventory iinventory1, final EntityHorse entityhorse, EntityHuman entityhuman) {
         player = (PlayerInventory) iinventory;
         // CraftBukkit end
@@ -47,33 +45,17 @@ public class ContainerHorse extends Container {
                 return super.isAllowed(itemstack) && entityhorse.cO() && EntityHorse.a(itemstack.getItem());
             }
         });
-        //int j;
-        //int k;
+        int j;
+        int k;
 
         if (entityhorse.hasChest()) {
-            Aparapi.range(b0).forEach(gid_j -> {
-                Aparapi.range(5).forEach(gid_k -> {
-                    this.a(new Slot(iinventory1, 2 + gid_k + gid_j * 5, 80 + gid_k * 18, 18 + gid_j * 18));
-                });
-            });
-            /*
             for (j = 0; j < b0; ++j) {
                 for (k = 0; k < 5; ++k) {
                     this.a(new Slot(iinventory1, 2 + k + j * 5, 80 + k * 18, 18 + j * 18));
                 }
-            }*/
+            }
         }
-        
-        Aparapi.range(3).forEach(gid_j -> {
-            Aparapi.range(9).forEach(gid_k -> {
-                this.a(new Slot(iinventory, gid_k + gid_j * 9 + 9, 8 + gid_k * 18, 102 + gid_j * 18 + i));
-            });
-        });
-        
-        Aparapi.range(9).forEach(gid_j -> {
-            this.a(new Slot(iinventory, gid_j, 8 + gid_j * 18, 160 + i));
-        });
-        /*
+
         for (j = 0; j < 3; ++j) {
             for (k = 0; k < 9; ++k) {
                 this.a(new Slot(iinventory, k + j * 9 + 9, 8 + k * 18, 102 + j * 18 + i));
@@ -82,7 +64,7 @@ public class ContainerHorse extends Container {
 
         for (j = 0; j < 9; ++j) {
             this.a(new Slot(iinventory, j, 8 + j * 18, 160 + i));
-        }*/
+        }
 
     }
 

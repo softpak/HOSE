@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -132,7 +131,6 @@ public class BlockVine extends Block {
         IBlockData iblockdata1 = iblockdata;
         Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-        
         while (iterator.hasNext()) {
             EnumDirection enumdirection = (EnumDirection) iterator.next();
             BlockStateBoolean blockstateboolean = a(enumdirection);
@@ -165,7 +163,6 @@ public class BlockVine extends Block {
 
     }
 
-    IBlockData iblockdata1, iblockdata3;
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         if (!world.isClientSide) {
             if (world.random.nextInt(4) == 0) {
@@ -193,24 +190,15 @@ public class BlockVine extends Block {
 
                 if (enumdirection == EnumDirection.UP && blockposition.getY() < 255 && world.isEmpty(blockposition.up())) {
                     if (!flag) {
-                        //IBlockData iblockdata1 = iblockdata;
-                        iblockdata1 = iblockdata;
+                        IBlockData iblockdata1 = iblockdata;
                         Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                        iterator.forEachRemaining(
-                            it -> {
-                                if (random.nextBoolean() || !this.c(world.getType(blockposition.shift((EnumDirection) it).up()).getBlock())) {
-                                    iblockdata1 = iblockdata1.set(a((EnumDirection) it), Boolean.valueOf(false));
-                                }
-                            }
-                        );
-                        /*
                         while (iterator.hasNext()) {
                             enumdirection1 = (EnumDirection) iterator.next();
                             if (random.nextBoolean() || !this.c(world.getType(blockposition.shift(enumdirection1).up()).getBlock())) {
                                 iblockdata1 = iblockdata1.set(a(enumdirection1), Boolean.valueOf(false));
                             }
-                        }*/
+                        }
 
                         if (((Boolean) iblockdata1.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.WEST)).booleanValue()) {
                             // CraftBukkit start - Call BlockSpreadEvent
@@ -272,7 +260,7 @@ public class BlockVine extends Block {
                             blockposition1 = blockposition.down();
                             IBlockData iblockdata2 = world.getType(blockposition1);
                             Block block1 = iblockdata2.getBlock();
-                            //IBlockData iblockdata3;
+                            IBlockData iblockdata3;
                             Iterator iterator1;
                             EnumDirection enumdirection3;
 
@@ -280,20 +268,12 @@ public class BlockVine extends Block {
                                 iblockdata3 = iblockdata;
                                 iterator1 = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                                iterator1.forEachRemaining(
-                                    it -> {
-                                        if (random.nextBoolean()) {
-                                            iblockdata3 = iblockdata3.set(a((EnumDirection) it), Boolean.valueOf(false));
-                                        }
-                                    }
-                                );
-                                /*
                                 while (iterator1.hasNext()) {
                                     enumdirection3 = (EnumDirection) iterator1.next();
                                     if (random.nextBoolean()) {
                                         iblockdata3 = iblockdata3.set(a(enumdirection3), Boolean.valueOf(false));
                                     }
-                                }*/
+                                }
 
                                 if (((Boolean) iblockdata3.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.WEST)).booleanValue()) {
                                     // CraftBukkit start - Call BlockSpreadEvent
@@ -307,16 +287,6 @@ public class BlockVine extends Block {
                                 iblockdata3 = iblockdata2;
                                 iterator1 = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                                iterator1.forEachRemaining(
-                                    it -> {
-                                        BlockStateBoolean blockstateboolean = a((EnumDirection) it);
-
-                                        if (random.nextBoolean() || !((Boolean) iblockdata.get(blockstateboolean)).booleanValue()) {
-                                            iblockdata3 = iblockdata3.set(blockstateboolean, Boolean.valueOf(false));
-                                        }
-                                    }
-                                );
-                                /*
                                 while (iterator1.hasNext()) {
                                     enumdirection3 = (EnumDirection) iterator1.next();
                                     BlockStateBoolean blockstateboolean = a(enumdirection3);
@@ -324,7 +294,7 @@ public class BlockVine extends Block {
                                     if (random.nextBoolean() || !((Boolean) iblockdata.get(blockstateboolean)).booleanValue()) {
                                         iblockdata3 = iblockdata3.set(blockstateboolean, Boolean.valueOf(false));
                                     }
-                                }*/
+                                }
 
                                 if (((Boolean) iblockdata3.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.WEST)).booleanValue()) {
                                     world.setTypeAndData(blockposition1, iblockdata3, 2);
@@ -414,25 +384,18 @@ public class BlockVine extends Block {
         }
     }
 
-    //lambda
-    static int i;
     public static int d(IBlockData iblockdata) {
-        //int i = 0;
-        i = 0;
+        int i = 0;
         BlockStateBoolean[] ablockstateboolean = BlockVine.Q;
         int j = ablockstateboolean.length;
 
-        IntStream.range(0, j).filter( k -> ((Boolean) iblockdata.get(ablockstateboolean[k])).booleanValue())
-                .forEach( k -> ++i);
-                
-        /*
         for (int k = 0; k < j; ++k) {
             BlockStateBoolean blockstateboolean = ablockstateboolean[k];
 
             if (((Boolean) iblockdata.get(blockstateboolean)).booleanValue()) {
                 ++i;
             }
-        }*/
+        }
 
         return i;
     }

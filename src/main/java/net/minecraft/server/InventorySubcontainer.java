@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -178,16 +176,12 @@ public class InventorySubcontainer implements IInventory {
     public int getMaxStackSize() {
         return 64;
     }
-    //HSA
+
     public void update() {
         if (this.d != null) {
-            Aparapi.range(this.d.size()).forEach(gid_i -> {
-                ((IInventoryListener) this.d.get(gid_i)).a(this);
-            });
-            /*
             for (int i = 0; i < this.d.size(); ++i) {
                 ((IInventoryListener) this.d.get(i)).a(this);
-            }*/
+            }
         }
 
     }
@@ -213,15 +207,11 @@ public class InventorySubcontainer implements IInventory {
     public int g() {
         return 0;
     }
-    
-    //HSA
+
     public void l() {
-        
-        Device.hsa().forEach(0, this.items.length, gid_i -> this.items[gid_i] = null);
-        /*
         for (int i = 0; i < this.items.length; ++i) {
             this.items[i] = null;
-        }*/
+        }
 
     }
 }

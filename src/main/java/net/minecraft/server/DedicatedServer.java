@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
 import java.io.File;
@@ -99,22 +98,17 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // CraftBukkit start - TODO: handle command-line logging arguments
         java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
         global.setUseParentHandlers(false);
-        
         for (java.util.logging.Handler handler : global.getHandlers()) {
             global.removeHandler(handler);
         }
         global.addHandler(new org.bukkit.craftbukkit.util.ForwardLogHandler());
 
         final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
-        
-        logger.getAppenders().values().stream().filter( app -> app instanceof org.apache.logging.log4j.core.appender.ConsoleAppender).forEach(
-            app -> logger.removeAppender(app));
-        /*
         for (org.apache.logging.log4j.core.Appender appender : logger.getAppenders().values()) {
             if (appender instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
                 logger.removeAppender(appender);
             }
-        }*/
+        }
 
         new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
@@ -612,18 +606,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         if (plugins.length > 0 && server.getQueryPlugins()) {
             result.append(": ");
-            
-            //HSA
-            Aparapi.range(plugins.length).forEach(gid_i -> {
-                if (gid_i > 0) {
-                    result.append("; ");
-                }
 
-                result.append(plugins[gid_i].getDescription().getName());
-                result.append(" ");
-                result.append(plugins[gid_i].getDescription().getVersion().replaceAll(";", ","));
-            });
-            /*
             for (int i = 0; i < plugins.length; i++) {
                 if (i > 0) {
                     result.append("; ");
@@ -632,7 +615,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 result.append(plugins[i].getDescription().getName());
                 result.append(" ");
                 result.append(plugins[i].getDescription().getVersion().replaceAll(";", ","));
-            }*/
+            }
         }
 
         return result.toString();

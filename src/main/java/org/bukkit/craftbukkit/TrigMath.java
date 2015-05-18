@@ -1,13 +1,11 @@
 package org.bukkit.craftbukkit;
 
-import com.amd.aparapi.Device;
-
 /**
  * Credits for this class goes to user aioobe on stackoverflow.com
  * Source: http://stackoverflow.com/questions/4454630/j2me-calculate-the-the-distance-between-2-latitude-and-longitude
  */
 public class TrigMath {
-    //HSA
+
     static final double sq2p1 = 2.414213562373095048802e0;
     static final double sq2m1 = .414213562373095048802e0;
     static final double p4 = .161536412982230228262e2;
@@ -21,18 +19,10 @@ public class TrigMath {
     static final double q1 = .207933497444540981287275926e4;
     static final double q0 = .89678597403663861962481162e3;
     static final double PIO2 = 1.5707963267948966135E0;
-    
-    //HSA
-    static double argsq;
-    static double value;
+
     private static double mxatan(double arg) {
-        //double argsq = arg * arg, value;
-        argsq = arg * arg;
-        //Device.hsa().forEach(0, 1, i -> value[i] = ((((p4 * argsq[i] + p3) * argsq[i] + p2) * argsq[i] + p1) * argsq[i] + p0)/ (((((argsq[i] + q4) * argsq[i] + q3) * argsq[i] + q2) * argsq[i] + q1) * argsq[i] + q0));
-        
-        //System.out.println("mxatan");
-        //return value[0] * arg;
-        
+        double argsq = arg * arg, value;
+
         value = ((((p4 * argsq + p3) * argsq + p2) * argsq + p1) * argsq + p0);
         value = value / (((((argsq + q4) * argsq + q3) * argsq + q2) * argsq + q1) * argsq + q0);
         return value * arg;

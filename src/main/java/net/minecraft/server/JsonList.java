@@ -118,41 +118,26 @@ public class JsonList<K, V extends JsonListEntry<K>> {
     protected boolean d(K k0) {
         return this.d.containsKey(this.a(k0));
     }
-    
-    //lambda
+
     private void h() {
         ArrayList arraylist = Lists.newArrayList();
         Iterator iterator = this.d.values().iterator();
-        
-        iterator.forEachRemaining(
-            it -> {
-                if (((JsonListEntry)it).hasExpired()) {
-                    arraylist.add(((JsonListEntry)it).getKey());
-                }
-            }        
-        );
-        /*
+
         while (iterator.hasNext()) {
             JsonListEntry jsonlistentry = (JsonListEntry) iterator.next();
 
             if (jsonlistentry.hasExpired()) {
                 arraylist.add(jsonlistentry.getKey());
             }
-        }*/
+        }
 
         iterator = arraylist.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                this.d.remove(it);
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Object object = iterator.next();
 
             this.d.remove(object);
-        }*/
+        }
 
     }
 
@@ -178,7 +163,6 @@ public class JsonList<K, V extends JsonListEntry<K>> {
 
     }
 
-    //lambda
     public void load() throws FileNotFoundException {
         Collection collection = null;
         BufferedReader bufferedreader = null;
@@ -205,22 +189,13 @@ public class JsonList<K, V extends JsonListEntry<K>> {
             this.d.clear();
             Iterator iterator = collection.iterator();
 
-            iterator.forEachRemaining(
-                it -> {
-                    if (((JsonListEntry) it).getKey() != null) {
-                        this.d.put(this.a((K) ((JsonListEntry) it).getKey()), (V) (JsonListEntry) it); // CraftBukkit - fix decompile error
-                    }
-                }       
-            );
-                  
-            /*
             while (iterator.hasNext()) {
                 JsonListEntry jsonlistentry = (JsonListEntry) iterator.next();
 
                 if (jsonlistentry.getKey() != null) {
                     this.d.put(this.a((K) jsonlistentry.getKey()), (V) jsonlistentry); // CraftBukkit - fix decompile error
                 }
-            }*/
+            }
         }
 
     }

@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import com.amd.aparapi.Aparapi;
 import org.bukkit.craftbukkit.inventory.CraftInventoryCrafting;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 // CraftBukkit end
@@ -28,17 +27,12 @@ public class ContainerPlayer extends Container {
 
         // CraftBukkit - fixed multiple decompiler errors below, good luck
         int j;
-        Aparapi.range(2).forEach(gid_i -> {
-            Aparapi.range(2).forEach(gid_j -> {
-                this.a(new Slot(this.craftInventory, gid_j + gid_i * 2, 88 + gid_j * 18, 26 + gid_i * 18));
-            });
-        });
-        /*
+
         for (int i = 0; i < 2; ++i) {
             for (j = 0; j < 2; ++j) {
                 this.a(new Slot(this.craftInventory, j + i * 2, 88 + j * 18, 26 + i * 18));
             }
-        }*/
+        }
 
         for (int ii = 0; ii < 4; ++ii) {
             final int i = ii;
@@ -52,17 +46,7 @@ public class ContainerPlayer extends Container {
                 }
             });
         }
-        
-        Aparapi.range(3).forEach(gid_i -> {
-            Aparapi.range(9).forEach(gid_j -> {
-                this.a(new Slot(playerinventory, gid_j + (gid_i + 1) * 9, 8 + gid_j * 18, 84 + gid_i * 18));
-            });
-        });
-        
-        Aparapi.range(9).forEach(gid_i -> {
-            this.a(new Slot(playerinventory, gid_i, 8 + gid_i * 18, 142));
-        });
-        /*
+
         for (int i = 0; i < 3; ++i) {
             for (j = 0; j < 9; ++j) {
                 this.a(new Slot(playerinventory, j + (i + 1) * 9, 8 + j * 18, 84 + i * 18));
@@ -71,7 +55,7 @@ public class ContainerPlayer extends Container {
 
         for (int i = 0; i < 9; ++i) {
             this.a(new Slot(playerinventory, i, 8 + i * 18, 142));
-        }*/
+        }
 
         // this.a((IInventory) this.craftInventory); // CraftBukkit - unneeded since it just sets result slot to empty
     }
@@ -90,26 +74,17 @@ public class ContainerPlayer extends Container {
         player.playerConnection.sendPacket(new PacketPlayOutSetSlot(player.activeContainer.windowId, 0, craftResult));
         // CraftBukkit end
     }
-    
-    //HSA
+
     public void b(EntityHuman entityhuman) {
         super.b(entityhuman);
-        
-        Aparapi.range(4).forEach(gid_i -> {
-            ItemStack itemstack = this.craftInventory.splitWithoutUpdate(gid_i);
 
-            if (itemstack != null) {
-                entityhuman.drop(itemstack, false);
-            }
-        });
-        /*
         for (int i = 0; i < 4; ++i) {
             ItemStack itemstack = this.craftInventory.splitWithoutUpdate(i);
 
             if (itemstack != null) {
                 entityhuman.drop(itemstack, false);
             }
-        }*/
+        }
 
         this.resultInventory.setItem(0, (ItemStack) null);
     }

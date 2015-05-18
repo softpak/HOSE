@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 // CraftBukkit start
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
@@ -17,15 +16,11 @@ public class InventoryLargeChest implements ITileInventory {
     // CraftBukkit start - add fields and methods
     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
 
-    //lambda
     public ItemStack[] getContents() {
         ItemStack[] result = new ItemStack[this.getSize()];
-        
-        IntStream.range(0, result.length).forEach(i -> result[i] = this.getItem(i));
-        /*
         for (int i = 0; i < result.length; i++) {
             result[i] = this.getItem(i);
-        }*/
+        }
         return result;
     }
 

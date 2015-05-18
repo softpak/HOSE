@@ -203,16 +203,6 @@ public class MobEffectList {
     public void a(EntityLiving entityliving, AttributeMapBase attributemapbase, int i) {
         Iterator iterator = this.J.entrySet().iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                AttributeInstance attributeinstance = attributemapbase.a((IAttribute) ((Entry) it).getKey());
-
-                if (attributeinstance != null) {
-                    attributeinstance.c((AttributeModifier) ((Entry) it).getValue());
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Entry entry = (Entry) iterator.next();
             AttributeInstance attributeinstance = attributemapbase.a((IAttribute) entry.getKey());
@@ -220,26 +210,13 @@ public class MobEffectList {
             if (attributeinstance != null) {
                 attributeinstance.c((AttributeModifier) entry.getValue());
             }
-        }*/
+        }
 
     }
 
     public void b(EntityLiving entityliving, AttributeMapBase attributemapbase, int i) {
         Iterator iterator = this.J.entrySet().iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                AttributeInstance attributeinstance = attributemapbase.a((IAttribute) ((Entry) it).getKey());
-
-                if (attributeinstance != null) {
-                    AttributeModifier attributemodifier = (AttributeModifier) ((Entry) it).getValue();
-
-                    attributeinstance.c(attributemodifier);
-                    attributeinstance.b(new AttributeModifier(attributemodifier.a(), this.a() + " " + i, this.a(i, attributemodifier), attributemodifier.c()));
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Entry entry = (Entry) iterator.next();
             AttributeInstance attributeinstance = attributemapbase.a((IAttribute) entry.getKey());
@@ -250,7 +227,7 @@ public class MobEffectList {
                 attributeinstance.c(attributemodifier);
                 attributeinstance.b(new AttributeModifier(attributemodifier.a(), this.a() + " " + i, this.a(i, attributemodifier), attributemodifier.c()));
             }
-        }*/
+        }
 
     }
 

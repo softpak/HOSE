@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.util.Iterator;
@@ -76,15 +75,12 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
     protected String bp() {
         return "mob.wither.death";
     }
-    
-    //HSA
-    int hj;
-    double hd0, hd1, hd2;
+
     public void m() {
         this.motY *= 0.6000000238418579D;
-        /*double d0;
+        double d0;
         double d1;
-        double d2;*/
+        double d2;
 
         if (!this.world.isClientSide && this.s(0) > 0) {
             Entity entity = this.world.a(this.s(0));
@@ -100,12 +96,12 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
 
                 double d3 = entity.locX - this.locX;
 
-                hd0 = entity.locZ - this.locZ;
-                hd1 = d3 * d3 + hd0 * hd0;
-                if (hd1 > 9.0D) {
-                    hd2 = (double) MathHelper.sqrt(hd1);
-                    this.motX += (d3 / hd2 * 0.5D - this.motX) * 0.6000000238418579D;
-                    this.motZ += (hd0 / hd2 * 0.5D - this.motZ) * 0.6000000238418579D;
+                d0 = entity.locZ - this.locZ;
+                d1 = d3 * d3 + d0 * d0;
+                if (d1 > 9.0D) {
+                    d2 = (double) MathHelper.sqrt(d1);
+                    this.motX += (d3 / d2 * 0.5D - this.motX) * 0.6000000238418579D;
+                    this.motZ += (d0 / d2 * 0.5D - this.motZ) * 0.6000000238418579D;
                 }
             }
         }
@@ -116,45 +112,15 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
 
         super.m();
 
-        //int i;
-        Aparapi.range(2).forEach(gid_i -> {
-            this.bm[gid_i] = this.b[gid_i];
-            this.c[gid_i] = this.a[gid_i];
-        });
-        /*
+        int i;
+
         for (i = 0; i < 2; ++i) {
             this.bm[i] = this.b[i];
             this.c[i] = this.a[i];
-        }*/
+        }
 
-        //int j;
-        
-        Aparapi.range(2).forEach(gid_i -> {
-            hj = this.s(gid_i + 1);
-            Entity entity1 = null;
+        int j;
 
-            if (hj > 0) {
-                entity1 = this.world.a(hj);
-            }
-
-            if (entity1 != null) {
-                hd0 = this.t(gid_i + 1);
-                hd1 = this.u(gid_i + 1);
-                hd2 = this.v(gid_i + 1);
-                double d4 = entity1.locX - hd0;
-                double d5 = entity1.locY + (double) entity1.getHeadHeight() - hd1;
-                double d6 = entity1.locZ - hd2;
-                double d7 = (double) MathHelper.sqrt(d4 * d4 + d6 * d6);
-                float f = (float) (MathHelper.b(d6, d4) * 180.0D / 3.1415927410125732D) - 90.0F;
-                float f1 = (float) (-(MathHelper.b(d5, d7) * 180.0D / 3.1415927410125732D));
-
-                this.a[gid_i] = this.b(this.a[gid_i], f1, 40.0F);
-                this.b[gid_i] = this.b(this.b[gid_i], f, 10.0F);
-            } else {
-                this.b[gid_i] = this.b(this.b[gid_i], this.aI, 10.0F);
-            }
-        });
-        /*
         for (i = 0; i < 2; ++i) {
             j = this.s(i + 1);
             Entity entity1 = null;
@@ -179,21 +145,10 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             } else {
                 this.b[i] = this.b(this.b[i], this.aI, 10.0F);
             }
-        }*/
+        }
 
         boolean flag = this.cm();
-        
-        Aparapi.range(3).forEach(gid_j -> {
-            double d8 = this.t(gid_j);
-            double d9 = this.u(gid_j);
-            double d10 = this.v(gid_j);
 
-            this.world.addParticle(EnumParticle.SMOKE_NORMAL, d8 + this.random.nextGaussian() * 0.30000001192092896D, d9 + this.random.nextGaussian() * 0.30000001192092896D, d10 + this.random.nextGaussian() * 0.30000001192092896D, 0.0D, 0.0D, 0.0D, new int[0]);
-            if (flag && this.world.random.nextInt(4) == 0) {
-                this.world.addParticle(EnumParticle.SPELL_MOB, d8 + this.random.nextGaussian() * 0.30000001192092896D, d9 + this.random.nextGaussian() * 0.30000001192092896D, d10 + this.random.nextGaussian() * 0.30000001192092896D, 0.699999988079071D, 0.699999988079071D, 0.5D, new int[0]);
-            }
-        });
-        /*
         for (j = 0; j < 3; ++j) {
             double d8 = this.t(j);
             double d9 = this.u(j);
@@ -203,16 +158,12 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             if (flag && this.world.random.nextInt(4) == 0) {
                 this.world.addParticle(EnumParticle.SPELL_MOB, d8 + this.random.nextGaussian() * 0.30000001192092896D, d9 + this.random.nextGaussian() * 0.30000001192092896D, d10 + this.random.nextGaussian() * 0.30000001192092896D, 0.699999988079071D, 0.699999988079071D, 0.5D, new int[0]);
             }
-        }*/
+        }
 
         if (this.cl() > 0) {
-            Aparapi.range(3).forEach(gid_j -> {
-                this.world.addParticle(EnumParticle.SPELL_MOB, this.locX + this.random.nextGaussian() * 1.0D, this.locY + (double) (this.random.nextFloat() * 3.3F), this.locZ + this.random.nextGaussian() * 1.0D, 0.699999988079071D, 0.699999988079071D, 0.8999999761581421D, new int[0]);
-            });
-            /*
             for (j = 0; j < 3; ++j) {
                 this.world.addParticle(EnumParticle.SPELL_MOB, this.locX + this.random.nextGaussian() * 1.0D, this.locY + (double) (this.random.nextFloat() * 3.3F), this.locZ + this.random.nextGaussian() * 1.0D, 0.699999988079071D, 0.699999988079071D, 0.8999999761581421D, new int[0]);
-            }*/
+            }
         }
 
     }
@@ -475,14 +426,10 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                     if (this.bp <= 0) {
                         this.bp = 20;
                     }
-                    
-                    Aparapi.range(this.bo.length).forEach(gid_i -> {
-                        this.bo[gid_i] += 3;
-                    });
-                    /*
+
                     for (int i = 0; i < this.bo.length; ++i) {
                         this.bo[i] += 3;
-                    }*/
+                    }
 
                     return super.damageEntity(damagesource, f);
                 }

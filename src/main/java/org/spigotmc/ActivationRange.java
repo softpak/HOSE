@@ -1,6 +1,5 @@
 package org.spigotmc;
 
-import com.amd.aparapi.Aparapi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -120,16 +119,7 @@ public class ActivationRange
             int j = MathHelper.floor( maxBB.d / 16.0D );
             int k = MathHelper.floor( maxBB.c / 16.0D );
             int l = MathHelper.floor( maxBB.f / 16.0D );
-            //HSA  fix bug for moving in wrong status.
-            Aparapi.range(j-i+1).forEach(gid_i1 -> {
-                Aparapi.range(l-k+1).forEach(gid_j1 -> {
-                    if ( world.getWorld().isChunkLoaded( gid_i1+i, gid_j1+k ) ){
-                        activateChunkEntities( world.getChunkAt( gid_i1+i, gid_j1+k ) );
-                    }
-                });
-            });
-            
-            /*
+
             for ( int i1 = i; i1 <= j; ++i1 )
             {
                 for ( int j1 = k; j1 <= l; ++j1 )
@@ -139,7 +129,7 @@ public class ActivationRange
                         activateChunkEntities( world.getChunkAt( i1, j1 ) );
                     }
                 }
-            }*/
+            }
         }
         SpigotTimings.entityActivationCheckTimer.stopTiming();
     }
@@ -149,7 +139,6 @@ public class ActivationRange
      *
      * @param chunk
      */
-    //lambda parallel
     private static void activateChunkEntities(Chunk chunk)
     {
         for ( List<Entity> slice : chunk.entitySlices )

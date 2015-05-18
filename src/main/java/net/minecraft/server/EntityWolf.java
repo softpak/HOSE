@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 
 // CraftBukkit start
@@ -179,20 +178,13 @@ public class EntityWolf extends EntityTameableAnimal {
             if (this.bs > 0.4F) {
                 float f = (float) this.getBoundingBox().b;
                 int i = (int) (MathHelper.sin((this.bs - 0.4F) * 3.1415927F) * 7.0F);
-                
-                Aparapi.range(i).forEach(gid_j -> {
-                    float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
-                    float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
 
-                    this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f1, (double) (f + 0.8F), this.locZ + (double) f2, this.motX, this.motY, this.motZ, new int[0]);
-                });
-                /*
                 for (int j = 0; j < i; ++j) {
                     float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
                     float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
 
                     this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f1, (double) (f + 0.8F), this.locZ + (double) f2, this.motX, this.motY, this.motZ, new int[0]);
-                }*/
+                }
             }
         }
 

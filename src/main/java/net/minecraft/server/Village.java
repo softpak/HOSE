@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import java.util.Iterator;
@@ -86,17 +85,12 @@ public class Village {
         if (!World.a((IBlockAccess) this.a, blockposition1.down())) {
             return false;
         } else {
-            //HSA
-            int[] hi = new int[1];
-            int[] hj = new int[1];
-            Aparapi.range(1).forEach(gid -> hi[gid] = blockposition1.getX() - blockposition.getX() / 2);
-            Aparapi.range(1).forEach(gid -> hj[gid] = blockposition1.getZ() - blockposition.getZ() / 2);
-            //int i = blockposition1.getX() - blockposition.getX() / 2;
-            //int j = blockposition1.getZ() - blockposition.getZ() / 2;
+            int i = blockposition1.getX() - blockposition.getX() / 2;
+            int j = blockposition1.getZ() - blockposition.getZ() / 2;
 
-            for (int k = hi[0]; k < hi[0] + blockposition.getX(); ++k) {
+            for (int k = i; k < i + blockposition.getX(); ++k) {
                 for (int l = blockposition1.getY(); l < blockposition1.getY() + blockposition.getY(); ++l) {
-                    for (int i1 = hj[0]; i1 < hj[0] + blockposition.getZ(); ++i1) {
+                    for (int i1 = j; i1 < j + blockposition.getZ(); ++i1) {
                         if (this.a.getType(new BlockPosition(k, l, i1)).getBlock().isOccluding()) {
                             return false;
                         }
@@ -242,24 +236,10 @@ public class Village {
         village_aggressor.b = this.g;
     }
 
-    //HSA
-    double hd0;
-    Village.Aggressor hvillage_aggressor;
     public EntityLiving b(EntityLiving entityliving) {
-        //double d0 = Double.MAX_VALUE;
-        hd0 = Double.MAX_VALUE;
-        //Village.Aggressor village_aggressor = null;
-        hvillage_aggressor = null;
-        Aparapi.range(this.k.size()).forEach(gid_i -> {
-            Village.Aggressor village_aggressor1 = (Village.Aggressor) this.k.get(gid_i);
-            double d1 = village_aggressor1.a.h(entityliving);
+        double d0 = Double.MAX_VALUE;
+        Village.Aggressor village_aggressor = null;
 
-            if (d1 <= hd0) {
-                hvillage_aggressor = village_aggressor1;
-                hd0 = d1;
-            }
-        });
-        /*
         for (int i = 0; i < this.k.size(); ++i) {
             Village.Aggressor village_aggressor1 = (Village.Aggressor) this.k.get(i);
             double d1 = village_aggressor1.a.h(entityliving);
@@ -268,9 +248,9 @@ public class Village {
                 village_aggressor = village_aggressor1;
                 d0 = d1;
             }
-        }*/
+        }
 
-        return hvillage_aggressor != null ? hvillage_aggressor.a : null;
+        return village_aggressor != null ? village_aggressor.a : null;
     }
 
     public EntityHuman c(EntityLiving entityliving) {
@@ -380,8 +360,7 @@ public class Village {
     public boolean d(String s) {
         return this.a(s) <= -15;
     }
-    
-    //HSA
+
     public void a(NBTTagCompound nbttagcompound) {
         this.h = nbttagcompound.getInt("PopSize");
         this.e = nbttagcompound.getInt("Radius");
@@ -392,39 +371,16 @@ public class Village {
         this.d = new BlockPosition(nbttagcompound.getInt("CX"), nbttagcompound.getInt("CY"), nbttagcompound.getInt("CZ"));
         this.c = new BlockPosition(nbttagcompound.getInt("ACX"), nbttagcompound.getInt("ACY"), nbttagcompound.getInt("ACZ"));
         NBTTagList nbttaglist = nbttagcompound.getList("Doors", 10);
-        
-        Aparapi.range(nbttaglist.size()).forEach(gid_i -> {
-            NBTTagCompound nbttagcompound1 = nbttaglist.get(gid_i);
-            VillageDoor villagedoor = new VillageDoor(new BlockPosition(nbttagcompound1.getInt("X"), nbttagcompound1.getInt("Y"), nbttagcompound1.getInt("Z")), nbttagcompound1.getInt("IDX"), nbttagcompound1.getInt("IDZ"), nbttagcompound1.getInt("TS"));
 
-            this.b.add(villagedoor);
-        });
-        /*
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
             VillageDoor villagedoor = new VillageDoor(new BlockPosition(nbttagcompound1.getInt("X"), nbttagcompound1.getInt("Y"), nbttagcompound1.getInt("Z")), nbttagcompound1.getInt("IDX"), nbttagcompound1.getInt("IDZ"), nbttagcompound1.getInt("TS"));
 
             this.b.add(villagedoor);
-        }*/
+        }
 
         NBTTagList nbttaglist1 = nbttagcompound.getList("Players", 10);
-        
-        
-        Aparapi.range(nbttaglist1.size()).forEach(gid_j -> {
-            NBTTagCompound nbttagcompound2 = nbttaglist1.get(gid_j);
 
-            if (nbttagcompound2.hasKey("UUID")) {
-                UserCache usercache = MinecraftServer.getServer().getUserCache();
-                GameProfile gameprofile = usercache.a(UUID.fromString(nbttagcompound2.getString("UUID")));
-
-                if (gameprofile != null) {
-                    this.j.put(gameprofile.getName(), Integer.valueOf(nbttagcompound2.getInt("S")));
-                }
-            } else {
-                this.j.put(nbttagcompound2.getString("Name"), Integer.valueOf(nbttagcompound2.getInt("S")));
-            }
-        });
-        /*
         for (int j = 0; j < nbttaglist1.size(); ++j) {
             NBTTagCompound nbttagcompound2 = nbttaglist1.get(j);
 
@@ -438,7 +394,7 @@ public class Village {
             } else {
                 this.j.put(nbttagcompound2.getString("Name"), Integer.valueOf(nbttagcompound2.getInt("S")));
             }
-        }*/
+        }
 
     }
 
@@ -457,7 +413,7 @@ public class Village {
         nbttagcompound.setInt("ACZ", this.c.getZ());
         NBTTagList nbttaglist = new NBTTagList();
         Iterator iterator = this.b.iterator();
-        //HSA posible
+
         while (iterator.hasNext()) {
             VillageDoor villagedoor = (VillageDoor) iterator.next();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();

@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.map;
 
 import java.awt.Image;
-import org.bukkit.craftbukkit.util.HSA_Arrays;
+import java.util.Arrays;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursorCollection;
 import org.bukkit.map.MapFont;
@@ -17,9 +17,7 @@ public class CraftMapCanvas implements MapCanvas {
 
     protected CraftMapCanvas(CraftMapView mapView) {
         this.mapView = mapView;
-        //HSA
-        //Arrays.fill(buffer, (byte) -1);
-        HSA_Arrays.fill(buffer, (byte) -1);
+        Arrays.fill(buffer, (byte) -1);
     }
 
     public CraftMapView getMapView() {

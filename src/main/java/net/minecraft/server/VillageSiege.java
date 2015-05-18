@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,22 +79,11 @@ public class VillageSiege {
 
                     while (true) {
                         if (i < 10) {
-                            //HSA
-                            //float f1 = this.a.random.nextFloat() * 3.1415927F * 2.0F;
-                            int[] hg = new int[1];
-                            int[] hi = new int[1];
-                            //this.g = blockposition.getX() + (int) ((double) (MathHelper.cos(f1) * f) * 0.9D);
-                            //this.i = blockposition.getZ() + (int) ((double) (MathHelper.sin(f1) * f) * 0.9D);
-                            Aparapi.range(1).forEach(gid -> { 
-                                hg[gid] = blockposition.getX() + (int) ((double) (MathHelper.cos(this.a.random.nextFloat() * 3.1415927F * 2.0F) * f) * 0.9D);
-                                this.g = hg[gid];
-                            });
-                            Aparapi.range(1).forEach(gid -> { 
-                                hi[gid] = blockposition.getZ() + (int) ((double) (MathHelper.sin(this.a.random.nextFloat() * 3.1415927F * 2.0F) * f) * 0.9D);
-                                this.i = hi[0];
-                            });
+                            float f1 = this.a.random.nextFloat() * 3.1415927F * 2.0F;
+
+                            this.g = blockposition.getX() + (int) ((double) (MathHelper.cos(f1) * f) * 0.9D);
                             this.h = blockposition.getY();
-                            
+                            this.i = blockposition.getZ() + (int) ((double) (MathHelper.sin(f1) * f) * 0.9D);
                             flag = false;
                             Iterator iterator1 = this.a.ae().getVillages().iterator();
 

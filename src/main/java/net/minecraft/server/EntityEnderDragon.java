@@ -302,9 +302,6 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         }
     }
 
-    //lambda
-    EntityEnderCrystal entityendercrystal;
-    double d0;
     private void n() {
         if (this.bz != null) {
             if (this.bz.dead) {
@@ -330,23 +327,10 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         if (this.random.nextInt(10) == 0) {
             float f = 32.0F;
             List list = this.world.a(EntityEnderCrystal.class, this.getBoundingBox().grow((double) f, (double) f, (double) f));
-            //EntityEnderCrystal entityendercrystal = null;
-            entityendercrystal = null;
-            //double d0 = Double.MAX_VALUE;
-            d0 = Double.MAX_VALUE;
+            EntityEnderCrystal entityendercrystal = null;
+            double d0 = Double.MAX_VALUE;
             Iterator iterator = list.iterator();
 
-            iterator.forEachRemaining(
-                it -> {
-                    double d1 = ((EntityEnderCrystal) it).h(this);
-
-                    if (d1 < d0) {
-                        d0 = d1;
-                        entityendercrystal = (EntityEnderCrystal) it;
-                    }
-                }
-            );
-            /*
             while (iterator.hasNext()) {
                 EntityEnderCrystal entityendercrystal1 = (EntityEnderCrystal) iterator.next();
                 double d1 = entityendercrystal1.h(this);
@@ -355,7 +339,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
                     d0 = d1;
                     entityendercrystal = entityendercrystal1;
                 }
-            }*/
+            }
 
             this.bz = entityendercrystal;
         }
@@ -367,18 +351,6 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         double d1 = (this.bo.getBoundingBox().c + this.bo.getBoundingBox().f) / 2.0D;
         Iterator iterator = list.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                if ((Entity) it instanceof EntityLiving) {
-                    double d2 = ((Entity) it).locX - d0;
-                    double d3 = ((Entity) it).locZ - d1;
-                    double d4 = d2 * d2 + d3 * d3;
-
-                    ((Entity) it).g(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             Entity entity = (Entity) iterator.next();
 
@@ -389,20 +361,11 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
 
                 entity.g(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
             }
-        }*/
+        }
 
     }
 
-    //lambda
     private void b(List<Entity> list) {
-        
-        list.stream().filter( li -> (Entity)li instanceof EntityLiving).forEach(
-                li -> {
-                    ((Entity)li).damageEntity(DamageSource.mobAttack(this), 10.0F);
-                    this.a((EntityLiving) this, (Entity)li);
-                }
-        );
-        /*
         for (int i = 0; i < list.size(); ++i) {
             Entity entity = (Entity) list.get(i);
 
@@ -410,7 +373,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
                 entity.damageEntity(DamageSource.mobAttack(this), 10.0F);
                 this.a((EntityLiving) this, entity);
             }
-        }*/
+        }
 
     }
 
@@ -419,19 +382,11 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         ArrayList arraylist = Lists.newArrayList(this.world.players);
         Iterator iterator = arraylist.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                if (((EntityHuman) it).v()) {
-                    iterator.remove();
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             if (((EntityHuman) iterator.next()).v()) {
                 iterator.remove();
             }
-        }*/
+        }
 
         if (this.random.nextInt(2) == 0 && !arraylist.isEmpty()) {
             // CraftBukkit start

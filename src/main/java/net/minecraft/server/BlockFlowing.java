@@ -7,6 +7,7 @@ import java.util.Set;
 
 // CraftBukkit start
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.Main;
 import org.bukkit.event.block.BlockFromToEvent;
 // CraftBukkit end
 
@@ -22,8 +23,6 @@ public class BlockFlowing extends BlockFluids {
         world.setTypeAndData(blockposition, b(this.material).getBlockData().set(BlockFlowing.LEVEL, iblockdata.get(BlockFlowing.LEVEL)), 2);
     }
 
-    //lambda
-    int k;
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         // CraftBukkit start
         org.bukkit.World bworld = world.getWorld();
@@ -38,7 +37,7 @@ public class BlockFlowing extends BlockFluids {
         }
 
         int j = this.a(world);
-        //int k;
+        int k;
 
         if (i > 0) {
             int l = -100;
@@ -76,7 +75,8 @@ public class BlockFlowing extends BlockFluids {
                 }
             }
 
-            if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && random.nextInt(4) != 0) {
+            //if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && random.nextInt(4) != 0) {
+            if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && Main.hrnd.nextInt(4) != 0) {
                 j *= 4;
             }
 
@@ -133,19 +133,6 @@ public class BlockFlowing extends BlockFluids {
 
             Iterator iterator1 = set.iterator();
 
-            iterator1.forEachRemaining(
-                it -> {
-                    BlockFromToEvent event = new BlockFromToEvent(source, org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace((EnumDirection)it));
-                    if (server != null) {
-                        server.getPluginManager().callEvent(event);
-                    }
-
-                    if (!event.isCancelled()) {
-                        this.flow(world, blockposition.shift((EnumDirection)it), world.getType(blockposition.shift((EnumDirection)it)), k);
-                    }
-                }
-            );
-            /*
             while (iterator1.hasNext()) {
                 EnumDirection enumdirection1 = (EnumDirection) iterator1.next();
 
@@ -159,7 +146,7 @@ public class BlockFlowing extends BlockFluids {
                     this.flow(world, blockposition.shift(enumdirection1), world.getType(blockposition.shift(enumdirection1)), k);
                 }
                 // CraftBukkit end
-            }*/
+            }
         }
 
     }
@@ -209,40 +196,11 @@ public class BlockFlowing extends BlockFluids {
         return j;
     }
 
-    //lambda
-    int i;
     private Set<EnumDirection> f(World world, BlockPosition blockposition) {
-        //int i = 1000;
-        i = 1000;
+        int i = 1000;
         EnumSet enumset = EnumSet.noneOf(EnumDirection.class);
         Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-        
-        iterator.forEachRemaining(
-            it -> {
-                BlockPosition blockposition1 = blockposition.shift((EnumDirection)it);
-                IBlockData iblockdata = world.getType(blockposition1);
 
-                if (!this.g(world, blockposition1, iblockdata) && (iblockdata.getBlock().getMaterial() != this.material || ((Integer) iblockdata.get(BlockFlowing.LEVEL)).intValue() > 0)) {
-                    int j;
-
-                    if (this.g(world, blockposition1.down(), world.getType(blockposition1.down()))) {
-                        j = this.a(world, blockposition1, 1, ((EnumDirection)it).opposite());
-                    } else {
-                        j = 0;
-                    }
-
-                    if (j < i) {
-                        enumset.clear();
-                    }
-
-                    if (j <= i) {
-                        enumset.add((EnumDirection)it);
-                        i = j;
-                    }
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             EnumDirection enumdirection = (EnumDirection) iterator.next();
             BlockPosition blockposition1 = blockposition.shift(enumdirection);
@@ -266,7 +224,7 @@ public class BlockFlowing extends BlockFluids {
                     i = j;
                 }
             }
-        }*/
+        }
 
         return enumset;
     }

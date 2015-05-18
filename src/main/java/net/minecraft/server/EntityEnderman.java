@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import java.util.Collections;
@@ -205,28 +204,8 @@ public class EntityEnderman extends EntityMonster {
             this.setPosition(d3, d4, d5);
             return false;
         } else {
-            //HSA
             short short0 = 128;
-            double[] hd6 = new double[short0];
-            float[] hf = new float[short0];
-            float[] hf1 = new float[short0];
-            float[] hf2 = new float[short0];
-            double[] hd7 = new double[short0];
-            double[] hd8 = new double[short0];
-            double[] hd9 = new double[short0];
-            
-            Aparapi.range(short0).forEach(gid_i -> {
-                hd6[gid_i] = (double) gid_i / ((double) short0 - 1.0D);
-                hf[gid_i] = (this.random.nextFloat() - 0.5F) * 0.2F;
-                hf1[gid_i] = (this.random.nextFloat() - 0.5F) * 0.2F;
-                hf2[gid_i] = (this.random.nextFloat() - 0.5F) * 0.2F;
-                hd7[gid_i] = d3 + (this.locX - d3) * hd6[gid_i] + (this.random.nextDouble() - 0.5D) * (double) this.width * 2.0D;
-                hd8[gid_i] = d4 + (this.locY - d4) * hd6[gid_i] + this.random.nextDouble() * (double) this.length;
-                hd9[gid_i] = d5 + (this.locZ - d5) * hd6[gid_i] + (this.random.nextDouble() - 0.5D) * (double) this.width * 2.0D;
 
-                this.world.addParticle(EnumParticle.PORTAL, hd7[gid_i], hd8[gid_i], hd9[gid_i], (double) hf[gid_i], (double) hf1[gid_i], (double) hf2[gid_i], new int[0]);
-            });
-            /*
             for (int i = 0; i < short0; ++i) {
                 double d6 = (double) i / ((double) short0 - 1.0D);
                 float f = (this.random.nextFloat() - 0.5F) * 0.2F;
@@ -237,7 +216,7 @@ public class EntityEnderman extends EntityMonster {
                 double d9 = d5 + (this.locZ - d5) * d6 + (this.random.nextDouble() - 0.5D) * (double) this.width * 2.0D;
 
                 this.world.addParticle(EnumParticle.PORTAL, d7, d8, d9, (double) f, (double) f1, (double) f2, new int[0]);
-            }*/
+            }
 
             this.world.makeSound(d3, d4, d5, "mob.endermen.portal", 1.0F, 1.0F);
             this.makeSound("mob.endermen.portal", 1.0F, 1.0F);

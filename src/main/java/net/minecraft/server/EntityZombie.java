@@ -3,6 +3,8 @@ package net.minecraft.server;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import org.HOSE.HRandom;
+import org.bukkit.craftbukkit.Main;
 
 //CraftBukkit start
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
@@ -162,6 +164,11 @@ public class EntityZombie extends EntityMonster {
 
         super.m();
     }
+    
+    //HSA rnd
+    public static int nextInt(HRandom random, int i, int j) {
+        return i >= j ? i : random.nextInt(j - i + 1) + i;
+    }
 
     public boolean damageEntity(DamageSource damagesource, float f) {
         if (super.damageEntity(damagesource, f)) {
@@ -178,9 +185,13 @@ public class EntityZombie extends EntityMonster {
                 EntityZombie entityzombie = new EntityZombie(this.world);
 
                 for (int l = 0; l < 50; ++l) {
+                    int i1 = i + nextInt(Main.hrnd, 7, 40) * nextInt(Main.hrnd, -1, 1);
+                    int j1 = j + nextInt(Main.hrnd, 7, 40) * nextInt(Main.hrnd, -1, 1);
+                    int k1 = k + nextInt(Main.hrnd, 7, 40) * nextInt(Main.hrnd, -1, 1);
+                    /*
                     int i1 = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
                     int j1 = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
-                    int k1 = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
+                    int k1 = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);*/
 
                     if (World.a((IBlockAccess) this.world, new BlockPosition(i1, j1 - 1, k1)) && this.world.getLightLevel(new BlockPosition(i1, j1, k1)) < 10) {
                         entityzombie.setPosition((double) i1, (double) j1, (double) k1);
@@ -451,7 +462,8 @@ public class EntityZombie extends EntityMonster {
             }
 
             if (!this.world.isClientSide) {
-                this.a(this.random.nextInt(2401) + 3600);
+                //this.a(this.random.nextInt(2401) + 3600);
+                this.a(Main.hrnd.nextInt(2401) + 3600);
             }
 
             return true;
@@ -497,8 +509,7 @@ public class EntityZombie extends EntityMonster {
         entityvillager.addEffect(new MobEffect(MobEffectList.CONFUSION.id, 200, 0));
         this.world.a((EntityHuman) null, 1017, new BlockPosition((int) this.locX, (int) this.locY, (int) this.locZ), 0);
     }
-    
-    //HSA
+
     protected int cr() {
         int i = 1;
 

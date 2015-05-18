@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -132,24 +131,17 @@ public class ScoreboardServer extends Scoreboard {
         }
 
     }
-    
-    //HSA
+
     public List<Packet> getScoreboardScorePacketsForObjective(ScoreboardObjective scoreboardobjective) {
         ArrayList arraylist = Lists.newArrayList();
 
         arraylist.add(new PacketPlayOutScoreboardObjective(scoreboardobjective, 0));
-        
-        Aparapi.range(19).forEach(gid_i -> {
-            if (this.getObjectiveForSlot(gid_i) == scoreboardobjective) {
-                arraylist.add(new PacketPlayOutScoreboardDisplayObjective(gid_i, scoreboardobjective));
-            }
-        });
-        /*
+
         for (int i = 0; i < 19; ++i) {
             if (this.getObjectiveForSlot(i) == scoreboardobjective) {
                 arraylist.add(new PacketPlayOutScoreboardDisplayObjective(i, scoreboardobjective));
             }
-        }*/
+        }
 
         Iterator iterator = this.getScoresForObjective(scoreboardobjective).iterator();
 
@@ -180,25 +172,17 @@ public class ScoreboardServer extends Scoreboard {
 
         this.b.add(scoreboardobjective);
     }
-    
-    
-    //HSA
+
     public List<Packet> f(ScoreboardObjective scoreboardobjective) {
         ArrayList arraylist = Lists.newArrayList();
 
         arraylist.add(new PacketPlayOutScoreboardObjective(scoreboardobjective, 1));
-        
-        Aparapi.range(19).forEach(gid_i -> {
-            if (this.getObjectiveForSlot(gid_i) == scoreboardobjective) {
-                arraylist.add(new PacketPlayOutScoreboardDisplayObjective(gid_i, scoreboardobjective));
-            }
-        });
-        /*
+
         for (int i = 0; i < 19; ++i) {
             if (this.getObjectiveForSlot(i) == scoreboardobjective) {
                 arraylist.add(new PacketPlayOutScoreboardDisplayObjective(i, scoreboardobjective));
             }
-        }*/
+        }
 
         return arraylist;
     }
@@ -221,27 +205,17 @@ public class ScoreboardServer extends Scoreboard {
 
         this.b.remove(scoreboardobjective);
     }
-    
-    //HSA
-    int hhi = 0;
+
     public int h(ScoreboardObjective scoreboardobjective) {
-        //int i = 0;
-        hhi = 0;
-        
-        Aparapi.range(19).forEach(gid_j -> {
-            if (this.getObjectiveForSlot(gid_j) == scoreboardobjective) {
-                ++hhi;
-            }
-        });
-        
-        /*
+        int i = 0;
+
         for (int j = 0; j < 19; ++j) {
             if (this.getObjectiveForSlot(j) == scoreboardobjective) {
                 ++i;
             }
-        }*/
+        }
 
-        return hhi;
+        return i;
     }
 
     // CraftBukkit start - Send to players

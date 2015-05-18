@@ -24,7 +24,7 @@ public class WorldGenPackedIce2 extends WorldGenerator {
 
             int k;
             int l;
-            //HSA
+
             for (k = 0; k < i; ++k) {
                 float f = (1.0F - (float) k / (float) i) * (float) j;
 

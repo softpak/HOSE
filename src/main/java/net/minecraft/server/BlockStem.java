@@ -3,7 +3,6 @@ package net.minecraft.server;
 import com.google.common.base.Predicate;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -114,16 +113,12 @@ public class BlockStem extends BlockPlant implements IBlockFragilePlantElement {
 
             if (item != null) {
                 int j = ((Integer) iblockdata.get(BlockStem.AGE)).intValue();
-                
-                IntStream.range(0, 3).filter( k -> world.random.nextInt(15) <= j).forEach(
-                    k -> a(world, blockposition, new ItemStack(item)));
-                System.out.println("drop stem");
-                /*
+
                 for (int k = 0; k < 3; ++k) {
                     if (world.random.nextInt(15) <= j) {
                         a(world, blockposition, new ItemStack(item));
                     }
-                }*/
+                }
 
             }
         }

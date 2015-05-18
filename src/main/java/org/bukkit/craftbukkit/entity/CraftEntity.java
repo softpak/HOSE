@@ -3,7 +3,6 @@ package org.bukkit.craftbukkit.entity;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.*;
 
 import net.minecraft.server.*;
 
@@ -253,19 +252,14 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return teleport(destination.getLocation(), cause);
     }
 
-    //lambda
-    List<org.bukkit.entity.Entity> bukkitEntityList;
     public List<org.bukkit.entity.Entity> getNearbyEntities(double x, double y, double z) {
         @SuppressWarnings("unchecked")
         List<Entity> notchEntityList = entity.world.getEntities(entity, entity.getBoundingBox().grow(x, y, z));
-        //List<org.bukkit.entity.Entity> bukkitEntityList = new java.util.ArrayList<org.bukkit.entity.Entity>(notchEntityList.size());
-        bukkitEntityList = new java.util.ArrayList<org.bukkit.entity.Entity>(notchEntityList.size());
+        List<org.bukkit.entity.Entity> bukkitEntityList = new java.util.ArrayList<org.bukkit.entity.Entity>(notchEntityList.size());
 
-        notchEntityList.stream().forEach( e -> bukkitEntityList.add(e.getBukkitEntity()));
-        /*
         for (Entity e : notchEntityList) {
             bukkitEntityList.add(e.getBukkitEntity());
-        }*/
+        }
         return bukkitEntityList;
     }
 

@@ -1,10 +1,10 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 
 public class WorldGenRegistration {
 
@@ -376,41 +376,26 @@ public class WorldGenRegistration {
             this.e[2] = nbttagcompound.getBoolean("hasPlacedChest2");
             this.e[3] = nbttagcompound.getBoolean("hasPlacedChest3");
         }
-        
-        //HSA
+
         public boolean a(World world, Random random, StructureBoundingBox structureboundingbox) {
             this.a(world, structureboundingbox, 0, -4, 0, this.a - 1, 0, this.c - 1, Blocks.SANDSTONE.getBlockData(), Blocks.SANDSTONE.getBlockData(), false);
 
             int i;
-            
-            Aparapi.range(9).forEach(gid_i -> {
-                this.a(world, structureboundingbox, (gid_i+1), (gid_i+1), (gid_i+1), this.a - 1 - (gid_i+1), (gid_i+1), this.c - 1 - (gid_i+1), Blocks.SANDSTONE.getBlockData(), Blocks.SANDSTONE.getBlockData(), false);
-                this.a(world, structureboundingbox, (gid_i+1) + 1, (gid_i+1), (gid_i+1) + 1, this.a - 2 - (gid_i+1), (gid_i+1), this.c - 2 - (gid_i+1), Blocks.AIR.getBlockData(), Blocks.AIR.getBlockData(), false);
-            });
-            
-            /*
+
             for (i = 1; i <= 9; ++i) {
                 this.a(world, structureboundingbox, i, i, i, this.a - 1 - i, i, this.c - 1 - i, Blocks.SANDSTONE.getBlockData(), Blocks.SANDSTONE.getBlockData(), false);
                 this.a(world, structureboundingbox, i + 1, i, i + 1, this.a - 2 - i, i, this.c - 2 - i, Blocks.AIR.getBlockData(), Blocks.AIR.getBlockData(), false);
-            }*/
+            }
 
             int j;
-            
-            Aparapi.range(this.a).forEach(gid_i -> {
-                Aparapi.range(this.c).forEach(gid_j -> {
-                    byte b0 = -5;
-                    this.b(world, Blocks.SANDSTONE.getBlockData(), gid_i, b0, gid_j, structureboundingbox);
-                });
-            });
-            
-            /*
+
             for (i = 0; i < this.a; ++i) {
                 for (j = 0; j < this.c; ++j) {
                     byte b0 = -5;
 
                     this.b(world, Blocks.SANDSTONE.getBlockData(), i, b0, j, structureboundingbox);
                 }
-            }*/
+            }
 
             i = this.a(Blocks.SANDSTONE_STAIRS, 3);
             j = this.a(Blocks.SANDSTONE_STAIRS, 2);
@@ -638,8 +623,7 @@ public class WorldGenRegistration {
             this.c = nbttagcompound.getInt("Depth");
             this.d = nbttagcompound.getInt("HPos");
         }
-        
-        //HSA
+
         protected boolean a(World world, StructureBoundingBox structureboundingbox, int i) {
             if (this.d >= 0) {
                 return true;
@@ -647,7 +631,7 @@ public class WorldGenRegistration {
                 int j = 0;
                 int k = 0;
                 BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
-                
+
                 for (int l = this.l.c; l <= this.l.f; ++l) {
                     for (int i1 = this.l.a; i1 <= this.l.d; ++i1) {
                         blockposition_mutableblockposition.c(i1, 64, l);

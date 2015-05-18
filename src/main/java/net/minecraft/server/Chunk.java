@@ -1,10 +1,9 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -16,9 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists; // CraftBukkit
-import java.util.stream.IntStream;
 import org.bukkit.Bukkit; // CraftBukkit
-import org.bukkit.craftbukkit.util.HSA_Arrays;
 
 public class Chunk {
 
@@ -66,22 +63,15 @@ public class Chunk {
         }
     }
 
-    //HSA
-    //int[] snl = new int[1];
     public void setNeighborLoaded(final int x, final int z) {
-        //Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
         this.neighbors |= 0x1 << (x * 5 + 12 + z);
-        //this.neighbors |= 0x1 << snl[0];
     }
 
     public void setNeighborUnloaded(final int x, final int z) {
-        //Device.hsa().forEach(0, 1, i -> snl[i] = x * 5 + 12 + z);
         this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
-        //this.neighbors &= ~(0x1 << snl[0]);
     }
     // CraftBukkit end
-    
-    //HSA
+
     public Chunk(World world, int i, int j) {
         this.sections = new ChunkSection[16];
         this.e = new byte[256];
@@ -96,18 +86,12 @@ public class Chunk {
         this.locZ = j;
         this.heightMap = new int[256];
 
-        Aparapi.range(this.entitySlices.length).forEach(gid_k -> {
-            this.entitySlices[gid_k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
-        });
-        /*
         for (int k = 0; k < this.entitySlices.length; ++k) {
             this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
-        }*/
+        }
         
-        HSA_Arrays.fill(this.f, -999);
-        HSA_Arrays.fill(this.e, (byte) -1);
-        //Arrays.fill(this.f, -999);
-        //Arrays.fill(this.e, (byte) -1);
+        Arrays.fill(this.f, -999);
+        Arrays.fill(this.e, (byte) -1);
 
         // CraftBukkit start
         if (!(this instanceof EmptyChunk)) {
@@ -119,32 +103,11 @@ public class Chunk {
     public boolean mustSave;
     // CraftBukkit end
 
-    //HSA
     public Chunk(World world, ChunkSnapshot chunksnapshot, int i, int j) {
         this(world, i, j);
         short short0 = 256;
         boolean flag = !world.worldProvider.o();
-        
-        Aparapi.range(16).forEach(gid_k -> {
-            Aparapi.range(16).forEach(gid_l -> {
-                Aparapi.range(short0).forEach(gid_i1 -> {
-                    int j1 = gid_k * short0 * 16 | gid_l * short0 | gid_i1;
-                    IBlockData iblockdata = chunksnapshot.a(j1);
 
-                    if (iblockdata.getBlock().getMaterial() != Material.AIR) {
-                        int k1 = gid_i1 >> 4;
-
-                        if (this.sections[k1] == null) {
-                            this.sections[k1] = new ChunkSection(k1 << 4, flag);
-                        }
-
-                        this.sections[k1].setType(gid_k, gid_i1 & 15, gid_l, iblockdata);
-                    }
-                });
-            });
-        });
-        
-        /*
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 for (int i1 = 0; i1 < short0; ++i1) {
@@ -162,7 +125,7 @@ public class Chunk {
                     }
                 }
             }
-        }*/
+        }
 
     }
 
@@ -256,16 +219,8 @@ public class Chunk {
         this.k = true;
     }
 
-    //HSA
-    //int[] bp = new int[2];
-    //int[] xz = new int[2];
     private void h(boolean flag) {
         this.world.methodProfiler.a("recheckGaps");
-        /*xz[0] = this.locX;
-        xz[1] = this.locZ;
-        Device.hsa().forEach(0, 2, i -> bp[i] = xz[i] * 16 + 8);*/
-        
-        //if (this.world.areChunksLoaded(new BlockPosition(bp[0], 0, bp[1]), 16)) {
         if (this.world.areChunksLoaded(new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8), 16)) {
             for (int i = 0; i < 16; ++i) {
                 for (int j = 0; j < 16; ++j) {
@@ -286,16 +241,10 @@ public class Chunk {
                         this.c(l, i1, j1);
                         iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                        iterator.forEachRemaining(
-                            it -> {
-                                this.c(l + ((EnumDirection)it).getAdjacentX(), i1 + ((EnumDirection)it).getAdjacentZ(), k);
-                            }
-                        );
-                        /*
                         while (iterator.hasNext()) {
                             enumdirection = (EnumDirection) iterator.next();
                             this.c(l + enumdirection.getAdjacentX(), i1 + enumdirection.getAdjacentZ(), k);
-                        }*/
+                        }
 
                         if (flag) {
                             this.world.methodProfiler.b();
@@ -321,101 +270,64 @@ public class Chunk {
         }
 
     }
-    //HSA
+
     private void a(int i, int j, int k, int l) {
         if (l > k && this.world.areChunksLoaded(new BlockPosition(i, 0, j), 16)) {
-            Aparapi.range(l-k).forEach(gid_i1 -> {
-                this.world.c(EnumSkyBlock.SKY, new BlockPosition(i, gid_i1+k, j));
-            });
-            
-            /*
             for (int i1 = k; i1 < l; ++i1) {
                 this.world.c(EnumSkyBlock.SKY, new BlockPosition(i, i1, j));
-            }*/
+            }
 
             this.q = true;
         }
 
     }
-      
-    ChunkSection hchunksection;
-    int hi1;
-    //HSA
-    
-    int j1, k1, i2, j2;
+
     private void d(int i, int j, int k) {
         int l = this.heightMap[k << 4 | i] & 255;
-        //int i1 = l;
-        hi1 = l;
+        int i1 = l;
+
         if (j > l) {
-            hi1 = j;
+            i1 = j;
         }
 
-        while (hi1 > 0 && this.e(i, hi1 - 1, k) == 0) {
-            --hi1;
+        while (i1 > 0 && this.e(i, i1 - 1, k) == 0) {
+            --i1;
         }
 
-        if (hi1 != l) {
-            /*xz[0] = this.locX;
-            xz[1] = this.locZ;
-            Device.hsa().forEach(0, 2, ii -> bp[ii] = xz[ii] * 16);*/
-            
-            this.world.a(i + this.locX * 16, k + this.locZ * 16, hi1, l);
-            //this.world.a(i + bp[0], k + bp[1], hi1, l);
-            this.heightMap[k << 4 | i] = hi1;
-            //int j1 = this.locX * 16 + i;
-            //int k1 = this.locZ * 16 + k;
-            j1 = this.locX * 16 + i;
-            k1 = this.locZ * 16 + k;
-            /*int j1 = bp[0] + i;
-            int k1 = bp[1] + k;*/
+        if (i1 != l) {
+            this.world.a(i + this.locX * 16, k + this.locZ * 16, i1, l);
+            this.heightMap[k << 4 | i] = i1;
+            int j1 = this.locX * 16 + i;
+            int k1 = this.locZ * 16 + k;
             int l1;
-            //int i2;
+            int i2;
 
             if (!this.world.worldProvider.o()) {
-                //ChunkSection chunksection;
+                ChunkSection chunksection;
 
-                if (hi1 < l) {
-                    //HSA
-                    Aparapi.range(l-hi1).forEach(gid_l1 -> {
-                        hchunksection = this.sections[(gid_l1+hi1) >> 4];
-                        if (hchunksection != null) {
-                            hchunksection.a(i, (gid_l1+hi1) & 15, k, 15);
-                            this.world.n(new BlockPosition((this.locX << 4) + i, (gid_l1+hi1), (this.locZ << 4) + k));
-                        }
-                    });
-                    
-                    /*
+                if (i1 < l) {
                     for (l1 = i1; l1 < l; ++l1) {
                         chunksection = this.sections[l1 >> 4];
                         if (chunksection != null) {
                             chunksection.a(i, l1 & 15, k, 15);
                             this.world.n(new BlockPosition((this.locX << 4) + i, l1, (this.locZ << 4) + k));
                         }
-                    }*/
+                    }
                 } else {
-                    Aparapi.range(hi1-l).forEach(gid_l1 -> {
-                        hchunksection = this.sections[(gid_l1+l) >> 4];
-                        if (hchunksection != null) {
-                            hchunksection.a(i, (gid_l1+l) & 15, k, 0);
-                            this.world.n(new BlockPosition((this.locX << 4) + i, (gid_l1+l), (this.locZ << 4) + k));
-                        }
-                    });
-                    /*
                     for (l1 = l; l1 < i1; ++l1) {
-                        hchunksection = this.sections[l1 >> 4];
-                        if (hchunksection != null) {
-                            hchunksection.a(i, l1 & 15, k, 0);
+                        chunksection = this.sections[l1 >> 4];
+                        if (chunksection != null) {
+                            chunksection.a(i, l1 & 15, k, 0);
                             this.world.n(new BlockPosition((this.locX << 4) + i, l1, (this.locZ << 4) + k));
                         }
-                    }*/
+                    }
                 }
 
                 l1 = 15;
 
-                while (hi1 > 0 && l1 > 0) {
-                    --hi1;
-                    i2 = this.e(i, hi1, k);
+                while (i1 > 0 && l1 > 0) {
+                    --i1;
+                    i2 = this.e(i, i1, k);
                     if (i2 == 0) {
                         i2 = 1;
                     }
@@ -425,18 +337,17 @@ public class Chunk {
                         l1 = 0;
                     }
 
-                    ChunkSection chunksection1 = this.sections[hi1 >> 4];
+                    ChunkSection chunksection1 = this.sections[i1 >> 4];
 
                     if (chunksection1 != null) {
-                        chunksection1.a(i, hi1 & 15, k, l1);
+                        chunksection1.a(i, i1 & 15, k, l1);
                     }
                 }
             }
 
             l1 = this.heightMap[k << 4 | i];
             i2 = l;
-            //int j2 = l1;
-            j2 = l1;
+            int j2 = l1;
 
             if (l1 < l) {
                 i2 = l1;
@@ -450,17 +361,11 @@ public class Chunk {
             if (!this.world.worldProvider.o()) {
                 Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                iterator.forEachRemaining( 
-                    it -> {
-                        this.a(j1 + ((EnumDirection) it).getAdjacentX(), k1 + ((EnumDirection) it).getAdjacentZ(), i2, j2);
-                    }
-                );
-                /*
                 while (iterator.hasNext()) {
                     EnumDirection enumdirection = (EnumDirection) iterator.next();
 
                     this.a(j1 + enumdirection.getAdjacentX(), k1 + enumdirection.getAdjacentZ(), i2, j2);
-                }*/
+                }
 
                 this.a(j1, k1, i2, j2);
             }
@@ -898,24 +803,11 @@ public class Chunk {
         }
 
     }
-    
-    //HSA
+
     public void addEntities() {
         this.h = true;
         this.world.a(this.tileEntities.values());
-        
-        Aparapi.range(this.entitySlices.length).forEach(gid_i -> {
-            Iterator iterator = this.entitySlices[gid_i].iterator();
 
-            while (iterator.hasNext()) {
-                Entity entity = (Entity) iterator.next();
-
-                entity.ah();
-            }
-
-            this.world.b((Collection) this.entitySlices[gid_i]);
-        });
-        /*
         for (int i = 0; i < this.entitySlices.length; ++i) {
             Iterator iterator = this.entitySlices[i].iterator();
 
@@ -926,7 +818,8 @@ public class Chunk {
             }
 
             this.world.b((Collection) this.entitySlices[i]);
-        }*/
+        }
+
     }
 
     public void removeEntities() {
@@ -986,77 +879,14 @@ public class Chunk {
     public void e() {
         this.q = true;
     }
-    
-    
-    //HSA
-    int hi, hj;
-    //Entity hentity1;
-    Entity iit;
+
     public void a(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate) {
-        //int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
-        //int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
-        hi = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
-        hj = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
-        
-        hi = MathHelper.clamp(hi, 0, this.entitySlices.length - 1);
-        hj = MathHelper.clamp(hj, 0, this.entitySlices.length - 1);
-        
-        
-        Aparapi.range(hj-hi+1).forEach(gid_k -> {
-            if (!this.entitySlices[gid_k+hi].isEmpty()) {
-                Iterator iterator = this.entitySlices[gid_k+hi].iterator();
-                
-                iterator.forEachRemaining(
-                    it -> {
-                        //Entity entity1 = (Entity) iterator.next();
-                        //hentity1 = (Entity) iterator.next();
+        int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
+        int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
 
-                        if (((Entity)it).getBoundingBox().b(axisalignedbb) && (Entity)it != entity) {
-                            if (predicate == null || predicate.apply((Entity)it)) {
-                                list.add((Entity)it);
-                            }
+        i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
+        j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
 
-                            Entity[] aentity = ((Entity)it).aB();
-                            iit = (Entity)it;
-                            if (aentity != null) {
-
-                                Aparapi.range(aentity.length).forEach(gid_l -> {
-                                    iit = aentity[gid_l];
-                                    if ((Entity)it != entity && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((Entity)it))) {
-                                        list.add((Entity)it);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                );
-                /*
-                while (iterator.hasNext()) {
-                    //Entity entity1 = (Entity) iterator.next();
-                    hentity1 = (Entity) iterator.next();
-
-                    if (hentity1.getBoundingBox().b(axisalignedbb) && hentity1 != entity) {
-                        if (predicate == null || predicate.apply(hentity1)) {
-                            list.add(hentity1);
-                        }
-
-                        Entity[] aentity = hentity1.aB();
-
-                        if (aentity != null) {
-                            
-                            Aparapi.range(aentity.length).forEach(gid_l -> {
-                                hentity1 = aentity[gid_l];
-                                if (hentity1 != entity && hentity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(hentity1))) {
-                                    list.add(hentity1);
-                                }
-                            });
-                        }
-                    }
-                }*/
-            }
-            
-        });
-        /*
         for (int k = i; k <= j; ++k) {
             if (!this.entitySlices[k].isEmpty()) {
                 Iterator iterator = this.entitySlices[k].iterator();
@@ -1082,54 +912,28 @@ public class Chunk {
                     }
                 }
             }
-        }*/
+        }
 
     }
-    
-    
-    //lambda
+
     public <T extends Entity> void a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, List<T> list, Predicate<? super T> predicate) {
         int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
         int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
 
         i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
-        
-        //HSA
-        IntStream.range(i, j+1).forEach(
-            kk -> {
-                Iterator iterator = this.entitySlices[kk].iterator(); // Spigot
-            
-                iterator.forEachRemaining(
-                    it -> {
-                        if (oclass.isInstance((Entity)it) && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) (Entity)it))) { // CraftBukkit - fix decompile error // Spigot
-                            list.add((T) (Entity)it); // Fix decompile error
-                        }
-                    }
-                );
-            }
-                
-        );
-        /*
+
         for (int k = i; k <= j; ++k) {
             Iterator iterator = this.entitySlices[k].iterator(); // Spigot
-            
-            iterator.forEachRemaining(
-                it -> {
-                    if (oclass.isInstance((Entity)it) && ((Entity)it).getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) (Entity)it))) { // CraftBukkit - fix decompile error // Spigot
-                        list.add((T) (Entity)it); // Fix decompile error
-                    }
-                }
-            );
-            /*
+
             while (iterator.hasNext()) {
                 Entity entity = (Entity) iterator.next();
 
                 if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
                     list.add((T) entity); // Fix decompile error
                 }
-            }*/
-        //}
+            }
+        }
 
     }
 
@@ -1145,7 +949,6 @@ public class Chunk {
         return this.q;
     }
 
-    //HSA
     public Random a(long i) {
         return new Random(this.world.getSeed() + (long) (this.locX * this.locX * 4987142) + (long) (this.locX * 5947611) + (long) (this.locZ * this.locZ) * 4392871L + (long) (this.locZ * 389711) ^ i);
     }
@@ -1292,19 +1095,14 @@ public class Chunk {
 
         return true;
     }
-    
-    //HSA
+
     public void a(ChunkSection[] achunksection) {
         if (this.sections.length != achunksection.length) {
             Chunk.c.warn("Could not set level chunk sections, array length is " + achunksection.length + " instead of " + this.sections.length);
         } else {
-            Aparapi.range(this.sections.length).forEach(gid_i -> {
-                this.sections[gid_i] = achunksection[gid_i];
-            });
-            /*
             for (int i = 0; i < this.sections.length; ++i) {
                 this.sections[i] = achunksection[i];
-            }*/
+            }
 
         }
     }
@@ -1328,20 +1126,14 @@ public class Chunk {
     public byte[] getBiomeIndex() {
         return this.e;
     }
-    
-    
-    //HSA
+
     public void a(byte[] abyte) {
         if (this.e.length != abyte.length) {
             Chunk.c.warn("Could not set level chunk biomes, array length is " + abyte.length + " instead of " + this.e.length);
         } else {
-            Aparapi.range(this.e.length).forEach(gid_i -> {
-                this.e[gid_i] = abyte[gid_i];
-            });
-            /*
             for (int i = 0; i < this.e.length; ++i) {
                 this.e[i] = abyte[i];
-            }*/
+            }
 
         }
     }
@@ -1349,9 +1141,7 @@ public class Chunk {
     public void l() {
         this.v = 0;
     }
-    
-    
-    //HSA
+
     public void m() {
         BlockPosition blockposition = new BlockPosition(this.locX << 4, 0, this.locZ << 4);
 
@@ -1365,29 +1155,7 @@ public class Chunk {
             int l = this.v / 256;
 
             ++this.v;
-            
-            Aparapi.range(16).forEach(gid_i1 -> {
-                BlockPosition blockposition1 = blockposition.a(k, (j << 4) + gid_i1, l);
-                boolean flag = gid_i1 == 0 || gid_i1 == 15 || k == 0 || k == 15 || l == 0 || l == 15;
 
-                if (this.sections[j] == null && flag || this.sections[j] != null && this.sections[j].b(k, gid_i1, l).getMaterial() == Material.AIR) {
-                    EnumDirection[] aenumdirection = EnumDirection.values();
-                    int j1 = aenumdirection.length;
-                    
-                    
-                    Aparapi.range(j1).forEach(gid_k1 -> {
-                        EnumDirection enumdirection = aenumdirection[gid_k1];
-                        BlockPosition blockposition2 = blockposition1.shift(enumdirection);
-
-                        if (this.world.getType(blockposition2).getBlock().r() > 0) {
-                            this.world.x(blockposition2);
-                        }
-                    });
-
-                    this.world.x(blockposition1);
-                }
-            });
-            /*
             for (int i1 = 0; i1 < 16; ++i1) {
                 BlockPosition blockposition1 = blockposition.a(k, (j << 4) + i1, l);
                 boolean flag = i1 == 0 || i1 == 15 || k == 0 || k == 15 || l == 0 || l == 15;
@@ -1407,7 +1175,7 @@ public class Chunk {
 
                     this.world.x(blockposition1);
                 }
-            }*/
+            }
         }
 
     }
@@ -1432,20 +1200,12 @@ public class Chunk {
                 if (this.lit) {
                     Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                    iterator.forEachRemaining(
-                        it -> {
-                            int k = ((EnumDirection)it).c() == EnumDirection.EnumAxisDirection.POSITIVE ? 16 : 1;
-
-                            this.world.getChunkAtWorldCoords(blockposition.shift((EnumDirection)it, k)).a(((EnumDirection)it).opposite());
-                        }
-                    );
-                    /*
                     while (iterator.hasNext()) {
                         EnumDirection enumdirection = (EnumDirection) iterator.next();
                         int k = enumdirection.c() == EnumDirection.EnumAxisDirection.POSITIVE ? 16 : 1;
 
                         this.world.getChunkAtWorldCoords(blockposition.shift(enumdirection, k)).a(enumdirection.opposite());
-                    }*/
+                    }
 
                     this.y();
                 }
@@ -1455,57 +1215,35 @@ public class Chunk {
         }
 
     }
-    
-    //HSA
+
     private void y() {
-        Device.hsa().forEach(0 , this.g.length, gid_i -> {
-            this.g[gid_i] = true;
-        });
-        /*
         for (int i = 0; i < this.g.length; ++i) {
             this.g[i] = true;
-        }*/
+        }
 
         this.h(false);
     }
-    
-    //HSA
+
     private void a(EnumDirection enumdirection) {
         if (this.done) {
             int i;
 
             if (enumdirection == EnumDirection.EAST) {
-                Aparapi.range(16).forEach(gid_i -> {
-                    this.e(15, gid_i);
-                });
-                /*
                 for (i = 0; i < 16; ++i) {
                     this.e(15, i);
-                }*/
+                }
             } else if (enumdirection == EnumDirection.WEST) {
-                Aparapi.range(16).forEach(gid_i -> {
-                    this.e(0, gid_i);
-                });
-                /*
                 for (i = 0; i < 16; ++i) {
                     this.e(0, i);
-                }*/
+                }
             } else if (enumdirection == EnumDirection.SOUTH) {
-                Aparapi.range(16).forEach(gid_i -> {
-                    this.e(gid_i, 15);
-                });
-                /*
                 for (i = 0; i < 16; ++i) {
                     this.e(i, 15);
-                }*/
+                }
             } else if (enumdirection == EnumDirection.NORTH) {
-                Aparapi.range(16).forEach(gid_i -> {
-                    this.e(gid_i, 0);
-                });
-                /*
                 for (i = 0; i < 16; ++i) {
                     this.e(i, 0);
-                }*/
+                }
             }
 
         }
@@ -1555,20 +1293,15 @@ public class Chunk {
     public int[] q() {
         return this.heightMap;
     }
-    
-    
-    //HSA
+
     public void a(int[] aint) {
         if (this.heightMap.length != aint.length) {
             Chunk.c.warn("Could not set level chunk heightmap, array length is " + aint.length + " instead of " + this.heightMap.length);
         } else {
-            Aparapi.range(this.heightMap.length).forEach(gid_i -> {
-                this.heightMap[gid_i] = aint[gid_i];
-            });
-            /*
             for (int i = 0; i < this.heightMap.length; ++i) {
                 this.heightMap[i] = aint[i];
-            }*/
+            }
+
         }
     }
 
