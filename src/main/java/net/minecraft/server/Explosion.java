@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -42,6 +43,7 @@ public class Explosion {
         this.b = flag1;
     }
 
+    public static HRandom hrnd = new HRandom();
     public void a() {
         // CraftBukkit start
         if (this.size < 0.1F) {
@@ -66,7 +68,8 @@ public class Explosion {
                         d0 /= d3;
                         d1 /= d3;
                         d2 /= d3;
-                        float f = this.size * (0.7F + this.world.random.nextFloat() * 0.6F);
+                        //float f = this.size * (0.7F + this.world.random.nextFloat() * 0.6F);
+                        float f = this.size * (0.7F + hrnd.nextFloat() * 0.6F);
                         double d4 = this.posX;
                         double d5 = this.posY;
                         double d6 = this.posZ;
@@ -149,7 +152,8 @@ public class Explosion {
     }
 
     public void a(boolean flag) {
-        this.world.makeSound(this.posX, this.posY, this.posZ, "random.explode", 4.0F, (1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F);
+        //this.world.makeSound(this.posX, this.posY, this.posZ, "random.explode", 4.0F, (1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F);
+        this.world.makeSound(this.posX, this.posY, this.posZ, "random.explode", 4.0F, (1.0F + (hrnd.nextFloat() - hrnd.nextFloat()) * 0.2F) * 0.7F);
         if (this.size >= 2.0F && this.b) {
             this.world.addParticle(EnumParticle.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 1.0D, 0.0D, 0.0D, new int[0]);
         } else {
@@ -212,9 +216,13 @@ public class Explosion {
 
                 world.spigotConfig.antiXrayInstance.updateNearbyBlocks(world, blockposition); // Spigot
                 if (flag) {
+                    double d0 = (double) ((float) blockposition.getX() + hrnd.nextFloat());
+                    double d1 = (double) ((float) blockposition.getY() + hrnd.nextFloat());
+                    double d2 = (double) ((float) blockposition.getZ() + hrnd.nextFloat());
+                    /*
                     double d0 = (double) ((float) blockposition.getX() + this.world.random.nextFloat());
                     double d1 = (double) ((float) blockposition.getY() + this.world.random.nextFloat());
-                    double d2 = (double) ((float) blockposition.getZ() + this.world.random.nextFloat());
+                    double d2 = (double) ((float) blockposition.getZ() + this.world.random.nextFloat());*/
                     double d3 = d0 - this.posX;
                     double d4 = d1 - this.posY;
                     double d5 = d2 - this.posZ;
@@ -225,7 +233,8 @@ public class Explosion {
                     d5 /= d6;
                     double d7 = 0.5D / (d6 / (double) this.size + 0.1D);
 
-                    d7 *= (double) (this.world.random.nextFloat() * this.world.random.nextFloat() + 0.3F);
+                    //d7 *= (double) (this.world.random.nextFloat() * this.world.random.nextFloat() + 0.3F);
+                    d7 *= hrnd.nextDouble() * hrnd.nextDouble() + 0.3D;
                     d3 *= d7;
                     d4 *= d7;
                     d5 *= d7;

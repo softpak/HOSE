@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.amd.aparapi.Aparapi;
 import java.util.Random;
+import org.HOSE.HRandom;
 
 public class NoiseGenerator3Handler {
 
@@ -13,11 +14,12 @@ public class NoiseGenerator3Handler {
     public double d;
     private static final double g = 0.5D * (NoiseGenerator3Handler.a - 1.0D);
     private static final double h = (3.0D - NoiseGenerator3Handler.a) / 6.0D;
-
+    
     public NoiseGenerator3Handler() {
         this(new Random());
     }
-
+    
+    
     public NoiseGenerator3Handler(Random random) {
         this.f = new int[512];
         this.b = random.nextDouble() * 256.0D;

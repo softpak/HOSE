@@ -98,9 +98,13 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             }
 
             this.inGround = false;
+            this.motX *= (hrnd.nextDouble() * 0.2D);
+            this.motY *= (hrnd.nextDouble() * 0.2D);
+            this.motZ *= (hrnd.nextDouble() * 0.2D);
+            /*
             this.motX *= (double) (this.random.nextFloat() * 0.2F);
             this.motY *= (double) (this.random.nextFloat() * 0.2F);
-            this.motZ *= (double) (this.random.nextFloat() * 0.2F);
+            this.motZ *= (double) (this.random.nextFloat() * 0.2F);*/
             this.i = 0;
             this.ar = 0;
         } else {

@@ -61,7 +61,8 @@ public class BlockOre extends Block {
         // */
 
     }
-
+    
+    public static HRandom hrnd = new HRandom();
     //HSA rnd
     public static int nextInt(HRandom random, int i, int j) {
         return i >= j ? i : random.nextInt(j - i + 1) + i;
@@ -73,15 +74,15 @@ public class BlockOre extends Block {
             int j = 0;
 
             if (this == Blocks.COAL_ORE) {
-                j = nextInt(Main.hrnd, 0, 2);
+                j = nextInt(hrnd, 0, 2);
             } else if (this == Blocks.DIAMOND_ORE) {
-                j = nextInt(Main.hrnd, 3, 7);
+                j = nextInt(hrnd, 3, 7);
             } else if (this == Blocks.EMERALD_ORE) {
-                j = nextInt(Main.hrnd, 3, 7);
+                j = nextInt(hrnd, 3, 7);
             } else if (this == Blocks.LAPIS_ORE) {
-                j = nextInt(Main.hrnd, 2, 5);
+                j = nextInt(hrnd, 2, 5);
             } else if (this == Blocks.QUARTZ_ORE) {
-                j = nextInt(Main.hrnd, 2, 5);
+                j = nextInt(hrnd, 2, 5);
             }
 
             return j;

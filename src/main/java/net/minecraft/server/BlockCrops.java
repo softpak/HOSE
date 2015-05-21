@@ -44,23 +44,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
 
     }
     
-    //HSA rnd
-    public static int nextInt(HRandom random, int i, int j) {
-        return i >= j ? i : random.nextInt(j - i + 1) + i;
-    }
-    
-    public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
-        int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue() + nextInt(Main.hrnd, 2, 5);
-        if (i > 7) {
-            i = 7;
-        }
 
-        // CraftBukkit start
-        IBlockData data = iblockdata.set(AGE, Integer.valueOf(i));
-        CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, toLegacyData(data));
-        // CraftBukkit end
-    }
-    /*
     public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
         int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue() + MathHelper.nextInt(world.random, 2, 5);
 
@@ -72,7 +56,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
         IBlockData data = iblockdata.set(AGE, Integer.valueOf(i));
         CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, toLegacyData(data));
         // CraftBukkit end
-    }*/
+    }
 
     protected static float a(Block block, World world, BlockPosition blockposition) {
         float f = 1.0F;

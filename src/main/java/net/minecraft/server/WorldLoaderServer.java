@@ -109,21 +109,9 @@ public class WorldLoaderServer extends WorldLoader {
         }
     }
 
-    //lambda
-    int ii;
     private void a(File file, Iterable<File> iterable, WorldChunkManager worldchunkmanager, int i, int j, IProgressUpdate iprogressupdate) {
         Iterator iterator = iterable.iterator();
-        ii = i;
-        iterator.forEachRemaining(
-            it -> {
-                this.a(file, (File)it, worldchunkmanager, ii, j, iprogressupdate);
-                ++ii;
-                int k = (int) Math.round(100.0D * (double) ii / (double) j);
 
-                iprogressupdate.a(k);
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             File file1 = (File) iterator.next();
 
@@ -132,7 +120,7 @@ public class WorldLoaderServer extends WorldLoader {
             int k = (int) Math.round(100.0D * (double) i / (double) j);
 
             iprogressupdate.a(k);
-        }*/
+        }
 
     }
 

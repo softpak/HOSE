@@ -271,10 +271,9 @@ public class ChunkProviderServer implements IChunkProvider {
                 BlockSand.instaFall = true;
                 Random random = new Random();
                 random.setSeed(world.getSeed());
-                /*long xRand = random.nextLong() / 2L * 2L + 1L;
-                long zRand = random.nextLong() / 2L * 2L + 1L;*/
-                long xRand = Main.hrnd.nextLong() / 2L * 2L + 1L;
-                long zRand = Main.hrnd.nextLong() / 2L * 2L + 1L;
+                long xRand = random.nextLong() / 2L * 2L + 1L;
+                long zRand = random.nextLong() / 2L * 2L + 1L;
+                
                 random.setSeed((long) i * xRand + (long) j * zRand ^ world.getSeed());
 
                 org.bukkit.World world = this.world.getWorld();

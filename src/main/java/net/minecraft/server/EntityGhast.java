@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import org.HOSE.HRandom;
 
 public class EntityGhast extends EntityFlying implements IMonster {
 
@@ -238,11 +239,16 @@ public class EntityGhast extends EntityFlying implements IMonster {
             return false;
         }
 
+        public static HRandom hrnd = new HRandom();
         public void c() {
+            double d0 = this.a.locX +  ((hrnd.nextFloat() * 2.0D - 1.0D) * 16.0D);
+            double d1 = this.a.locY +  ((hrnd.nextFloat() * 2.0D - 1.0D) * 16.0D);
+            double d2 = this.a.locZ +  ((hrnd.nextFloat() * 2.0D - 1.0D) * 16.0D);
+            /*
             Random random = this.a.bc();
             double d0 = this.a.locX + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
             double d1 = this.a.locY + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double d2 = this.a.locZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double d2 = this.a.locZ + (double) ((random.nextFloat() * 2.0F - 1.0F) * 16.0F);*/
 
             this.a.getControllerMove().a(d0, d1, d2, 1.0D);
         }

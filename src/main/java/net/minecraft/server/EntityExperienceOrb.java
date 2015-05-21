@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import org.HOSE.HRandom;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -15,15 +16,20 @@ public class EntityExperienceOrb extends Entity {
     public int value; // CraftBukkit - public
     private EntityHuman targetPlayer;
     private int targetTime;
+    public static HRandom hrnd = new HRandom();
 
     public EntityExperienceOrb(World world, double d0, double d1, double d2, int i) {
         super(world);
         this.setSize(0.5F, 0.5F);
         this.setPosition(d0, d1, d2);
-        this.yaw = (float) (Math.random() * 360.0D);
+        this.yaw = (float) (hrnd.nextDouble() * 360.0D);
+        this.motX = (double) ((float) (hrnd.nextDouble() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motY = (double) ((float) (hrnd.nextDouble() * 0.2D) * 2.0F);
+        this.motZ = (double) ((float) (hrnd.nextDouble() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        /*this.yaw = (float) (Math.random() * 360.0D);
         this.motX = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
         this.motY = (double) ((float) (Math.random() * 0.2D) * 2.0F);
-        this.motZ = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motZ = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);*/
         this.value = i;
     }
 
@@ -51,9 +57,12 @@ public class EntityExperienceOrb extends Entity {
         this.motY -= 0.029999999329447746D;
         if (this.world.getType(new BlockPosition(this)).getBlock().getMaterial() == Material.LAVA) {
             this.motY = 0.20000000298023224D;
-            this.motX = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
+            this.motX = (double) ((hrnd.nextFloat() - hrnd.nextFloat()) * 0.2F);
+            this.motZ = (double) ((hrnd.nextFloat() - hrnd.nextFloat()) * 0.2F);
+            this.makeSound("random.fizz", 0.4F, 2.0F + hrnd.nextFloat() * 0.4F);
+            /*this.motX = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
             this.motZ = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
-            this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+            this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);*/
         }
 
         this.j(this.locX, (this.getBoundingBox().b + this.getBoundingBox().e) / 2.0D, this.locZ);
@@ -158,7 +167,8 @@ public class EntityExperienceOrb extends Entity {
         if (!this.world.isClientSide) {
             if (this.c == 0 && entityhuman.bp == 0) {
                 entityhuman.bp = 2;
-                this.world.makeSound(entityhuman, "random.orb", 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
+                //this.world.makeSound(entityhuman, "random.orb", 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
+                this.world.makeSound(entityhuman, "random.orb", 0.1F, 0.5F * ((hrnd.nextFloat() - hrnd.nextFloat()) * 0.7F + 1.8F));
                 entityhuman.receive(this, 1);
                 entityhuman.giveExp(CraftEventFactory.callPlayerExpChangeEvent(entityhuman, this.value).getAmount()); // CraftBukkit - this.value -> event.getAmount()
                 this.die();

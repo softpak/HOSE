@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.Main;
+import org.HOSE.HRandom;
 
 public class EntityChicken extends EntityAnimal {
 
@@ -11,12 +11,13 @@ public class EntityChicken extends EntityAnimal {
     public float br = 1.0F;
     public int bs;
     public boolean bt;
-
+    public static HRandom hrndec = new HRandom();
+    
     public EntityChicken(World world) {
         super(world);
         this.setSize(0.4F, 0.7F);
         //this.bs = this.random.nextInt(6000) + 6000;
-        this.bs = Main.hrnd.nextInt(6000) + 6000;
+        this.bs = hrndec.nextInt(6000) + 6000;
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
         this.goalSelector.a(1, new PathfinderGoalPanic(this, 1.4D));
         this.goalSelector.a(2, new PathfinderGoalBreed(this, 1.0D));
@@ -59,10 +60,10 @@ public class EntityChicken extends EntityAnimal {
 
         this.bm += this.br * 2.0F;
         if (!this.world.isClientSide && !this.isBaby() && !this.isChickenJockey() && --this.bs <= 0) {
-            this.makeSound("mob.chicken.plop", 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+            this.makeSound("mob.chicken.plop", 1.0F, (hrndec.nextFloat() - hrndec.nextFloat()) * 0.2F + 1.0F);
             this.a(Items.EGG, 1);
             //this.bs = this.random.nextInt(6000) + 6000;
-            this.bs = Main.hrnd.nextInt(6000) + 6000;
+            this.bs = hrndec.nextInt(6000) + 6000;
         }
 
     }
@@ -91,7 +92,7 @@ public class EntityChicken extends EntityAnimal {
 
     protected void dropDeathLoot(boolean flag, int i) {
         //int j = this.random.nextInt(3) + this.random.nextInt(1 + i);
-        int j = Main.hrnd.nextInt(3) + Main.hrnd.nextInt(1 + i);
+        int j = hrndec.nextInt(3) + hrndec.nextInt(1 + i);
 
         for (int k = 0; k < j; ++k) {
             this.a(Items.FEATHER, 1);

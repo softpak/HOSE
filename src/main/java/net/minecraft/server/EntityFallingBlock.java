@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.HOSE.HRandom;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -131,6 +132,7 @@ public class EntityFallingBlock extends Entity {
         }
     }
 
+    public static HRandom hrnd = new HRandom();
     public void e(float f, float f1) {
         Block block = this.block.getBlock();
 
@@ -151,7 +153,8 @@ public class EntityFallingBlock extends Entity {
                     CraftEventFactory.entityDamage = null; // CraftBukkit
                 }
 
-                if (flag && (double) this.random.nextFloat() < 0.05000000074505806D + (double) i * 0.05D) {
+                //if (flag && (double) this.random.nextFloat() < 0.05000000074505806D + (double) i * 0.05D) {
+                if (flag && (double) hrnd.nextFloat() < 0.05000000074505806D + (double) i * 0.05D) {
                     int j = ((Integer) this.block.get(BlockAnvil.DAMAGE)).intValue();
 
                     ++j;

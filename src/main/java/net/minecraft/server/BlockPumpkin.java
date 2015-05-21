@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
+import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.util.BlockStateListPopulator;
@@ -40,6 +41,7 @@ public class BlockPumpkin extends BlockDirectional {
         return this.getDetectorSnowGolemPart().a(world, blockposition) != null || this.getDetectorIronGolemPart().a(world, blockposition) != null;
     }
 
+    public static HRandom hrnd = new HRandom();
     private void f(World world, BlockPosition blockposition) {
         ShapeDetector.ShapeDetectorCollection shapedetector_shapedetectorcollection;
         int i;
@@ -66,7 +68,8 @@ public class BlockPumpkin extends BlockDirectional {
                 blockList.updateList();
 
             for (j = 0; j < 120; ++j) {
-                world.addParticle(EnumParticle.SNOW_SHOVEL, (double) blockposition1.getX() + world.random.nextDouble(), (double) blockposition1.getY() + world.random.nextDouble() * 2.5D, (double) blockposition1.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+                //world.addParticle(EnumParticle.SNOW_SHOVEL, (double) blockposition1.getX() + world.random.nextDouble(), (double) blockposition1.getY() + world.random.nextDouble() * 2.5D, (double) blockposition1.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+                world.addParticle(EnumParticle.SNOW_SHOVEL, (double) blockposition1.getX() + hrnd.nextDouble(), (double) blockposition1.getY() + hrnd.nextDouble() * 2.5D, (double) blockposition1.getZ() + hrnd.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
             }
 
             for (j = 0; j < this.getDetectorSnowGolem().b(); ++j) {
@@ -98,7 +101,8 @@ public class BlockPumpkin extends BlockDirectional {
                 blockList.updateList();
 
             for (j = 0; j < 120; ++j) {
-                world.addParticle(EnumParticle.SNOWBALL, (double) blockposition2.getX() + world.random.nextDouble(), (double) blockposition2.getY() + world.random.nextDouble() * 3.9D, (double) blockposition2.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+                //world.addParticle(EnumParticle.SNOWBALL, (double) blockposition2.getX() + world.random.nextDouble(), (double) blockposition2.getY() + world.random.nextDouble() * 3.9D, (double) blockposition2.getZ() + world.random.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+                world.addParticle(EnumParticle.SNOWBALL, (double) blockposition2.getX() + hrnd.nextDouble(), (double) blockposition2.getY() + hrnd.nextDouble() * 3.9D, (double) blockposition2.getZ() + hrnd.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
             }
 
             for (j = 0; j < this.getDetectorIronGolem().c(); ++j) {

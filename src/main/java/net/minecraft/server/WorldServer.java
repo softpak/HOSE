@@ -422,8 +422,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 int i1;
                 BlockPosition blockposition;
 
-                //if (this.random.nextInt(100000) == 0 && this.S() && this.R()) {
-                if (Main.hrnd.nextInt(100000) == 0 && this.S() && this.R()) {
+                if (this.random.nextInt(100000) == 0 && this.S() && this.R()) {
                     this.m = this.m * 3 + 1013904223;
                     i1 = this.m >> 2;
                     blockposition = this.a(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
@@ -433,8 +432,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 }
 
                 this.methodProfiler.c("iceandsnow");
-                //if (this.random.nextInt(16) == 0) {
-                if (Main.hrnd.nextInt(16) == 0) {
+                if (this.random.nextInt(16) == 0) {
                     this.m = this.m * 3 + 1013904223;
                     i1 = this.m >> 2;
                     blockposition = this.q(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.Bukkit;
@@ -868,6 +869,7 @@ public abstract class Entity implements ICommandListener {
         return this.inWater;
     }
 
+    public static HRandom hrnd = new HRandom();
     protected void X() {
         float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
 
@@ -876,6 +878,7 @@ public abstract class Entity implements ICommandListener {
         }
 
         this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+        //this.makeSound(this.aa(), f, 1.0F + (hrnd.nextFloat() - hrnd.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
         int i;
@@ -883,15 +886,23 @@ public abstract class Entity implements ICommandListener {
         float f3;
 
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
+            f2 = (hrnd.nextFloat() * 2.0F - 1.0F) * this.width;
+            f3 = (hrnd.nextFloat() * 2.0F - 1.0F) * this.width;
+            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (hrnd.nextFloat() * 0.2F), this.motZ, new int[0]);
+            /*
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
+            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);*/
         }
 
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
+            f2 = (hrnd.nextFloat() * 2.0F - 1.0F) * this.width;
+            f3 = (hrnd.nextFloat() * 2.0F - 1.0F) * this.width;
+            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
+            /*
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
+            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);*/
         }
 
     }
@@ -912,7 +923,8 @@ public abstract class Entity implements ICommandListener {
         Block block = iblockdata.getBlock();
 
         if (block.b() != -1) {
-            this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
+            //this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
+            this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + ((double) hrnd.nextFloat() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
         }
 
     }

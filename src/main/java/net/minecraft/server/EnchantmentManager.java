@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.HOSE.HRandom;
 
 
 public class EnchantmentManager {
@@ -292,6 +293,7 @@ public class EnchantmentManager {
         return itemstack;
     }
 
+    public static HRandom hrnd = new HRandom();
     public static List<WeightedRandomEnchant> b(Random random, ItemStack itemstack, int i) {
         Item item = itemstack.getItem();
         int j = item.b();
@@ -302,7 +304,8 @@ public class EnchantmentManager {
             j /= 2;
             j = 1 + random.nextInt((j >> 1) + 1) + random.nextInt((j >> 1) + 1);
             int k = j + i;
-            float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
+            //float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
+            float f = (hrnd.nextFloat() + hrnd.nextFloat() - 1.0F) * 0.15F;
             int l = (int) ((float) k * (1.0F + f) + 0.5F);
 
             if (l < 1) {

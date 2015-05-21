@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.List;
+import org.HOSE.HRandom;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -63,6 +64,7 @@ public abstract class EntityFireball extends Entity {
         this.dirZ = d2 / d3 * 0.1D;
     }
 
+    public static HRandom hrnd = new HRandom();
     public void t_() {
         if (!this.world.isClientSide && (this.shooter != null && this.shooter.dead || !this.world.isLoaded(new BlockPosition(this)))) {
             this.die();
@@ -80,9 +82,13 @@ public abstract class EntityFireball extends Entity {
                 }
 
                 this.i = false;
+                this.motX *= (hrnd.nextDouble() * 0.2D);
+                this.motY *= (hrnd.nextDouble() * 0.2D);
+                this.motZ *= (hrnd.nextDouble() * 0.2D);
+                /*
                 this.motX *= (double) (this.random.nextFloat() * 0.2F);
                 this.motY *= (double) (this.random.nextFloat() * 0.2F);
-                this.motZ *= (double) (this.random.nextFloat() * 0.2F);
+                this.motZ *= (double) (this.random.nextFloat() * 0.2F);*/
                 this.ar = 0;
                 this.as = 0;
             } else {

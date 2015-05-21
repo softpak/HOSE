@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenAcaciaTree extends WorldGenTreeAbstract {
 
@@ -88,21 +87,13 @@ public class WorldGenAcaciaTree extends WorldGenTreeAbstract {
 
                     int j2;
 
-                    IntStream.range(-3, 4).forEach( ll1 -> {
-                        IntStream.range(-3, 4).forEach( jj2 -> {
-                            if (Math.abs(ll1) != 3 || Math.abs(jj2) != 3) {
-                                this.c(world, blockposition2.a(ll1, 0, jj2));
-                            }
-                        });
-                    });
-                    /*
                     for (l1 = -3; l1 <= 3; ++l1) {
                         for (j2 = -3; j2 <= 3; ++j2) {
                             if (Math.abs(l1) != 3 || Math.abs(j2) != 3) {
                                 this.c(world, blockposition2.a(l1, 0, j2));
                             }
                         }
-                    }*/
+                    }
 
                     blockposition2 = blockposition2.up();
 
@@ -150,21 +141,14 @@ public class WorldGenAcaciaTree extends WorldGenTreeAbstract {
 
                             int i3;
 
-                            IntStream.range(-2, 3).forEach( kk2 -> {
-                                IntStream.range(-2, 3).forEach( ii3 -> {
-                                    if (Math.abs(kk2) != 2 || Math.abs(ii3) != 2) {
-                                        this.c(world, blockposition4.a(kk2, 0, ii3));
-                                    }
-                                });
-                            });
-                            /*
+
                             for (k2 = -2; k2 <= 2; ++k2) {
                                 for (i3 = -2; i3 <= 2; ++i3) {
                                     if (Math.abs(k2) != 2 || Math.abs(i3) != 2) {
                                         this.c(world, blockposition4.a(k2, 0, i3));
                                     }
                                 }
-                            }*/
+                            }
 
                             blockposition4 = blockposition4.up();
 

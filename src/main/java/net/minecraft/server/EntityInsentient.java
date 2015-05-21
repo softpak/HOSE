@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference; // Spigot
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.craftbukkit.Main;
+import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -36,7 +36,7 @@ public abstract class EntityInsentient extends EntityLiving {
     private boolean bo;
     private Entity bp;
     private NBTTagCompound bq;
-    Device dev = Device.hsa();
+    HRandom hrndei = new HRandom();
 
     public EntityInsentient(World world) {
         super(world);
@@ -48,13 +48,12 @@ public abstract class EntityInsentient extends EntityLiving {
         this.b = new EntityAIBodyControl(this);
         this.navigation = this.b(world);
         this.bk = new EntitySenses(this);
-
-        dev.forEach(this.dropChances.length, i -> this.dropChances[i] = 0.085F);
+        //System.out.println(this.dropChances.length);
+        Device.hsa().forEach(5, i -> this.dropChances[i] = 0.085F);
         /*
         for (int i = 0; i < this.dropChances.length; ++i) {
             this.dropChances[i] = 0.085F;
         }*/
-
         // CraftBukkit start - default persistance to type's persistance value
         this.persistent = !isTypeNotPersistent();
         // CraftBukkit end
@@ -155,15 +154,10 @@ public abstract class EntityInsentient extends EntityLiving {
         super.K();
         this.world.methodProfiler.a("mobBaseTick");
         //System.out.println("mobBaseTick");
-        if (this.isAlive() && Main.hrnd.nextInt(1000) < this.a_++) {
-            this.a_ = -this.w();
-            this.x();
-        }
-        /*
         if (this.isAlive() && this.random.nextInt(1000) < this.a_++) {
             this.a_ = -this.w();
             this.x();
-        }*/
+        }
 
         this.world.methodProfiler.b();
     }
@@ -193,7 +187,8 @@ public abstract class EntityInsentient extends EntityLiving {
                 double d2 = this.random.nextGaussian() * 0.02D;
                 double d3 = 10.0D;
 
-                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (this.random.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2, new int[0]);
+                //this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (this.random.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2, new int[0]);
+                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (hrndei.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (hrndei.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (hrndei.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2, new int[0]);
             }
         } else {
             this.world.broadcastEntityEffect(this, (byte) 20);
@@ -408,7 +403,8 @@ public abstract class EntityInsentient extends EntityLiving {
             }
 
             if (flag && this.a(itemstack)) {
-                if (itemstack1 != null && this.random.nextFloat() - 0.1F < this.dropChances[i]) {
+                //if (itemstack1 != null && this.random.nextFloat() - 0.1F < this.dropChances[i]) {
+                if (itemstack1 != null && hrndei.nextFloat() - 0.1F < this.dropChances[i]) {
                     this.a(itemstack1, 0.0F);
                 }
 
@@ -594,7 +590,8 @@ public abstract class EntityInsentient extends EntityLiving {
             ItemStack itemstack = this.getEquipment(j);
             boolean flag1 = this.dropChances[j] > 1.0F;
 
-            if (itemstack != null && (flag || flag1) && this.random.nextFloat() - (float) i * 0.01F < this.dropChances[j]) {
+            //if (itemstack != null && (flag || flag1) && this.random.nextFloat() - (float) i * 0.01F < this.dropChances[j]) {
+            if (itemstack != null && (flag || flag1) && hrndei.nextFloat() - (float) i * 0.01F < this.dropChances[j]) {
                 if (!flag1 && itemstack.e()) {
                     int k = Math.max(itemstack.j() - 25, 1);
                     int l = itemstack.j() - this.random.nextInt(this.random.nextInt(k) + 1);
@@ -617,26 +614,29 @@ public abstract class EntityInsentient extends EntityLiving {
     }
 
     protected void a(DifficultyDamageScaler difficultydamagescaler) {
-        if (this.random.nextFloat() < 0.15F * difficultydamagescaler.c()) {
+        //if (this.random.nextFloat() < 0.15F * difficultydamagescaler.c()) {
+        if (hrndei.nextFloat() < 0.15F * difficultydamagescaler.c()) {
             int i = this.random.nextInt(2);
             float f = this.world.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.25F;
 
-            if (this.random.nextFloat() < 0.095F) {
+            //if (this.random.nextFloat() < 0.095F) {
+            if (hrndei.nextFloat() < 0.095F) {
                 ++i;
             }
 
-            if (this.random.nextFloat() < 0.095F) {
+            if (hrndei.nextFloat() < 0.095F) {
                 ++i;
             }
 
-            if (this.random.nextFloat() < 0.095F) {
+            if (hrndei.nextFloat() < 0.095F) {
                 ++i;
             }
 
             for (int j = 3; j >= 0; --j) {
                 ItemStack itemstack = this.q(j);
 
-                if (j < 3 && this.random.nextFloat() < f) {
+                //if (j < 3 && this.random.nextFloat() < f) {
+                if (j < 3 && hrndei.nextFloat() < f) {
                     break;
                 }
 
@@ -738,14 +738,16 @@ public abstract class EntityInsentient extends EntityLiving {
     protected void b(DifficultyDamageScaler difficultydamagescaler) {
         float f = difficultydamagescaler.c();
 
-        if (this.bA() != null && this.random.nextFloat() < 0.25F * f) {
+        //if (this.bA() != null && this.random.nextFloat() < 0.25F * f) {
+        if (this.bA() != null && hrndei.nextFloat() < 0.25F * f) {
             EnchantmentManager.a(this.random, this.bA(), (int) (5.0F + f * (float) this.random.nextInt(18)));
         }
 
         for (int i = 0; i < 4; ++i) {
             ItemStack itemstack = this.q(i);
 
-            if (itemstack != null && this.random.nextFloat() < 0.5F * f) {
+            //if (itemstack != null && this.random.nextFloat() < 0.5F * f) {
+            if (itemstack != null && hrndei.nextFloat() < 0.5F * f) {
                 EnchantmentManager.a(this.random, itemstack, (int) (5.0F + f * (float) this.random.nextInt(18)));
             }
         }

@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Iterator;
+import org.HOSE.HRandom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,17 +17,21 @@ public class EntityItem extends Entity {
     private String g;
     public float a;
     private int lastTick = MinecraftServer.currentTick; // CraftBukkit
-
+    public static HRandom hrnd = new HRandom();
     public EntityItem(World world, double d0, double d1, double d2) {
         super(world);
         this.e = 5;
-        this.a = (float) (Math.random() * 3.141592653589793D * 2.0D);
+        //this.a = (float) (Math.random() * 3.141592653589793D * 2.0D);
+        this.a = (float) (hrnd.nextDouble() * 3.141592653589793D * 2.0D);
         this.setSize(0.25F, 0.25F);
         this.setPosition(d0, d1, d2);
-        this.yaw = (float) (Math.random() * 360.0D);
-        this.motX = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D));
+        //this.yaw = (float) (Math.random() * 360.0D);
+        this.yaw = (float) (hrnd.nextDouble() * 360.0D);
+        //this.motX = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D));
+        this.motX = hrnd.nextDouble() * 0.20000000298023224D - 0.10000000149011612D;
         this.motY = 0.20000000298023224D;
-        this.motZ = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D));
+        //this.motZ = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D));
+        this.motZ = hrnd.nextDouble() * 0.20000000298023224D - 0.10000000149011612D;
     }
 
     public EntityItem(World world, double d0, double d1, double d2, ItemStack itemstack) {
@@ -46,7 +51,8 @@ public class EntityItem extends Entity {
     public EntityItem(World world) {
         super(world);
         this.e = 5;
-        this.a = (float) (Math.random() * 3.141592653589793D * 2.0D);
+        //this.a = (float) (Math.random() * 3.141592653589793D * 2.0D);
+        this.a = (float) (hrnd.nextDouble() * 3.141592653589793D * 2.0D);
         this.setSize(0.25F, 0.25F);
         this.setItemStack(new ItemStack(Blocks.AIR, 0));
     }
@@ -78,9 +84,12 @@ public class EntityItem extends Entity {
             if (flag || this.ticksLived % 25 == 0) {
                 if (this.world.getType(new BlockPosition(this)).getBlock().getMaterial() == Material.LAVA) {
                     this.motY = 0.20000000298023224D;
-                    this.motX = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
+                    this.motX =  (hrnd.nextDouble() - hrnd.nextDouble()) * 0.2D;
+                    this.motZ =  (hrnd.nextDouble() - hrnd.nextDouble()) * 0.2D;
+                    this.makeSound("random.fizz", 0.4F, 2.0F + hrnd.nextFloat() * 0.4F);
+                    /*this.motX = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
                     this.motZ = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
-                    this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+                    this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);*/
                 }
 
                 if (!this.world.isClientSide) {

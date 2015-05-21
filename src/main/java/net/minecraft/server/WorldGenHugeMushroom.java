@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenHugeMushroom extends WorldGenerator {
 
@@ -154,20 +153,13 @@ public class WorldGenHugeMushroom extends WorldGenerator {
                         }
                     }
 
-                    IntStream.range(0, i).filter( 
-                        jj1 -> !((Block)world.getType(blockposition.up(jj1)).getBlock()).o()).forEach(
-                        jj1 -> this.a(world, blockposition.up(jj1), this.a.getBlockData().set(BlockHugeMushroom.VARIANT, BlockHugeMushroom.EnumHugeMushroomVariant.STEM)));
-                            
-                    
-                    
-                    /*
                     for (j1 = 0; j1 < i; ++j1) {
                         Block block2 = world.getType(blockposition.up(j1)).getBlock();
 
                         if (!block2.o()) {
                             this.a(world, blockposition.up(j1), this.a.getBlockData().set(BlockHugeMushroom.VARIANT, BlockHugeMushroom.EnumHugeMushroomVariant.STEM));
                         }
-                    }*/
+                    }
 
                     return true;
                 }

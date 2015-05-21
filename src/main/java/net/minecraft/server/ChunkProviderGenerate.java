@@ -3,7 +3,6 @@ package net.minecraft.server;
 import com.amd.aparapi.Aparapi;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class ChunkProviderGenerate implements IChunkProvider {
 
@@ -60,21 +59,13 @@ public class ChunkProviderGenerate implements IChunkProvider {
         this.p = new double[825];
         this.q = new float[25];
 
-        IntStream.range(-2, 3).forEach(gid_j -> {
-            IntStream.range(-2, 3).forEach(gid_k -> {
-                float f = 10.0F / MathHelper.c((float) (gid_j * gid_j + gid_k * gid_k) + 0.2F);
-
-                this.q[gid_j + 2 + (gid_k + 2) * 5] = f;
-            });
-        });
-        /*
         for (int j = -2; j <= 2; ++j) {
             for (int k = -2; k <= 2; ++k) {
                 float f = 10.0F / MathHelper.c((float) (j * j + k * k) + 0.2F);
 
                 this.q[j + 2 + (k + 2) * 5] = f;
             }
-        }*/
+        }
 
         if (s != null) {
             this.r = CustomWorldSettingsFinal.CustomWorldSettings.a(s).b();

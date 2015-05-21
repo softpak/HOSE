@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenForest extends WorldGenTreeAbstract {
 
@@ -86,20 +85,13 @@ public class WorldGenForest extends WorldGenTreeAbstract {
                         }
                     }
 
-                    
-                    IntStream.range(0, i).filter(
-                        ii1 -> ((Block)world.getType(blockposition.up(ii1)).getBlock()).getMaterial() == Material.AIR || ((Block)world.getType(blockposition.up(ii1)).getBlock()).getMaterial() == Material.LEAVES).forEach(
-                        ii1 -> this.a(world, blockposition.up(ii1), WorldGenForest.a));
-                    
-                    
-                    /*
                     for (i1 = 0; i1 < i; ++i1) {
                         Block block2 = world.getType(blockposition.up(i1)).getBlock();
 
                         if (block2.getMaterial() == Material.AIR || block2.getMaterial() == Material.LEAVES) {
                             this.a(world, blockposition.up(i1), WorldGenForest.a);
                         }
-                    }*/
+                    }
 
                     return true;
                 } else {

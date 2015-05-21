@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenJungleTree extends WorldGenMegaTreeAbstract {
 
@@ -28,29 +27,20 @@ public class WorldGenJungleTree extends WorldGenMegaTreeAbstract {
 
                 int i1;
 
-                IntStream.range(0, 5).forEach( ii1 -> {
-                    k = blockposition.getX() + (int) (1.5F + MathHelper.cos(f) * (float) ii1);
-                    l = blockposition.getZ() + (int) (1.5F + MathHelper.sin(f) * (float) ii1);
-                    this.a(world, new BlockPosition(k, j - 3 + ii1 / 2, l), this.b);
-                });
-                        
-                /*
                 for (i1 = 0; i1 < 5; ++i1) {
                     k = blockposition.getX() + (int) (1.5F + MathHelper.cos(f) * (float) i1);
                     l = blockposition.getZ() + (int) (1.5F + MathHelper.sin(f) * (float) i1);
                     this.a(world, new BlockPosition(k, j - 3 + i1 / 2, l), this.b);
-                }*/
+                }
 
                 i1 = 1 + random.nextInt(2);
                 int j1 = j;
 
-                IntStream.range(j - i1, j1+1).forEach( k1 -> this.b(world, new BlockPosition(k, k1, l), 1 - (k1 - j1)));
-                /*
                 for (int k1 = j - i1; k1 <= j1; ++k1) {
                     int l1 = k1 - j1;
 
                     this.b(world, new BlockPosition(k, k1, l), 1 - l1);
-                }*/
+                }
             }
 
             for (int i2 = 0; i2 < i; ++i2) {
@@ -111,11 +101,9 @@ public class WorldGenJungleTree extends WorldGenMegaTreeAbstract {
     private void c(World world, BlockPosition blockposition, int i) {
         byte b0 = 2;
 
-        IntStream.range(-b0, 1).forEach( j -> this.a(world, blockposition.up(j), i + 1 - j));
-        /*
         for (int j = -b0; j <= 0; ++j) {
             this.a(world, blockposition.up(j), i + 1 - j);
-        }*/
+        }
 
     }
 }

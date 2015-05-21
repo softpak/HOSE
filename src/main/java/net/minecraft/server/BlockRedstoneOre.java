@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import org.HOSE.HRandom;
 import org.bukkit.craftbukkit.Main;
 
 // CraftBukkit start
@@ -118,14 +119,18 @@ public class BlockRedstoneOre extends Block {
         // CraftBukkit end
     }
 
+    public static HRandom hrnd = new HRandom();
     private void f(World world, BlockPosition blockposition) {
-        Random random = world.random;
+        //Random random = world.random;
         double d0 = 0.0625D;
 
         for (int i = 0; i < 6; ++i) {
-            double d1 = (double) ((float) blockposition.getX() + random.nextFloat());
+            /*double d1 = (double) ((float) blockposition.getX() + random.nextFloat());
             double d2 = (double) ((float) blockposition.getY() + random.nextFloat());
-            double d3 = (double) ((float) blockposition.getZ() + random.nextFloat());
+            double d3 = (double) ((float) blockposition.getZ() + random.nextFloat());*/
+            double d1 = (double) ((float) blockposition.getX() + hrnd.nextFloat());
+            double d2 = (double) ((float) blockposition.getY() + hrnd.nextFloat());
+            double d3 = (double) ((float) blockposition.getZ() + hrnd.nextFloat());
 
             if (i == 0 && !world.getType(blockposition.up()).getBlock().c()) {
                 d2 = (double) blockposition.getY() + d0 + 1.0D;

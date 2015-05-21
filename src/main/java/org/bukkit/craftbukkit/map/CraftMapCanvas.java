@@ -18,6 +18,7 @@ public class CraftMapCanvas implements MapCanvas {
     protected CraftMapCanvas(CraftMapView mapView) {
         this.mapView = mapView;
         Arrays.fill(buffer, (byte) -1);
+        System.out.println("CraftMapCanvas:"+buffer.length);
     }
 
     public CraftMapView getMapView() {

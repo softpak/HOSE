@@ -1,10 +1,14 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Device;
+import org.HOSE.HRandom;
+
 public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
 
     protected Block bn;
     private int bm;
     private EntityHuman bo;
+    public static HRandom hrndea = new HRandom();
 
     public EntityAnimal(World world) {
         super(world);
@@ -32,7 +36,8 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
 
-                this.world.addParticle(EnumParticle.HEART, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
+                //this.world.addParticle(EnumParticle.HEART, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
+                this.world.addParticle(EnumParticle.HEART, this.locX + (double) (hrndea.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (hrndea.nextFloat() * this.length), this.locZ + (double) (hrndea.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
             }
         }
 
@@ -65,11 +70,23 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
         this.bm = nbttagcompound.getInt("InLove");
     }
 
+    Device dev = Device.hsa();
+    BlockPosition blockposition;
     public boolean bR() {
+        long st = System.nanoTime();
+        dev.forEach(1, gd -> {
+            int i = MathHelper.floor(this.locX);
+            int j = MathHelper.floor(this.getBoundingBox().b);
+            int k = MathHelper.floor(this.locZ);
+            blockposition = new BlockPosition(i, j, k);
+        });
+        long et = System.nanoTime();
+        System.out.println("EAbR Time use:"+(et-st)+"ns.");
+        /*
         int i = MathHelper.floor(this.locX);
         int j = MathHelper.floor(this.getBoundingBox().b);
         int k = MathHelper.floor(this.locZ);
-        BlockPosition blockposition = new BlockPosition(i, j, k);
+        BlockPosition blockposition = new BlockPosition(i, j, k);*/
 
         return this.world.getType(blockposition.down()).getBlock() == this.bn && this.world.k(blockposition) > 8 && super.bR();
     }

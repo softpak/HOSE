@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenBigTree extends WorldGenTreeAbstract {
 
@@ -86,19 +85,6 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
     void a(BlockPosition blockposition, float f, IBlockData iblockdata) {
         int i = (int) ((double) f + 0.618D);
 
-        IntStream.range(-i, i).forEach( j -> {
-            IntStream.range(-i, i).forEach( k -> {
-                if (Math.pow((double) Math.abs(j) + 0.5D, 2.0D) + Math.pow((double) Math.abs(k) + 0.5D, 2.0D) <= (double) (f * f)) {
-                    BlockPosition blockposition1 = blockposition.a(j, 0, k);
-                    Material material = this.l.getType(blockposition1).getBlock().getMaterial();
-
-                    if (material == Material.AIR || material == Material.LEAVES) {
-                        this.a(this.l, blockposition1, iblockdata);
-                    }
-                }
-            });
-        });
-        /*
         for (int j = -i; j <= i; ++j) {
             for (int k = -i; k <= i; ++k) {
                 if (Math.pow((double) Math.abs(j) + 0.5D, 2.0D) + Math.pow((double) Math.abs(k) + 0.5D, 2.0D) <= (double) (f * f)) {
@@ -110,7 +96,7 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
                     }
                 }
             }
-        }*/
+        }
 
     }
 
@@ -154,18 +140,12 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
         float f1 = (float) blockposition2.getY() / (float) i;
         float f2 = (float) blockposition2.getZ() / (float) i;
 
-        IntStream.range(0, i).forEach( j -> {
-            BlockLogAbstract.EnumLogRotation blocklogabstract_enumlogrotation = this.b(blockposition, blockposition.a((double) (0.5F + (float) j * f), (double) (0.5F + (float) j * f1), (double) (0.5F + (float) j * f2)));
-
-            this.a(this.l, blockposition.a((double) (0.5F + (float) j * f), (double) (0.5F + (float) j * f1), (double) (0.5F + (float) j * f2)), block.getBlockData().set(BlockLogAbstract.AXIS, blocklogabstract_enumlogrotation));
-        });
-        /*
         for (int j = 0; j <= i; ++j) {
             BlockPosition blockposition3 = blockposition.a((double) (0.5F + (float) j * f), (double) (0.5F + (float) j * f1), (double) (0.5F + (float) j * f2));
             BlockLogAbstract.EnumLogRotation blocklogabstract_enumlogrotation = this.b(blockposition, blockposition3);
 
             this.a(this.l, blockposition3, block.getBlockData().set(BlockLogAbstract.AXIS, blocklogabstract_enumlogrotation));
-        }*/
+        }
 
     }
 
@@ -197,17 +177,11 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
     void b() {
         Iterator iterator = this.j.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                this.a((BlockPosition) (WorldGenBigTree.Position) it);
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             WorldGenBigTree.Position worldgenbigtree_position = (WorldGenBigTree.Position) iterator.next();
 
             this.a((BlockPosition) worldgenbigtree_position);
-        }*/
+        }
 
     }
 
@@ -232,17 +206,6 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
     void d() {
         Iterator iterator = this.j.iterator();
 
-        iterator.forEachRemaining(
-            it -> {
-                int i = ((WorldGenBigTree.Position) it).q();
-                BlockPosition blockposition = new BlockPosition(this.m.getX(), i, this.m.getZ());
-
-                if (!blockposition.equals((WorldGenBigTree.Position) it) && this.c(i - this.m.getY())) {
-                    this.a(blockposition, (BlockPosition) (WorldGenBigTree.Position) it, Blocks.LOG);
-                }
-            }
-        );
-        /*
         while (iterator.hasNext()) {
             WorldGenBigTree.Position worldgenbigtree_position = (WorldGenBigTree.Position) iterator.next();
             int i = worldgenbigtree_position.q();
@@ -251,7 +214,7 @@ public class WorldGenBigTree extends WorldGenTreeAbstract {
             if (!blockposition.equals(worldgenbigtree_position) && this.c(i - this.m.getY())) {
                 this.a(blockposition, (BlockPosition) worldgenbigtree_position, Blocks.LOG);
             }
-        }*/
+        }
 
     }
 

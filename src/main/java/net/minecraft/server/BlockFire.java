@@ -4,7 +4,7 @@ import com.amd.aparapi.Device;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
-import org.bukkit.craftbukkit.Main;
+import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -24,7 +24,8 @@ public class BlockFire extends Block {
     public static final BlockStateInteger UPPER = BlockStateInteger.of("upper", 0, 2);
     private final Map<Block, Integer> T = Maps.newIdentityHashMap();
     private final Map<Block, Integer> U = Maps.newIdentityHashMap();
-
+    public static HRandom hrndbf = new HRandom();
+    
     public IBlockData updateState(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
         int i = blockposition.getX();
         int j = blockposition.getY();
@@ -133,13 +134,11 @@ public class BlockFire extends Block {
                 int i = ((Integer) iblockdata.get(BlockFire.AGE)).intValue();
 
                 if (i < 15) {
-                    //iblockdata = iblockdata.set(BlockFire.AGE, Integer.valueOf(i + random.nextInt(3) / 2));
-                    iblockdata = iblockdata.set(BlockFire.AGE, Integer.valueOf(i + Main.hrnd.nextInt(3) / 2));
+                    iblockdata = iblockdata.set(BlockFire.AGE, Integer.valueOf(i + random.nextInt(3) / 2));
                     world.setTypeAndData(blockposition, iblockdata, 4);
                 }
 
-                //world.a(blockposition, (Block) this, this.a(world) + random.nextInt(10));
-                world.a(blockposition, (Block) this, this.a(world) + Main.hrnd.nextInt(10));
+                world.a(blockposition, (Block) this, this.a(world) + random.nextInt(10));
                 if (!flag) {
                     if (!this.f(world, blockposition)) {
                         if (!World.a((IBlockAccess) world, blockposition.down()) || i > 3) {
@@ -149,8 +148,7 @@ public class BlockFire extends Block {
                         return;
                     }
 
-                    //if (!this.e((IBlockAccess) world, blockposition.down()) && i == 15 && random.nextInt(4) == 0) {
-                    if (!this.e((IBlockAccess) world, blockposition.down()) && i == 15 && Main.hrnd.nextInt(4) == 0) {
+                    if (!this.e((IBlockAccess) world, blockposition.down()) && i == 15 && random.nextInt(4) == 0) {
                         fireExtinguished(world, blockposition); // CraftBukkit
                         return;
                     }
@@ -191,9 +189,9 @@ public class BlockFire extends Block {
                                     }
 
                                     //if (k1 > 0 && random.nextInt(i1) <= k1 && (!world.S() || !this.e(world, blockposition1))) {
-                                    if (k1 > 0 && Main.hrnd.nextInt(i1) <= k1 && (!world.S() || !this.e(world, blockposition1))) {
+                                    if (k1 > 0 && hrndbf.nextInt(i1) <= k1 && (!world.S() || !this.e(world, blockposition1))) {
                                         //int l1 = i + random.nextInt(5) / 4;
-                                        int l1 = i + Main.hrnd.nextInt(5) / 4;
+                                        int l1 = i + hrndbf.nextInt(5) / 4;
 
                                         if (l1 > 15) {
                                             l1 = 15;
@@ -253,8 +251,10 @@ public class BlockFire extends Block {
     private void a(World world, BlockPosition blockposition, int i, Random random, int j) {
         int k = this.c(world.getType(blockposition).getBlock());
 
-        //if (random.nextInt(i) < k) {
-        if (Main.hrnd.nextInt(i) < k) {
+        
+        if (random.nextInt(i) < k) {
+        //will stop main tick
+        //if (hrndbf.nextInt(i) < k) {
             IBlockData iblockdata = world.getType(blockposition);
 
             // CraftBukkit start
@@ -269,9 +269,9 @@ public class BlockFire extends Block {
             // CraftBukkit end
 
             //if (random.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
-            if (Main.hrnd.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
+            if (hrndbf.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
                 //int l = j + random.nextInt(5) / 4;
-                int l = j + Main.hrnd.nextInt(5) / 4;
+                int l = j + hrndbf.nextInt(5) / 4;
 
                 if (l > 15) {
                     l = 15;
@@ -351,7 +351,7 @@ public class BlockFire extends Block {
                 fireExtinguished(world, blockposition); // CraftBukkit - fuel block broke
             } else {
                 //world.a(blockposition, (Block) this, this.a(world) + world.random.nextInt(10));
-                world.a(blockposition, (Block) this, this.a(world) + Main.hrnd.nextInt(10));
+                world.a(blockposition, (Block) this, this.a(world) + hrndbf.nextInt(10));
             }
         }
     }

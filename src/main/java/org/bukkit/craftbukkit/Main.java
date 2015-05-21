@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionParser;
@@ -19,17 +20,19 @@ public class Main {
     public static boolean useJline = true;
     public static boolean useConsole = true;
     public static HRandom hrnd = new HRandom();
+    public static Random rnd = new Random();
     
 
     public static void main(String[] args) {
         // Todo: Installation script
         double a[] = new double[1000];
         System.out.println("HSA test.");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             long st = System.nanoTime();
             //Aparapi.range(1000).forEach(g -> a[g] = hrnd.nextDouble());
             
-            System.out.println(hrnd.nextDouble());
+            System.out.println(rnd.nextLong());
+            //System.out.println(Math.random());
             long et = System.nanoTime();
 
             System.out.println("Time use:"+(et-st)+"ns.");

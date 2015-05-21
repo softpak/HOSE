@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import org.HOSE.HRandom;
+
 public class BlockJukeBox extends BlockContainer {
 
     public static final BlockStateBoolean HAS_RECORD = BlockStateBoolean.of("has_record");
@@ -32,6 +34,7 @@ public class BlockJukeBox extends BlockContainer {
         }
     }
 
+    public static HRandom hrnd = new HRandom();
     public void dropRecord(World world, BlockPosition blockposition, IBlockData iblockdata) { // CraftBukkit - public
         if (!world.isClientSide) {
             TileEntity tileentity = world.getTileEntity(blockposition);
@@ -45,9 +48,13 @@ public class BlockJukeBox extends BlockContainer {
                     world.a(blockposition, (String) null);
                     blockjukebox_tileentityrecordplayer.setRecord((ItemStack) null);
                     float f = 0.7F;
+                    double d0 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    double d1 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.2D + 0.6D;
+                    double d2 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    /*
                     double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
                     double d1 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.2D + 0.6D;
-                    double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;*/
                     ItemStack itemstack1 = itemstack.cloneItemStack();
                     EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack1);
 

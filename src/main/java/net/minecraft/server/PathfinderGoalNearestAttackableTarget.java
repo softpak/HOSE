@@ -67,8 +67,7 @@ public class PathfinderGoalNearestAttackableTarget<T extends EntityLiving> exten
     }
 
     public boolean a() {
-        //if (this.g > 0 && this.e.bc().nextInt(this.g) != 0) {
-        if (this.g > 0 && Main.hrnd.nextInt(this.g) != 0) {
+        if (this.g > 0 && this.e.bc().nextInt(this.g) != 0) {
             return false;
         } else {
             double d0 = this.f();

@@ -32,7 +32,8 @@ public class EntityGuardian extends EntityMonster {
         pathfindergoalmovetowardsrestriction.a(3);
         this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, 10, true, false, new EntityGuardian.EntitySelectorGuardianTargetHumanSquid(this)));
         this.moveController = new EntityGuardian.ControllerMoveGuardian(this);
-        this.b = this.a = this.random.nextFloat();
+        //this.b = this.a = this.random.nextFloat();
+        this.b = this.a = hrnd.nextFloat();
     }
 
     public void initAttributes() { // CraftBukkit - public
@@ -200,7 +201,8 @@ public class EntityGuardian extends EntityMonster {
             this.a += this.c;
             this.bn = this.bm;
             if (!this.V()) {
-                this.bm = this.random.nextFloat();
+                //this.bm = this.random.nextFloat();
+                this.bm = hrnd.nextFloat();
             } else if (this.n()) {
                 this.bm += (0.0F - this.bm) * 0.25F;
             } else {

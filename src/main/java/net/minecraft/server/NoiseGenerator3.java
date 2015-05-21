@@ -7,7 +7,7 @@ public class NoiseGenerator3 extends NoiseGenerator {
 
     private NoiseGenerator3Handler[] a;
     private int b;
-
+    
     public NoiseGenerator3(Random random, int i) {
         this.b = i;
         this.a = new NoiseGenerator3Handler[i];

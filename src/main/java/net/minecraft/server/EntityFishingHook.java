@@ -140,9 +140,13 @@ public class EntityFishingHook extends Entity {
                 }
 
                 this.as = false;
+                this.motX *= (double) (hrnd.nextFloat() * 0.2F);
+                this.motY *= (double) (hrnd.nextFloat() * 0.2F);
+                this.motZ *= (double) (hrnd.nextFloat() * 0.2F);
+                /*
                 this.motX *= (double) (this.random.nextFloat() * 0.2F);
                 this.motY *= (double) (this.random.nextFloat() * 0.2F);
-                this.motZ *= (double) (this.random.nextFloat() * 0.2F);
+                this.motZ *= (double) (this.random.nextFloat() * 0.2F);*/
                 this.at = 0;
                 this.au = 0;
             } else {

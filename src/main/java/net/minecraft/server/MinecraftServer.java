@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Device;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
@@ -127,7 +128,11 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private static final int SAMPLE_INTERVAL = 100;
     public final double[] recentTps = new double[ 3 ];
     // Spigot end
-
+    
+    //HOSE
+    Device dev = Device.hsa();
+    
+    
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
         io.netty.util.ResourceLeakDetector.setEnabled( false ); // Spigot - disable
         this.e = proxy;
@@ -530,6 +535,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 // Spigot start
                 Arrays.fill( recentTps, 20 );
+                //dev.forEach(3, gd -> recentTps[gd] = 20);
                 long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                 while (this.isRunning) {
                     curTime = System.nanoTime();
@@ -637,11 +643,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     protected void y() {}
 
-    //HSA rnd
-    public static int nextInt(HRandom random, int i, int j) {
-        return i >= j ? i : random.nextInt(j - i + 1) + i;
-    }
-    
     protected void z() throws ExceptionWorldConflict { // CraftBukkit - added throws
         SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
@@ -659,8 +660,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.X = i;
             this.r.setPlayerSample(new ServerPing.ServerPingPlayerSample(this.I(), this.H()));
             GameProfile[] agameprofile = new GameProfile[Math.min(this.H(), 12)];
-            //int j = MathHelper.nextInt(this.s, 0, this.H() - agameprofile.length);
-            int j = nextInt(Main.hrnd, 0, this.H() - agameprofile.length);
+            int j = MathHelper.nextInt(this.s, 0, this.H() - agameprofile.length);
+            
 
             for (int k = 0; k < agameprofile.length; ++k) {
                 agameprofile[k] = ((EntityPlayer) this.v.v().get(j + k)).getProfile();

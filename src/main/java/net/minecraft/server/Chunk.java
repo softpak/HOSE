@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.amd.aparapi.Device;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -72,6 +73,7 @@ public class Chunk {
     }
     // CraftBukkit end
 
+    Device dev = Device.hsa();
     public Chunk(World world, int i, int j) {
         this.sections = new ChunkSection[16];
         this.e = new byte[256];
@@ -89,9 +91,14 @@ public class Chunk {
         for (int k = 0; k < this.entitySlices.length; ++k) {
             this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
         }
-        
+        dev.forEach(256, gd -> {
+            this.f[gd] = -999;
+            this.e[gd] = (byte) -1;
+        });
+        //5~7 deci ns
+        /*
         Arrays.fill(this.f, -999);
-        Arrays.fill(this.e, (byte) -1);
+        Arrays.fill(this.e, (byte) -1);*/
 
         // CraftBukkit start
         if (!(this instanceof EmptyChunk)) {

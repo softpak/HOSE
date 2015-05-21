@@ -191,8 +191,7 @@ public abstract class World implements IBlockAccess {
         this.chunkTickList.setAutoCompactionFactor( 0 );
         // Spigot end
 
-        //this.L = this.random.nextInt(12000);
-        this.L = Main.hrnd.nextInt(12000);
+        this.L = this.random.nextInt(12000);
         this.allowMonsters = true;
         this.allowAnimals = true;
         this.H = new int['\u8000'];
@@ -2094,11 +2093,9 @@ public abstract class World implements IBlockAccess {
 
                 if (j <= 0) {
                     if (this.worldData.isThundering()) {
-                        //this.worldData.setThunderDuration(this.random.nextInt(12000) + 3600);
-                        this.worldData.setThunderDuration(Main.hrnd.nextInt(12000) + 3600);
+                        this.worldData.setThunderDuration(this.random.nextInt(12000) + 3600);
                     } else {
-                        //this.worldData.setThunderDuration(this.random.nextInt(168000) + 12000);
-                        this.worldData.setThunderDuration(Main.hrnd.nextInt(168000) + 12000);
+                        this.worldData.setThunderDuration(this.random.nextInt(168000) + 12000);
                     }
                 } else {
                     --j;
@@ -2120,11 +2117,9 @@ public abstract class World implements IBlockAccess {
 
                 if (k <= 0) {
                     if (this.worldData.hasStorm()) {
-                        //this.worldData.setWeatherDuration(this.random.nextInt(12000) + 12000);
-                        this.worldData.setWeatherDuration(Main.hrnd.nextInt(12000) + 12000);
+                        this.worldData.setWeatherDuration(this.random.nextInt(12000) + 12000);
                     } else {
-                        //this.worldData.setWeatherDuration(this.random.nextInt(168000) + 12000);
-                        this.worldData.setWeatherDuration(Main.hrnd.nextInt(168000) + 12000);
+                        this.worldData.setWeatherDuration(this.random.nextInt(168000) + 12000);
                     }
                 } else {
                     --k;

@@ -19,8 +19,7 @@ public class PathfinderGoalMakeLove extends PathfinderGoal {
     public boolean a() {
         if (this.b.getAge() != 0) {
             return false;
-        //} else if (this.b.bc().nextInt(500) != 0) {
-        } else if (Main.hrnd.nextInt(500) != 0) {
+        } else if (this.b.bc().nextInt(500) != 0) {
             return false;
         } else {
             this.a = this.d.ae().getClosestVillage(new BlockPosition(this.b), 0);

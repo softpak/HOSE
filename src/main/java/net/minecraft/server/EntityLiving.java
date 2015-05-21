@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.ArrayList;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import org.bukkit.craftbukkit.Main;
+import org.HOSE.HRandom;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
@@ -89,6 +89,8 @@ public abstract class EntityLiving extends Entity {
     public int expToDrop;
     public int maxAirTicks = 300;
     ArrayList<org.bukkit.inventory.ItemStack> drops = null;
+    private static HRandom hrndel = new HRandom();
+    
     // CraftBukkit end
     // Spigot start
     public void inactiveTick()
@@ -109,8 +111,12 @@ public abstract class EntityLiving extends Entity {
         this.datawatcher.watch(6, (float) this.getAttributeInstance(GenericAttributes.maxHealth).getValue());
         this.k = true;
         this.aH = (float) ((Math.random() + 1.0D) * 0.009999999776482582D);
+        //this.aH = (float) ((hrndel.nextDouble() + 1.0D) * 0.009999999776482582D);
         this.setPosition(this.locX, this.locY, this.locZ);
+        //this.aG = (float) hrndel.nextDouble() * 12398.0F;
         this.aG = (float) Math.random() * 12398.0F;
+        //flash
+        //this.yaw = (float) (hrndel.nextDouble() * 3.1415927410125732D * 2.0D);
         this.yaw = (float) (Math.random() * 3.1415927410125732D * 2.0D);
         this.aK = this.yaw;
         this.S = 0.6F;
@@ -165,6 +171,7 @@ public abstract class EntityLiving extends Entity {
         return false;
     }
 
+    
     public void K() {
         this.ay = this.az;
         super.K();
@@ -197,9 +204,12 @@ public abstract class EntityLiving extends Entity {
                         this.setAirTicks(0);
 
                         for (int i = 0; i < 8; ++i) {
-                            float f = this.random.nextFloat() - this.random.nextFloat();
+                            float f = hrndel.nextFloat() - hrndel.nextFloat();
+                            float f1 = hrndel.nextFloat() - hrndel.nextFloat();
+                            float f2 = hrndel.nextFloat() - hrndel.nextFloat();
+                            /*float f = this.random.nextFloat() - this.random.nextFloat();
                             float f1 = this.random.nextFloat() - this.random.nextFloat();
-                            float f2 = this.random.nextFloat() - this.random.nextFloat();
+                            float f2 = this.random.nextFloat() - this.random.nextFloat();*/
 
                             this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f, this.locY + (double) f1, this.locZ + (double) f2, this.motX, this.motY, this.motZ, new int[0]);
                         }
@@ -302,7 +312,8 @@ public abstract class EntityLiving extends Entity {
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
 
-                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
+                //this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
+                this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (hrndel.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (hrndel.nextFloat() * this.length), this.locZ + (double) (hrndel.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
             }
         }
 
@@ -315,8 +326,8 @@ public abstract class EntityLiving extends Entity {
     protected int j(int i) {
         int j = EnchantmentManager.getOxygenEnchantmentLevel(this);
 
-        //return j > 0 && this.random.nextInt(j + 1) > 0 ? i : i - 1;
-        return j > 0 && Main.hrnd.nextInt(j + 1) > 0 ? i : i - 1;
+        return j > 0 && this.random.nextInt(j + 1) > 0 ? i : i - 1;
+        
     }
 
     protected int getExpValue(EntityHuman entityhuman) {
@@ -509,16 +520,13 @@ public abstract class EntityLiving extends Entity {
             boolean flag1 = false;
 
             if (!this.isInvisible()) {
-                //flag1 = this.random.nextBoolean();
-                flag1 = Main.hrnd.nextBoolean();
+                flag1 = this.random.nextBoolean();
             } else {
-                //flag1 = this.random.nextInt(15) == 0;
-                flag1 = Main.hrnd.nextInt(15) == 0;
+                flag1 = this.random.nextInt(15) == 0;
             }
 
             if (flag) {
-                //flag1 &= this.random.nextInt(5) == 0;
-                flag1 &= Main.hrnd.nextInt(5) == 0;
+                flag1 &= this.random.nextInt(5) == 0;
             }
 
             if (flag1 && i > 0) {
@@ -722,7 +730,8 @@ public abstract class EntityLiving extends Entity {
             } else {
                 // CraftBukkit - Moved into d(DamageSource, float)
                 if (false && (damagesource == DamageSource.ANVIL || damagesource == DamageSource.FALLING_BLOCK) && this.getEquipment(4) != null) {
-                    this.getEquipment(4).damage((int) (f * 4.0F + this.random.nextFloat() * f * 2.0F), this);
+                    //this.getEquipment(4).damage((int) (f * 4.0F + this.random.nextFloat() * f * 2.0F), this);
+                    this.getEquipment(4).damage((int) (f * 4.0F + hrndel.nextFloat() * f * 2.0F), this);
                     f *= 0.75F;
                 }
 
@@ -793,15 +802,20 @@ public abstract class EntityLiving extends Entity {
                         double d0 = entity.locX - this.locX;
 
                         double d1;
-
+                        
+                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (hrndel.nextDouble() - hrndel.nextDouble()) * 0.01D) {
+                            d0 = (hrndel.nextDouble() - hrndel.nextDouble()) * 0.01D;
+                        }
+                        /*
                         for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
                             d0 = (Math.random() - Math.random()) * 0.01D;
-                        }
+                        }*/
 
                         this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
                         this.a(entity, f, d0, d1);
                     } else {
-                        this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
+                        //this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
+                        this.aw = (float) ((int) (hrndel.nextDouble() * 2.0D) * 180);
                     }
                 }
 
@@ -830,12 +844,16 @@ public abstract class EntityLiving extends Entity {
         this.makeSound("random.break", 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
 
         for (int i = 0; i < 5; ++i) {
-            Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            //Vec3D vec3d = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            Vec3D vec3d = new Vec3D(((double) hrndel.nextFloat() - 0.5D) * 0.1D, hrndel.nextDouble() * 0.1D + 0.1D, 0.0D);
 
             vec3d = vec3d.a(-this.pitch * 3.1415927F / 180.0F);
             vec3d = vec3d.b(-this.yaw * 3.1415927F / 180.0F);
+            double d0 = -hrndel.nextDouble() * 0.6D - 0.3D;
+            Vec3D vec3d1 = new Vec3D((hrndel.nextDouble() - 0.5D) * 0.3D, d0, 0.6D);
+            /*
             double d0 = (double) (-this.random.nextFloat()) * 0.6D - 0.3D;
-            Vec3D vec3d1 = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
+            Vec3D vec3d1 = new Vec3D(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);*/
 
             vec3d1 = vec3d1.a(-this.pitch * 3.1415927F / 180.0F);
             vec3d1 = vec3d1.b(-this.yaw * 3.1415927F / 180.0F);
@@ -871,7 +889,8 @@ public abstract class EntityLiving extends Entity {
                 
                 this.dropDeathLoot(this.lastDamageByPlayerTime > 0, i);
                 this.dropEquipment(this.lastDamageByPlayerTime > 0, i);
-                if (this.lastDamageByPlayerTime > 0 && this.random.nextFloat() < 0.025F + (float) i * 0.01F) {
+                //if (this.lastDamageByPlayerTime > 0 && this.random.nextFloat() < 0.025F + (float) i * 0.01F) {
+                if (this.lastDamageByPlayerTime > 0 && hrndel.nextFloat() < 0.025F + (float) i * 0.01F) {
                     this.getRareDrop();
                 }
                 // CraftBukkit start - Call death event
@@ -889,7 +908,8 @@ public abstract class EntityLiving extends Entity {
     protected void dropEquipment(boolean flag, int i) {}
 
     public void a(Entity entity, float f, double d0, double d1) {
-        if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+        //if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+        if (hrndel.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
             float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
             float f2 = 0.4F;
@@ -1247,6 +1267,7 @@ public abstract class EntityLiving extends Entity {
 
     protected float bC() {
         return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
+        //return this.isBaby() ? (hrndel.nextFloat() - hrndel.nextFloat()) * 0.2F + 1.5F : (hrndel.nextFloat() - hrndel.nextFloat()) * 0.2F + 1.0F;
     }
 
     protected boolean bD() {
@@ -1795,7 +1816,8 @@ public abstract class EntityLiving extends Entity {
     }
 
     protected void ac() {
-        this.velocityChanged = this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue();
+        //this.velocityChanged = this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue();
+        this.velocityChanged = hrndel.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue();
     }
 
     public float getHeadRotation() {

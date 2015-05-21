@@ -19,16 +19,6 @@ public class WorldGenBase {
         long l = this.b.nextLong();
         long i1 = this.b.nextLong();
 
-        IntStream.range(i - k, i + k+1).forEach( j1 -> {
-            IntStream.range(j - k, j + k+1).forEach( k1 -> {
-                long l1 = (long) j1 * l;
-                long i2 = (long) k1 * i1;
-
-                this.b.setSeed(l1 ^ i2 ^ world.getSeed());
-                this.a(world, j1, k1, i, j, chunksnapshot);
-            });
-        });
-        /*
         for (int j1 = i - k; j1 <= i + k; ++j1) {
             for (int k1 = j - k; k1 <= j + k; ++k1) {
                 long l1 = (long) j1 * l;
@@ -37,7 +27,7 @@ public class WorldGenBase {
                 this.b.setSeed(l1 ^ i2 ^ world.getSeed());
                 this.a(world, j1, k1, i, j, chunksnapshot);
             }
-        }*/
+        }
 
     }
 

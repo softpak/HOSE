@@ -4,6 +4,7 @@ import java.util.Random;
 
 // CraftBukkit start
 import java.util.List;
+import org.HOSE.HRandom;
 
 import org.bukkit.Location;
 import org.bukkit.TreeType;
@@ -205,8 +206,10 @@ public class BlockSapling extends BlockPlant implements IBlockFragilePlantElemen
         return true;
     }
 
+    public static HRandom hrnd = new HRandom();
     public boolean a(World world, Random random, BlockPosition blockposition, IBlockData iblockdata) {
-        return (double) world.random.nextFloat() < 0.45D;
+        //return (double) world.random.nextFloat() < 0.45D;
+        return hrnd.nextDouble() < 0.45D;
     }
 
     public void b(World world, Random random, BlockPosition blockposition, IBlockData iblockdata) {

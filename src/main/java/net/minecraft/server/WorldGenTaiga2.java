@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenTaiga2 extends WorldGenTreeAbstract {
 
@@ -95,18 +94,13 @@ public class WorldGenTaiga2 extends WorldGenTreeAbstract {
 
                     i1 = random.nextInt(3);
 
-                    IntStream.range(0, i-i1).filter( jj2 -> ((Block)world.getType(blockposition.up(jj2)).getBlock()).getMaterial() == Material.AIR || ((Block)world.getType(blockposition.up(jj2)).getBlock()).getMaterial() == Material.LEAVES).forEach(
-                        jj2 -> this.a(world, blockposition.up(jj2), WorldGenTaiga2.a));
-                    
-                            
-                    /*
                     for (j2 = 0; j2 < i - i1; ++j2) {
                         Block block2 = world.getType(blockposition.up(j2)).getBlock();
 
                         if (block2.getMaterial() == Material.AIR || block2.getMaterial() == Material.LEAVES) {
                             this.a(world, blockposition.up(j2), WorldGenTaiga2.a);
                         }
-                    }*/
+                    }
 
                     return true;
                 } else {

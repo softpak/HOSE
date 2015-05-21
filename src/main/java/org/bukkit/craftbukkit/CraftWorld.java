@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.server.*;
+import org.HOSE.HRandom;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.BlockChangeDelegate;
@@ -82,8 +83,7 @@ public class CraftWorld implements World {
         environment = env;
 
         if (server.chunkGCPeriod > 0) {
-            //chunkGCTickCount = rand.nextInt(server.chunkGCPeriod);
-            chunkGCTickCount = Main.hrnd.nextInt(server.chunkGCPeriod);
+            chunkGCTickCount = rand.nextInt(server.chunkGCPeriod);
         }
     }
 
@@ -139,16 +139,10 @@ public class CraftWorld implements World {
         Object[] chunks = world.chunkProviderServer.chunks.values().toArray();
         org.bukkit.Chunk[] craftChunks = new CraftChunk[chunks.length];
 
-        System.out.println("CWgLC");
-        Device.hsa().forEach(chunks.length, i -> {
-            net.minecraft.server.Chunk chunk = (net.minecraft.server.Chunk) chunks[i];
-            craftChunks[i] = chunk.bukkitChunk;
-        });
-        /*
         for (int i = 0; i < chunks.length; i++) {
             net.minecraft.server.Chunk chunk = (net.minecraft.server.Chunk) chunks[i];
             craftChunks[i] = chunk.bukkitChunk;
-        }*/
+        }
 
         return craftChunks;
     }
@@ -347,11 +341,14 @@ public class CraftWorld implements World {
             loc.setZ(Math.ceil(prevZ - 0.01));
         }
     }
-
+    public static HRandom hrnd = new HRandom();
     public org.bukkit.entity.Item dropItemNaturally(Location loc, ItemStack item) {
-        double xs = world.random.nextFloat() * 0.7F - 0.35D;
+        double xs = hrnd.nextFloat() * 0.7F - 0.35D;
+        double ys = hrnd.nextFloat() * 0.7F - 0.35D;
+        double zs = hrnd.nextFloat() * 0.7F - 0.35D;
+        /*double xs = world.random.nextFloat() * 0.7F - 0.35D;
         double ys = world.random.nextFloat() * 0.7F - 0.35D;
-        double zs = world.random.nextFloat() * 0.7F - 0.35D;
+        double zs = world.random.nextFloat() * 0.7F - 0.35D;*/
         loc = loc.clone();
         // Makes sure the new item is created within the block the location points to.
         // This prevents item spill in 1-block wide farms.

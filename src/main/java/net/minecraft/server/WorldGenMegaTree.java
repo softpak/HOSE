@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenMegaTree extends WorldGenMegaTreeAbstract {
 
@@ -61,21 +60,13 @@ public class WorldGenMegaTree extends WorldGenMegaTreeAbstract {
         i1 = random.nextInt(5) + (this.h ? this.a : 3);
         j1 = 0;
 
-        IntStream.range(k - i1, k+1).forEach( k1 -> {
-            int l1 = k - k1;
-            int i2 = l + MathHelper.d((float) l1 / (float) i1 * 3.5F);
-
-            this.a(world, new BlockPosition(i, k1, j), i2 + (l1 > 0 && i2 == j1 && (k1 & 1) == 0 ? 1 : 0));
-            j1 = i2;
-        });
-        /*
         for (int k1 = k - i1; k1 <= k; ++k1) {
             int l1 = k - k1;
             int i2 = l + MathHelper.d((float) l1 / (float) i1 * 3.5F);
 
             this.a(world, new BlockPosition(i, k1, j), i2 + (l1 > 0 && i2 == j1 && (k1 & 1) == 0 ? 1 : 0));
             j1 = i2;
-        }*/
+        }
 
     }
 
@@ -87,16 +78,6 @@ public class WorldGenMegaTree extends WorldGenMegaTreeAbstract {
         this.b(world, blockposition.west().south(2));
         this.b(world, blockposition.east(2).south(2));
 
-        IntStream.range(0, 5).forEach( i -> {
-            int j = random.nextInt(64);
-            int k = j % 8;
-            int l = j / 8;
-
-            if (k == 0 || k == 7 || l == 0 || l == 7) {
-                this.b(world, blockposition.a(-3 + k, 0, -3 + l));
-            }
-        });
-        /*
         for (int i = 0; i < 5; ++i) {
             int j = random.nextInt(64);
             int k = j % 8;
@@ -105,26 +86,19 @@ public class WorldGenMegaTree extends WorldGenMegaTreeAbstract {
             if (k == 0 || k == 7 || l == 0 || l == 7) {
                 this.b(world, blockposition.a(-3 + k, 0, -3 + l));
             }
-        }*/
+        }
 
     }
 
     //lambda
     private void b(World world, BlockPosition blockposition) {
-        
-        
-        IntStream.range(-2, 3).forEach( i -> {
-            IntStream.range(-2, 3).filter( j -> Math.abs(i) != 2 || Math.abs(j) != 2).forEach(
-                j -> this.c(world, blockposition.a(i, 0, j)));
-        });
-        /*
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 if (Math.abs(i) != 2 || Math.abs(j) != 2) {
                     this.c(world, blockposition.a(i, 0, j));
                 }
             }
-        }*/
+        }
 
     }
 

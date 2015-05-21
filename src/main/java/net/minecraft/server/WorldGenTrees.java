@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class WorldGenTrees extends WorldGenTreeAbstract {
 
@@ -97,29 +96,6 @@ public class WorldGenTrees extends WorldGenTreeAbstract {
                         }
                     }
 
-                    IntStream.range(0, i).forEach( j -> {
-                        if (world.getType(blockposition.up(j)).getBlock().getMaterial() == Material.AIR || world.getType(blockposition.up(j)).getBlock().getMaterial() == Material.LEAVES || world.getType(blockposition.up(j)).getBlock().getMaterial() == Material.REPLACEABLE_PLANT) {
-                            this.a(world, blockposition.up(j), this.e);
-                            if (this.d && j > 0) {
-                                if (random.nextInt(3) > 0 && world.isEmpty(blockposition.a(-1, j, 0))) {
-                                    this.a(world, blockposition.a(-1, j, 0), BlockVine.EAST);
-                                }
-
-                                if (random.nextInt(3) > 0 && world.isEmpty(blockposition.a(1, j, 0))) {
-                                    this.a(world, blockposition.a(1, j, 0), BlockVine.WEST);
-                                }
-
-                                if (random.nextInt(3) > 0 && world.isEmpty(blockposition.a(0, j, -1))) {
-                                    this.a(world, blockposition.a(0, j, -1), BlockVine.SOUTH);
-                                }
-
-                                if (random.nextInt(3) > 0 && world.isEmpty(blockposition.a(0, j, 1))) {
-                                    this.a(world, blockposition.a(0, j, 1), BlockVine.NORTH);
-                                }
-                            }
-                        }
-                    });
-                    /*
                     for (j = 0; j < i; ++j) {
                         Block block2 = world.getType(blockposition.up(j)).getBlock();
 
@@ -143,7 +119,7 @@ public class WorldGenTrees extends WorldGenTreeAbstract {
                                 }
                             }
                         }
-                    }*/
+                    }
 
                     if (this.d) {
                         for (j = blockposition.getY() - 3 + i; j <= blockposition.getY() + i; ++j) {
@@ -185,16 +161,6 @@ public class WorldGenTrees extends WorldGenTreeAbstract {
                             for (j = 0; j < 2; ++j) {
                                 Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
-                                iterator.forEachRemaining(
-                                    it -> {
-                                        if (random.nextInt(4 - j) == 0) {
-                                            EnumDirection enumdirection1 = ((EnumDirection) it).opposite();
-
-                                            this.a(world, random.nextInt(3), blockposition.a(enumdirection1.getAdjacentX(), i - 5 + j, enumdirection1.getAdjacentZ()), (EnumDirection) it);
-                                        }
-                                    }
-                                );
-                                /*
                                 while (iterator.hasNext()) {
                                     EnumDirection enumdirection = (EnumDirection) iterator.next();
 
@@ -203,7 +169,7 @@ public class WorldGenTrees extends WorldGenTreeAbstract {
 
                                         this.a(world, random.nextInt(3), blockposition.a(enumdirection1.getAdjacentX(), i - 5 + j, enumdirection1.getAdjacentZ()), enumdirection);
                                     }
-                                }*/
+                                }
                             }
                         }
                     }

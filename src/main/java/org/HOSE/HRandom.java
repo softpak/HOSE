@@ -84,10 +84,11 @@ public class HRandom implements java.io.Serializable{
             
         });
         seed.compareAndSet(oldseed, nextseed);
-        /*
-        do {
+        
+        /*do {
             oldseed = seed.get();
             nextseed = (oldseed * multiplier + addend) & mask;
+            seed.compareAndSet(oldseed, nextseed);
         } while (!seed.compareAndSet(oldseed, nextseed));*/
         return (int)(nextseed >>> (48 - bits));
     }

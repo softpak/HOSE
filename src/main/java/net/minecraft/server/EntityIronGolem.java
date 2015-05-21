@@ -34,8 +34,7 @@ public class EntityIronGolem extends EntityGolem {
 
     protected void E() {
         if (--this.b <= 0) {
-            //this.b = 70 + this.random.nextInt(50);
-            this.b = 70 + Main.hrnd.nextInt(50);
+            this.b = 70 + this.random.nextInt(50);
             this.a = this.world.ae().getClosestVillage(new BlockPosition(this), 32);
             if (this.a == null) {
                 this.cj();
