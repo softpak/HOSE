@@ -119,7 +119,6 @@ public class BlockPosition extends BaseBlockPosition {
         int j = (int) (i << 64 - BlockPosition.g - BlockPosition.c >> 64 - BlockPosition.c);
         int k = (int) (i << 64 - BlockPosition.f - BlockPosition.e >> 64 - BlockPosition.e);
         int l = (int) (i << 64 - BlockPosition.d >> 64 - BlockPosition.d);
-
         return new BlockPosition(j, k, l);
     }
 

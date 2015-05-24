@@ -49,11 +49,9 @@ public abstract class EntityInsentient extends EntityLiving {
         this.navigation = this.b(world);
         this.bk = new EntitySenses(this);
         //System.out.println(this.dropChances.length);
-        Device.hsa().forEach(5, i -> this.dropChances[i] = 0.085F);
-        /*
         for (int i = 0; i < this.dropChances.length; ++i) {
             this.dropChances[i] = 0.085F;
-        }*/
+        }
         // CraftBukkit start - default persistance to type's persistance value
         this.persistent = !isTypeNotPersistent();
         // CraftBukkit end
@@ -182,6 +180,10 @@ public abstract class EntityInsentient extends EntityLiving {
     public void y() {
         if (this.world.isClientSide) {
             for (int i = 0; i < 20; ++i) {
+                /*double d0 = hrndei.nextGaussian() * 0.02D;
+                double d1 = hrndei.nextGaussian() * 0.02D;
+                double d2 = hrndei.nextGaussian() * 0.02D;*/
+                
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;

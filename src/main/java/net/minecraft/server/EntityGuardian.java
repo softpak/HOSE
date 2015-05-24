@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Predicate;
 import java.util.Iterator;
 import java.util.List;
+import org.HOSE.HRandom;
 
 public class EntityGuardian extends EntityMonster {
 
@@ -15,9 +16,11 @@ public class EntityGuardian extends EntityMonster {
     private int bp;
     private boolean bq;
     public PathfinderGoalRandomStroll br; // CraftBukkit - public, PAIL: Rename goalRandomStroll
+    final private HRandom hrndegd;
 
     public EntityGuardian(World world) {
         super(world);
+        this.hrndegd = new HRandom();
         this.b_ = 10;
         this.setSize(0.85F, 0.85F);
         this.goalSelector.a(4, new EntityGuardian.PathfinderGoalGuardianAttack(this));
@@ -33,7 +36,7 @@ public class EntityGuardian extends EntityMonster {
         this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, 10, true, false, new EntityGuardian.EntitySelectorGuardianTargetHumanSquid(this)));
         this.moveController = new EntityGuardian.ControllerMoveGuardian(this);
         //this.b = this.a = this.random.nextFloat();
-        this.b = this.a = hrnd.nextFloat();
+        this.b = this.a = hrndegd.nextFloat();
     }
 
     public void initAttributes() { // CraftBukkit - public
@@ -202,7 +205,7 @@ public class EntityGuardian extends EntityMonster {
             this.bn = this.bm;
             if (!this.V()) {
                 //this.bm = this.random.nextFloat();
-                this.bm = hrnd.nextFloat();
+                this.bm = hrndegd.nextFloat();
             } else if (this.n()) {
                 this.bm += (0.0F - this.bm) * 0.25F;
             } else {

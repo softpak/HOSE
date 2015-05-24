@@ -1304,10 +1304,12 @@ public abstract class World implements IBlockAccess {
         return (int) (f2 * 11.0F);
     }
 
+    //WPa(long, float)
     public float c(float f) {
         return this.worldProvider.a(this.worldData.getDayTime(), f);
     }
 
+    //WPa(long)
     public float y() {
         return WorldProvider.a[this.worldProvider.a(this.worldData.getDayTime())];
     }

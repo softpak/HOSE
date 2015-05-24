@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import java.util.List;
 import java.util.UUID;
+import org.HOSE.HRandom;
 
 public abstract class EntityProjectile extends Entity implements IProjectile {
 
@@ -15,6 +16,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
     public String shooterName; // CraftBukkit - public
     private int i;
     private int ar;
+    private HRandom hrndepj = new HRandom();
 
     public EntityProjectile(World world) {
         super(world);
@@ -98,9 +100,9 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             }
 
             this.inGround = false;
-            this.motX *= (hrnd.nextDouble() * 0.2D);
-            this.motY *= (hrnd.nextDouble() * 0.2D);
-            this.motZ *= (hrnd.nextDouble() * 0.2D);
+            this.motX *= (hrndepj.nextDouble() * 0.2D);
+            this.motY *= (hrndepj.nextDouble() * 0.2D);
+            this.motZ *= (hrndepj.nextDouble() * 0.2D);
             /*
             this.motX *= (double) (this.random.nextFloat() * 0.2F);
             this.motY *= (double) (this.random.nextFloat() * 0.2F);

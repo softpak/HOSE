@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Aparapi;
+import com.amd.aparapi.Device;
 
 public abstract class WorldProvider {
 
@@ -27,13 +27,14 @@ public abstract class WorldProvider {
     
     //HSA
     protected void a() {
-        float f = 0.0F;
-        Aparapi.range(16).forEach( i -> {
+        //float f = 0.0F;
+        Device.hsa().forEach(16, i -> {
+            float f = 0.0F;
             float f1 = 1.0F - (float) i / 15.0F;
 
             this.f[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
         });
-
+        
         /*
         for (int i = 0; i <= 15; ++i) {
             float f1 = 1.0F - (float) i / 15.0F;
@@ -65,7 +66,8 @@ public abstract class WorldProvider {
     public boolean canSpawn(int i, int j) {
         return this.b.c(new BlockPosition(i, 0, j)) == Blocks.GRASS;
     }
-
+    
+    
     public float a(long i, float f) {
         int j = (int) (i % 24000L);
         float f1 = ((float) j + f) / 24000.0F - 0.25F;

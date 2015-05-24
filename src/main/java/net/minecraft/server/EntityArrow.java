@@ -126,7 +126,7 @@ public class EntityArrow extends Entity implements IProjectile {
         this.ar = 0;
     }
 
-    public static HRandom hrnd = new HRandom();
+    private static HRandom hrndear = new HRandom();
     public void t_() {
         super.t_();
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
@@ -163,9 +163,9 @@ public class EntityArrow extends Entity implements IProjectile {
                 }
             } else {
                 this.inGround = false;
-                this.motX *= (double) (hrnd.nextFloat() * 0.2F);
-                this.motY *= (double) (hrnd.nextFloat() * 0.2F);
-                this.motZ *= (double) (hrnd.nextFloat() * 0.2F);
+                this.motX *= (double) (hrndear.nextFloat() * 0.2F);
+                this.motY *= (double) (hrndear.nextFloat() * 0.2F);
+                this.motZ *= (double) (hrndear.nextFloat() * 0.2F);
                 this.ar = 0;
                 this.as = 0;
             }
@@ -279,7 +279,7 @@ public class EntityArrow extends Entity implements IProjectile {
                         }
 
                         //this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-                        this.makeSound("random.bowhit", 1.0F, 1.2F / (hrnd.nextFloat() * 0.2F + 0.9F));
+                        this.makeSound("random.bowhit", 1.0F, 1.2F / (hrndear.nextFloat() * 0.2F + 0.9F));
                         if (!(movingobjectposition.entity instanceof EntityEnderman)) {
                             this.die();
                         }
@@ -309,7 +309,7 @@ public class EntityArrow extends Entity implements IProjectile {
                     this.locY -= this.motY / (double) f1 * 0.05000000074505806D;
                     this.locZ -= this.motZ / (double) f1 * 0.05000000074505806D;
                     //this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-                    this.makeSound("random.bowhit", 1.0F, 1.2F / (hrnd.nextFloat() * 0.2F + 0.9F));
+                    this.makeSound("random.bowhit", 1.0F, 1.2F / (hrndear.nextFloat() * 0.2F + 0.9F));
                     this.inGround = true;
                     this.shake = 7;
                     this.setCritical(false);

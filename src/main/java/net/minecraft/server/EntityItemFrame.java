@@ -1,8 +1,11 @@
 package net.minecraft.server;
 
+import org.HOSE.HRandom;
+
 public class EntityItemFrame extends EntityHanging {
 
     private float c = 1.0F;
+    final private HRandom hrndeif = new HRandom();
 
     public EntityItemFrame(World world) {
         super(world);
@@ -72,7 +75,7 @@ public class EntityItemFrame extends EntityHanging {
             }
 
             //if (itemstack != null && this.random.nextFloat() < this.c) {
-            if (itemstack != null && hrnd.nextFloat() < this.c) {
+            if (itemstack != null && hrndeif.nextFloat() < this.c) {
                 itemstack = itemstack.cloneItemStack();
                 this.b(itemstack);
                 this.a(itemstack, 0.0F);

@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import java.util.Random;
 import org.HOSE.HRandom;
-import org.bukkit.craftbukkit.Main;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -12,6 +11,7 @@ import org.bukkit.event.entity.EntityInteractEvent;
 public class BlockRedstoneOre extends Block {
 
     private final boolean a;
+    private static HRandom hrndbro = new HRandom();
 
     public BlockRedstoneOre(boolean flag) {
         super(Material.STONE);
@@ -88,12 +88,12 @@ public class BlockRedstoneOre extends Block {
 
     public int getDropCount(int i, Random random) {
         //return this.a(random) + random.nextInt(i + 1);
-        return this.a(random) + Main.hrnd.nextInt(i + 1);
+        return this.a(random) + hrndbro.nextInt(i + 1);
     }
 
     public int a(Random random) {
         //return 4 + random.nextInt(2);
-        return 4 + Main.hrnd.nextInt(2);
+        return 4 + hrndbro.nextInt(2);
     }
 
     public void dropNaturally(World world, BlockPosition blockposition, IBlockData iblockdata, float f, int i) {
@@ -111,7 +111,7 @@ public class BlockRedstoneOre extends Block {
     public int getExpDrop(World world, IBlockData data, int i) {
         if (this.getDropType(data, world.random, i) != Item.getItemOf(this)) {
             //int j = 1 + world.random.nextInt(5);
-            int j = 1 + Main.hrnd.nextInt(5);
+            int j = 1 + hrndbro.nextInt(5);
 
             return j;
         }
@@ -119,7 +119,6 @@ public class BlockRedstoneOre extends Block {
         // CraftBukkit end
     }
 
-    public static HRandom hrnd = new HRandom();
     private void f(World world, BlockPosition blockposition) {
         //Random random = world.random;
         double d0 = 0.0625D;
@@ -128,9 +127,9 @@ public class BlockRedstoneOre extends Block {
             /*double d1 = (double) ((float) blockposition.getX() + random.nextFloat());
             double d2 = (double) ((float) blockposition.getY() + random.nextFloat());
             double d3 = (double) ((float) blockposition.getZ() + random.nextFloat());*/
-            double d1 = (double) ((float) blockposition.getX() + hrnd.nextFloat());
-            double d2 = (double) ((float) blockposition.getY() + hrnd.nextFloat());
-            double d3 = (double) ((float) blockposition.getZ() + hrnd.nextFloat());
+            double d1 = (double) ((float) blockposition.getX() + hrndbro.nextFloat());
+            double d2 = (double) ((float) blockposition.getY() + hrndbro.nextFloat());
+            double d3 = (double) ((float) blockposition.getZ() + hrndbro.nextFloat());
 
             if (i == 0 && !world.getType(blockposition.up()).getBlock().c()) {
                 d2 = (double) blockposition.getY() + d0 + 1.0D;

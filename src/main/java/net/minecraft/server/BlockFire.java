@@ -268,10 +268,8 @@ public class BlockFire extends Block {
             }
             // CraftBukkit end
 
-            //if (random.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
-            if (hrndbf.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
-                //int l = j + random.nextInt(5) / 4;
-                int l = j + hrndbf.nextInt(5) / 4;
+            if (random.nextInt(j + 10) < 5 && !world.isRainingAt(blockposition)) {
+                int l = j + random.nextInt(5) / 4;
 
                 if (l > 15) {
                     l = 15;

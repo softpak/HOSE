@@ -643,6 +643,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     protected void y() {}
 
+    //main tick
     protected void z() throws ExceptionWorldConflict { // CraftBukkit - added throws
         SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
@@ -736,7 +737,15 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         SpigotTimings.processQueueTimer.stopTiming(); // Spigot
 
         SpigotTimings.chunkIOTickTimer.startTiming(); // Spigot
+        
+        long st = System.nanoTime();
         org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.tick();
+        
+        long et = System.nanoTime();
+        long tu = et-st;
+        if (tu > 1000000L){
+            System.out.println("Chunk tick Time use:"+(tu)+"ns.");
+        }
         SpigotTimings.chunkIOTickTimer.stopTiming(); // Spigot
 
         SpigotTimings.timeUpdateTimer.startTiming(); // Spigot
@@ -772,7 +781,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 try {
                     worldserver.timings.doTick.startTiming(); // Spigot
+                    
+                    //long sst = System.nanoTime();
                     worldserver.doTick();
+                    //long eet = System.nanoTime();
+
+                    //System.out.println("world tick Time use:"+(eet-sst)+"ns.");
                     worldserver.timings.doTick.stopTiming(); // Spigot
                 } catch (Throwable throwable) {
                     // Spigot Start

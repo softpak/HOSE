@@ -308,10 +308,12 @@ public abstract class EntityLiving extends Entity {
             this.die();
 
             for (i = 0; i < 20; ++i) {
-                double d0 = this.random.nextGaussian() * 0.02D;
+                double d0 = hrndel.nextGaussian() * 0.02D;
+                double d1 = hrndel.nextGaussian() * 0.02D;
+                double d2 = hrndel.nextGaussian() * 0.02D;
+                /*double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
-                double d2 = this.random.nextGaussian() * 0.02D;
-
+                double d2 = this.random.nextGaussian() * 0.02D;*/
                 //this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
                 this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + (double) (hrndel.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + (double) (hrndel.nextFloat() * this.length), this.locZ + (double) (hrndel.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
             }
@@ -910,6 +912,7 @@ public abstract class EntityLiving extends Entity {
     public void a(Entity entity, float f, double d0, double d1) {
         //if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
         if (hrndel.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+            long st = System.nanoTime();
             this.ai = true;
             float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
             float f2 = 0.4F;
@@ -923,6 +926,9 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > 0.4000000059604645D) {
                 this.motY = 0.4000000059604645D;
             }
+            long et = System.nanoTime();
+
+            System.out.println("entity living Time use:"+(et-st)+"ns.");
 
         }
     }

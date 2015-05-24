@@ -203,6 +203,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         }
     }
     // CraftBukkit end
+    //world tick
     public void doTick() {
         super.doTick();
         if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {

@@ -21,20 +21,26 @@ public class Main {
     public static boolean useConsole = true;
     public static HRandom hrnd = new HRandom();
     public static Random rnd = new Random();
-    
+    public static Device hsadev = Device.hsa();
 
     public static void main(String[] args) {
         // Todo: Installation script
         double a[] = new double[1000];
+        //int[] mwi = new int[1000000];
         System.out.println("HSA test.");
+        //hsadev.setMaxWorkGroupSize(1000000);
+        //hsadev.setMaxWorkItemSize(mwi);
+        //hsadev.setMaxWorkItemDimensions(1000000);
+        System.out.println("MaxWorkItemSize:"+hsadev.getMaxWorkItemSize().length);
+        System.out.println("MaxWorkGroupSize:"+hsadev.getMaxWorkGroupSize());
+        System.out.println("MaxWorkItemDimensions:"+hsadev.getMaxWorkItemDimensions());
         for (int i = 0; i < 100; i++) {
             long st = System.nanoTime();
-            //Aparapi.range(1000).forEach(g -> a[g] = hrnd.nextDouble());
-            
-            System.out.println(rnd.nextLong());
+            //hsadev.forEach(1000, g -> a[g] = hrnd.nextDouble());
+            //Aparapi.range(1000).forEach(kk -> System.out.print(a[kk]+"."));
+            System.out.println(hrnd.nextLong());
             //System.out.println(Math.random());
             long et = System.nanoTime();
-
             System.out.println("Time use:"+(et-st)+"ns.");
         }
         //Aparapi.range(1000).forEach(kk -> System.out.print(a[kk]+".")); 
