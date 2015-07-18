@@ -16,7 +16,6 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.craftbukkit.util.LongHashSet;
@@ -28,12 +27,12 @@ public class ChunkProviderServer implements IChunkProvider {
 
     private static final Logger b = LogManager.getLogger();
     public LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
-    public Chunk emptyChunk; // CraftBukkit - public
-    public IChunkProvider chunkProvider; // CraftBukkit - public
+    public Chunk emptyChunk;
+    public IChunkProvider chunkProvider;
     private IChunkLoader chunkLoader;
     public boolean forceChunkLoad = false; // CraftBukkit - true -> false
     public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>();
-    public WorldServer world; // CraftBukkit - public
+    public WorldServer world;
 
     public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, IChunkProvider ichunkprovider) {
         this.emptyChunk = new EmptyChunk(worldserver, 0, 0);
@@ -210,7 +209,7 @@ public class ChunkProviderServer implements IChunkProvider {
         // CraftBukkit end
     }
 
-    public Chunk loadChunk(int i, int j) { // CraftBukkit - public
+    public Chunk loadChunk(int i, int j) {
         if (this.chunkLoader == null) {
             return null;
         } else {
@@ -234,7 +233,7 @@ public class ChunkProviderServer implements IChunkProvider {
         }
     }
 
-    public void saveChunkNOP(Chunk chunk) { // CraftBukkit - public
+    public void saveChunkNOP(Chunk chunk) {
         if (this.chunkLoader != null) {
             try {
                 this.chunkLoader.b(this.world, chunk);
@@ -245,7 +244,7 @@ public class ChunkProviderServer implements IChunkProvider {
         }
     }
 
-    public void saveChunk(Chunk chunk) { // CraftBukkit - public
+    public void saveChunk(Chunk chunk) {
         if (this.chunkLoader != null) {
             try {
                 chunk.setLastSaved(this.world.getTime());
@@ -273,7 +272,6 @@ public class ChunkProviderServer implements IChunkProvider {
                 random.setSeed(world.getSeed());
                 long xRand = random.nextLong() / 2L * 2L + 1L;
                 long zRand = random.nextLong() / 2L * 2L + 1L;
-                
                 random.setSeed((long) i * xRand + (long) j * zRand ^ world.getSeed());
 
                 org.bukkit.World world = this.world.getWorld();
@@ -325,7 +323,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 this.saveChunk(chunk);
                 chunk.f(false);
                 ++i;
-                if (i == 24 && !flag) {
+                if (i == 24 && !flag && false) { // Spigot
                     return false;
                 }
             }

@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Device;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -9,6 +8,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -16,7 +16,8 @@ import java.util.concurrent.Callable;
 // CraftBukkit start
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
@@ -26,7 +27,6 @@ import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -37,7 +37,6 @@ import org.bukkit.event.weather.ThunderChangeEvent;
 
 public abstract class World implements IBlockAccess {
 
-    Device dev = Device.hsa();
     private int a = 63;
     protected boolean e;
     // Spigot start - guard entity list from removals
@@ -1174,12 +1173,7 @@ public abstract class World implements IBlockAccess {
                     continue;
                 }
                 int cz = chunkz << 4;
-                
                 Chunk chunk = this.getChunkAt( chunkx, chunkz );
-                
-                
-                
-                
                 // Compute ranges within chunk
                 int xstart = ( i < cx ) ? cx : i;
                 int xend = ( j < ( cx + 16 ) ) ? j : ( cx + 16 );
@@ -1304,12 +1298,10 @@ public abstract class World implements IBlockAccess {
         return (int) (f2 * 11.0F);
     }
 
-    //WPa(long, float)
     public float c(float f) {
         return this.worldProvider.a(this.worldData.getDayTime(), f);
     }
 
-    //WPa(long)
     public float y() {
         return WorldProvider.a[this.worldProvider.a(this.worldData.getDayTime())];
     }
@@ -2164,10 +2156,7 @@ public abstract class World implements IBlockAccess {
         // Spigot start
         int optimalChunks = spigotConfig.chunksPerTick;
         // Quick conditions to allow us to exist early
-        if ( optimalChunks <= 0 || players.isEmpty() )
-        {
-            return;
-        }
+        if ( optimalChunks > 0  ) {
         // Keep chunks with growth inside of the optimal chunk range
         int chunksPerPlayer = Math.min( 200, Math.max( 1, (int) ( ( ( optimalChunks - players.size() ) / (double) players.size() ) + 0.5 ) ) );
         int randRange = 3 + chunksPerPlayer / 30;
@@ -2198,6 +2187,7 @@ public abstract class World implements IBlockAccess {
                     chunkTickList.put( hash, (short) -1 ); // no players
                 }
             }
+        }
             // Spigot End
         }
 
@@ -2257,12 +2247,6 @@ public abstract class World implements IBlockAccess {
         block.b(this, blockposition, this.getType(blockposition), random);
         this.e = false;
     }
-    /*
-    public void a(Block block, BlockPosition blockposition, Random random) {
-        this.e = true;
-        block.b(this, blockposition, this.getType(blockposition), random);
-        this.e = false;
-    }*/
 
     public boolean v(BlockPosition blockposition) {
         return this.e(blockposition, false);
@@ -2528,13 +2512,6 @@ public abstract class World implements IBlockAccess {
         int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
         int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
 
-        // CraftBukkit start - filter out large ranges
-        if (j - i > 10 || l - k > 10) {
-            getServer().getLogger().log(java.util.logging.Level.WARNING, "Filtered out large getEntities call {0},{1} {2},{3}", new Object[]{i, j, k, j});
-            return arraylist;
-        }
-        // CraftBukkit end
-
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
                 if (this.isChunkLoaded(i1, j1, true)) {
@@ -2776,8 +2753,18 @@ public abstract class World implements IBlockAccess {
         return i;
     }
 
-    public EntityHuman findNearbyPlayer(Entity entity, double d0) {
-        return this.findNearbyPlayer(entity.locX, entity.locY, entity.locZ, d0);
+    //callable
+    Callable<EntityHuman> fnp;
+    public EntityHuman findNearbyPlayer(final Entity entity, final double d0) throws InterruptedException, ExecutionException {
+        //return this.findNearbyPlayer(entity.locX, entity.locY, entity.locZ, d0);
+        fnp = new Callable<EntityHuman>() {                             
+            public EntityHuman call() throws Exception {
+                return findNearbyPlayer(entity.locX, entity.locY, entity.locZ, d0);
+            }
+        };
+        FutureTask<EntityHuman> future = new FutureTask<EntityHuman>(fnp);  
+        new Thread(future).start();  
+        return future.get();
     }
 
     public EntityHuman findNearbyPlayer(double d0, double d1, double d2, double d3) {
@@ -3012,13 +2999,6 @@ public abstract class World implements IBlockAccess {
         this.random.setSeed(l);
         return this.random;
     }
-    /*
-    public Random a(int i, int j, int k) {
-        long l = (long) i * 341873128712L + (long) j * 132897987541L + this.getWorldData().getSeed() + (long) k;
-
-        this.random.setSeed(l);
-        return this.random;
-    }*/
 
     public BlockPosition a(String s, BlockPosition blockposition) {
         return this.N().findNearestMapFeature(this, s, blockposition);
@@ -3067,7 +3047,7 @@ public abstract class World implements IBlockAccess {
 
     public Calendar Y() {
         if (this.getTime() % 600L == 0L) {
-            this.K.setTimeInMillis(MinecraftServer.ay());
+            this.K.setTimeInMillis(MinecraftServer.az());
         }
 
         return this.K;
@@ -3114,7 +3094,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public EnumDifficulty getDifficulty() {
-        return this.getWorldData().y();
+        return this.getWorldData().getDifficulty();
     }
 
     public int ab() {

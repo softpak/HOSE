@@ -39,14 +39,6 @@ public class EntityEnderPearl extends EntityProjectile {
                 EntityPlayer entityplayer = (EntityPlayer) entityliving;
 
                 if (entityplayer.playerConnection.a().g() && entityplayer.world == this.world && !entityplayer.isSleeping()) {
-                    if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
-                        EntityEndermite entityendermite = new EntityEndermite(this.world);
-
-                        entityendermite.a(true);
-                        entityendermite.setPositionRotation(entityliving.locX, entityliving.locY, entityliving.locZ, entityliving.yaw, entityliving.pitch);
-                        this.world.addEntity(entityendermite);
-                    }
-
                     // CraftBukkit start - Fire PlayerTeleportEvent
                     org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
                     org.bukkit.Location location = getBukkitEntity().getLocation();
@@ -57,6 +49,14 @@ public class EntityEnderPearl extends EntityProjectile {
                     Bukkit.getPluginManager().callEvent(teleEvent);
 
                     if (!teleEvent.isCancelled() && !entityplayer.playerConnection.isDisconnected()) {
+                        if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
+                            EntityEndermite entityendermite = new EntityEndermite(this.world);
+
+                            entityendermite.a(true);
+                            entityendermite.setPositionRotation(entityliving.locX, entityliving.locY, entityliving.locZ, entityliving.yaw, entityliving.pitch);
+                            this.world.addEntity(entityendermite);
+                        }
+
                         if (entityliving.au()) {
                             entityliving.mount((Entity) null);
                         }

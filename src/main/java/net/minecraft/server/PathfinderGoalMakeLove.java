@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.Main;
-
 public class PathfinderGoalMakeLove extends PathfinderGoal {
 
     private EntityVillager b;

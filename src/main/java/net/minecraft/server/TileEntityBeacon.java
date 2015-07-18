@@ -196,10 +196,20 @@ public class TileEntityBeacon extends TileEntityContainer implements IUpdatePlay
         return new PacketPlayOutTileEntityData(this.position, 3, nbttagcompound);
     }
 
+    private int h(int i) {
+        if (i >= 0 && i < MobEffectList.byId.length && MobEffectList.byId[i] != null) {
+            MobEffectList mobeffectlist = MobEffectList.byId[i];
+
+            return mobeffectlist != MobEffectList.FASTER_MOVEMENT && mobeffectlist != MobEffectList.FASTER_DIG && mobeffectlist != MobEffectList.RESISTANCE && mobeffectlist != MobEffectList.JUMP && mobeffectlist != MobEffectList.INCREASE_DAMAGE && mobeffectlist != MobEffectList.REGENERATION ? 0 : i;
+        } else {
+            return 0;
+        }
+    }
+
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
-        this.k = validateEffect(nbttagcompound.getInt("Primary")); // CraftBukkit
-        this.l = validateEffect(nbttagcompound.getInt("Secondary")); // CraftBukkit
+        this.k = this.h(nbttagcompound.getInt("Primary"));
+        this.l = this.h(nbttagcompound.getInt("Secondary"));
         this.j = nbttagcompound.getInt("Levels");
     }
 
@@ -311,11 +321,11 @@ public class TileEntityBeacon extends TileEntityContainer implements IUpdatePlay
             break;
 
         case 1:
-            this.k = validateEffect(j);
+            this.k = this.h(j);
             break;
 
         case 2:
-            this.l = validateEffect(j);
+            this.l = this.h(j);
         }
 
     }
@@ -355,23 +365,4 @@ public class TileEntityBeacon extends TileEntityContainer implements IUpdatePlay
             return this.a;
         }
     }
-
-    // CraftBukkit start
-    public int validateEffect(int i) {
-        i = i < 0 || i >= MobEffectList.byId.length || MobEffectList.byId[i] == null ? 0 : i;
-        switch (i) {
-            case 1: // MobEffectList.FASTER_MOVEMENT.id
-            case 3: // MobEffectList.FASTER_DIG.id
-            case 11: // MobEffectList.RESISTANCE.id
-            case 8: // MobEffectList.JUMP.id
-            case 5: // MobEffectList.INCREASE_DAMAGE.id
-            case 10: // MobEffectList.REGENERATION.id
-                break;
-            default:
-                i = 0;
-                break;
-        }
-        return i;
-    }
-    // CraftBukkit end
 }

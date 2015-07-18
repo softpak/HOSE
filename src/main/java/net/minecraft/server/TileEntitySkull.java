@@ -67,7 +67,7 @@ public class TileEntitySkull extends TileEntity {
 
                         if ( property == null )
                         {
-                            profile = MinecraftServer.getServer().aC().fillProfileProperties( profile, true );
+                            profile = MinecraftServer.getServer().aD().fillProfileProperties( profile, true );
                         }
                     }
 
@@ -142,7 +142,7 @@ public class TileEntitySkull extends TileEntity {
 
             @Override
             public boolean apply(GameProfile input) {
-                setSkullType( 3 ); // Work around client bug
+                setSkullType(3); // Work around client bug
                 g = input;
                 update();
                 if (world != null) {

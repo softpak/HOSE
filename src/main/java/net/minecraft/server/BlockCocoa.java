@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import org.bukkit.craftbukkit.Main;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 

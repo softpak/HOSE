@@ -1,6 +1,9 @@
 package net.minecraft.server;
 
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EntitySilverfish extends EntityMonster {
 
@@ -28,8 +31,8 @@ public class EntitySilverfish extends EntityMonster {
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(8.0D);
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.25D);
-        this.getAttributeInstance(GenericAttributes.e).setValue(1.0D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.25D);
+        this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(1.0D);
     }
 
     protected boolean s_() {
@@ -83,7 +86,14 @@ public class EntitySilverfish extends EntityMonster {
 
     public boolean bR() {
         if (super.bR()) {
-            EntityHuman entityhuman = this.world.findNearbyPlayer(this, 5.0D);
+            EntityHuman entityhuman = null;
+            try {
+                entityhuman = this.world.findNearbyPlayer(this, 5.0D);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(EntitySilverfish.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(EntitySilverfish.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             return entityhuman == null;
         } else {

@@ -63,8 +63,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     private final EnumProtocolDirection h;
     private final Queue<NetworkManager.QueuedPacket> i = Queues.newConcurrentLinkedQueue();
     private final ReentrantReadWriteLock j = new ReentrantReadWriteLock();
-    public Channel k; // CraftBukkit - public, PAIL: Rename channel
-    // Spigot Start
+    public Channel channel;
+    // Spigot Start // PAIL
     public SocketAddress l;
     public java.util.UUID spoofedUUID;
     public com.mojang.authlib.properties.Property[] spoofedProfile;
@@ -81,8 +81,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     public void channelActive(ChannelHandlerContext channelhandlercontext) throws Exception {
         super.channelActive(channelhandlercontext);
-        this.k = channelhandlercontext.channel();
-        this.l = this.k.remoteAddress();
+        this.channel = channelhandlercontext.channel();
+        this.l = this.channel.remoteAddress();
         // Spigot Start
         this.preparing = false;
         // Spigot End
@@ -96,8 +96,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public void a(EnumProtocol enumprotocol) {
-        this.k.attr(NetworkManager.c).set(enumprotocol);
-        this.k.config().setAutoRead(true);
+        this.channel.attr(NetworkManager.c).set(enumprotocol);
+        this.channel.config().setAutoRead(true);
         NetworkManager.g.debug("Enabled auto read");
     }
 
@@ -119,7 +119,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     protected void a(ChannelHandlerContext channelhandlercontext, Packet packet) throws Exception {
-        if (this.k.isOpen()) {
+        if (this.channel.isOpen()) {
             try {
                 packet.a(this.m);
             } catch (CancelledPacketHandleException cancelledpackethandleexception) {
@@ -169,19 +169,19 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     private void a(final Packet packet, final GenericFutureListener<? extends Future<? super Void>>[] agenericfuturelistener) {
         final EnumProtocol enumprotocol = EnumProtocol.a(packet);
-        final EnumProtocol enumprotocol1 = (EnumProtocol) this.k.attr(NetworkManager.c).get();
+        final EnumProtocol enumprotocol1 = (EnumProtocol) this.channel.attr(NetworkManager.c).get();
 
         if (enumprotocol1 != enumprotocol) {
             NetworkManager.g.debug("Disabled auto read");
-            this.k.config().setAutoRead(false);
+            this.channel.config().setAutoRead(false);
         }
 
-        if (this.k.eventLoop().inEventLoop()) {
+        if (this.channel.eventLoop().inEventLoop()) {
             if (enumprotocol != enumprotocol1) {
                 this.a(enumprotocol);
             }
 
-            ChannelFuture channelfuture = this.k.writeAndFlush(packet);
+            ChannelFuture channelfuture = this.channel.writeAndFlush(packet);
 
             if (agenericfuturelistener != null) {
                 channelfuture.addListeners(agenericfuturelistener);
@@ -189,13 +189,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
             channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         } else {
-            this.k.eventLoop().execute(new Runnable() {
+            this.channel.eventLoop().execute(new Runnable() {
                 public void run() {
                     if (enumprotocol != enumprotocol1) {
                         NetworkManager.this.a(enumprotocol);
                     }
 
-                    ChannelFuture channelfuture = NetworkManager.this.k.writeAndFlush(packet);
+                    ChannelFuture channelfuture = NetworkManager.this.channel.writeAndFlush(packet);
 
                     if (agenericfuturelistener != null) {
                         channelfuture.addListeners(agenericfuturelistener);
@@ -209,7 +209,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     private void m() {
-        if (this.k != null && this.k.isOpen()) {
+        if (this.channel != null && this.channel.isOpen()) {
             this.j.readLock().lock();
 
             try {
@@ -231,7 +231,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             ((IUpdatePlayerListBox) this.m).c();
         }
 
-        this.k.flush();
+        this.channel.flush();
     }
 
     public SocketAddress getSocketAddress() {
@@ -241,31 +241,30 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     public void close(IChatBaseComponent ichatbasecomponent) {
         // Spigot Start
         this.preparing = false;
-        this.i.clear();
         // Spigot End
-        if (this.k.isOpen()) {
-            this.k.close(); // We can't wait as this may be called from an event loop.
+        if (this.channel.isOpen()) {
+            this.channel.close(); // We can't wait as this may be called from an event loop.
             this.n = ichatbasecomponent;
         }
 
     }
 
     public boolean c() {
-        return this.k instanceof LocalChannel || this.k instanceof LocalServerChannel;
+        return this.channel instanceof LocalChannel || this.channel instanceof LocalServerChannel;
     }
 
     public void a(SecretKey secretkey) {
         this.o = true;
-        this.k.pipeline().addBefore("splitter", "decrypt", new PacketDecrypter(MinecraftEncryption.a(2, secretkey)));
-        this.k.pipeline().addBefore("prepender", "encrypt", new PacketEncrypter(MinecraftEncryption.a(1, secretkey)));
+        this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecrypter(MinecraftEncryption.a(2, secretkey)));
+        this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncrypter(MinecraftEncryption.a(1, secretkey)));
     }
 
     public boolean g() {
-        return this.k != null && this.k.isOpen();
+        return this.channel != null && this.channel.isOpen();
     }
 
     public boolean h() {
-        return this.k == null;
+        return this.channel == null;
     }
 
     public PacketListener getPacketListener() {
@@ -277,36 +276,36 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public void k() {
-        this.k.config().setAutoRead(false);
+        this.channel.config().setAutoRead(false);
     }
 
     public void a(int i) {
         if (i >= 0) {
-            if (this.k.pipeline().get("decompress") instanceof PacketDecompressor) {
-                ((PacketDecompressor) this.k.pipeline().get("decompress")).a(i);
+            if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {
+                ((PacketDecompressor) this.channel.pipeline().get("decompress")).a(i);
             } else {
-                this.k.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(i));
+                this.channel.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(i));
             }
 
-            if (this.k.pipeline().get("compress") instanceof PacketCompressor) {
-                ((PacketCompressor) this.k.pipeline().get("decompress")).a(i);
+            if (this.channel.pipeline().get("compress") instanceof PacketCompressor) {
+                ((PacketCompressor) this.channel.pipeline().get("decompress")).a(i);
             } else {
-                this.k.pipeline().addBefore("encoder", "compress", new PacketCompressor(i));
+                this.channel.pipeline().addBefore("encoder", "compress", new PacketCompressor(i));
             }
         } else {
-            if (this.k.pipeline().get("decompress") instanceof PacketDecompressor) {
-                this.k.pipeline().remove("decompress");
+            if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {
+                this.channel.pipeline().remove("decompress");
             }
 
-            if (this.k.pipeline().get("compress") instanceof PacketCompressor) {
-                this.k.pipeline().remove("compress");
+            if (this.channel.pipeline().get("compress") instanceof PacketCompressor) {
+                this.channel.pipeline().remove("compress");
             }
         }
 
     }
 
     public void l() {
-        if (this.k != null && !this.k.isOpen()) {
+        if (this.channel != null && !this.channel.isOpen()) {
             if (!this.p) {
                 this.p = true;
                 if (this.j() != null) {
@@ -339,7 +338,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     // Spigot Start
     public SocketAddress getRawAddress()
     {
-        return this.k.remoteAddress();
+        return this.channel.remoteAddress();
     }
     // Spigot End
 }

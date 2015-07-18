@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 public class RecipesFurnace {
 
     private static final RecipesFurnace a = new RecipesFurnace();
-    public Map<ItemStack, ItemStack> recipes = Maps.newHashMap(); // CraftBukkit - public
+    public Map<ItemStack, ItemStack> recipes = Maps.newHashMap();
     private Map<ItemStack, Float> c = Maps.newHashMap();
     public Map customRecipes = Maps.newHashMap(); // CraftBukkit - add field
 
@@ -16,7 +16,7 @@ public class RecipesFurnace {
         return RecipesFurnace.a;
     }
 
-    public RecipesFurnace() { // CraftBukkit - public
+    public RecipesFurnace() { // PAIL: Public
         this.registerRecipe(Blocks.IRON_ORE, new ItemStack(Items.IRON_INGOT), 0.7F);
         this.registerRecipe(Blocks.GOLD_ORE, new ItemStack(Items.GOLD_INGOT), 1.0F);
         this.registerRecipe(Blocks.DIAMOND_ORE, new ItemStack(Items.DIAMOND), 1.0F);

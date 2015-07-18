@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import org.HOSE.HRandom;
+import java.util.concurrent.Callable;
 
 public class EntityChicken extends EntityAnimal {
 
@@ -11,13 +11,12 @@ public class EntityChicken extends EntityAnimal {
     public float br = 1.0F;
     public int bs;
     public boolean bt;
-    private final HRandom hrndec = new HRandom();
-    
+
     public EntityChicken(World world) {
         super(world);
         this.setSize(0.4F, 0.7F);
+        final EntityChicken self = this;
         this.bs = this.random.nextInt(6000) + 6000;
-        //this.bs = hrndec.nextInt(6000) + 6000;
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
         this.goalSelector.a(1, new PathfinderGoalPanic(this, 1.4D));
         this.goalSelector.a(2, new PathfinderGoalBreed(this, 1.0D));
@@ -35,7 +34,7 @@ public class EntityChicken extends EntityAnimal {
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(4.0D);
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.25D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.25D);
     }
 
     public void m() {
@@ -60,10 +59,9 @@ public class EntityChicken extends EntityAnimal {
 
         this.bm += this.br * 2.0F;
         if (!this.world.isClientSide && !this.isBaby() && !this.isChickenJockey() && --this.bs <= 0) {
-            this.makeSound("mob.chicken.plop", 1.0F, (hrndec.nextFloat() - hrndec.nextFloat()) * 0.2F + 1.0F);
+            this.makeSound("mob.chicken.plop", 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
             this.a(Items.EGG, 1);
             this.bs = this.random.nextInt(6000) + 6000;
-            
         }
 
     }

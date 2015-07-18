@@ -87,7 +87,7 @@ public abstract class BlockMinecartTrackAbstract extends Block {
                 flag = true;
             }
 
-            if (flag) {
+            if (flag && !world.isEmpty(blockposition)) { // CraftBukkit - SPIGOT-424, MC-73474
                 this.b(world, blockposition, iblockdata, 0);
                 world.setAir(blockposition);
             } else {

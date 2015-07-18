@@ -89,6 +89,7 @@ public class SpigotWorldConfig
     public int pumpkinModifier;
     public int saplingModifier;
     public int wheatModifier;
+    public int wartModifier;
     private int getAndValidateGrowth(String crop)
     {
         int modifier = getInt( "growth." + crop.toLowerCase() + "-modifier", 100 );
@@ -110,6 +111,7 @@ public class SpigotWorldConfig
         pumpkinModifier = getAndValidateGrowth( "Pumpkin" );
         saplingModifier = getAndValidateGrowth( "Sapling" );
         wheatModifier = getAndValidateGrowth( "Wheat" );
+        wartModifier = getAndValidateGrowth( "NetherWart" );
     }
 
     public double itemMerge;

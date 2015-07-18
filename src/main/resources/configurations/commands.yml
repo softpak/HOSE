@@ -6,9 +6,9 @@
 # on the forums asking for advice.
 # 
 # IRC: #spigot @ irc.spi.gt
-#    (If this means nothing to you, just go to http://irc.spi.gt/iris/?nick=&channels=spigot )
-# Forums: http://www.spigotmc.org/forums/help.40/
-# Bug tracker: http://www.spigotmc.org/forums/bugs-feature-requests.8/
+#    (If this means nothing to you, just go to http://www.spigotmc.org/pages/irc/ )
+# Forums: http://www.spigotmc.org/
+# Bug tracker: http://www.spigotmc.org/go/bugs
 
 command-block-overrides: []
 aliases:

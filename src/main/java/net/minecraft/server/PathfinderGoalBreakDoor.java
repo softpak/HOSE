@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.Main;
-
 public class PathfinderGoalBreakDoor extends PathfinderGoalDoorInteract {
 
     private int g;

@@ -1,51 +1,23 @@
 package org.bukkit.craftbukkit;
 
-import com.amd.aparapi.Aparapi;
-import com.amd.aparapi.Device;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
-import org.HOSE.HRandom;
 import org.fusesource.jansi.AnsiConsole;
 
 public class Main {
     public static boolean useJline = true;
     public static boolean useConsole = true;
-    public static HRandom hrnd = new HRandom();
-    public static Random rnd = new Random();
-    public static Device hsadev = Device.hsa();
 
     public static void main(String[] args) {
         // Todo: Installation script
-        double a[] = new double[1000];
-        //int[] mwi = new int[1000000];
-        System.out.println("HSA test.");
-        //hsadev.setMaxWorkGroupSize(1000000);
-        //hsadev.setMaxWorkItemSize(mwi);
-        //hsadev.setMaxWorkItemDimensions(1000000);
-        System.out.println("MaxWorkItemSize:"+hsadev.getMaxWorkItemSize().length);
-        System.out.println("MaxWorkGroupSize:"+hsadev.getMaxWorkGroupSize());
-        System.out.println("MaxWorkItemDimensions:"+hsadev.getMaxWorkItemDimensions());
-        for (int i = 0; i < 100; i++) {
-            long st = System.nanoTime();
-            //hsadev.forEach(1000, g -> a[g] = hrnd.nextDouble());
-            //Aparapi.range(1000).forEach(kk -> System.out.print(a[kk]+"."));
-            System.out.println(hrnd.nextLong());
-            //System.out.println(Math.random());
-            long et = System.nanoTime();
-            System.out.println("Time use:"+(et-st)+"ns.");
-        }
-        //Aparapi.range(1000).forEach(kk -> System.out.print(a[kk]+".")); 
-        
-        System.out.println("Done!");
         OptionParser parser = new OptionParser() {
             {
                 acceptsAll(asList("?", "help"), "Show the help");
@@ -142,6 +114,14 @@ public class Main {
                 acceptsAll(asList("v", "version"), "Show the CraftBukkit Version");
 
                 acceptsAll(asList("demo"), "Demo mode");
+
+                // Spigot Start
+                acceptsAll(asList("S", "spigot-settings"), "File for spigot settings")
+                        .withRequiredArg()
+                        .ofType(File.class)
+                        .defaultsTo(new File("spigot.yml"))
+                        .describedAs("Yml file");
+                // Spigot End
             }
         };
 

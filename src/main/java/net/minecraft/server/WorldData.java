@@ -298,7 +298,7 @@ public class WorldData {
         nbttagcompound.setLong("Time", this.h);
         nbttagcompound.setLong("DayTime", this.i);
         nbttagcompound.setLong("SizeOnDisk", this.k);
-        nbttagcompound.setLong("LastPlayed", MinecraftServer.ay());
+        nbttagcompound.setLong("LastPlayed", MinecraftServer.az());
         nbttagcompound.setString("LevelName", this.n);
         nbttagcompound.setInt("version", this.o);
         nbttagcompound.setInt("clearWeatherTime", this.p);
@@ -580,21 +580,21 @@ public class WorldData {
         this.J = i;
     }
 
-    public EnumDifficulty y() {
+    public EnumDifficulty getDifficulty() {
         return this.z;
     }
 
     public void setDifficulty(EnumDifficulty enumdifficulty) {
         this.z = enumdifficulty;
         // CraftBukkit start
-        PacketPlayOutServerDifficulty packet = new PacketPlayOutServerDifficulty(this.y(), this.z()); // PAIL: Rename getDifficulty, isDifficultyLocked
+        PacketPlayOutServerDifficulty packet = new PacketPlayOutServerDifficulty(this.getDifficulty(), this.isDifficultyLocked());
         for (EntityPlayer player : (java.util.List<EntityPlayer>) (java.util.List) world.players) {
             player.playerConnection.sendPacket(packet);
         }
         // CraftBukkit end
     }
 
-    public boolean z() {
+    public boolean isDifficultyLocked() {
         return this.A;
     }
 

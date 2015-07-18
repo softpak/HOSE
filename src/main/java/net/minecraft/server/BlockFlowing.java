@@ -4,10 +4,10 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 // CraftBukkit start
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.event.block.BlockFromToEvent;
 // CraftBukkit end
 
@@ -75,8 +75,7 @@ public class BlockFlowing extends BlockFluids {
                 }
             }
 
-            //if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && random.nextInt(4) != 0) {
-            if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && Main.hrnd.nextInt(4) != 0) {
+            if (this.material == Material.LAVA && i < 8 && i1 < 8 && i1 > i && random.nextInt(4) != 0) {
                 j *= 4;
             }
 
@@ -166,10 +165,41 @@ public class BlockFlowing extends BlockFluids {
 
     }
 
-    private int a(World world, BlockPosition blockposition, int i, EnumDirection enumdirection) {
-        int j = 1000;
-        Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
+    //callable
+    int j;
+    private int a(final World world, final BlockPosition blockposition, final int i, final EnumDirection enumdirection) {
+        //int j = 1000;
+        j = 1000;
+        final Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
+        
+        new Callable<Integer>() {                             
+            public Integer call() throws Exception {
+                while (iterator.hasNext()) {
+                    EnumDirection enumdirection1 = (EnumDirection) iterator.next();
 
+                    if (enumdirection1 != enumdirection) {
+                        BlockPosition blockposition1 = blockposition.shift(enumdirection1);
+                        IBlockData iblockdata = world.getType(blockposition1);
+
+                        if (!g(world, blockposition1, iblockdata) && (iblockdata.getBlock().getMaterial() != material || ((Integer) iblockdata.get(BlockFlowing.LEVEL)).intValue() > 0)) {
+                            if (!g(world, blockposition1.down(), iblockdata)) {
+                                return i;
+                            }
+
+                            if (i < 4) {
+                                int k = a(world, blockposition1, i + 1, enumdirection1.opposite());
+
+                                if (k < j) {
+                                    j = k;
+                                }
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+        };
+        /*
         while (iterator.hasNext()) {
             EnumDirection enumdirection1 = (EnumDirection) iterator.next();
 
@@ -191,8 +221,7 @@ public class BlockFlowing extends BlockFluids {
                     }
                 }
             }
-        }
-
+        }*/
         return j;
     }
 

@@ -154,7 +154,8 @@ public class DispenserRegistry {
                     }
                 }
 
-                EntityFireworks entityfireworks = new EntityFireworks(isourceblock.i(), d0, d1, d2, itemstack);
+                itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
+                EntityFireworks entityfireworks = new EntityFireworks(isourceblock.i(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), itemstack1);
 
                 isourceblock.i().addEntity(entityfireworks);
                 // itemstack.a(1); // Handled during event processing
@@ -633,30 +634,6 @@ public class DispenserRegistry {
                 }
 
             }
-        });
-        BlockDispenser.N.a(Item.getItemOf(Blocks.COMMAND_BLOCK), new DispenseBehaviorItem() {
-            protected ItemStack b(ISourceBlock isourceblock, ItemStack itemstack) {
-                World world = isourceblock.i();
-                BlockPosition blockposition = isourceblock.getBlockPosition().shift(BlockDispenser.b(isourceblock.f()));
-
-                if (world.isEmpty(blockposition) && false) { // Craftbukkit - yeah... no, TODO: see if its safe to readd
-                    if (!world.isClientSide) {
-                        IBlockData iblockdata = Blocks.COMMAND_BLOCK.getBlockData().set(BlockCommand.TRIGGERED, Boolean.valueOf(false));
-
-                        world.setTypeAndData(blockposition, iblockdata, 3);
-                        ItemBlock.a(world, blockposition, itemstack);
-                        world.applyPhysics(isourceblock.getBlockPosition(), isourceblock.e());
-                    }
-
-                    --itemstack.count;
-                }
-
-                return itemstack;
-            }
-
-            protected void a(ISourceBlock isourceblock) {}
-
-            protected void a(ISourceBlock isourceblock, EnumDirection enumdirection) {}
         });
     }
 

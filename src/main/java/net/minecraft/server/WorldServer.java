@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Device;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import org.bukkit.WeatherType;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.craftbukkit.util.HashTreeSet;
 
@@ -34,10 +33,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
     private static final Logger a = LogManager.getLogger();
     private final MinecraftServer server;
-    public EntityTracker tracker; // CraftBukkit - public, remove final
+    public EntityTracker tracker;
     private final PlayerChunkMap manager;
-    // private final Set<NextTickListEntry> L = Sets.newHashSet(); // CraftBukkit, PAIL: Rename nextTickListHash
-    private final HashTreeSet<NextTickListEntry> M = new HashTreeSet<NextTickListEntry>(); // CraftBukkit - HashTreeSet, PAIL: Rename nextTickList
+    // private final Set<NextTickListEntry> L = Sets.newHashSet(); // PAIL: Rename nextTickListHash
+    private final HashTreeSet<NextTickListEntry> M = new HashTreeSet<NextTickListEntry>(); // CraftBukkit - HashTreeSet // PAIL: Rename nextTickList
     private final Map<UUID, Entity> entitiesByUUID = Maps.newHashMap();
     public ChunkProviderServer chunkProviderServer;
     public boolean savingDisabled;
@@ -69,7 +68,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         this.Q = new org.bukkit.craftbukkit.CraftTravelAgent(this); // CraftBukkit
         this.B();
         this.C();
-        this.getWorldBorder().a(minecraftserver.aH());
+        this.getWorldBorder().a(minecraftserver.aI());
     }
 
     public World b() {
@@ -203,7 +202,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         }
     }
     // CraftBukkit end
-    //world tick
+
     public void doTick() {
         super.doTick();
         if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {
@@ -296,7 +295,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             while (iterator.hasNext()) {
                 EntityHuman entityhuman = (EntityHuman) iterator.next();
 
-                if (entityhuman.v()) {
+                if (entityhuman.isSpectator()) {
                     ++i;
                 } else if (entityhuman.isSleeping() || entityhuman.fauxSleeping) {
                     ++j;
@@ -362,7 +361,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 if (entityhuman.isDeeplySleeping()) {
                     foundActualSleepers = true;
                 }
-            } while (!entityhuman.v() && (entityhuman.isDeeplySleeping() || entityhuman.fauxSleeping));
+            } while (!entityhuman.isSpectator() && (entityhuman.isDeeplySleeping() || entityhuman.fauxSleeping));
             // CraftBukkit end
 
             return false;
@@ -692,9 +691,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 iterator = this.M.iterator();
             } else {
                 iterator = this.V.iterator();
-                if (!this.V.isEmpty()) {
-                    WorldServer.a.debug("toBeTicked = " + this.V.size());
-                }
             }
 
             while (iterator.hasNext()) {

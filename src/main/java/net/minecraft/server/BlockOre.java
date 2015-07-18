@@ -1,10 +1,9 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import org.HOSE.HRandom;
 
 public class BlockOre extends Block {
-    public static HRandom hrndbo = new HRandom();
+
     public BlockOre() {
         this(Material.STONE.r());
     }
@@ -19,14 +18,12 @@ public class BlockOre extends Block {
     }
 
     public int a(Random random) {
-        //return this == Blocks.LAPIS_ORE ? 4 + random.nextInt(5) : 1;
-        return this == Blocks.LAPIS_ORE ? 4 + hrndbo.nextInt(5) : 1;
+        return this == Blocks.LAPIS_ORE ? 4 + random.nextInt(5) : 1;
     }
 
     public int getDropCount(int i, Random random) {
         if (i > 0 && Item.getItemOf(this) != this.getDropType((IBlockData) this.P().a().iterator().next(), random, i)) {
-            //int j = random.nextInt(i + 2) - 1;
-            int j = hrndbo.nextInt(i + 2) - 1;
+            int j = random.nextInt(i + 2) - 1;
 
             if (j < 0) {
                 j = 0;
@@ -61,36 +58,7 @@ public class BlockOre extends Block {
         // */
 
     }
-    
-    //HSA rnd
-    public static int nextInt(HRandom random, int i, int j) {
-        return i >= j ? i : random.nextInt(j - i + 1) + i;
-    }
-    
-    @Override
-    public int getExpDrop(World world, IBlockData iblockdata, int i) {
-        if (this.getDropType(iblockdata, world.random, i) != Item.getItemOf(this)) {
-            int j = 0;
 
-            if (this == Blocks.COAL_ORE) {
-                j = nextInt(hrndbo, 0, 2);
-            } else if (this == Blocks.DIAMOND_ORE) {
-                j = nextInt(hrndbo, 3, 7);
-            } else if (this == Blocks.EMERALD_ORE) {
-                j = nextInt(hrndbo, 3, 7);
-            } else if (this == Blocks.LAPIS_ORE) {
-                j = nextInt(hrndbo, 2, 5);
-            } else if (this == Blocks.QUARTZ_ORE) {
-                j = nextInt(hrndbo, 2, 5);
-            }
-
-            return j;
-        }
-
-        return 0;
-        // CraftBukkit end
-    }
-    /*
     @Override
     public int getExpDrop(World world, IBlockData iblockdata, int i) {
         if (this.getDropType(iblockdata, world.random, i) != Item.getItemOf(this)) {
@@ -113,7 +81,7 @@ public class BlockOre extends Block {
 
         return 0;
         // CraftBukkit end
-    }*/
+    }
 
     public int getDropData(World world, BlockPosition blockposition) {
         return 0;

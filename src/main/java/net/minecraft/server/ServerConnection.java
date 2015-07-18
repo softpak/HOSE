@@ -74,7 +74,7 @@ public class ServerConnection {
             Class oclass;
             LazyInitVar lazyinitvar;
 
-            if (Epoll.isAvailable() && this.f.ah()) {
+            if (Epoll.isAvailable() && this.f.ai()) {
                 oclass = EpollServerSocketChannel.class;
                 lazyinitvar = ServerConnection.b;
                 ServerConnection.e.info("Using epoll channel type");
@@ -166,8 +166,8 @@ public class ServerConnection {
                             ServerConnection.e.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
                             final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
 
-                            networkmanager.a(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener<Future<Void>>() {
-                                public void operationComplete(Future<Void> future) throws Exception {
+                            networkmanager.a(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener() {
+                                public void operationComplete(Future future) throws Exception {
                                     networkmanager.close(chatcomponenttext);
                                 }
                             }, new GenericFutureListener[0]);

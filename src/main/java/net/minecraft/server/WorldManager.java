@@ -55,6 +55,12 @@ public class WorldManager implements IWorldAccess {
     public void b(int i, BlockPosition blockposition, int j) {
         Iterator iterator = this.a.getPlayerList().v().iterator();
 
+        // CraftBukkit start
+        EntityHuman entityhuman = null;
+        Entity entity = world.a(i); // PAIL Rename getEntity
+        if (entity instanceof EntityHuman) entityhuman = (EntityHuman) entity;
+        // CraftBukkit end
+
         while (iterator.hasNext()) {
             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
 
@@ -62,6 +68,12 @@ public class WorldManager implements IWorldAccess {
                 double d0 = (double) blockposition.getX() - entityplayer.locX;
                 double d1 = (double) blockposition.getY() - entityplayer.locY;
                 double d2 = (double) blockposition.getZ() - entityplayer.locZ;
+
+                // CraftBukkit start
+                if (entityhuman != null && entityhuman instanceof EntityPlayer && !entityplayer.getBukkitEntity().canSee(((EntityPlayer) entityhuman).getBukkitEntity())) {
+                    continue;
+                }
+                // CraftBukkit end
 
                 if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
                     entityplayer.playerConnection.sendPacket(new PacketPlayOutBlockBreakAnimation(i, blockposition, j));

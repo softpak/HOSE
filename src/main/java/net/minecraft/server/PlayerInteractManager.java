@@ -34,7 +34,7 @@ public class PlayerInteractManager {
         this.gamemode = worldsettings_enumgamemode;
         worldsettings_enumgamemode.a(this.player.abilities);
         this.player.updateAbilities();
-        this.player.server.getPlayerList().sendAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new EntityPlayer[] { this.player}));
+        this.player.server.getPlayerList().sendAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new EntityPlayer[] { this.player}), this.player); // CraftBukkit
     }
 
     public WorldSettings.EnumGamemode getGameMode() {
@@ -496,7 +496,7 @@ public class PlayerInteractManager {
                 result = blockdata.getBlock().interact(world, blockposition, blockdata, entityhuman, enumdirection, f, f1, f2);
             }
 
-            if (itemstack != null && !result) {
+            if (itemstack != null && !result && !interactResult) { // add !interactResult SPIGOT-764
                 int j1 = itemstack.getData();
                 int k1 = itemstack.count;
 

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ public class WorldMap extends PersistentBase {
     public byte[] colors = new byte[16384];
     public List<WorldMap.WorldMapHumanTracker> g = Lists.newArrayList();
     public Map<EntityHuman, WorldMap.WorldMapHumanTracker> i = Maps.newHashMap(); // Spigot
-    public Map<String, MapIcon> decorations = Maps.newLinkedHashMap();
+    public Map<UUID, MapIcon> decorations = Maps.newLinkedHashMap(); // Spigot
 
     // CraftBukkit start
     public final CraftMapView mapView;
@@ -144,7 +145,7 @@ public class WorldMap extends PersistentBase {
         }
 
         if (!entityhuman.inventory.c(itemstack)) {
-            this.decorations.remove(entityhuman.getName());
+            this.decorations.remove(entityhuman.getUniqueID()); // Spigot
         }
 
         for (int i = 0; i < this.g.size(); ++i) {
@@ -152,7 +153,7 @@ public class WorldMap extends PersistentBase {
 
             if (!worldmap_worldmaphumantracker1.trackee.dead && (worldmap_worldmaphumantracker1.trackee.inventory.c(itemstack) || itemstack.y())) {
                 if (!itemstack.y() && worldmap_worldmaphumantracker1.trackee.dimension == this.map) {
-                    this.a(0, worldmap_worldmaphumantracker1.trackee.world, worldmap_worldmaphumantracker1.trackee.getName(), worldmap_worldmaphumantracker1.trackee.locX, worldmap_worldmaphumantracker1.trackee.locZ, (double) worldmap_worldmaphumantracker1.trackee.yaw);
+                    this.a(0, worldmap_worldmaphumantracker1.trackee.world, worldmap_worldmaphumantracker1.trackee.getUniqueID(), worldmap_worldmaphumantracker1.trackee.locX, worldmap_worldmaphumantracker1.trackee.locZ, (double) worldmap_worldmaphumantracker1.trackee.yaw); // Spigot
                 }
             } else {
                 this.i.remove(worldmap_worldmaphumantracker1.trackee);
@@ -164,7 +165,7 @@ public class WorldMap extends PersistentBase {
             EntityItemFrame entityitemframe = itemstack.z();
             BlockPosition blockposition = entityitemframe.getBlockPosition();
 
-            this.a(1, entityhuman.world, "frame-" + entityitemframe.getId(), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.direction.b() * 90));
+            this.a(1, entityhuman.world, UUID.nameUUIDFromBytes(("frame-" + entityitemframe.getId()).getBytes(Charsets.US_ASCII)), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.direction.b() * 90)); // Spigot
         }
 
         if (itemstack.hasTag() && itemstack.getTag().hasKeyOfType("Decorations", 9)) {
@@ -173,15 +174,18 @@ public class WorldMap extends PersistentBase {
             for (int j = 0; j < nbttaglist.size(); ++j) {
                 NBTTagCompound nbttagcompound = nbttaglist.get(j);
 
-                if (!this.decorations.containsKey(nbttagcompound.getString("id"))) {
-                    this.a(nbttagcompound.getByte("type"), entityhuman.world, nbttagcompound.getString("id"), nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
+                // Spigot - start
+                UUID uuid = UUID.nameUUIDFromBytes(nbttagcompound.getString("id").getBytes(Charsets.US_ASCII));
+                if (!this.decorations.containsKey(uuid)) {
+                    this.a(nbttagcompound.getByte("type"), entityhuman.world, uuid, nbttagcompound.getDouble("x"), nbttagcompound.getDouble("z"), nbttagcompound.getDouble("rot"));
+                // Spigot - end
                 }
             }
         }
 
     }
 
-    private void a(int i, World world, String s, double d0, double d1, double d2) {
+    private void a(int i, World world, UUID s, double d0, double d1, double d2) {
         int j = 1 << this.scale;
         float f = (float) (d0 - (double) this.centerX) / (float) j;
         float f1 = (float) (d1 - (double) this.centerZ) / (float) j;

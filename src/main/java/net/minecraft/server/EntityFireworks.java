@@ -3,7 +3,7 @@ package net.minecraft.server;
 public class EntityFireworks extends Entity {
 
     private int ticksFlown;
-    public int expectedLifespan; // CraftBukkit - public
+    public int expectedLifespan;
 
     // Spigot Start
     @Override

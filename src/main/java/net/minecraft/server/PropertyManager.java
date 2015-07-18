@@ -13,7 +13,7 @@ import joptsimple.OptionSet; // CraftBukkit
 public class PropertyManager {
 
     private static final Logger a = LogManager.getLogger();
-    public final Properties properties = new Properties(); // CraftBukkit - public
+    public final Properties properties = new Properties();
     private final File file;
 
     public PropertyManager(File file) {

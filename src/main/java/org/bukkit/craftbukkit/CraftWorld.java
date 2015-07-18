@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit;
 
-import com.amd.aparapi.Device;
+import com.google.common.base.Preconditions;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.server.*;
-import org.HOSE.HRandom;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.BlockChangeDelegate;
@@ -341,14 +340,11 @@ public class CraftWorld implements World {
             loc.setZ(Math.ceil(prevZ - 0.01));
         }
     }
-    public static HRandom hrnd = new HRandom();
+
     public org.bukkit.entity.Item dropItemNaturally(Location loc, ItemStack item) {
-        double xs = hrnd.nextFloat() * 0.7F - 0.35D;
-        double ys = hrnd.nextFloat() * 0.7F - 0.35D;
-        double zs = hrnd.nextFloat() * 0.7F - 0.35D;
-        /*double xs = world.random.nextFloat() * 0.7F - 0.35D;
+        double xs = world.random.nextFloat() * 0.7F - 0.35D;
         double ys = world.random.nextFloat() * 0.7F - 0.35D;
-        double zs = world.random.nextFloat() * 0.7F - 0.35D;*/
+        double zs = world.random.nextFloat() * 0.7F - 0.35D;
         loc = loc.clone();
         // Makes sure the new item is created within the block the location points to.
         // This prevents item spill in 1-block wide farms.
@@ -417,14 +413,12 @@ public class CraftWorld implements World {
         case SMALL_JUNGLE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
-            gen = new WorldGenTrees(true, 4 + Main.hrnd.nextInt(7), iblockdata1, iblockdata2, false);
+            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
             break;
         case COCOA_TREE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
-            gen = new WorldGenTrees(true, 4 + Main.hrnd.nextInt(7), iblockdata1, iblockdata2, true);
+            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
             break;
         case JUNGLE_BUSH:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
@@ -447,8 +441,7 @@ public class CraftWorld implements World {
             gen = new WorldGenForestTree(true);
             break;
         case MEGA_REDWOOD:
-            //gen = new WorldGenMegaTree(false, rand.nextBoolean());
-            gen = new WorldGenMegaTree(false, Main.hrnd.nextBoolean());
+            gen = new WorldGenMegaTree(false, rand.nextBoolean());
             break;
         case TALL_BIRCH:
             gen = new WorldGenForest(true, true);
@@ -733,16 +726,13 @@ public class CraftWorld implements World {
     }
 
     public List<Player> getPlayers() {
-        List<Player> list = new ArrayList<Player>();
+        List<Player> list = new ArrayList<Player>(world.players.size());
 
-        for (Object o : world.entityList) {
-            if (o instanceof net.minecraft.server.Entity) {
-                net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-                Entity bukkitEntity = mcEnt.getBukkitEntity();
+        for (EntityHuman human : world.players) {
+            HumanEntity bukkitEntity = human.getBukkitEntity();
 
-                if ((bukkitEntity != null) && (bukkitEntity instanceof Player)) {
-                    list.add((Player) bukkitEntity);
-                }
+            if ((bukkitEntity != null) && (bukkitEntity instanceof Player)) {
+                list.add((Player) bukkitEntity);
             }
         }
 
@@ -890,7 +880,7 @@ public class CraftWorld implements World {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Entity> T spawn(Location location, Class<T> clazz, SpawnReason reason) throws IllegalArgumentException {
+    public net.minecraft.server.Entity createEntity(Location location, Class<? extends Entity> clazz) throws IllegalArgumentException {
         if (location == null || clazz == null) {
             throw new IllegalArgumentException("Location or entity class cannot be null");
         }
@@ -1122,18 +1112,30 @@ public class CraftWorld implements World {
                 ( (EntityOcelot) entity ).spawnBonus = false;
             }
             // Spigot end
-            if (entity instanceof EntityInsentient) {
-                ((EntityInsentient) entity).prepare(getHandle().E(new BlockPosition(entity)), (GroupDataEntity) null);
-            }
-
-            world.addEntity(entity, reason);
-            return (T) entity.getBukkitEntity();
+            return entity;
         }
 
         throw new IllegalArgumentException("Cannot spawn an entity for " + clazz.getName());
     }
 
-    ChunkSnapshot re;
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> T addEntity(net.minecraft.server.Entity entity, SpawnReason reason) throws IllegalArgumentException {
+        Preconditions.checkArgument(entity != null, "Cannot spawn null entity");
+
+        if (entity instanceof EntityInsentient) {
+            ((EntityInsentient) entity).prepare(getHandle().E(new BlockPosition(entity)), (GroupDataEntity) null);
+        }
+
+        world.addEntity(entity, reason);
+        return (T) entity.getBukkitEntity();
+    }
+
+    public <T extends Entity> T spawn(Location location, Class<T> clazz, SpawnReason reason) throws IllegalArgumentException {
+        net.minecraft.server.Entity entity = createEntity(location, clazz);
+
+        return addEntity(entity, reason);
+    }
+
     public ChunkSnapshot getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) {
         return CraftChunk.getEmptyChunkSnapshot(x, z, this, includeBiome, includeBiomeTempRain);
     }

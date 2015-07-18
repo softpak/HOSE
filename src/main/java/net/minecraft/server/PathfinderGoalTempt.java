@@ -1,5 +1,9 @@
 package net.minecraft.server;
 
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class PathfinderGoalTempt extends PathfinderGoal {
 
     private EntityCreature a;
@@ -32,7 +36,13 @@ public class PathfinderGoalTempt extends PathfinderGoal {
             --this.i;
             return false;
         } else {
-            this.h = this.a.world.findNearbyPlayer(this.a, 10.0D);
+            try {
+                this.h = this.a.world.findNearbyPlayer(this.a, 10.0D);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(PathfinderGoalTempt.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(PathfinderGoalTempt.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if (this.h == null) {
                 return false;
             } else {

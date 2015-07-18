@@ -12,7 +12,7 @@ import org.bukkit.event.entity.SpawnerSpawnEvent;
 
 public abstract class MobSpawnerAbstract {
 
-    public int spawnDelay = 20; // CraftBukkit - public
+    public int spawnDelay = 20;
     private String mobName = "Pig";
     private final List<MobSpawnerAbstract.a> mobs = Lists.newArrayList();
     private MobSpawnerAbstract.a spawnData;
@@ -28,7 +28,7 @@ public abstract class MobSpawnerAbstract {
 
     public MobSpawnerAbstract() {}
 
-    public String getMobName() { // CraftBukkit - public
+    public String getMobName() {
         if (this.i() == null) {
             // CraftBukkit start - fix NPE
             if (this.mobName == null) {
@@ -266,36 +266,40 @@ public abstract class MobSpawnerAbstract {
     }
 
     public void b(NBTTagCompound nbttagcompound) {
-        nbttagcompound.setString("EntityId", this.getMobName());
-        nbttagcompound.setShort("Delay", (short) this.spawnDelay);
-        nbttagcompound.setShort("MinSpawnDelay", (short) this.minSpawnDelay);
-        nbttagcompound.setShort("MaxSpawnDelay", (short) this.maxSpawnDelay);
-        nbttagcompound.setShort("SpawnCount", (short) this.spawnCount);
-        nbttagcompound.setShort("MaxNearbyEntities", (short) this.maxNearbyEntities);
-        nbttagcompound.setShort("RequiredPlayerRange", (short) this.requiredPlayerRange);
-        nbttagcompound.setShort("SpawnRange", (short) this.spawnRange);
-        if (this.i() != null) {
-            nbttagcompound.set("SpawnData", this.i().c.clone());
-        }
+        String s = this.getMobName();
 
-        if (this.i() != null || this.mobs.size() > 0) {
-            NBTTagList nbttaglist = new NBTTagList();
-
-            if (this.mobs.size() > 0) {
-                Iterator iterator = this.mobs.iterator();
-
-                while (iterator.hasNext()) {
-                    MobSpawnerAbstract.a mobspawnerabstract_a = (MobSpawnerAbstract.a) iterator.next();
-
-                    nbttaglist.add(mobspawnerabstract_a.a());
-                }
-            } else {
-                nbttaglist.add(this.i().a());
+        if (!UtilColor.b(s)) {
+            nbttagcompound.setString("EntityId", s);
+            nbttagcompound.setShort("Delay", (short) this.spawnDelay);
+            nbttagcompound.setShort("MinSpawnDelay", (short) this.minSpawnDelay);
+            nbttagcompound.setShort("MaxSpawnDelay", (short) this.maxSpawnDelay);
+            nbttagcompound.setShort("SpawnCount", (short) this.spawnCount);
+            nbttagcompound.setShort("MaxNearbyEntities", (short) this.maxNearbyEntities);
+            nbttagcompound.setShort("RequiredPlayerRange", (short) this.requiredPlayerRange);
+            nbttagcompound.setShort("SpawnRange", (short) this.spawnRange);
+            if (this.i() != null) {
+                nbttagcompound.set("SpawnData", this.i().c.clone());
             }
 
-            nbttagcompound.set("SpawnPotentials", nbttaglist);
-        }
+            if (this.i() != null || this.mobs.size() > 0) {
+                NBTTagList nbttaglist = new NBTTagList();
 
+                if (this.mobs.size() > 0) {
+                    Iterator iterator = this.mobs.iterator();
+
+                    while (iterator.hasNext()) {
+                        MobSpawnerAbstract.a mobspawnerabstract_a = (MobSpawnerAbstract.a) iterator.next();
+
+                        nbttaglist.add(mobspawnerabstract_a.a());
+                    }
+                } else {
+                    nbttaglist.add(this.i().a());
+                }
+
+                nbttagcompound.set("SpawnPotentials", nbttaglist);
+            }
+
+        }
     }
 
     public boolean b(int i) {

@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 import java.util.List;
-import org.HOSE.HRandom;
-import org.bukkit.craftbukkit.Main;
 
 // CraftBukkit start
 import org.bukkit.entity.LivingEntity;
@@ -24,7 +22,7 @@ public class EntityArrow extends Entity implements IProjectile {
     private int ar;
     private int as;
     private double damage = 2.0D;
-    public int knockbackStrength; // CraftBukkit - public
+    public int knockbackStrength;
 
     // Spigot Start
     @Override
@@ -126,7 +124,6 @@ public class EntityArrow extends Entity implements IProjectile {
         this.ar = 0;
     }
 
-    private static HRandom hrndear = new HRandom();
     public void t_() {
         super.t_();
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
@@ -163,9 +160,9 @@ public class EntityArrow extends Entity implements IProjectile {
                 }
             } else {
                 this.inGround = false;
-                this.motX *= (double) (hrndear.nextFloat() * 0.2F);
-                this.motY *= (double) (hrndear.nextFloat() * 0.2F);
-                this.motZ *= (double) (hrndear.nextFloat() * 0.2F);
+                this.motX *= (double) (this.random.nextFloat() * 0.2F);
+                this.motY *= (double) (this.random.nextFloat() * 0.2F);
+                this.motZ *= (double) (this.random.nextFloat() * 0.2F);
                 this.ar = 0;
                 this.as = 0;
             }
@@ -230,8 +227,7 @@ public class EntityArrow extends Entity implements IProjectile {
                     int k = MathHelper.f((double) f2 * this.damage);
 
                     if (this.isCritical()) {
-                        //k += this.random.nextInt(k / 2 + 2);
-                        k += Main.hrnd.nextInt(k / 2 + 2);
+                        k += this.random.nextInt(k / 2 + 2);
                     }
 
                     DamageSource damagesource;
@@ -278,8 +274,7 @@ public class EntityArrow extends Entity implements IProjectile {
                             }
                         }
 
-                        //this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-                        this.makeSound("random.bowhit", 1.0F, 1.2F / (hrndear.nextFloat() * 0.2F + 0.9F));
+                        this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
                         if (!(movingobjectposition.entity instanceof EntityEnderman)) {
                             this.die();
                         }
@@ -308,8 +303,7 @@ public class EntityArrow extends Entity implements IProjectile {
                     this.locX -= this.motX / (double) f1 * 0.05000000074505806D;
                     this.locY -= this.motY / (double) f1 * 0.05000000074505806D;
                     this.locZ -= this.motZ / (double) f1 * 0.05000000074505806D;
-                    //this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-                    this.makeSound("random.bowhit", 1.0F, 1.2F / (hrndear.nextFloat() * 0.2F + 0.9F));
+                    this.makeSound("random.bowhit", 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
                     this.inGround = true;
                     this.shake = 7;
                     this.setCritical(false);

@@ -1,14 +1,10 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Device;
-import org.HOSE.HRandom;
-
 public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
 
     protected Block bn;
     private int bm;
     private EntityHuman bo;
-    public static HRandom hrndea = new HRandom();
 
     public EntityAnimal(World world) {
         super(world);
@@ -22,7 +18,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
 
         super.E();
     }
-
+    
     public void m() {
         super.m();
         if (this.getAge() != 0) {
@@ -32,14 +28,11 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
         if (this.bm > 0) {
             --this.bm;
             if (this.bm % 10 == 0) {
-                 /*double d0 = this.random.nextGaussian() * 0.02D;
+                double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
-                double d2 = this.random.nextGaussian() * 0.02D;*/
-                double d0 = hrndea.nextGaussian() * 0.02D;
-                double d1 = hrndea.nextGaussian() * 0.02D;
-                double d2 = hrndea.nextGaussian() * 0.02D;
-                //this.world.addParticle(EnumParticle.HEART, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
-                this.world.addParticle(EnumParticle.HEART, this.locX + (double) (hrndea.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (hrndea.nextFloat() * this.length), this.locZ + (double) (hrndea.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
+                double d2 = this.random.nextGaussian() * 0.02D;
+
+                this.world.addParticle(EnumParticle.HEART, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2, new int[0]);
             }
         }
 
@@ -71,7 +64,6 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
         super.a(nbttagcompound);
         this.bm = nbttagcompound.getInt("InLove");
     }
-
 
     public boolean bR() {
         int i = MathHelper.floor(this.locX);

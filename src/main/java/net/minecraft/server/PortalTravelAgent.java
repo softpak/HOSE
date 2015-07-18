@@ -198,11 +198,9 @@ public class PortalTravelAgent {
             }
 
             if (shapedetector_shapedetectorcollection.b().k() == EnumDirection.EnumAxis.X) {
-                d2 += (double) shapedetector_shapedetectorcollection.b().getAdjacentX();
                 d4 = d5 + (1.0D - entity.aG().a) * (double) shapedetector_shapedetectorcollection.d() * (double) shapedetector_shapedetectorcollection.b().e().c().a();
             } else {
                 d2 = d5 + (1.0D - entity.aG().a) * (double) shapedetector_shapedetectorcollection.d() * (double) shapedetector_shapedetectorcollection.b().e().c().a();
-                d4 += (double) shapedetector_shapedetectorcollection.b().getAdjacentZ();
             }
 
             float f1 = 0.0F;

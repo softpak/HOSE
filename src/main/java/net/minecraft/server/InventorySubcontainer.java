@@ -13,7 +13,7 @@ public class InventorySubcontainer implements IInventory {
 
     private String a;
     private int b;
-    public ItemStack[] items; // CraftBukkit - public
+    public ItemStack[] items;
     private List<IInventoryListener> d;
     private boolean e;
 

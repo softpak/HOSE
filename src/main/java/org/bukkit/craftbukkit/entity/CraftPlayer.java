@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import net.minecraft.server.*;
+import net.minecraft.server.PacketPlayOutTitle.EnumTitleAction;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.NotImplementedException;
@@ -104,13 +106,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     }
 
     public boolean isOnline() {
-        for (Object obj : server.getHandle().players) {
-            EntityPlayer player = (EntityPlayer) obj;
-            if (player.getName().equalsIgnoreCase(getName())) {
-                return true;
-            }
-        }
-        return false;
+        return server.getPlayer(getUniqueId()) != null;
     }
 
     public InetSocketAddress getAddress() {
@@ -759,7 +755,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                 return;
             }
             
-            getHandle().e((Entity) getHandle()); // PAIL: Rename setSpectatorTarget
+            getHandle().setSpectatorTarget(getHandle());
             getHandle().playerInteractManager.setGameMode(WorldSettings.EnumGamemode.getById(mode.getValue()));
             getHandle().fallDistance = 0;
             getHandle().playerConnection.sendPacket(new PacketPlayOutGameStateChange(3, mode.getValue()));
@@ -1321,6 +1317,37 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
         collection.add(new AttributeModifiable(getHandle().getAttributeMap(), (new AttributeRanged(null, "generic.maxHealth", healthMod, 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
         // Spigot end
+    }
+
+    @Override
+    public org.bukkit.entity.Entity getSpectatorTarget() {
+        Entity followed = getHandle().C(); // PAIL
+        return followed == getHandle() ? null : followed.getBukkitEntity();
+    }
+
+    @Override
+    public void setSpectatorTarget(org.bukkit.entity.Entity entity) {
+        Preconditions.checkArgument(getGameMode() == GameMode.SPECTATOR, "Player must be in spectator mode");
+        getHandle().setSpectatorTarget((entity == null) ? null : ((CraftEntity) entity).getHandle());
+    }
+
+    @Override
+    public void sendTitle(String title, String subtitle) {
+        if (title != null) {
+            PacketPlayOutTitle packetTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE, CraftChatMessage.fromString(title)[0]);
+            getHandle().playerConnection.sendPacket(packetTitle);
+        }
+
+        if (subtitle != null) {
+            PacketPlayOutTitle packetSubtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, CraftChatMessage.fromString(subtitle)[0]);
+            getHandle().playerConnection.sendPacket(packetSubtitle);
+        }
+    }
+
+    @Override
+    public void resetTitle() {
+        PacketPlayOutTitle packetReset = new PacketPlayOutTitle(EnumTitleAction.RESET, null);
+        getHandle().playerConnection.sendPacket(packetReset);
     }
 
     // Spigot start

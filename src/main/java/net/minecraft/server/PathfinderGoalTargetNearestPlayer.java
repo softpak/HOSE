@@ -101,7 +101,7 @@ public class PathfinderGoalTargetNearestPlayer extends PathfinderGoal {
     }
 
     protected double f() {
-        AttributeInstance attributeinstance = this.b.getAttributeInstance(GenericAttributes.b);
+        AttributeInstance attributeinstance = this.b.getAttributeInstance(GenericAttributes.FOLLOW_RANGE);
 
         return attributeinstance == null ? 16.0D : attributeinstance.getValue();
     }

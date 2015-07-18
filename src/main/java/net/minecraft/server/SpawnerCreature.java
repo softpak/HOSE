@@ -52,7 +52,7 @@ public final class SpawnerCreature {
             while (iterator.hasNext()) {
                 EntityHuman entityhuman = (EntityHuman) iterator.next();
 
-                if (!entityhuman.v()) {
+                if (!entityhuman.isSpectator()) {
                     int l = MathHelper.floor(entityhuman.locX / 16.0D);
 
                     j = MathHelper.floor(entityhuman.locZ / 16.0D);

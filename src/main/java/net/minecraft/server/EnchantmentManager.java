@@ -9,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.HOSE.HRandom;
-
 
 public class EnchantmentManager {
 
@@ -170,10 +168,7 @@ public class EnchantmentManager {
         if (entity instanceof EntityHuman) {
             a((EnchantmentManager.EnchantmentModifier) EnchantmentManager.d, entityliving.bA());
         }
-        // Spigot start
-        d.b = null;
-        d.a = null;
-        // Spigot end
+
     }
 
     public static void b(EntityLiving entityliving, Entity entity) {
@@ -186,10 +181,7 @@ public class EnchantmentManager {
         if (entityliving instanceof EntityHuman) {
             a((EnchantmentManager.EnchantmentModifier) EnchantmentManager.e, entityliving.bA());
         }
-        // Spigot start
-        e.a = null;
-        e.b = null;
-        // Spigot end
+
     }
 
     public static int a(EntityLiving entityliving) {
@@ -293,7 +285,6 @@ public class EnchantmentManager {
         return itemstack;
     }
 
-    public static HRandom hrnd = new HRandom();
     public static List<WeightedRandomEnchant> b(Random random, ItemStack itemstack, int i) {
         Item item = itemstack.getItem();
         int j = item.b();
@@ -304,8 +295,7 @@ public class EnchantmentManager {
             j /= 2;
             j = 1 + random.nextInt((j >> 1) + 1) + random.nextInt((j >> 1) + 1);
             int k = j + i;
-            //float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
-            float f = (hrnd.nextFloat() + hrnd.nextFloat() - 1.0F) * 0.15F;
+            float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
             int l = (int) ((float) k * (1.0F + f) + 0.5F);
 
             if (l < 1) {

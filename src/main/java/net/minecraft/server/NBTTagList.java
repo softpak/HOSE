@@ -34,23 +34,28 @@ public class NBTTagList extends NBTBase {
     }
 
     void load(DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException {
+        nbtreadlimiter.a(296L);
         if (i > 512) {
             throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
         } else {
-            nbtreadlimiter.a(8L);
             this.type = datainput.readByte();
             int j = datainput.readInt();
             nbtreadlimiter.a(j * 8); // CraftBukkit
 
-            this.list = Lists.newArrayList();
+            if (this.type == 0 && j > 0) {
+                throw new RuntimeException("Missing type on ListTag");
+            } else {
+                nbtreadlimiter.a(32L * (long) j);
+                this.list = Lists.newArrayListWithCapacity(j);
 
-            for (int k = 0; k < j; ++k) {
-                NBTBase nbtbase = NBTBase.createTag(this.type);
+                for (int k = 0; k < j; ++k) {
+                    NBTBase nbtbase = NBTBase.createTag(this.type);
 
-                nbtbase.load(datainput, i + 1, nbtreadlimiter);
-                this.list.add(nbtbase);
+                    nbtbase.load(datainput, i + 1, nbtreadlimiter);
+                    this.list.add(nbtbase);
+                }
+
             }
-
         }
     }
 
@@ -73,18 +78,24 @@ public class NBTTagList extends NBTBase {
     }
 
     public void add(NBTBase nbtbase) {
-        if (this.type == 0) {
-            this.type = nbtbase.getTypeId();
-        } else if (this.type != nbtbase.getTypeId()) {
-            NBTTagList.b.warn("Adding mismatching tag types to tag list");
-            return;
-        }
+        if (nbtbase.getTypeId() == 0) {
+            NBTTagList.b.warn("Invalid TagEnd added to ListTag");
+        } else {
+            if (this.type == 0) {
+                this.type = nbtbase.getTypeId();
+            } else if (this.type != nbtbase.getTypeId()) {
+                NBTTagList.b.warn("Adding mismatching tag types to tag list");
+                return;
+            }
 
-        this.list.add(nbtbase);
+            this.list.add(nbtbase);
+        }
     }
 
     public void a(int i, NBTBase nbtbase) {
-        if (i >= 0 && i < this.list.size()) {
+        if (nbtbase.getTypeId() == 0) {
+            NBTTagList.b.warn("Invalid TagEnd added to ListTag");
+        } else if (i >= 0 && i < this.list.size()) {
             if (this.type == 0) {
                 this.type = nbtbase.getTypeId();
             } else if (this.type != nbtbase.getTypeId()) {

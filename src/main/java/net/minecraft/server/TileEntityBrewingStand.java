@@ -14,7 +14,7 @@ public class TileEntityBrewingStand extends TileEntityContainer implements IUpda
     private static final int[] a = new int[] { 3};
     private static final int[] f = new int[] { 0, 1, 2};
     private ItemStack[] items = new ItemStack[4];
-    public int brewTime; // CraftBukkit - public
+    public int brewTime;
     private boolean[] i;
     private Item j;
     private String k;

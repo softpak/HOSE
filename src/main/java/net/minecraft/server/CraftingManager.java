@@ -14,7 +14,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 public class CraftingManager {
 
     private static final CraftingManager a = new CraftingManager();
-    public List<IRecipe> recipes = Lists.newArrayList(); // CraftBukkit - public, removed final
+    public List<IRecipe> recipes = Lists.newArrayList();
     // CraftBukkit start
     public IRecipe lastRecipe;
     public org.bukkit.inventory.InventoryView lastCraftView;
@@ -24,7 +24,7 @@ public class CraftingManager {
         return CraftingManager.a;
     }
 
-    public CraftingManager() { // CraftBukkit - public
+    public CraftingManager() { // PAIL: Public
         (new RecipesTools()).a(this);
         (new RecipesWeapons()).a(this);
         (new RecipeIngots()).a(this);

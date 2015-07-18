@@ -17,7 +17,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
             return this.a((Entity) object);
         }
     };
-    public static final IAttribute attributeJumpStrength = (new AttributeRanged((IAttribute) null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).a("Jump Strength").a(true); // CraftBukkit - public
+    public static final IAttribute attributeJumpStrength = (new AttributeRanged((IAttribute) null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).a("Jump Strength").a(true);
     private static final String[] bu = new String[] { null, "textures/entity/horse/armor/horse_armor_iron.png", "textures/entity/horse/armor/horse_armor_gold.png", "textures/entity/horse/armor/horse_armor_diamond.png"};
     private static final String[] bv = new String[] { "", "meo", "goo", "dio"};
     private static final int[] bw = new int[] { 0, 5, 7, 11};
@@ -31,7 +31,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
     public int bm;
     public int bo;
     protected boolean bp;
-    public InventoryHorseChest inventoryChest; // CraftBukkit - public
+    public InventoryHorseChest inventoryChest;
     private boolean bF;
     protected int bq;
     protected float br;
@@ -326,7 +326,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         return this.hasChest() /* && (i == 1 || i == 2) */ ? 17 : 2; // CraftBukkit - Remove type check
     }
 
-    public void loadChest() { // CraftBukkit - public
+    public void loadChest() {
         InventoryHorseChest inventoryhorsechest = this.inventoryChest;
 
         this.inventoryChest = new InventoryHorseChest("HorseChest", this.cZ(), this); // CraftBukkit - add this horse
@@ -486,7 +486,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         super.initAttributes();
         this.getAttributeMap().b(EntityHorse.attributeJumpStrength);
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(53.0D);
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.22499999403953552D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.22499999403953552D);
     }
 
     public int bV() {
@@ -933,7 +933,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
             this.S = 1.0F;
             this.aM = this.bI() * 0.1F;
             if (!this.world.isClientSide) {
-                this.k((float) this.getAttributeInstance(GenericAttributes.d).getValue());
+                this.k((float) this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).getValue());
                 super.g(f, f1);
             }
 
@@ -1044,7 +1044,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         AttributeInstance attributeinstance = this.getAttributeMap().a("Speed");
 
         if (attributeinstance != null) {
-            this.getAttributeInstance(GenericAttributes.d).setValue(attributeinstance.b() * 0.25D);
+            this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(attributeinstance.b() * 0.25D);
         }
 
         if (this.hasChest()) {
@@ -1147,9 +1147,9 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         double d1 = this.getAttributeInstance(EntityHorse.attributeJumpStrength).b() + entityageable.getAttributeInstance(EntityHorse.attributeJumpStrength).b() + this.dj();
 
         entityhorse1.getAttributeInstance(EntityHorse.attributeJumpStrength).setValue(d1 / 3.0D);
-        double d2 = this.getAttributeInstance(GenericAttributes.d).b() + entityageable.getAttributeInstance(GenericAttributes.d).b() + this.dk();
+        double d2 = this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).b() + entityageable.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).b() + this.dk();
 
-        entityhorse1.getAttributeInstance(GenericAttributes.d).setValue(d2 / 3.0D);
+        entityhorse1.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(d2 / 3.0D);
         return entityhorse1;
     }
 
@@ -1185,13 +1185,13 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
         if (j != 4 && j != 3) {
             this.getAttributeInstance(GenericAttributes.maxHealth).setValue((double) this.di());
             if (j == 0) {
-                this.getAttributeInstance(GenericAttributes.d).setValue(this.dk());
+                this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(this.dk());
             } else {
-                this.getAttributeInstance(GenericAttributes.d).setValue(0.17499999701976776D);
+                this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.17499999701976776D);
             }
         } else {
             this.getAttributeInstance(GenericAttributes.maxHealth).setValue(15.0D);
-            this.getAttributeInstance(GenericAttributes.d).setValue(0.20000000298023224D);
+            this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.20000000298023224D);
         }
 
         if (j != 2 && j != 1) {

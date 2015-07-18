@@ -1,11 +1,11 @@
 package net.minecraft.server;
 
-import org.HOSE.HRandom;
+import java.util.UUID;
+import org.apache.commons.codec.Charsets;
 
 public class EntityItemFrame extends EntityHanging {
 
     private float c = 1.0F;
-    final private HRandom hrndeif = new HRandom();
 
     public EntityItemFrame(World world) {
         super(world);
@@ -74,8 +74,7 @@ public class EntityItemFrame extends EntityHanging {
                 this.a(new ItemStack(Items.ITEM_FRAME), 0.0F);
             }
 
-            //if (itemstack != null && this.random.nextFloat() < this.c) {
-            if (itemstack != null && hrndeif.nextFloat() < this.c) {
+            if (itemstack != null && this.random.nextFloat() < this.c) {
                 itemstack = itemstack.cloneItemStack();
                 this.b(itemstack);
                 this.a(itemstack, 0.0F);
@@ -89,7 +88,7 @@ public class EntityItemFrame extends EntityHanging {
             if (itemstack.getItem() == Items.FILLED_MAP) {
                 WorldMap worldmap = ((ItemWorldMap) itemstack.getItem()).getSavedMap(itemstack, this.world);
 
-                worldmap.decorations.remove("frame-" + this.getId());
+                worldmap.decorations.remove(UUID.nameUUIDFromBytes(("frame-" + this.getId()).getBytes(Charsets.US_ASCII))); // Spigot
             }
 
             itemstack.a((EntityItemFrame) null);

@@ -69,7 +69,7 @@ public class VillageSiege {
         while (iterator.hasNext()) {
             EntityHuman entityhuman = (EntityHuman) iterator.next();
 
-            if (!entityhuman.v()) {
+            if (!entityhuman.isSpectator()) {
                 this.f = this.a.ae().getClosestVillage(new BlockPosition(entityhuman), 1);
                 if (this.f != null && this.f.c() >= 10 && this.f.d() >= 20 && this.f.e() >= 20) {
                     BlockPosition blockposition = this.f.a();

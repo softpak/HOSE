@@ -32,7 +32,7 @@ public class SystemUtils {
             Processor[] aprocessor = (new SystemInfo()).getHardware().getProcessors();
 
             SystemUtils.a = String.format("%dx %s", new Object[] { Integer.valueOf(aprocessor.length), aprocessor[0]}).replaceAll("\\s+", " ");
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             ;
         }
 

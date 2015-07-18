@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.HOSE.HRandom;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
@@ -91,7 +90,6 @@ public class BlockRedstoneTorch extends BlockTorch {
 
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
 
-    public static HRandom hrndbt = new HRandom();
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         boolean flag = this.g(world, blockposition, iblockdata);
         List list = (List) BlockRedstoneTorch.b.get(world);
@@ -121,18 +119,12 @@ public class BlockRedstoneTorch extends BlockTorch {
                 // CraftBukkit end
                 world.setTypeAndData(blockposition, Blocks.UNLIT_REDSTONE_TORCH.getBlockData().set(BlockRedstoneTorch.FACING, iblockdata.get(BlockRedstoneTorch.FACING)), 3);
                 if (this.a(world, blockposition, true)) {
-                    //world.makeSound((double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-                    world.makeSound((double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), "random.fizz", 0.5F, 2.6F + (hrndbt.nextFloat() - hrndbt.nextFloat()) * 0.8F);
+                    world.makeSound((double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
 
                     for (int i = 0; i < 5; ++i) {
-                        //flash
-                        double d0 = (double) blockposition.getX() + hrndbt.nextDouble() * 0.6D + 0.2D;
-                        double d1 = (double) blockposition.getY() + hrndbt.nextDouble() * 0.6D + 0.2D;
-                        double d2 = (double) blockposition.getZ() + hrndbt.nextDouble() * 0.6D + 0.2D;
-                        /*
                         double d0 = (double) blockposition.getX() + random.nextDouble() * 0.6D + 0.2D;
                         double d1 = (double) blockposition.getY() + random.nextDouble() * 0.6D + 0.2D;
-                        double d2 = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;*/
+                        double d2 = (double) blockposition.getZ() + random.nextDouble() * 0.6D + 0.2D;
 
                         world.addParticle(EnumParticle.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
                     }

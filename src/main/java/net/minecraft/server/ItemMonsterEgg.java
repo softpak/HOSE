@@ -19,8 +19,7 @@ public class ItemMonsterEgg extends Item {
     }
 
     public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2) {
-        // CraftBukkit - check ItemStack data
-        if (world.isClientSide || itemstack.getData() == 48 || itemstack.getData() == 49 || itemstack.getData() == 63 || itemstack.getData() == 64) {
+        if (world.isClientSide) {
             return true;
         } else if (!entityhuman.a(blockposition.shift(enumdirection), enumdirection, itemstack)) {
             return false;

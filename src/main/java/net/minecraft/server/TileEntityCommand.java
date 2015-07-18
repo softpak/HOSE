@@ -51,6 +51,10 @@ public class TileEntityCommand extends TileEntity {
         return new PacketPlayOutTileEntityData(this.position, 2, nbttagcompound);
     }
 
+    public boolean F() {
+        return true;
+    }
+
     public CommandBlockListenerAbstract getCommandBlock() {
         return this.a;
     }

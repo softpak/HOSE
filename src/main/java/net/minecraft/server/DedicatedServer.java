@@ -32,7 +32,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     private final List<ServerCommand> l = Collections.synchronizedList(Lists.<ServerCommand>newArrayList()); // CraftBukkit - fix decompile error
     private RemoteStatusListener m;
     private RemoteControlListener n;
-    public PropertyManager propertyManager; // CraftBukkit - public
+    public PropertyManager propertyManager;
     private EULA p;
     private boolean generateStructures;
     private WorldSettings.EnumGamemode r;
@@ -92,9 +92,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             }
         };
 
-        thread.setDaemon(true);
-        thread.start();
-
         // CraftBukkit start - TODO: handle command-line logging arguments
         java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
         global.setUseParentHandlers(false);
@@ -116,7 +113,9 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
         // CraftBukkit end
 
-        DedicatedServer.LOGGER.info("Starting minecraft server version 1.8.3");
+        thread.setDaemon(true);
+        thread.start();
+        DedicatedServer.LOGGER.info("Starting minecraft server version 1.8.7");
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L) {
             DedicatedServer.LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
         }
@@ -138,7 +137,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.p.b();
             return false;
         } else {
-            if (this.S()) {
+            if (this.T()) {
                 this.c("127.0.0.1");
             } else {
                 this.setOnlineMode(this.propertyManager.getBoolean("online-mode", true));
@@ -170,22 +169,22 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 inetaddress = InetAddress.getByName(this.getServerIp());
             }
 
-            if (this.Q() < 0) {
+            if (this.R() < 0) {
                 this.setPort(this.propertyManager.getInt("server-port", 25565));
             }
             // Spigot start
             this.a((PlayerList) (new DedicatedPlayerList(this)));
-            org.spigotmc.SpigotConfig.init();
+            org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
             org.spigotmc.SpigotConfig.registerCommands();
             // Spigot end
 
             DedicatedServer.LOGGER.info("Generating keypair");
             this.a(MinecraftEncryption.b());
-            DedicatedServer.LOGGER.info("Starting Minecraft server on " + (this.getServerIp().length() == 0 ? "*" : this.getServerIp()) + ":" + this.Q());
+            DedicatedServer.LOGGER.info("Starting Minecraft server on " + (this.getServerIp().length() == 0 ? "*" : this.getServerIp()) + ":" + this.R());
 
         if (!org.spigotmc.SpigotConfig.lateBind) {
             try {
-                this.ap().a(inetaddress, this.Q());
+                this.aq().a(inetaddress, this.R());
             } catch (IOException ioexception) {
                 DedicatedServer.LOGGER.warn("**** FAILED TO BIND TO PORT!");
                 DedicatedServer.LOGGER.warn("The exception was: {}", new Object[] { ioexception.toString()});
@@ -203,11 +202,18 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             if (!this.getOnlineMode()) {
                 DedicatedServer.LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
                 DedicatedServer.LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
-                DedicatedServer.LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+                // Spigot start
+                if (org.spigotmc.SpigotConfig.bungee) {
+                    DedicatedServer.LOGGER.warn("Whilst this makes it possible to use BungeeCord, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
+                    DedicatedServer.LOGGER.warn("Please see http://www.spigotmc.org/wiki/firewall-guide/ for further information.");
+                } else {
+                    DedicatedServer.LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+                }
+                // Spigot end
                 DedicatedServer.LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
             }
 
-            if (this.aQ()) {
+            if (this.aR()) {
                 this.getUserCache().c();
             }
 
@@ -217,7 +223,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 this.convertable = new WorldLoaderServer(server.getWorldContainer()); // CraftBukkit - moved from MinecraftServer constructor
                 long j = System.nanoTime();
 
-                if (this.T() == null) {
+                if (this.U() == null) {
                     this.setWorld(this.propertyManager.getString("level-name", "world"));
                 }
 
@@ -244,17 +250,17 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                     worldtype = WorldType.NORMAL;
                 }
 
-                this.aA();
+                this.aB();
                 this.getEnableCommandBlock();
                 this.p();
                 this.getSnooperEnabled();
-                this.aJ();
+                this.aK();
                 this.c(this.propertyManager.getInt("max-build-height", 256));
                 this.c((this.getMaxBuildHeight() + 8) / 16 * 16);
                 this.c(MathHelper.clamp(this.getMaxBuildHeight(), 64, 256));
                 this.propertyManager.setProperty("max-build-height", Integer.valueOf(this.getMaxBuildHeight()));
-                DedicatedServer.LOGGER.info("Preparing level \"" + this.T() + "\"");
-                this.a(this.T(), this.T(), k, worldtype, s2);
+                DedicatedServer.LOGGER.info("Preparing level \"" + this.U() + "\"");
+                this.a(this.U(), this.U(), k, worldtype, s2);
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", new Object[] { Double.valueOf((double) i1 / 1.0E9D)});
 
@@ -284,7 +290,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         if (org.spigotmc.SpigotConfig.lateBind) {
             try {
-                this.ap().a(inetaddress, this.Q());
+                this.aq().a(inetaddress, this.R());
             } catch (IOException ioexception) {
                 DedicatedServer.LOGGER.warn("**** FAILED TO BIND TO PORT!");
                 DedicatedServer.LOGGER.warn("The exception was: {}", new Object[] { ioexception.toString()});
@@ -293,7 +299,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             }
         }
 
-                if (false && this.aR() > 0L) { // Spigot - disable
+                if (false && this.aS() > 0L) {  // Spigot - disable
                     Thread thread1 = new Thread(new ThreadWatchdog(this));
 
                     thread1.setName("Server Watchdog");
@@ -360,13 +366,13 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         return crashreport;
     }
 
-    protected void y() {
+    protected void z() {
         System.exit(0);
     }
 
-    public void A() { // CraftBukkit - fix decompile error
-        super.A();
-        this.aN();
+    public void B() { // CraftBukkit - fix decompile error
+        super.B();
+        this.aO();
     }
 
     public boolean getAllowNether() {
@@ -378,8 +384,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public void a(MojangStatisticsGenerator mojangstatisticsgenerator) {
-        mojangstatisticsgenerator.a("whitelist_enabled", Boolean.valueOf(this.aO().getHasWhitelist()));
-        mojangstatisticsgenerator.a("whitelist_count", Integer.valueOf(this.aO().getWhitelisted().length));
+        mojangstatisticsgenerator.a("whitelist_enabled", Boolean.valueOf(this.aP().getHasWhitelist()));
+        mojangstatisticsgenerator.a("whitelist_count", Integer.valueOf(this.aP().getWhitelisted().length));
         super.a(mojangstatisticsgenerator);
     }
 
@@ -391,7 +397,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         this.l.add(new ServerCommand(s, icommandlistener));
     }
 
-    public void aN() {
+    public void aO() {
         SpigotTimings.serverCommandTimer.startTiming(); // Spigot
         while (!this.l.isEmpty()) {
             ServerCommand servercommand = (ServerCommand) this.l.remove(0);
@@ -409,15 +415,15 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
     }
 
-    public boolean ad() {
+    public boolean ae() {
         return true;
     }
 
-    public boolean ah() {
+    public boolean ai() {
         return this.propertyManager.getBoolean("use-native-transport", true);
     }
 
-    public DedicatedPlayerList aO() {
+    public DedicatedPlayerList aP() {
         return (DedicatedPlayerList) super.getPlayerList();
     }
 
@@ -447,12 +453,12 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         return file != null ? file.getAbsolutePath() : "No settings file";
     }
 
-    public void aP() {
+    public void aQ() {
         ServerGUI.a(this);
         this.s = true;
     }
 
-    public boolean ar() {
+    public boolean as() {
         return this.s;
     }
 
@@ -471,9 +477,9 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     public boolean a(World world, BlockPosition blockposition, EntityHuman entityhuman) {
         if (world.worldProvider.getDimension() != 0) {
             return false;
-        } else if (this.aO().getOPs().isEmpty()) {
+        } else if (this.aP().getOPs().isEmpty()) {
             return false;
-        } else if (this.aO().isOp(entityhuman.getProfile())) {
+        } else if (this.aP().isOp(entityhuman.getProfile())) {
             return false;
         } else if (this.getSpawnProtection() <= 0) {
             return false;
@@ -501,27 +507,31 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         return this.propertyManager.getBoolean("broadcast-rcon-to-ops", true);
     }
 
-    public boolean aA() {
+    public boolean r() {
+        return this.propertyManager.getBoolean("broadcast-console-to-ops", true);
+    }
+
+    public boolean aB() {
         return this.propertyManager.getBoolean("announce-player-achievements", true);
     }
 
-    public int aH() {
-        int i = this.propertyManager.getInt("max-world-size", super.aH());
+    public int aI() {
+        int i = this.propertyManager.getInt("max-world-size", super.aI());
 
         if (i < 1) {
             i = 1;
-        } else if (i > super.aH()) {
-            i = super.aH();
+        } else if (i > super.aI()) {
+            i = super.aI();
         }
 
         return i;
     }
 
-    public int aJ() {
-        return this.propertyManager.getInt("network-compression-threshold", super.aJ());
+    public int aK() {
+        return this.propertyManager.getInt("network-compression-threshold", super.aK());
     }
 
-    protected boolean aQ() {
+    protected boolean aR() {
         server.getLogger().info( "**** Beginning UUID conversion, this may take A LONG time ****"); // Spigot, let the user know whats up!
         boolean flag = false;
 
@@ -530,7 +540,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         for (i = 0; !flag && i <= 2; ++i) {
             if (i > 0) {
                 DedicatedServer.LOGGER.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
-                this.aT();
+                this.aU();
             }
 
             flag = NameReferencingFileConverter.a((MinecraftServer) this);
@@ -541,7 +551,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         for (i = 0; !flag1 && i <= 2; ++i) {
             if (i > 0) {
                 DedicatedServer.LOGGER.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
-                this.aT();
+                this.aU();
             }
 
             flag1 = NameReferencingFileConverter.b((MinecraftServer) this);
@@ -552,7 +562,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         for (i = 0; !flag2 && i <= 2; ++i) {
             if (i > 0) {
                 DedicatedServer.LOGGER.warn("Encountered a problem while converting the op list, retrying in a few seconds");
-                this.aT();
+                this.aU();
             }
 
             flag2 = NameReferencingFileConverter.c((MinecraftServer) this);
@@ -563,7 +573,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         for (i = 0; !flag3 && i <= 2; ++i) {
             if (i > 0) {
                 DedicatedServer.LOGGER.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
-                this.aT();
+                this.aU();
             }
 
             flag3 = NameReferencingFileConverter.d((MinecraftServer) this);
@@ -574,7 +584,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         for (i = 0; !flag4 && i <= 2; ++i) {
             if (i > 0) {
                 DedicatedServer.LOGGER.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
-                this.aT();
+                this.aU();
             }
 
             flag4 = NameReferencingFileConverter.a(this, this.propertyManager);
@@ -583,7 +593,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         return flag || flag1 || flag2 || flag3 || flag4;
     }
 
-    private void aT() {
+    private void aU() {
         try {
             Thread.sleep(5000L);
         } catch (InterruptedException interruptedexception) {
@@ -591,7 +601,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         }
     }
 
-    public long aR() {
+    public long aS() {
         return this.propertyManager.getLong("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
     }
 
@@ -631,6 +641,9 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 // Event changes start
                 RemoteServerCommandEvent event = new RemoteServerCommandEvent(remoteConsole, s);
                 server.getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return "";
+                }
                 // Event change end
                 ServerCommand serverCommand = new ServerCommand(event.getCommand(), RemoteControlCommandListener.getInstance());
                 server.dispatchServerCommand(remoteConsole, serverCommand);
@@ -650,6 +663,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public PlayerList getPlayerList() {
-        return this.aO();
+        return this.aP();
     }
 }

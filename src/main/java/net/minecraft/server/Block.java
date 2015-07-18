@@ -3,11 +3,9 @@ package net.minecraft.server;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import org.HOSE.HRandom;
 
 public class Block {
 
-    private static HRandom hrnd = new HRandom();
     private static final MinecraftKey a = new MinecraftKey("air");
     public static final RegistryBlocks<MinecraftKey, Block> REGISTRY = new RegistryBlocks(Block.a);
     public static final RegistryID<IBlockData> d = new RegistryID();
@@ -300,12 +298,7 @@ public class Block {
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
         this.b(world, blockposition, iblockdata, random);
     }
-    /*
-    public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
-        this.b(world, blockposition, iblockdata, random);
-    }*/
 
-    //public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
 
     public void postBreak(World world, BlockPosition blockposition, IBlockData iblockdata) {}
@@ -348,8 +341,7 @@ public class Block {
 
             for (int k = 0; k < j; ++k) {
                 // CraftBukkit - <= to < to allow for plugins to completely disable block drops from explosions
-                //if (world.random.nextFloat() < f) {
-                if (hrnd.nextFloat() < f) {
+                if (world.random.nextFloat() < f) {
                     Item item = this.getDropType(iblockdata, world.random, i);
 
                     if (item != null) {
@@ -364,12 +356,9 @@ public class Block {
     public static void a(World world, BlockPosition blockposition, ItemStack itemstack) {
         if (!world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
             float f = 0.5F;
-            double d0 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d1 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d2 = (double) (hrnd.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            /*double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;*/
+            double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             EntityItem entityitem = new EntityItem(world, (double) blockposition.getX() + d0, (double) blockposition.getY() + d1, (double) blockposition.getZ() + d2, itemstack);
 
             entityitem.p();
@@ -610,10 +599,6 @@ public class Block {
     public int getDropCount(int i, Random random) {
         return this.a(random);
     }
-    /*
-    public int getDropCount(int i, Random random) {
-        return this.a(random);
-    }*/
 
     public void postPlace(World world, BlockPosition blockposition, IBlockData iblockdata, EntityLiving entityliving, ItemStack itemstack) {}
 

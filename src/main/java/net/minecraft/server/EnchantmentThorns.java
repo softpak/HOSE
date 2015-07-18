@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import org.HOSE.HRandom;
 
 public class EnchantmentThorns extends Enchantment {
 
@@ -45,10 +44,8 @@ public class EnchantmentThorns extends Enchantment {
 
     }
 
-    public static HRandom hrnd = new HRandom();
     public static boolean a(int i, Random random) {
-        //return i <= 0 ? false : random.nextFloat() < 0.15F * (float) i;
-        return i <= 0 ? false : hrnd.nextFloat() < 0.15F * (float) i;
+        return i <= 0 ? false : random.nextFloat() < 0.15F * (float) i;
     }
 
     public static int b(int i, Random random) {

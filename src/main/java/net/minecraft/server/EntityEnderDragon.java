@@ -35,7 +35,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
     public float bv;
     public boolean bw;
     public boolean bx;
-    public Entity bA; // CraftBukkit - public
+    public Entity bA; // CraftBukkit - public // PAIL: Target
     public int by;
     public EntityEnderCrystal bz;
     private Explosion explosionSource = new Explosion(null, this, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, true); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
@@ -383,7 +383,7 @@ public class EntityEnderDragon extends EntityInsentient implements IComplex, IMo
         Iterator iterator = arraylist.iterator();
 
         while (iterator.hasNext()) {
-            if (((EntityHuman) iterator.next()).v()) {
+            if (((EntityHuman) iterator.next()).isSpectator()) {
                 iterator.remove();
             }
         }

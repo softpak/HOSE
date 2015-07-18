@@ -95,7 +95,6 @@ public abstract class EntityCreature extends EntityInsentient {
             }
 
             if (f > 6.0F) {
-                long st = System.nanoTime();
                 double d0 = (entity.locX - this.locX) / (double) f;
                 double d1 = (entity.locY - this.locY) / (double) f;
                 double d2 = (entity.locZ - this.locZ) / (double) f;
@@ -103,8 +102,6 @@ public abstract class EntityCreature extends EntityInsentient {
                 this.motX += d0 * Math.abs(d0) * 0.4D;
                 this.motY += d1 * Math.abs(d1) * 0.4D;
                 this.motZ += d2 * Math.abs(d2) * 0.4D;
-                long et = System.nanoTime();
-                System.out.println("CEca Time use:"+(et-st)+"ns.");
             }
 
             if (f > 10.0F) {

@@ -24,14 +24,12 @@ public class EntityArmorStand extends EntityLiving {
     private long i;
     private int bi;
     private boolean bj;
-    // CraftBukkit start - public all the things!
     public Vector3f headPose;
     public Vector3f bodyPose;
     public Vector3f leftArmPose;
     public Vector3f rightArmPose;
     public Vector3f leftLegPose;
     public Vector3f rightLegPose;
-    // CraftBukkit end
 
     public EntityArmorStand(World world) {
         super(world);
@@ -264,7 +262,7 @@ public class EntityArmorStand extends EntityLiving {
     public boolean a(EntityHuman entityhuman, Vec3D vec3d) {
         if (this.s()) {
             return false;
-        } else if (!this.world.isClientSide && !entityhuman.v()) {
+        } else if (!this.world.isClientSide && !entityhuman.isSpectator()) {
             byte b0 = 0;
             ItemStack itemstack = entityhuman.bZ();
             boolean flag = itemstack != null;
@@ -584,7 +582,7 @@ public class EntityArmorStand extends EntityLiving {
         return this.isInvisible();
     }
 
-    public void setSmall(boolean flag) { // CraftBukkit - public
+    public void setSmall(boolean flag) {
         byte b0 = this.datawatcher.getByte(10);
 
         if (flag) {
@@ -600,7 +598,7 @@ public class EntityArmorStand extends EntityLiving {
         return (this.datawatcher.getByte(10) & 1) != 0;
     }
 
-    public void setGravity(boolean flag) { // CraftBukkit - public
+    public void setGravity(boolean flag) {
         byte b0 = this.datawatcher.getByte(10);
 
         if (flag) {
@@ -610,14 +608,13 @@ public class EntityArmorStand extends EntityLiving {
         }
 
         this.datawatcher.watch(10, Byte.valueOf(b0));
-        this.noclip = flag; // CraftBukkit.
     }
 
     public boolean hasGravity() {
         return (this.datawatcher.getByte(10) & 2) != 0;
     }
 
-    public void setArms(boolean flag) { // CraftBukkit - public
+    public void setArms(boolean flag) {
         byte b0 = this.datawatcher.getByte(10);
 
         if (flag) {
@@ -633,7 +630,7 @@ public class EntityArmorStand extends EntityLiving {
         return (this.datawatcher.getByte(10) & 4) != 0;
     }
 
-    public void setBasePlate(boolean flag) { // CraftBukkit - public
+    public void setBasePlate(boolean flag) {
         byte b0 = this.datawatcher.getByte(10);
 
         if (flag) {
@@ -649,7 +646,8 @@ public class EntityArmorStand extends EntityLiving {
         return (this.datawatcher.getByte(10) & 8) != 0;
     }
 
-    private void n(boolean flag) {
+    // PAIL
+    public void n(boolean flag) { // CraftBukkit - public
         byte b0 = this.datawatcher.getByte(10);
 
         if (flag) {
@@ -661,6 +659,7 @@ public class EntityArmorStand extends EntityLiving {
         this.datawatcher.watch(10, Byte.valueOf(b0));
     }
 
+    // PAIL
     public boolean s() {
         return (this.datawatcher.getByte(10) & 16) != 0;
     }

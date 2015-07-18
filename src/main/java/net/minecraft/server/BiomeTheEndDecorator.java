@@ -1,9 +1,7 @@
 package net.minecraft.server;
 
-import org.HOSE.HRandom;
-
 public class BiomeTheEndDecorator extends BiomeDecorator {
-    protected HRandom hrnd = new HRandom();
+
     protected WorldGenerator M;
 
     public BiomeTheEndDecorator() {
@@ -12,7 +10,6 @@ public class BiomeTheEndDecorator extends BiomeDecorator {
 
     protected void a(BiomeBase biomebase) {
         this.a();
-
         if (this.b.nextInt(5) == 0) {
             int i = this.b.nextInt(16) + 8;
             int j = this.b.nextInt(16) + 8;
@@ -23,8 +20,7 @@ public class BiomeTheEndDecorator extends BiomeDecorator {
         if (this.c.getX() == 0 && this.c.getZ() == 0) {
             EntityEnderDragon entityenderdragon = new EntityEnderDragon(this.a);
 
-            //entityenderdragon.setPositionRotation(0.0D, 128.0D, 0.0D, this.b.nextFloat() * 360.0F, 0.0F);
-            entityenderdragon.setPositionRotation(0.0D, 128.0D, 0.0D, hrnd.nextFloat() * 360.0F, 0.0F);
+            entityenderdragon.setPositionRotation(0.0D, 128.0D, 0.0D, this.b.nextFloat() * 360.0F, 0.0F);
             this.a.addEntity(entityenderdragon, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN); // CraftBukkit - add SpawnReason
         }
 

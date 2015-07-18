@@ -39,7 +39,7 @@ public class BlockDropper extends BlockDispenser {
 
                     if (iinventory == null) {
                         itemstack1 = this.P.a(sourceblock, itemstack);
-                        if (itemstack1 != null && itemstack1.count == 0) {
+                        if (itemstack1 != null && itemstack1.count <= 0) {
                             itemstack1 = null;
                         }
                     } else {
@@ -63,7 +63,7 @@ public class BlockDropper extends BlockDispenser {
                         if (event.getItem().equals(oitemstack) && itemstack1 == null) {
                             // CraftBukkit end
                             itemstack1 = itemstack.cloneItemStack();
-                            if (--itemstack1.count == 0) {
+                            if (--itemstack1.count <= 0) {
                                 itemstack1 = null;
                             }
                         } else {

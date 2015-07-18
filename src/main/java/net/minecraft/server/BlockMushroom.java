@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import java.util.Iterator;
 import java.util.Random;
-import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.TreeType;
@@ -108,10 +107,8 @@ public class BlockMushroom extends BlockPlant implements IBlockFragilePlantEleme
         return true;
     }
 
-    public static HRandom hrnd = new HRandom();
     public boolean a(World world, Random random, BlockPosition blockposition, IBlockData iblockdata) {
-        //return (double) random.nextFloat() < 0.4D;
-        return hrnd.nextDouble() < 0.4D;
+        return (double) random.nextFloat() < 0.4D;
     }
 
     public void b(World world, Random random, BlockPosition blockposition, IBlockData iblockdata) {

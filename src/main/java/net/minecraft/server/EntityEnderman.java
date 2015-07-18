@@ -48,9 +48,9 @@ public class EntityEnderman extends EntityMonster {
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(GenericAttributes.maxHealth).setValue(40.0D);
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.30000001192092896D);
-        this.getAttributeInstance(GenericAttributes.e).setValue(7.0D);
-        this.getAttributeInstance(GenericAttributes.b).setValue(64.0D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.30000001192092896D);
+        this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7.0D);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(64.0D);
     }
 
     protected void h() {
@@ -431,7 +431,7 @@ public class EntityEnderman extends EntityMonster {
         public void d() {
             this.g = null;
             this.j.a(false);
-            AttributeInstance attributeinstance = this.j.getAttributeInstance(GenericAttributes.d);
+            AttributeInstance attributeinstance = this.j.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
 
             attributeinstance.c(EntityEnderman.b);
             super.d();
@@ -459,7 +459,7 @@ public class EntityEnderman extends EntityMonster {
                     super.c();
                     this.j.makeSound("mob.endermen.stare", 1.0F, 1.0F);
                     this.j.a(true);
-                    AttributeInstance attributeinstance = this.j.getAttributeInstance(GenericAttributes.d);
+                    AttributeInstance attributeinstance = this.j.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
 
                     attributeinstance.b(EntityEnderman.b);
                 }

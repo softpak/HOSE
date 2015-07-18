@@ -48,15 +48,15 @@ public class EntityWolf extends EntityTameableAnimal {
 
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.30000001192092896D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.30000001192092896D);
         if (this.isTamed()) {
             this.getAttributeInstance(GenericAttributes.maxHealth).setValue(20.0D);
         } else {
             this.getAttributeInstance(GenericAttributes.maxHealth).setValue(8.0D);
         }
 
-        this.getAttributeMap().b(GenericAttributes.e);
-        this.getAttributeInstance(GenericAttributes.e).setValue(2.0D);
+        this.getAttributeMap().b(GenericAttributes.ATTACK_DAMAGE);
+        this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(2.0D);
     }
 
     public void setGoalTarget(EntityLiving entityliving) {
@@ -215,7 +215,7 @@ public class EntityWolf extends EntityTameableAnimal {
     }
 
     public boolean r(Entity entity) {
-        boolean flag = entity.damageEntity(DamageSource.mobAttack(this), (float) ((int) this.getAttributeInstance(GenericAttributes.e).getValue()));
+        boolean flag = entity.damageEntity(DamageSource.mobAttack(this), (float) ((int) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue()));
 
         if (flag) {
             this.a((EntityLiving) this, entity);
@@ -232,7 +232,7 @@ public class EntityWolf extends EntityTameableAnimal {
             this.getAttributeInstance(GenericAttributes.maxHealth).setValue(8.0D);
         }
 
-        this.getAttributeInstance(GenericAttributes.e).setValue(4.0D);
+        this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(4.0D);
     }
 
     public boolean a(EntityHuman entityhuman) {

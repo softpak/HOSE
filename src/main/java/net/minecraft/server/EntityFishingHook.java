@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import java.util.Arrays;
 import java.util.List;
-import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.entity.Player;
@@ -35,7 +34,6 @@ public class EntityFishingHook extends Entity {
     private double aC;
     private double aD;
     private double aE;
-    final private HRandom hrndefh;
 
     public static List<PossibleFishingResult> j() {
         return EntityFishingHook.f;
@@ -43,14 +41,12 @@ public class EntityFishingHook extends Entity {
 
     public EntityFishingHook(World world) {
         super(world);
-        this.hrndefh = new HRandom();
         this.setSize(0.25F, 0.25F);
         this.ah = true;
     }
 
     public EntityFishingHook(World world, EntityHuman entityhuman) {
         super(world);
-        this.hrndefh = new HRandom();
         this.ah = true;
         this.owner = entityhuman;
         this.owner.hookedFish = this;
@@ -144,13 +140,9 @@ public class EntityFishingHook extends Entity {
                 }
 
                 this.as = false;
-                this.motX *=  (hrndefh.nextFloat() * 0.2D);
-                this.motY *=  (hrndefh.nextFloat() * 0.2D);
-                this.motZ *=  (hrndefh.nextFloat() * 0.2D);
-                /*
                 this.motX *= (double) (this.random.nextFloat() * 0.2F);
                 this.motY *= (double) (this.random.nextFloat() * 0.2F);
-                this.motZ *= (double) (this.random.nextFloat() * 0.2F);*/
+                this.motZ *= (double) (this.random.nextFloat() * 0.2F);
                 this.at = 0;
                 this.au = 0;
             } else {

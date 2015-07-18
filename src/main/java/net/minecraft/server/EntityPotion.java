@@ -12,7 +12,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class EntityPotion extends EntityProjectile {
 
-    public ItemStack item; // CraftBukkit - public
+    public ItemStack item;
 
     public EntityPotion(World world) {
         super(world);

@@ -243,7 +243,7 @@ public class BlockRedstoneWire extends Block {
         }
     }
 
-    public int getPower(World world, BlockPosition blockposition, int i) { // CraftBukkit - public
+    public int getPower(World world, BlockPosition blockposition, int i) {
         if (world.getType(blockposition).getBlock() != this) {
             return i;
         } else {

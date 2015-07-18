@@ -102,31 +102,29 @@ final class CraftTeam extends CraftScoreboardComponent implements Team {
     public void setNameTagVisibility(NameTagVisibility visibility) throws IllegalArgumentException {
         CraftScoreboard scoreboard = checkState();
 
-        team.setNameTagVisibility(bukkitToNotch(visibility)); 
+        team.setNameTagVisibility(bukkitToNotch(visibility));
     }
 
     public Set<OfflinePlayer> getPlayers() throws IllegalStateException {
         CraftScoreboard scoreboard = checkState();
 
         ImmutableSet.Builder<OfflinePlayer> players = ImmutableSet.builder();
-        for (Object o : team.getPlayerNameSet()) {
-            players.add(Bukkit.getOfflinePlayer(o.toString()));
+        for (String playerName : team.getPlayerNameSet()) {
+            players.add(Bukkit.getOfflinePlayer(playerName));
         }
         return players.build();
     }
 
-    // Spigot start
     @Override
     public Set<String> getEntries() throws IllegalStateException {
         CraftScoreboard scoreboard = checkState();
-        
+
         ImmutableSet.Builder<String> entries = ImmutableSet.builder();
-        for (Object o : team.getPlayerNameSet()){
-            entries.add(o.toString());
+        for (String playerName: team.getPlayerNameSet()){
+            entries.add(playerName);
         }
         return entries.build();
     }
-    // Spigot end
 
     public int getSize() throws IllegalStateException {
         CraftScoreboard scoreboard = checkState();
@@ -136,24 +134,21 @@ final class CraftTeam extends CraftScoreboardComponent implements Team {
 
     public void addPlayer(OfflinePlayer player) throws IllegalStateException, IllegalArgumentException {
         Validate.notNull(player, "OfflinePlayer cannot be null");
-        // Spigot Start
         addEntry(player.getName());
     }
-    
+
     public void addEntry(String entry) throws IllegalStateException, IllegalArgumentException {
         Validate.notNull(entry, "Entry cannot be null");
         CraftScoreboard scoreboard = checkState();
 
         scoreboard.board.addPlayerToTeam(entry, team.getName());
-        // Spigot end
     }
 
     public boolean removePlayer(OfflinePlayer player) throws IllegalStateException, IllegalArgumentException {
         Validate.notNull(player, "OfflinePlayer cannot be null");
-        // Spigot start
         return removeEntry(player.getName());
     }
-    
+
     public boolean removeEntry(String entry) throws IllegalStateException, IllegalArgumentException {
         Validate.notNull(entry, "Entry cannot be null");
         CraftScoreboard scoreboard = checkState();
@@ -163,13 +158,11 @@ final class CraftTeam extends CraftScoreboardComponent implements Team {
         }
 
         scoreboard.board.removePlayerFromTeam(entry, team);
-        // Spigot end
         return true;
     }
 
     public boolean hasPlayer(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
         Validate.notNull(player, "OfflinePlayer cannot be null");
-        // Spigot start
         return hasEntry(player.getName());
     }
 
@@ -179,7 +172,6 @@ final class CraftTeam extends CraftScoreboardComponent implements Team {
         CraftScoreboard scoreboard = checkState();
 
         return team.getPlayerNameSet().contains(entry);
-        // Spigot end
     }
 
     @Override
@@ -246,6 +238,5 @@ final class CraftTeam extends CraftScoreboardComponent implements Team {
         final CraftTeam other = (CraftTeam) obj;
         return !(this.team != other.team && (this.team == null || !this.team.equals(other.team)));
     }
-    // Spigot end
 
 }

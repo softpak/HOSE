@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 import java.util.Random;
-import org.HOSE.HRandom;
-import org.bukkit.craftbukkit.Main;
 
 import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
 
@@ -43,7 +41,6 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
         }
 
     }
-    
 
     public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
         int i = ((Integer) iblockdata.get(BlockCrops.AGE)).intValue() + MathHelper.nextInt(world.random, 2, 5);

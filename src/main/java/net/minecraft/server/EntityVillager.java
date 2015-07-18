@@ -2,6 +2,9 @@ package net.minecraft.server;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.craftbukkit.entity.CraftVillager; // CraftBukkit
 
 public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
@@ -74,7 +77,7 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
 
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.5D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.5D);
     }
 
     protected void E() {
@@ -270,7 +273,14 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
                     this.village.h();
                 }
             } else {
-                EntityHuman entityhuman = this.world.findNearbyPlayer(this, 16.0D);
+                EntityHuman entityhuman = null;
+                try {
+                    entityhuman = this.world.findNearbyPlayer(this, 16.0D);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(EntityVillager.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(EntityVillager.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 if (entityhuman != null) {
                     this.village.h();
@@ -392,7 +402,7 @@ public class EntityVillager extends EntityAgeable implements IMerchant, NPC {
         int j = this.by - 1;
         EntityVillager.IMerchantRecipeOption[][] aentityvillager_imerchantrecipeoption1 = aentityvillager_imerchantrecipeoption[i];
 
-        if (j < aentityvillager_imerchantrecipeoption1.length) {
+        if (j >= 0 && j < aentityvillager_imerchantrecipeoption1.length) {
             EntityVillager.IMerchantRecipeOption[] aentityvillager_imerchantrecipeoption2 = aentityvillager_imerchantrecipeoption1[j];
             EntityVillager.IMerchantRecipeOption[] aentityvillager_imerchantrecipeoption3 = aentityvillager_imerchantrecipeoption2;
             int k = aentityvillager_imerchantrecipeoption2.length;

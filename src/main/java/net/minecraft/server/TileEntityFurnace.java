@@ -16,9 +16,9 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
     private static final int[] f = new int[] { 2, 1};
     private static final int[] g = new int[] { 1};
     private ItemStack[] items = new ItemStack[3];
-    public int burnTime; // CraftBukkit - public
+    public int burnTime;
     private int ticksForCurrentFuel;
-    public int cookTime; // CraftBukkit - public
+    public int cookTime;
     private int cookTimeTotal;
     private String m;
 
@@ -176,7 +176,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
     }
 
     public void c() {
-        boolean flag = this.isBurning();
+        boolean flag = (this.w() == Blocks.LIT_FURNACE); // CraftBukkit - SPIGOT-844 - Check if furnace block is lit using the block instead of burn time // PAIL: Rename
         boolean flag1 = false;
 
         // CraftBukkit start - Use wall time instead of ticks for cooking
@@ -252,6 +252,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
             if (flag != this.isBurning()) {
                 flag1 = true;
                 BlockFurnace.a(this.isBurning(), this.world, this.position);
+                this.E(); // CraftBukkit - Invalidate tile entity's cached block type // PAIL: Rename
             }
         }
 

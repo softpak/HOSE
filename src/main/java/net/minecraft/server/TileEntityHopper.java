@@ -236,7 +236,7 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
     }
 
     private boolean r() {
-        IInventory iinventory = this.G();
+        IInventory iinventory = this.H();
 
         if (iinventory == null) {
             return false;
@@ -529,7 +529,7 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
         return itemstack;
     }
 
-    private IInventory G() {
+    private IInventory H() {
         EnumDirection enumdirection = BlockHopper.b(this.u());
 
         return b(this.getWorld(), (double) (this.position.getX() + enumdirection.getAdjacentX()), (double) (this.position.getY() + enumdirection.getAdjacentY()), (double) (this.position.getZ() + enumdirection.getAdjacentZ()));

@@ -31,7 +31,7 @@ public class PacketStatusListener implements PacketStatusInListener {
     // CraftBukkit end
 
     public void a(PacketStatusInStart packetstatusinstart) {
-        // this.networkManager.handle(new PacketStatusOutServerInfo(this.minecraftServer.aF()));
+        // this.networkManager.handle(new PacketStatusOutServerInfo(this.minecraftServer.aG()));
         // CraftBukkit start - fire ping event
         if (state != WAITING) {
             networkManager.close(null);

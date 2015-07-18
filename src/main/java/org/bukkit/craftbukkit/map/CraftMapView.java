@@ -1,6 +1,5 @@
 package org.bukkit.craftbukkit.map;
 
-import com.amd.aparapi.Device;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -123,6 +122,7 @@ public final class CraftMapView implements MapView {
     public RenderData render(CraftPlayer player) {
         boolean context = isContextual();
         RenderData render = renderCache.get(context ? player : null);
+
         if (render == null) {
             render = new RenderData();
             renderCache.put(context ? player : null, render);
@@ -131,9 +131,8 @@ public final class CraftMapView implements MapView {
         if (context && renderCache.containsKey(null)) {
             renderCache.remove(null);
         }
-        
+
         Arrays.fill(render.buffer, (byte) 0);
-        //CraftMapView:16384
         render.cursors.clear();
 
         for (MapRenderer renderer : renderers) {
@@ -147,13 +146,12 @@ public final class CraftMapView implements MapView {
             renderer.render(this, canvas, player);
 
             byte[] buf = canvas.getBuffer();
-                        
             for (int i = 0; i < buf.length; ++i) {
                 byte color = buf[i];
                 // There are 143 valid color id's, 0 -> 127 and -128 -> -113
                 if (color >= 0 || color <= -113) render.buffer[i] = color;
             }
-            
+
             for (int i = 0; i < canvas.getCursors().size(); ++i) {
                 render.cursors.add(canvas.getCursors().getCursor(i));
             }

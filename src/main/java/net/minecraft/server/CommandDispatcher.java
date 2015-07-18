@@ -48,7 +48,7 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
         this.a((ICommand) (new CommandWorldBorder()));
         this.a((ICommand) (new CommandTitle()));
         this.a((ICommand) (new CommandEntityData()));
-        if (MinecraftServer.getServer().ad()) {
+        if (MinecraftServer.getServer().ae()) {
             this.a((ICommand) (new CommandOp()));
             this.a((ICommand) (new CommandDeop()));
             this.a((ICommand) (new CommandStop()));
@@ -89,8 +89,13 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
             while (iterator.hasNext()) {
                 EntityHuman entityhuman = (EntityHuman) iterator.next();
 
-                if (entityhuman != icommandlistener && minecraftserver.getPlayerList().isOp(entityhuman.getProfile()) && icommand.canUse(icommandlistener) && (!(icommandlistener instanceof RemoteControlCommandListener) || MinecraftServer.getServer().q())) {
-                    entityhuman.sendMessage(chatmessage);
+                if (entityhuman != icommandlistener && minecraftserver.getPlayerList().isOp(entityhuman.getProfile()) && icommand.canUse(icommandlistener)) {
+                    boolean flag1 = icommandlistener instanceof MinecraftServer && MinecraftServer.getServer().r();
+                    boolean flag2 = icommandlistener instanceof RemoteControlCommandListener && MinecraftServer.getServer().q();
+
+                    if (flag1 || flag2 || !(icommandlistener instanceof RemoteControlCommandListener) && !(icommandlistener instanceof MinecraftServer)) {
+                        entityhuman.sendMessage(chatmessage);
+                    }
                 }
             }
         }
@@ -99,13 +104,13 @@ public class CommandDispatcher extends CommandHandler implements ICommandDispatc
             minecraftserver.sendMessage(chatmessage);
         }
 
-        boolean flag1 = minecraftserver.worldServer[0].getGameRules().getBoolean("sendCommandFeedback");
+        boolean flag3 = minecraftserver.worldServer[0].getGameRules().getBoolean("sendCommandFeedback");
 
         if (icommandlistener instanceof CommandBlockListenerAbstract) {
-            flag1 = ((CommandBlockListenerAbstract) icommandlistener).m();
+            flag3 = ((CommandBlockListenerAbstract) icommandlistener).m();
         }
 
-        if ((i & 1) != 1 && flag1) {
+        if ((i & 1) != 1 && flag3 || icommandlistener instanceof MinecraftServer) {
             icommandlistener.sendMessage(new ChatMessage(s, aobject));
         }
 

@@ -289,7 +289,6 @@ public class CraftChunk implements Chunk {
     }
 
     private static float[] getTemperatures(WorldChunkManager chunkmanager, int chunkX, int chunkZ) {
-        long st = System.nanoTime();
         BiomeBase[] biomes = chunkmanager.getBiomes(null, chunkX, chunkZ, 16, 16);
         float[] temps = new float[biomes.length];
 
@@ -302,14 +301,11 @@ public class CraftChunk implements Chunk {
 
             temps[i] = temp;
         }
-        long et = System.nanoTime();
 
-        System.out.println("getTemperatures:"+emptySkyLight.length+".Time use:"+(et-st)+"ns.");
         return temps;
     }
 
     static {
         Arrays.fill(emptySkyLight, (byte) 0xFF);
-        
     }
 }

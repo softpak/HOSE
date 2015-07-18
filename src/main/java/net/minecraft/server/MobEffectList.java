@@ -17,11 +17,11 @@ public class MobEffectList {
     public static final MobEffectList[] byId = new MobEffectList[32];
     private static final Map<MinecraftKey, MobEffectList> I = Maps.newHashMap();
     public static final MobEffectList b = null;
-    public static final MobEffectList FASTER_MOVEMENT = (new MobEffectList(1, new MinecraftKey("speed"), false, 8171462)).c("potion.moveSpeed").b(0, 0).a(GenericAttributes.d, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2);
-    public static final MobEffectList SLOWER_MOVEMENT = (new MobEffectList(2, new MinecraftKey("slowness"), true, 5926017)).c("potion.moveSlowdown").b(1, 0).a(GenericAttributes.d, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2);
+    public static final MobEffectList FASTER_MOVEMENT = (new MobEffectList(1, new MinecraftKey("speed"), false, 8171462)).c("potion.moveSpeed").b(0, 0).a(GenericAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2);
+    public static final MobEffectList SLOWER_MOVEMENT = (new MobEffectList(2, new MinecraftKey("slowness"), true, 5926017)).c("potion.moveSlowdown").b(1, 0).a(GenericAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2);
     public static final MobEffectList FASTER_DIG = (new MobEffectList(3, new MinecraftKey("haste"), false, 14270531)).c("potion.digSpeed").b(2, 0).a(1.5D);
     public static final MobEffectList SLOWER_DIG = (new MobEffectList(4, new MinecraftKey("mining_fatigue"), true, 4866583)).c("potion.digSlowDown").b(3, 0);
-    public static final MobEffectList INCREASE_DAMAGE = (new MobEffectAttackDamage(5, new MinecraftKey("strength"), false, 9643043)).c("potion.damageBoost").b(4, 0).a(GenericAttributes.e, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 2.5D, 2);
+    public static final MobEffectList INCREASE_DAMAGE = (new MobEffectAttackDamage(5, new MinecraftKey("strength"), false, 9643043)).c("potion.damageBoost").b(4, 0).a(GenericAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 2.5D, 2);
     public static final MobEffectList HEAL = (new InstantMobEffect(6, new MinecraftKey("instant_health"), false, 16262179)).c("potion.heal");
     public static final MobEffectList HARM = (new InstantMobEffect(7, new MinecraftKey("instant_damage"), true, 4393481)).c("potion.harm");
     public static final MobEffectList JUMP = (new MobEffectList(8, new MinecraftKey("jump_boost"), false, 2293580)).c("potion.jump").b(2, 1);
@@ -34,7 +34,7 @@ public class MobEffectList {
     public static final MobEffectList BLINDNESS = (new MobEffectList(15, new MinecraftKey("blindness"), true, 2039587)).c("potion.blindness").b(5, 1).a(0.25D);
     public static final MobEffectList NIGHT_VISION = (new MobEffectList(16, new MinecraftKey("night_vision"), false, 2039713)).c("potion.nightVision").b(4, 1);
     public static final MobEffectList HUNGER = (new MobEffectList(17, new MinecraftKey("hunger"), true, 5797459)).c("potion.hunger").b(1, 1);
-    public static final MobEffectList WEAKNESS = (new MobEffectAttackDamage(18, new MinecraftKey("weakness"), true, 4738376)).c("potion.weakness").b(5, 0).a(GenericAttributes.e, "22653B89-116E-49DC-9B6B-9971489B5BE5", 2.0D, 0);
+    public static final MobEffectList WEAKNESS = (new MobEffectAttackDamage(18, new MinecraftKey("weakness"), true, 4738376)).c("potion.weakness").b(5, 0).a(GenericAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 2.0D, 0);
     public static final MobEffectList POISON = (new MobEffectList(19, new MinecraftKey("poison"), true, 5149489)).c("potion.poison").b(6, 0).a(0.25D);
     public static final MobEffectList WITHER = (new MobEffectList(20, new MinecraftKey("wither"), true, 3484199)).c("potion.wither").b(1, 2).a(0.25D);
     public static final MobEffectList HEALTH_BOOST = (new MobEffectHealthBoost(21, new MinecraftKey("health_boost"), false, 16284963)).c("potion.healthBoost").b(2, 2).a(GenericAttributes.maxHealth, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0D, 0);

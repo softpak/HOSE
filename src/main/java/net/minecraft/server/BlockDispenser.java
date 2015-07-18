@@ -69,7 +69,7 @@ public class BlockDispenser extends BlockContainer {
         }
     }
 
-    public void dispense(World world, BlockPosition blockposition) { // CraftBukkit - public
+    public void dispense(World world, BlockPosition blockposition) {
         SourceBlock sourceblock = new SourceBlock(world, blockposition);
         TileEntityDispenser tileentitydispenser = (TileEntityDispenser) sourceblock.getTileEntity();
 
@@ -86,7 +86,7 @@ public class BlockDispenser extends BlockContainer {
                     ItemStack itemstack1 = idispensebehavior.a(sourceblock, itemstack);
                     eventFired = false; // CraftBukkit - reset event status
 
-                    tileentitydispenser.setItem(i, itemstack1.count == 0 ? null : itemstack1);
+                    tileentitydispenser.setItem(i, itemstack1.count <= 0 ? null : itemstack1);
                 }
 
             }

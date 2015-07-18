@@ -122,10 +122,10 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             // CraftBukkit end
         } else {
             this.g = LoginListener.EnumProtocolState.ACCEPTED;
-            if (this.server.aJ() >= 0 && !this.networkManager.c()) {
-                this.networkManager.a(new PacketLoginOutSetCompression(this.server.aJ()), new ChannelFutureListener() {
+            if (this.server.aK() >= 0 && !this.networkManager.c()) {
+                this.networkManager.a(new PacketLoginOutSetCompression(this.server.aK()), new ChannelFutureListener() {
                     public void a(ChannelFuture channelfuture) throws Exception {
-                        LoginListener.this.networkManager.a(LoginListener.this.server.aJ());
+                        LoginListener.this.networkManager.a(LoginListener.this.server.aK());
                     }
 
                     public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error
@@ -160,7 +160,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
         this.i = packetlogininstart.a();
         if (this.server.getOnlineMode() && !this.networkManager.c()) {
             this.g = LoginListener.EnumProtocolState.KEY;
-            this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.P().getPublic(), this.e));
+            this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.Q().getPublic(), this.e));
         } else {
             // Spigot start
             initUUID();
@@ -183,7 +183,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
 
     public void a(PacketLoginInEncryptionBegin packetlogininencryptionbegin) {
         Validate.validState(this.g == LoginListener.EnumProtocolState.KEY, "Unexpected key packet", new Object[0]);
-        PrivateKey privatekey = this.server.P().getPrivate();
+        PrivateKey privatekey = this.server.Q().getPrivate();
 
         if (!Arrays.equals(this.e, packetlogininencryptionbegin.b(privatekey))) {
             throw new IllegalStateException("Invalid nonce!");
@@ -196,9 +196,9 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     GameProfile gameprofile = LoginListener.this.i;
 
                     try {
-                        String s = (new BigInteger(MinecraftEncryption.a(LoginListener.this.j, LoginListener.this.server.P().getPublic(), LoginListener.this.loginKey))).toString(16);
+                        String s = (new BigInteger(MinecraftEncryption.a(LoginListener.this.j, LoginListener.this.server.Q().getPublic(), LoginListener.this.loginKey))).toString(16);
 
-                        LoginListener.this.i = LoginListener.this.server.aC().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
+                        LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
                         if (LoginListener.this.i != null) {
                             // CraftBukkit start - fire PlayerPreLoginEvent
                             if (!networkManager.g()) {
@@ -206,7 +206,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                             }
 
                             new LoginHandler().fireEvents();
-                        } else if (LoginListener.this.server.S()) {
+                        } else if (LoginListener.this.server.T()) {
                             LoginListener.c.warn("Failed to verify username but will let them in anyway!");
                             LoginListener.this.i = LoginListener.this.a(gameprofile);
                             LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
@@ -215,7 +215,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                             LoginListener.c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
                         }
                     } catch (AuthenticationUnavailableException authenticationunavailableexception) {
-                        if (LoginListener.this.server.S()) {
+                        if (LoginListener.this.server.T()) {
                             LoginListener.c.warn("Authentication servers are down but will let them in anyway!");
                             LoginListener.this.i = LoginListener.this.a(gameprofile);
                             LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;

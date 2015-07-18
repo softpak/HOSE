@@ -14,7 +14,7 @@ import org.bukkit.event.painting.PaintingBreakEvent;
 public abstract class EntityHanging extends Entity {
 
     private int c;
-    public BlockPosition blockPosition; // CraftBukkit - public
+    public BlockPosition blockPosition;
     public EnumDirection direction;
 
     public EntityHanging(World world) {
@@ -29,7 +29,7 @@ public abstract class EntityHanging extends Entity {
 
     protected void h() {}
 
-    public void setDirection(EnumDirection enumdirection) { // CraftBukkit - public
+    public void setDirection(EnumDirection enumdirection) {
         Validate.notNull(enumdirection);
         Validate.isTrue(enumdirection.k().c());
         this.direction = enumdirection;

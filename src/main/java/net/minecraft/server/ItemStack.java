@@ -129,7 +129,8 @@ public final class ItemStack {
             world.capturedBlockStates.clear();
             StructureGrowEvent event = null;
             if (treeType != null) {
-                event = new StructureGrowEvent(location, treeType, false, (Player) entityhuman.getBukkitEntity(), blocks);
+                boolean isBonemeal = getItem() == Items.DYE && data == 15;
+                event = new StructureGrowEvent(location, treeType, isBonemeal, (Player) entityhuman.getBukkitEntity(), blocks);
                 org.bukkit.Bukkit.getPluginManager().callEvent(event);
             }
             if (event == null || !event.isCancelled()) {

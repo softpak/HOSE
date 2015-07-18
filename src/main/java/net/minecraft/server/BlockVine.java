@@ -170,7 +170,7 @@ public class BlockVine extends Block {
                 int i = 5;
                 boolean flag = false;
 
-                label189:
+                label188:
                 for (int j = -b0; j <= b0; ++j) {
                     for (int k = -b0; k <= b0; ++k) {
                         for (int l = -1; l <= 1; ++l) {
@@ -178,7 +178,7 @@ public class BlockVine extends Block {
                                 --i;
                                 if (i <= 0) {
                                     flag = true;
-                                    break label189;
+                                    break label188;
                                 }
                             }
                         }
@@ -186,24 +186,25 @@ public class BlockVine extends Block {
                 }
 
                 EnumDirection enumdirection = EnumDirection.a(random);
+                BlockPosition blockposition1 = blockposition.up();
                 EnumDirection enumdirection1;
 
-                if (enumdirection == EnumDirection.UP && blockposition.getY() < 255 && world.isEmpty(blockposition.up())) {
+                if (enumdirection == EnumDirection.UP && blockposition.getY() < 255 && world.isEmpty(blockposition1)) {
                     if (!flag) {
                         IBlockData iblockdata1 = iblockdata;
                         Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 
                         while (iterator.hasNext()) {
                             enumdirection1 = (EnumDirection) iterator.next();
-                            if (random.nextBoolean() || !this.c(world.getType(blockposition.shift(enumdirection1).up()).getBlock())) {
+                            if (random.nextBoolean() || !this.c(world.getType(blockposition1.shift(enumdirection1)).getBlock())) {
                                 iblockdata1 = iblockdata1.set(a(enumdirection1), Boolean.valueOf(false));
                             }
                         }
 
                         if (((Boolean) iblockdata1.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata1.get(BlockVine.WEST)).booleanValue()) {
                             // CraftBukkit start - Call BlockSpreadEvent
-                            // world.setTypeAndData(blockposition.up(), iblockdata1, 2);
-                            BlockPosition target = blockposition.up();
+                            // world.setTypeAndData(blockposition1, iblockdata1, 2);
+                            BlockPosition target = blockposition1;
                             org.bukkit.block.Block source = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
                             org.bukkit.block.Block block = world.getWorld().getBlockAt(target.getX(), target.getY(), target.getZ());
                             CraftEventFactory.handleBlockSpreadEvent(block, source, this, toLegacyData(iblockdata1));
@@ -212,41 +213,41 @@ public class BlockVine extends Block {
 
                     }
                 } else {
-                    BlockPosition blockposition1;
+                    BlockPosition blockposition2;
 
                     if (enumdirection.k().c() && !((Boolean) iblockdata.get(a(enumdirection))).booleanValue()) {
                         if (!flag) {
-                            blockposition1 = blockposition.shift(enumdirection);
-                            Block block = world.getType(blockposition1).getBlock();
+                            blockposition2 = blockposition.shift(enumdirection);
+                            Block block = world.getType(blockposition2).getBlock();
 
                             if (block.material == Material.AIR) {
                                 enumdirection1 = enumdirection.e();
                                 EnumDirection enumdirection2 = enumdirection.f();
                                 boolean flag1 = ((Boolean) iblockdata.get(a(enumdirection1))).booleanValue();
                                 boolean flag2 = ((Boolean) iblockdata.get(a(enumdirection2))).booleanValue();
-                                BlockPosition blockposition2 = blockposition1.shift(enumdirection1);
-                                BlockPosition blockposition3 = blockposition1.shift(enumdirection2);
+                                BlockPosition blockposition3 = blockposition2.shift(enumdirection1);
+                                BlockPosition blockposition4 = blockposition2.shift(enumdirection2);
 
                                 // CraftBukkit start - Call BlockSpreadEvent
                                 org.bukkit.block.Block source = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
-                                org.bukkit.block.Block bukkitBlock = world.getWorld().getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ());
+                                org.bukkit.block.Block bukkitBlock = world.getWorld().getBlockAt(blockposition2.getX(), blockposition2.getY(), blockposition2.getZ());
 
-                                if (flag1 && this.c(world.getType(blockposition2).getBlock())) {
-                                    // world.setTypeAndData(blockposition1, this.getBlockData().set(a(enumdirection1), Boolean.valueOf(true)), 2);
+                                if (flag1 && this.c(world.getType(blockposition3).getBlock())) {
+                                    // world.setTypeAndData(blockposition2, this.getBlockData().set(a(enumdirection1), Boolean.valueOf(true)), 2);
                                     CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData().set(a(enumdirection1), Boolean.valueOf(true))));
-                                } else if (flag2 && this.c(world.getType(blockposition3).getBlock())) {
-                                    // world.setTypeAndData(blockposition1, this.getBlockData().set(a(enumdirection2), Boolean.valueOf(true)), 2);
+                                } else if (flag2 && this.c(world.getType(blockposition4).getBlock())) {
+                                    // world.setTypeAndData(blockposition2, this.getBlockData().set(a(enumdirection2), Boolean.valueOf(true)), 2);
                                     CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData().set(a(enumdirection2), Boolean.valueOf(true))));
-                                } else if (flag1 && world.isEmpty(blockposition2) && this.c(world.getType(blockposition.shift(enumdirection1)).getBlock())) {
-                                    // world.setTypeAndData(blockposition2, this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true)), 2);
-                                    bukkitBlock = world.getWorld().getBlockAt(blockposition2.getX(), blockposition2.getY(), blockposition2.getZ());
-                                    CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true))));
-                                } else if (flag2 && world.isEmpty(blockposition3) && this.c(world.getType(blockposition.shift(enumdirection2)).getBlock())) {
+                                } else if (flag1 && world.isEmpty(blockposition3) && this.c(world.getType(blockposition.shift(enumdirection1)).getBlock())) {
                                     // world.setTypeAndData(blockposition3, this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true)), 2);
                                     bukkitBlock = world.getWorld().getBlockAt(blockposition3.getX(), blockposition3.getY(), blockposition3.getZ());
                                     CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true))));
-                                } else if (this.c(world.getType(blockposition1.up()).getBlock())) {
-                                    // world.setTypeAndData(blockposition1, this.getBlockData(), 2);
+                                } else if (flag2 && world.isEmpty(blockposition4) && this.c(world.getType(blockposition.shift(enumdirection2)).getBlock())) {
+                                    // world.setTypeAndData(blockposition4, this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true)), 2);
+                                    bukkitBlock = world.getWorld().getBlockAt(blockposition4.getX(), blockposition4.getY(), blockposition4.getZ());
+                                    CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData().set(a(enumdirection.opposite()), Boolean.valueOf(true))));
+                                } else if (this.c(world.getType(blockposition2.up()).getBlock())) {
+                                    // world.setTypeAndData(blockposition2, this.getBlockData(), 2);
                                     CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(this.getBlockData()));
                                 }
                                 // CraftBukkit end
@@ -257,8 +258,8 @@ public class BlockVine extends Block {
                         }
                     } else {
                         if (blockposition.getY() > 1) {
-                            blockposition1 = blockposition.down();
-                            IBlockData iblockdata2 = world.getType(blockposition1);
+                            blockposition2 = blockposition.down();
+                            IBlockData iblockdata2 = world.getType(blockposition2);
                             Block block1 = iblockdata2.getBlock();
                             IBlockData iblockdata3;
                             Iterator iterator1;
@@ -277,9 +278,9 @@ public class BlockVine extends Block {
 
                                 if (((Boolean) iblockdata3.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.WEST)).booleanValue()) {
                                     // CraftBukkit start - Call BlockSpreadEvent
-                                    // world.setTypeAndData(blockposition1, iblockdata3, 2);
+                                    // world.setTypeAndData(blockposition2, iblockdata3, 2);
                                     org.bukkit.block.Block source = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
-                                    org.bukkit.block.Block bukkitBlock = world.getWorld().getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ());
+                                    org.bukkit.block.Block bukkitBlock = world.getWorld().getBlockAt(blockposition2.getX(), blockposition2.getY(), blockposition2.getZ());
                                     CraftEventFactory.handleBlockSpreadEvent(bukkitBlock, source, this, toLegacyData(iblockdata3));
                                     // CraftBukkit end
                                 }
@@ -291,13 +292,13 @@ public class BlockVine extends Block {
                                     enumdirection3 = (EnumDirection) iterator1.next();
                                     BlockStateBoolean blockstateboolean = a(enumdirection3);
 
-                                    if (random.nextBoolean() || !((Boolean) iblockdata.get(blockstateboolean)).booleanValue()) {
-                                        iblockdata3 = iblockdata3.set(blockstateboolean, Boolean.valueOf(false));
+                                    if (random.nextBoolean() && ((Boolean) iblockdata.get(blockstateboolean)).booleanValue()) {
+                                        iblockdata3 = iblockdata3.set(blockstateboolean, Boolean.valueOf(true));
                                     }
                                 }
 
                                 if (((Boolean) iblockdata3.get(BlockVine.NORTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.EAST)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.SOUTH)).booleanValue() || ((Boolean) iblockdata3.get(BlockVine.WEST)).booleanValue()) {
-                                    world.setTypeAndData(blockposition1, iblockdata3, 2);
+                                    world.setTypeAndData(blockposition2, iblockdata3, 2);
                                 }
                             }
                         }

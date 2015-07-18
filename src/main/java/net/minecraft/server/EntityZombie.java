@@ -3,8 +3,6 @@ package net.minecraft.server;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
-import org.HOSE.HRandom;
-import org.bukkit.craftbukkit.Main;
 
 //CraftBukkit start
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
@@ -51,9 +49,9 @@ public class EntityZombie extends EntityMonster {
 
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeInstance(GenericAttributes.b).setValue(35.0D);
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.23000000417232513D);
-        this.getAttributeInstance(GenericAttributes.e).setValue(3.0D);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(35.0D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.23000000417232513D);
+        this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.0D);
         this.getAttributeMap().b(EntityZombie.a).setValue(this.random.nextDouble() * 0.10000000149011612D);
     }
 
@@ -105,7 +103,7 @@ public class EntityZombie extends EntityMonster {
     public void setBaby(boolean flag) {
         this.getDataWatcher().watch(12, Byte.valueOf((byte) (flag ? 1 : 0)));
         if (this.world != null && !this.world.isClientSide) {
-            AttributeInstance attributeinstance = this.getAttributeInstance(GenericAttributes.d);
+            AttributeInstance attributeinstance = this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
 
             attributeinstance.c(EntityZombie.c);
             if (flag) {
@@ -163,11 +161,6 @@ public class EntityZombie extends EntityMonster {
         }
 
         super.m();
-    }
-    
-    //HSA rnd
-    public static int nextInt(HRandom random, int i, int j) {
-        return i >= j ? i : random.nextInt(j - i + 1) + i;
     }
 
     public boolean damageEntity(DamageSource damagesource, float f) {
@@ -433,7 +426,7 @@ public class EntityZombie extends EntityMonster {
         double d0 = this.random.nextDouble() * 1.5D * (double) f;
 
         if (d0 > 1.0D) {
-            this.getAttributeInstance(GenericAttributes.b).b(new AttributeModifier("Random zombie-spawn bonus", d0, 2));
+            this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).b(new AttributeModifier("Random zombie-spawn bonus", d0, 2));
         }
 
         if (this.random.nextFloat() < f * 0.05F) {

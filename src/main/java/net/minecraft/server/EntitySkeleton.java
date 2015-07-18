@@ -29,7 +29,7 @@ public class EntitySkeleton extends EntityMonster implements IRangedEntity {
 
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeInstance(GenericAttributes.d).setValue(0.25D);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.25D);
     }
 
     protected void h() {
@@ -194,7 +194,7 @@ public class EntitySkeleton extends EntityMonster implements IRangedEntity {
             this.goalSelector.a(4, this.b);
             this.setSkeletonType(1);
             this.setEquipment(0, new ItemStack(Items.STONE_SWORD));
-            this.getAttributeInstance(GenericAttributes.e).setValue(4.0D);
+            this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(4.0D);
         } else {
             this.goalSelector.a(4, this.a);
             this.a(difficultydamagescaler);

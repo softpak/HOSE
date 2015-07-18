@@ -5,8 +5,8 @@ import java.io.IOException;
 public class PacketHandshakingInSetProtocol implements Packet<PacketHandshakingInListener> {
 
     private int a;
-    public String b; // CraftBukkit - public
-    public int c; // CraftBukkit - public
+    public String b; // CraftBukkit - public // PAIL: hostname
+    public int c; // CraftBukkit - public // PAIL: port
     private EnumProtocol d;
 
     public PacketHandshakingInSetProtocol() {}

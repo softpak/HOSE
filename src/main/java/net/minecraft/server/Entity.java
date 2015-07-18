@@ -1,12 +1,10 @@
 package net.minecraft.server;
 
-import com.amd.aparapi.Device;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import org.HOSE.HRandom;
 
 // CraftBukkit start
 import org.bukkit.Bukkit;
@@ -26,7 +24,6 @@ import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -91,15 +88,15 @@ public abstract class Entity implements ICommandListener {
     protected Random random;
     public int ticksLived;
     public int maxFireTicks;
-    public int fireTicks; // CraftBukkit - public
-    public boolean inWater; // Spigot - protected -> public
+    public int fireTicks;
+    public boolean inWater; // Spigot - protected -> public // PAIL
     public int noDamageTicks;
     protected boolean justCreated;
     protected boolean fireProof;
     protected DataWatcher datawatcher;
     private double ar;
     private double as;
-    public boolean ad; public boolean isAddedToChunk() { return ad; } // Spigot
+    public boolean ad; public boolean isAddedToChunk() { return ad; } // Spigot // PAIL
     public int ae;
     public int af;
     public int ag;
@@ -189,7 +186,7 @@ public abstract class Entity implements ICommandListener {
         this.dead = true;
     }
 
-    public void setSize(float f, float f1) { // CraftBukkit - public
+    public void setSize(float f, float f1) {
         if (f != this.width || f1 != this.length) {
             float f2 = this.width;
 
@@ -397,11 +394,6 @@ public abstract class Entity implements ICommandListener {
         return this.world.getCubes(this, axisalignedbb).isEmpty() && !this.world.containsLiquid(axisalignedbb);
     }
 
-    double[] hd0 = new double[1],
-            hd1 = new double[1],
-            hd2 = new double[1];
-    double d3, d4, d5, d6, d7, d8;
-            
     public void move(double d0, double d1, double d2) {
         org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.startTiming(); // Spigot
         if (this.noclip) {
@@ -425,8 +417,6 @@ public abstract class Entity implements ICommandListener {
             }
             // CraftBukkit end
             this.world.methodProfiler.a("move");
-            
-            
             double d3 = this.locX;
             double d4 = this.locY;
             double d5 = this.locZ;
@@ -444,7 +434,6 @@ public abstract class Entity implements ICommandListener {
             double d6 = d0;
             double d7 = d1;
             double d8 = d2;
-            
             boolean flag = this.onGround && this.isSneaking() && this instanceof EntityHuman;
 
             if (flag) {
@@ -761,8 +750,7 @@ public abstract class Entity implements ICommandListener {
         BlockPosition blockposition1 = new BlockPosition(this.getBoundingBox().d - 0.001D, this.getBoundingBox().e - 0.001D, this.getBoundingBox().f - 0.001D);
 
         if (this.world.areChunksLoadedBetween(blockposition, blockposition1)) {
-            
-             for (int i = blockposition.getX(); i <= blockposition1.getX(); ++i) {
+            for (int i = blockposition.getX(); i <= blockposition1.getX(); ++i) {
                 for (int j = blockposition.getY(); j <= blockposition1.getY(); ++j) {
                     for (int k = blockposition.getZ(); k <= blockposition1.getZ(); ++k) {
                         BlockPosition blockposition2 = new BlockPosition(i, j, k);
@@ -862,10 +850,16 @@ public abstract class Entity implements ICommandListener {
         return this.inWater;
     }
 
+    //callable thread
     public boolean W() {
         if (this.world.a(this.getBoundingBox().grow(0.0D, -0.4000000059604645D, 0.0D).shrink(0.001D, 0.001D, 0.001D), Material.WATER, this)) {
             if (!this.inWater && !this.justCreated) {
-                this.X();
+                new Callable<Void>() {                             
+                    public Void call() throws Exception {
+                        X();
+                        return null;
+                    }
+                };
             }
 
             this.fallDistance = 0.0F;
@@ -877,9 +871,9 @@ public abstract class Entity implements ICommandListener {
 
         return this.inWater;
     }
-
-    HRandom hrndX = new HRandom();
+    
     protected void X() {
+        //System.out.println("CX");
         float f = MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
 
         if (f > 1.0F) {
@@ -887,7 +881,6 @@ public abstract class Entity implements ICommandListener {
         }
 
         this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-        //this.makeSound(this.aa(), f, 1.0F + (hrnd.nextFloat() - hrnd.nextFloat()) * 0.4F);
         float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
 
         int i;
@@ -895,23 +888,15 @@ public abstract class Entity implements ICommandListener {
         float f3;
         
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
-            f2 = (hrndX.nextFloat() * 2.0F - 1.0F) * this.width;
-            f3 = (hrndX.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (hrndX.nextDouble() * 0.2D), this.motZ, new int[0]);
-            /*
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);*/
+            this.world.addParticle(EnumParticle.WATER_BUBBLE, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY - (double) (this.random.nextFloat() * 0.2F), this.motZ, new int[0]);
         }
 
         for (i = 0; (float) i < 1.0F + this.width * 20.0F; ++i) {
-            f2 = (hrndX.nextFloat() * 2.0F - 1.0F) * this.width;
-            f3 = (hrndX.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
-            /*
             f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
             f3 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);*/
+            this.world.addParticle(EnumParticle.WATER_SPLASH, this.locX + (double) f2, (double) (f1 + 1.0F), this.locZ + (double) f3, this.motX, this.motY, this.motZ, new int[0]);
         }
 
     }
@@ -922,9 +907,8 @@ public abstract class Entity implements ICommandListener {
         }
 
     }
-    HRandom hrnd = new HRandom();
+
     protected void Z() {
-        
         int i = MathHelper.floor(this.locX);
         int j = MathHelper.floor(this.locY - 0.20000000298023224D);
         int k = MathHelper.floor(this.locZ);
@@ -933,8 +917,7 @@ public abstract class Entity implements ICommandListener {
         Block block = iblockdata.getBlock();
 
         if (block.b() != -1) {
-            //this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
-            this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + (hrnd.nextDouble() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + (hrnd.nextDouble() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
+            this.world.addParticle(EnumParticle.BLOCK_CRACK, this.locX + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, this.getBoundingBox().b + 0.1D, this.locZ + ((double) this.random.nextFloat() - 0.5D) * (double) this.width, -this.motX * 4.0D, 1.5D, -this.motZ * 4.0D, new int[] { Block.getCombinedId(iblockdata)});
         }
 
     }
@@ -968,7 +951,6 @@ public abstract class Entity implements ICommandListener {
         float f3 = f * f + f1 * f1;
 
         if (f3 >= 1.0E-4F) {
-            
             f3 = MathHelper.c(f3);
             if (f3 < 1.0F) {
                 f3 = 1.0F;
@@ -982,9 +964,7 @@ public abstract class Entity implements ICommandListener {
 
             this.motX += (double) (f * f5 - f1 * f4);
             this.motZ += (double) (f1 * f5 + f * f4);
-            
         }
-
     }
 
     public float c(float f) {
@@ -1081,18 +1061,59 @@ public abstract class Entity implements ICommandListener {
 
     int numCollisions = 0; // Spigot
     
-    
-    public void collide(Entity entity) {
+    //callable
+    public void collide(final Entity entity) {
         if (entity.passenger != this && entity.vehicle != this) {
             if (!entity.noclip && !this.noclip) {
+                new Callable<Void>() {                             
+                    public Void call() throws Exception {
+                        double d0 = entity.locX - locX;
+                        double d1 = entity.locZ - locZ;
+                        double d2 = MathHelper.a(d0, d1);
+
+                        if (d2 >= 0.009999999776482582D) {
+                            d2 = (double) MathHelper.sqrt(d2);
+                            d0 /= d2;
+                            d1 /= d2;
+                            double d3 = 1.0D / d2;
+
+                            if (d3 > 1.0D) {
+                                d3 = 1.0D;
+                            }
+
+                            d0 *= d3;
+                            d1 *= d3;
+                            d0 *= 0.05000000074505806D;
+                            d1 *= 0.05000000074505806D;
+                            d0 *= (double) (1.0F - U);
+                            d1 *= (double) (1.0F - U);
+                            if (passenger == null) {
+                                g(-d0, 0.0D, -d1);
+                            }
+
+                            if (entity.passenger == null) {
+                                entity.g(d0, 0.0D, d1);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                
+                /*
                 double d0 = entity.locX - this.locX;
                 double d1 = entity.locZ - this.locZ;
-                d0 = entity.locX - this.locX;
-                d1 = entity.locZ - this.locZ;
                 double d2 = MathHelper.a(d0, d1);
-                d2 = MathHelper.a(d0, d1);
 
                 if (d2 >= 0.009999999776482582D) {
+                    d2 = (double) MathHelper.sqrt(d2);
+                    d0 /= d2;
+                    d1 /= d2;
+                    double d3 = 1.0D / d2;
+
+                    if (d3 > 1.0D) {
+                        d3 = 1.0D;
+                    }
+
                     d0 *= d3;
                     d1 *= d3;
                     d0 *= 0.05000000074505806D;
@@ -1106,11 +1127,10 @@ public abstract class Entity implements ICommandListener {
                     if (entity.passenger == null) {
                         entity.g(d0, 0.0D, d1);
                     }
-                }
+                }*/
 
             }
         }
-        
     }
 
     public void g(double d0, double d1, double d2) {
@@ -1145,15 +1165,10 @@ public abstract class Entity implements ICommandListener {
     }
 
     protected final Vec3D f(float f, float f1) {
-        long st = System.nanoTime();
         float f2 = MathHelper.cos(-f1 * 0.017453292F - 3.1415927F);
         float f3 = MathHelper.sin(-f1 * 0.017453292F - 3.1415927F);
         float f4 = -MathHelper.cos(-f * 0.017453292F);
         float f5 = MathHelper.sin(-f * 0.017453292F);
-        
-        long et = System.nanoTime();
-
-        System.out.println("Entity Vec3D Time use:"+(et-st)+"ns.");
 
         return new Vec3D((double) (f3 * f4), (double) f5, (double) (f2 * f4));
     }
@@ -1387,16 +1402,17 @@ public abstract class Entity implements ICommandListener {
 
     public void ah() {}
 
-    
     protected NBTTagList a(double... adouble) {
         NBTTagList nbttaglist = new NBTTagList();
         double[] adouble1 = adouble;
         int i = adouble.length;
+
         for (int j = 0; j < i; ++j) {
             double d0 = adouble1[j];
 
             nbttaglist.add(new NBTTagDouble(d0));
         }
+
         return nbttaglist;
     }
 
@@ -2144,7 +2160,6 @@ public abstract class Entity implements ICommandListener {
 
     public void a(AxisAlignedBB axisalignedbb) {
         // CraftBukkit start - block invalid bounding boxes
-        
         double a = axisalignedbb.a,
                 b = axisalignedbb.b,
                 c = axisalignedbb.c,
@@ -2164,7 +2179,6 @@ public abstract class Entity implements ICommandListener {
         if (len > 64) f = c + 64.0;
         this.boundingBox = new AxisAlignedBB(a, b, c, d, e, f);
         // CraftBukkit end
-
     }
 
     public float getHeadHeight() {

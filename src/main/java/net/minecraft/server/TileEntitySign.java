@@ -6,7 +6,7 @@ public class TileEntitySign extends TileEntity {
 
     public final IChatBaseComponent[] lines = new IChatBaseComponent[] { new ChatComponentText(""), new ChatComponentText(""), new ChatComponentText(""), new ChatComponentText("")};
     public int f = -1;
-    public boolean isEditable = true; // CraftBukkit - public
+    public boolean isEditable = true;
     private EntityHuman h;
     private final CommandObjectiveExecutor i = new CommandObjectiveExecutor();
 
@@ -79,6 +79,9 @@ public class TileEntitySign extends TileEntity {
 
         for (int i = 0; i < 4; ++i) {
             String s = nbttagcompound.getString("Text" + (i + 1));
+            if (s != null && s.length() > 2048) {
+                s = "\"\"";
+            }
 
             try {
                 IChatBaseComponent ichatbasecomponent = IChatBaseComponent.ChatSerializer.a(s);
@@ -109,6 +112,10 @@ public class TileEntitySign extends TileEntity {
         return new PacketPlayOutUpdateSign(this.world, this.position, aichatbasecomponent);
     }
 
+    public boolean F() {
+        return true;
+    }
+
     public boolean b() {
         return this.isEditable;
     }
@@ -134,7 +141,7 @@ public class TileEntitySign extends TileEntity {
             public void sendMessage(IChatBaseComponent ichatbasecomponent) {}
 
             public boolean a(int i, String s) {
-                return true;
+                return i <= 2;
             }
 
             public BlockPosition getChunkCoordinates() {
