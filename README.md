@@ -4,26 +4,20 @@
 #Find some critical bugs in actual test. DO NOT use in your main servers for a short time.
 
 ####Minecraft Server with HSA.
-Now I will use NAG and HSA. Please see HSAFoundation and Numerical Algorithms Group for further information.
+Now I will use some parallel or Callable functions.
 
-*   It`s based on SpigotMC v1.8.3. And is compatible with v1.8.4 and below. See http://www.spigotmc.org/ for details.
-*   See https://code.google.com/p/aparapi/ for JAR and JNI builds.
-*   See http://www.hsafoundation.com/ to learn how to set your environment.
-
+*   It`s based on SpigotMC v1.8.7. And is compatible with v1.8.1 and below. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
 Software :
 *   OS : Linux Kernel 3.17 or any mainline higher than 3.17.
-*   JVM : Oricale & Open JDK 1.8 or higher.
-*   OpenCL : v1.2 or higher.
-*   AMDAPP : v2.9 or higher.
-   
+*   JVM : Oricale & Open JDK 1.6 or higher.
+
 Hardware :
-*   CPU : AMD APU Kaveri series or later products.
-*   VGA : AMD GCN v1.1 or later products.
+*   CPU : Any muilti-core CPUs.
 
 ####Test Server
 *     IP address : 59.127.231.87 (static)
-*     Version : 1.8.0 ~ 1.8.4
+*     Version : 1.8.1 ~ 1.8.7
 *     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server. If you are getting lag. You can try /tps command to check the ticks. Maybe it is you PCs. The map will be wiped out every month or the map data reaches 10GB. You are welcome to leave any messages.`     
