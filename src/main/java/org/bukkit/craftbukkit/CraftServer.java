@@ -120,6 +120,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
+import java.util.concurrent.ExecutionException;
 import jline.console.ConsoleReader;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -884,7 +885,16 @@ public final class CraftServer implements Server {
             worlddata = new WorldData(worldSettings, name);
         }
         worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-        WorldServer internal = (WorldServer) new WorldServer(console, sdm, worlddata, dimension, console.methodProfiler, creator.environment(), generator).b();
+        WorldServer internal = null;
+        try {
+            internal = (WorldServer) new WorldServer(console, sdm, worlddata, dimension, console.methodProfiler, creator.environment(), generator).b();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         if (!(worlds.containsKey(name.toLowerCase()))) {
             return null;
@@ -925,7 +935,15 @@ public final class CraftServer implements Server {
                     }
 
                     BlockPosition chunkcoordinates = internal.getSpawn();
-                    internal.chunkProviderServer.getChunkAt(chunkcoordinates.getX() + j >> 4, chunkcoordinates.getZ() + k >> 4);
+                    try {
+                        internal.chunkProviderServer.getChunkAt(chunkcoordinates.getX() + j >> 4, chunkcoordinates.getZ() + k >> 4);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }

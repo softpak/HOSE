@@ -13,6 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 // CraftBukkit start
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 
 import org.bukkit.Server;
@@ -92,12 +95,27 @@ public class ChunkProviderServer implements IChunkProvider {
     public Chunk getChunkIfLoaded(int x, int z) {
         return chunks.get(LongHash.toLong(x, z));
     }
-
-    public Chunk getChunkAt(int i, int j) {
+    
+    //Callable<Chunk> gca;
+    public Chunk getChunkAt(final int i, final int j) throws InterruptedException, ExecutionException, Exception {
         return getChunkAt(i, j, null);
+        /*
+        gca = new Callable<Chunk>() {                             
+            public Chunk call() throws Exception {
+                return getChunkAt(i, j, null);
+            }
+        };
+        FutureTask<Chunk> future = new FutureTask<Chunk>(gca);  
+        new Thread(future).start();
+        //System.out.println("CPSgCA");
+        return future.get();*/
+        
     }
 
-    public Chunk getChunkAt(int i, int j, Runnable runnable) {
+    //Callable<Chunk> gca;
+    //public Chunk getChunkAt(final int i, final int j, Runnable runnable) throws InterruptedException, ExecutionException{
+    public Chunk getChunkAt(final int i, final int j, Callable runnable) throws InterruptedException, ExecutionException, Exception{
+        
         unloadQueue.remove(i, j);
         Chunk chunk = chunks.get(LongHash.toLong(i, j));
         ChunkRegionLoader loader = null;
@@ -113,19 +131,28 @@ public class ChunkProviderServer implements IChunkProvider {
                 return null;
             } else {
                 chunk = ChunkIOExecutor.syncChunkLoad(world, loader, this, i, j);
+               
             }
         } else if (chunk == null) {
+            //callable
             chunk = originalGetChunkAt(i, j);
+           
+        
         }
 
         // If we didn't load the chunk async and have a callback run it now
         if (runnable != null) {
-            runnable.run();
+            //runnable.run();
+            runnable.call();
         }
-
+        
         return chunk;
     }
-    public Chunk originalGetChunkAt(int i, int j) {
+    
+    //chunk gen
+    Callable<Chunk> gca;
+    FutureTask<Chunk> future;
+    public Chunk originalGetChunkAt(final int i, final int j) throws InterruptedException, ExecutionException {
         this.unloadQueue.remove(i, j);
         Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
         boolean newChunk = false;
@@ -133,13 +160,37 @@ public class ChunkProviderServer implements IChunkProvider {
 
         if (chunk == null) {
             world.timings.syncChunkLoadTimer.startTiming(); // Spigot
-            chunk = this.loadChunk(i, j);
+            //chunk = this.loadChunk(i, j);
+            gca = new Callable<Chunk>() {                             
+                public Chunk call() throws Exception {
+                    return loadChunk(i, j);
+                }
+            };
+
+
+            future = new FutureTask<Chunk>(gca);  
+            new Thread(future).start();  
+            chunk = future.get();
+            
+            
             if (chunk == null) {
                 if (this.chunkProvider == null) {
                     chunk = this.emptyChunk;
                 } else {
                     try {
-                        chunk = this.chunkProvider.getOrCreateChunk(i, j);
+                        //chunk = this.chunkProvider.getOrCreateChunk(i, j);
+                        
+                        gca = new Callable<Chunk>() {                             
+                            public Chunk call() throws Exception {
+                                return chunkProvider.getOrCreateChunk(i, j);
+                            }
+                        };
+                                    
+            
+                        future = new FutureTask<Chunk>(gca);  
+                        new Thread(future).start();  
+                        chunk = future.get();
+                        
                     } catch (Throwable throwable) {
                         CrashReport crashreport = CrashReport.a(throwable, "Exception generating new chunk");
                         CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Chunk to be generated");
@@ -183,18 +234,30 @@ public class ChunkProviderServer implements IChunkProvider {
                 }
             }
             // CraftBukkit end
+            //callable
             chunk.loadNearby(this, this, i, j);
+            
             world.timings.syncChunkLoadTimer.stopTiming(); // Spigot
         }
 
         return chunk;
     }
-
+    
     public Chunk getOrCreateChunk(int i, int j) {
         // CraftBukkit start
+        //long st = System.nanoTime();
         Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
+        
 
-        chunk = chunk == null ? (!this.world.ad() && !this.forceChunkLoad ? this.emptyChunk : this.getChunkAt(i, j)) : chunk;
+        try {
+            chunk = chunk == null ? (!this.world.ad() && !this.forceChunkLoad ? this.emptyChunk : this.getChunkAt(i, j)) : chunk;
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(ChunkProviderServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            java.util.logging.Logger.getLogger(ChunkProviderServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(ChunkProviderServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         if (chunk == emptyChunk) return chunk;
         if (i != chunk.locX || j != chunk.locZ) {
@@ -204,7 +267,7 @@ public class ChunkProviderServer implements IChunkProvider {
             ex.fillInStackTrace();
             ex.printStackTrace();
         }
-
+        
         return chunk;
         // CraftBukkit end
     }

@@ -247,6 +247,7 @@ public class CraftChunk implements Chunk {
 
             if (includeBiome) {
                 biome = new BiomeBase[256];
+                
                 for (int i = 0; i < 256; i++) {
                     biome[i] = world.getHandle().getBiome(new BlockPosition((x << 4) + (i & 0xF), 0, (z << 4) + (i >> 4)));
                 }

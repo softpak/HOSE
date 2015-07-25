@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,7 +85,7 @@ public abstract class PlayerList {
         this.maxPlayers = 8;
     }
 
-    public void a(NetworkManager networkmanager, EntityPlayer entityplayer) {
+    public void a(NetworkManager networkmanager, EntityPlayer entityplayer) throws InterruptedException, ExecutionException, Exception{
         GameProfile gameprofile = entityplayer.getProfile();
         UserCache usercache = this.server.getUserCache();
         GameProfile gameprofile1 = usercache.a(gameprofile.getId());
@@ -246,7 +247,7 @@ public abstract class PlayerList {
         });
     }
 
-    public void a(EntityPlayer entityplayer, WorldServer worldserver) {
+    public void a(EntityPlayer entityplayer, WorldServer worldserver) throws InterruptedException, ExecutionException, Exception {
         WorldServer worldserver1 = entityplayer.u();
 
         if (worldserver != null) {
@@ -286,7 +287,7 @@ public abstract class PlayerList {
 
     }
 
-    public void onPlayerJoin(EntityPlayer entityplayer, String joinMessage) { // CraftBukkit added param
+    public void onPlayerJoin(EntityPlayer entityplayer, String joinMessage) throws InterruptedException, ExecutionException, Exception { // CraftBukkit added param
         this.players.add(entityplayer);
         this.playersByName.put(entityplayer.getName(), entityplayer); // Spigot
         this.j.put(entityplayer.getUniqueID(), entityplayer);
@@ -334,11 +335,11 @@ public abstract class PlayerList {
         // CraftBukkit end
     }
 
-    public void d(EntityPlayer entityplayer) {
+    public void d(EntityPlayer entityplayer) throws InterruptedException, ExecutionException, Exception{
         entityplayer.u().getPlayerChunkMap().movePlayer(entityplayer);
     }
 
-    public String disconnect(EntityPlayer entityplayer) { // CraftBukkit - return string
+    public String disconnect(EntityPlayer entityplayer) throws InterruptedException, ExecutionException{ // CraftBukkit - return string
         entityplayer.b(StatisticList.f);
 
         // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
@@ -503,10 +504,10 @@ public abstract class PlayerList {
     }
 
     // CraftBukkit start
-    public EntityPlayer moveToWorld(EntityPlayer entityplayer, int i, boolean flag) {
+    public EntityPlayer moveToWorld(EntityPlayer entityplayer, int i, boolean flag) throws InterruptedException, ExecutionException, Exception{
         return this.moveToWorld(entityplayer, i, flag, null, true);
     }
-    public EntityPlayer moveToWorld(EntityPlayer entityplayer, int i, boolean flag, Location location, boolean avoidSuffocation) {
+    public EntityPlayer moveToWorld(EntityPlayer entityplayer, int i, boolean flag, Location location, boolean avoidSuffocation) throws InterruptedException, ExecutionException, Exception {
         entityplayer.u().getTracker().untrackPlayer(entityplayer);
         // entityplayer.u().getTracker().untrackEntity(entityplayer); // CraftBukkit
         entityplayer.u().getPlayerChunkMap().removePlayer(entityplayer);
@@ -637,7 +638,7 @@ public abstract class PlayerList {
     }
 
     // CraftBukkit start - Replaced the standard handling of portals with a more customised method.
-    public void changeDimension(EntityPlayer entityplayer, int i, TeleportCause cause) {
+    public void changeDimension(EntityPlayer entityplayer, int i, TeleportCause cause) throws InterruptedException, ExecutionException, Exception{
         WorldServer exitWorld = null;
         if (entityplayer.dimension < CraftWorld.CUSTOM_DIMENSION_OFFSET) { // plugins must specify exit from custom Bukkit worlds
             // only target existing worlds (compensate for allow-nether/allow-end as false)
@@ -1221,7 +1222,7 @@ public abstract class PlayerList {
         return serverstatisticmanager;
     }
 
-    public void a(int i) {
+    public void a(int i) throws InterruptedException, ExecutionException, Exception{
         this.r = i;
         if (this.server.worldServer != null) {
             WorldServer[] aworldserver = this.server.worldServer;

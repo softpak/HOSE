@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -63,7 +64,7 @@ public class EntityTrackerEntry {
         return this.tracker.getId();
     }
 
-    public void track(List<EntityHuman> list) {
+    public void track(List<EntityHuman> list) throws InterruptedException, ExecutionException{
         this.n = false;
         if (!this.isMoving || this.tracker.e(this.q, this.r, this.s) > 16.0D) {
             this.q = this.tracker.locX;
@@ -309,7 +310,7 @@ public class EntityTrackerEntry {
 
     }
 
-    public void updatePlayer(EntityPlayer entityplayer) {
+    public void updatePlayer(EntityPlayer entityplayer) throws InterruptedException, ExecutionException{
         org.spigotmc.AsyncCatcher.catchOp( "player tracker update"); // Spigot
         if (entityplayer != this.tracker) {
             if (this.c(entityplayer)) {
@@ -419,11 +420,11 @@ public class EntityTrackerEntry {
         return d0 >= (double) (-this.b) && d0 <= (double) this.b && d1 >= (double) (-this.b) && d1 <= (double) this.b && this.tracker.a(entityplayer);
     }
 
-    private boolean e(EntityPlayer entityplayer) {
+    private boolean e(EntityPlayer entityplayer) throws InterruptedException, ExecutionException {
         return entityplayer.u().getPlayerChunkMap().a(entityplayer, this.tracker.ae, this.tracker.ag);
     }
 
-    public void scanPlayers(List<EntityHuman> list) {
+    public void scanPlayers(List<EntityHuman> list) throws InterruptedException, ExecutionException{
         for (int i = 0; i < list.size(); ++i) {
             this.updatePlayer((EntityPlayer) list.get(i));
         }

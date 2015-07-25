@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,9 +26,29 @@ public class PathfinderGoalSelector {
         this.b.add(new PathfinderGoalSelector.PathfinderGoalSelectorItem(i, pathfindergoal));
     }
 
-    public void a(PathfinderGoal pathfindergoal) {
-        Iterator iterator = this.b.iterator();
+    //callable
+    public void a(final PathfinderGoal pathfindergoal) {
+        final Iterator iterator = this.b.iterator();
+         new Callable<Void>() {                             
+            public Void call() throws Exception {
+                while (iterator.hasNext()) {
+                    PathfinderGoalSelector.PathfinderGoalSelectorItem pathfindergoalselector_pathfindergoalselectoritem = (PathfinderGoalSelector.PathfinderGoalSelectorItem) iterator.next();
+                    PathfinderGoal pathfindergoal1 = pathfindergoalselector_pathfindergoalselectoritem.a;
 
+                    if (pathfindergoal1 == pathfindergoal) {
+                        if (c.contains(pathfindergoalselector_pathfindergoalselectoritem)) {
+                            pathfindergoal1.d();
+                            c.remove(pathfindergoalselector_pathfindergoalselectoritem);
+                        }
+
+                        iterator.remove();
+                    }
+                }
+                
+                return null;
+            }
+        };
+        /*
         while (iterator.hasNext()) {
             PathfinderGoalSelector.PathfinderGoalSelectorItem pathfindergoalselector_pathfindergoalselectoritem = (PathfinderGoalSelector.PathfinderGoalSelectorItem) iterator.next();
             PathfinderGoal pathfindergoal1 = pathfindergoalselector_pathfindergoalselectoritem.a;
@@ -40,7 +61,7 @@ public class PathfinderGoalSelector {
 
                 iterator.remove();
             }
-        }
+        }*/
 
     }
 

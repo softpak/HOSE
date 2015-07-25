@@ -1,6 +1,9 @@
 package net.minecraft.server;
 
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WorldManager implements IWorldAccess {
 
@@ -15,7 +18,13 @@ public class WorldManager implements IWorldAccess {
     public void a(int i, boolean flag, double d0, double d1, double d2, double d3, double d4, double d5, int... aint) {}
 
     public void a(Entity entity) {
-        this.world.getTracker().track(entity);
+        try {
+            this.world.getTracker().track(entity);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void b(Entity entity) {
@@ -36,7 +45,13 @@ public class WorldManager implements IWorldAccess {
     public void a(int i, int j, int k, int l, int i1, int j1) {}
 
     public void a(BlockPosition blockposition) {
-        this.world.getPlayerChunkMap().flagDirty(blockposition);
+        try {
+            this.world.getPlayerChunkMap().flagDirty(blockposition);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void b(BlockPosition blockposition) {}

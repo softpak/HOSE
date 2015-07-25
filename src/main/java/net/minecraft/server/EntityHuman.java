@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
@@ -1270,7 +1271,7 @@ public abstract class EntityHuman extends EntityLiving {
         return this.world.getType(this.bx).getBlock() == Blocks.BED;
     }
 
-    public static BlockPosition getBed(World world, BlockPosition blockposition, boolean flag) {
+    public static BlockPosition getBed(World world, BlockPosition blockposition, boolean flag) throws InterruptedException, ExecutionException, Exception{
         ((ChunkProviderServer) world.chunkProvider).getChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4); // CraftBukkit
         Block block = world.getType(blockposition).getBlock();
 

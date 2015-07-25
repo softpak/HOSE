@@ -12,6 +12,7 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.crypto.SecretKey;
@@ -51,13 +52,29 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
 
     public void c() {
         if (this.g == LoginListener.EnumProtocolState.READY_TO_ACCEPT) {
-            this.b();
+            try {
+                this.b();
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (this.g == LoginListener.EnumProtocolState.e) {
             EntityPlayer entityplayer = this.server.getPlayerList().a(this.i.getId());
 
             if (entityplayer == null) {
                 this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
-                this.server.getPlayerList().a(this.networkManager, this.l);
+                try {
+                    this.server.getPlayerList().a(this.networkManager, this.l);
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    java.util.logging.Logger.getLogger(LoginListener.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 this.l = null;
             }
         }
@@ -105,7 +122,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     }
     // Spigot end
 
-    public void b() {
+    public void b() throws InterruptedException, ExecutionException, Exception{
         // Spigot start - Moved to initUUID
         /*
         if (!this.i.isComplete()) {

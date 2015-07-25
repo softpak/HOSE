@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 // CraftBukkit start
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import org.bukkit.WeatherType;
@@ -54,7 +55,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     public final int dimension;
 
     // Add env and gen to constructor
-    public WorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, WorldData worlddata, int i, MethodProfiler methodprofiler, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) {
+    public WorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, WorldData worlddata, int i, MethodProfiler methodprofiler, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) throws InterruptedException, ExecutionException, Exception {
         super(idatamanager, worlddata, WorldProvider.byDimension(env.getId()), methodprofiler, false, gen, env);
         this.dimension = i;
         this.pvpMode = minecraftserver.getPVP();

@@ -11,6 +11,11 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.minecraft.server.*;
 
@@ -121,9 +126,19 @@ public class CraftWorld implements World {
             return false;
         }
     }
-
+    Chunk gca;
     public Chunk getChunkAt(int x, int z) {
-        return this.world.chunkProviderServer.getChunkAt(x, z).bukkitChunk;
+        try {
+            gca = this.world.chunkProviderServer.getChunkAt(x, z).bukkitChunk;
+            //return this.world.chunkProviderServer.getChunkAt(x, z).bukkitChunk;
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return gca;
     }
 
     public Chunk getChunkAt(Block block) {
@@ -241,16 +256,33 @@ public class CraftWorld implements World {
         return true;
     }
 
+    boolean iciu;
     public boolean isChunkInUse(int x, int z) {
-        return world.getPlayerChunkMap().isChunkInUse(x, z);
+        try {
+            iciu = world.getPlayerChunkMap().isChunkInUse(x, z);
+            //return world.getPlayerChunkMap().isChunkInUse(x, z);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return iciu;
     }
 
     public boolean loadChunk(int x, int z, boolean generate) {
         org.spigotmc.AsyncCatcher.catchOp( "chunk load"); // Spigot
         chunkLoadCount++;
         if (generate) {
-            // Use the default variant of loadChunk when generate == true.
-            return world.chunkProviderServer.getChunkAt(x, z) != null;
+            try {
+                // Use the default variant of loadChunk when generate == true.
+                return world.chunkProviderServer.getChunkAt(x, z) != null;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         world.chunkProviderServer.unloadQueue.remove(x, z);
@@ -390,65 +422,362 @@ public class CraftWorld implements World {
         return new CraftLightningStrike(server, lightning);
     }
 
+    //ballable
+    Callable<net.minecraft.server.WorldGenerator> nmsw;
+    net.minecraft.server.WorldGenerator gen;
+    FutureTask<net.minecraft.server.WorldGenerator> future;
+    IBlockData iblockdata1, iblockdata2;
     public boolean generateTree(Location loc, TreeType type) {
-        net.minecraft.server.WorldGenerator gen;
+        //net.minecraft.server.WorldGenerator gen;
         switch (type) {
         case BIG_TREE:
-            gen = new WorldGenBigTree(true);
+            //gen = new WorldGenBigTree(true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenBigTree(true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+            
             break;
         case BIRCH:
-            gen = new WorldGenForest(true, false);
+            //gen = new WorldGenForest(true, false);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenForest(true, false);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case REDWOOD:
-            gen = new WorldGenTaiga2(true);
+            //gen = new WorldGenTaiga2(true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenTaiga2(true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case TALL_REDWOOD:
-            gen = new WorldGenTaiga1();
+            //gen = new WorldGenTaiga1();
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenTaiga1();
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case JUNGLE:
-            IBlockData iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
-            IBlockData iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenJungleTree(true, 10, 20, iblockdata1, iblockdata2); // Magic values as in BlockSapling
+            //IBlockData iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
+            //IBlockData iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+            iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
+            iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+            //gen = new WorldGenJungleTree(true, 10, 20, iblockdata1, iblockdata2); // Magic values as in BlockSapling
+            nmsw = new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen =  new WorldGenJungleTree(true, 10, 20, iblockdata1, iblockdata2); // Magic values as in BlockSapling
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case SMALL_JUNGLE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
+            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, false);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case COCOA_TREE:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.JUNGLE).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
+            //gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockdata1, iblockdata2, true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case JUNGLE_BUSH:
             iblockdata1 = Blocks.LOG.getBlockData().set(BlockLog1.VARIANT, BlockWood.EnumLogVariant.JUNGLE);
             iblockdata2 = Blocks.LEAVES.getBlockData().set(BlockLeaves1.VARIANT, BlockWood.EnumLogVariant.OAK).set(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-            gen = new WorldGenGroundBush(iblockdata1, iblockdata2);
+            //gen = new WorldGenGroundBush(iblockdata1, iblockdata2);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenGroundBush(iblockdata1, iblockdata2);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case RED_MUSHROOM:
-            gen = new WorldGenHugeMushroom(Blocks.RED_MUSHROOM_BLOCK);
+            //gen = new WorldGenHugeMushroom(Blocks.RED_MUSHROOM_BLOCK);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenHugeMushroom(Blocks.RED_MUSHROOM_BLOCK);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case BROWN_MUSHROOM:
-            gen = new WorldGenHugeMushroom(Blocks.BROWN_MUSHROOM_BLOCK);
+            //gen = new WorldGenHugeMushroom(Blocks.BROWN_MUSHROOM_BLOCK);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenHugeMushroom(Blocks.BROWN_MUSHROOM_BLOCK);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case SWAMP:
-            gen = new WorldGenSwampTree();
+            //gen = new WorldGenSwampTree();
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenSwampTree();
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case ACACIA:
-            gen = new WorldGenAcaciaTree(true);
+            //gen = new WorldGenAcaciaTree(true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenAcaciaTree(true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case DARK_OAK:
-            gen = new WorldGenForestTree(true);
+            //gen = new WorldGenForestTree(true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenForestTree(true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case MEGA_REDWOOD:
-            gen = new WorldGenMegaTree(false, rand.nextBoolean());
+            //gen = new WorldGenMegaTree(false, rand.nextBoolean());
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenMegaTree(false, rand.nextBoolean());
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case TALL_BIRCH:
-            gen = new WorldGenForest(true, true);
+            //gen = new WorldGenForest(true, true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenForest(true, true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         case TREE:
         default:
-            gen = new WorldGenTrees(true);
+            //gen = new WorldGenTrees(true);
+            nmsw =  new Callable<net.minecraft.server.WorldGenerator>() {                             
+                public net.minecraft.server.WorldGenerator call() throws Exception {
+                    //System.out.println("BFf");
+                    gen = new WorldGenTrees(true);
+                    return gen;
+                }
+            
+            };
+            future = new FutureTask<net.minecraft.server.WorldGenerator>(nmsw);  
+            new Thread(future).start();  
+        
+            try {
+                gen = future.get();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftWorld.class.getName()).log(Level.SEVERE, null, ex);
+            }
             break;
         }
 

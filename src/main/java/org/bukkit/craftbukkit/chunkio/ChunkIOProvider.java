@@ -1,6 +1,8 @@
 package org.bukkit.craftbukkit.chunkio;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import net.minecraft.server.Chunk;
 import net.minecraft.server.ChunkRegionLoader;
 import net.minecraft.server.NBTTagCompound;
@@ -15,14 +17,22 @@ import java.util.logging.Logger;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntitySlice;
 
-class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChunk, Chunk, Runnable, RuntimeException> {
+//class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChunk, Chunk, Runnable, RuntimeException> {
+class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChunk, Chunk, Callable, RuntimeException> {
     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
     // async stuff
     public Chunk callStage1(QueuedChunk queuedChunk) throws RuntimeException {
         try {
             ChunkRegionLoader loader = queuedChunk.loader;
-            Object[] data = loader.loadChunk(queuedChunk.world, queuedChunk.x, queuedChunk.z);
+            Object[] data = null;
+            try {
+                data = loader.loadChunk(queuedChunk.world, queuedChunk.x, queuedChunk.z);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ChunkIOProvider.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(ChunkIOProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
             
             if (data != null) {
                 queuedChunk.compound = (NBTTagCompound) data[1];
@@ -38,8 +48,14 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
     // sync stuff
     public void callStage2(QueuedChunk queuedChunk, Chunk chunk) throws RuntimeException {
         if (chunk == null) {
-            // If the chunk loading failed just do it synchronously (may generate)
-            queuedChunk.provider.originalGetChunkAt(queuedChunk.x, queuedChunk.z);
+            try {
+                // If the chunk loading failed just do it synchronously (may generate)
+                queuedChunk.provider.originalGetChunkAt(queuedChunk.x, queuedChunk.z);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ChunkIOProvider.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(ChunkIOProvider.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return;
         }
 
@@ -76,9 +92,16 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
 
         chunk.loadNearby(queuedChunk.provider, queuedChunk.provider, queuedChunk.x, queuedChunk.z);
     }
-
+    /*
     public void callStage3(QueuedChunk queuedChunk, Chunk chunk, Runnable runnable) throws RuntimeException {
         runnable.run();
+    }*/
+    public void callStage3(QueuedChunk queuedChunk, Chunk chunk, Callable runnable) throws RuntimeException {
+        try {
+            runnable.call();
+        } catch (Exception ex) {
+            Logger.getLogger(ChunkIOProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Thread newThread(Runnable runnable) {

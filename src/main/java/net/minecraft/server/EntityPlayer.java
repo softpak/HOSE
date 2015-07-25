@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -145,7 +147,15 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 CraftWorld cworld = (CraftWorld) Bukkit.getServer().getWorld(this.spawnWorld);
                 if (cworld != null && this.getBed() != null) {
                     world = cworld.getHandle();
-                    position = EntityHuman.getBed(cworld.getHandle(), this.getBed(), false);
+                    try {
+                        position = EntityHuman.getBed(cworld.getHandle(), this.getBed(), false);
+                    } catch (InterruptedException ex) {
+                        java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
             if (world == null || position == null) {
@@ -259,7 +269,13 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
                 while (iterator2.hasNext()) {
                     chunk = (Chunk) iterator2.next();
-                    this.u().getTracker().a(this, chunk);
+                    try {
+                        this.u().getTracker().a(this, chunk);
+                    } catch (InterruptedException ex) {
+                        java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
@@ -271,7 +287,15 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 this.setSpectatorTarget(this);
             } else {
                 this.setLocation(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
-                this.server.getPlayerList().d(this);
+                try {
+                    this.server.getPlayerList().d(this);
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 if (this.isSneaking()) {
                     this.setSpectatorTarget(this);
                 }
@@ -533,7 +557,15 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
             // CraftBukkit start
             TeleportCause cause = (this.dimension == 1 || i == 1) ? TeleportCause.END_PORTAL : TeleportCause.NETHER_PORTAL;
-            this.server.getPlayerList().changeDimension(this, i, cause);
+            try {
+                this.server.getPlayerList().changeDimension(this, i, cause);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
             // CraftBukkit end
             this.lastSentExp = -1;
             this.bM = -1.0F;
@@ -1038,7 +1070,13 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             super.B();
         }
 
-        this.u().getTracker().a(this);
+        try {
+            this.u().getTracker().a(this);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            java.util.logging.Logger.getLogger(EntityPlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Entity C() {

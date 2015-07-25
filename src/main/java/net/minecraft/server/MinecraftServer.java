@@ -40,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 
 // CraftBukkit start
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
@@ -199,7 +200,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.S = s;
     }
 
-    protected void a(String s, String s1, long i, WorldType worldtype, String s2) {
+    protected void a(String s, String s1, long i, WorldType worldtype, String s2) throws InterruptedException, ExecutionException, Exception{
         this.a(s);
         this.b("menu.loadingLevel");
         this.worldServer = new WorldServer[3];
@@ -333,7 +334,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.k();
     }
 
-    protected void k() {
+    //callable
+    int ck,cl;
+    protected void k() throws InterruptedException, ExecutionException, Exception{
         boolean flag = true;
         boolean flag1 = true;
         boolean flag2 = true;
@@ -345,28 +348,28 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
         // CraftBukkit start - fire WorldLoadEvent and handle whether or not to keep the spawn in memory
         for (int m = 0; m < worlds.size(); m++) {
-            WorldServer worldserver = this.worlds.get(m);
+            final WorldServer worldserver = this.worlds.get(m);
             LOGGER.info("Preparing start region for level " + m + " (Seed: " + worldserver.getSeed() + ")");
 
             if (!worldserver.getWorld().getKeepSpawnInMemory()) {
                 continue;
             }
 
-            BlockPosition blockposition = worldserver.getSpawn();
+            final BlockPosition blockposition = worldserver.getSpawn();
             long j = az();
             i = 0;
-
-            for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
-                for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
+            
+            for (ck = -192; ck <= 192 && this.isRunning(); ck += 16) {
+                for (cl = -192; cl <= 192 && this.isRunning(); cl += 16) {
                     long i1 = az();
 
                     if (i1 - j > 1000L) {
-                        this.a_("Preparing spawn area", i * 100 / 625);
+                        this.a_("Preparing spawn area ", i * 100 / 625);
                         j = i1;
                     }
 
                     ++i;
-                    worldserver.chunkProviderServer.getChunkAt(blockposition.getX() + k >> 4, blockposition.getZ() + l >> 4);
+                    worldserver.chunkProviderServer.getChunkAt(blockposition.getX() + ck >> 4, blockposition.getZ() + cl >> 4);
                 }
             }
         }
@@ -638,7 +641,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     protected void z() {}
 
-    protected void A() throws ExceptionWorldConflict { // CraftBukkit - added throws
+    protected void A() throws ExceptionWorldConflict, InterruptedException, ExecutionException { // CraftBukkit - added throws
         SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
 
@@ -703,7 +706,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         org.spigotmc.CustomTimingsHandler.tick(); // Spigot
     }
 
-    public void B() {
+    public void B() throws InterruptedException, ExecutionException {
         this.methodProfiler.a("jobs");
         Queue queue = this.j;
 

@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 // CraftBukkit start
 import java.io.PrintStream;
+import java.util.concurrent.ExecutionException;
 import org.apache.logging.log4j.Level;
 
 import org.bukkit.craftbukkit.LoggerOutputStream;
@@ -260,7 +261,15 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                 this.c(MathHelper.clamp(this.getMaxBuildHeight(), 64, 256));
                 this.propertyManager.setProperty("max-build-height", Integer.valueOf(this.getMaxBuildHeight()));
                 DedicatedServer.LOGGER.info("Preparing level \"" + this.U() + "\"");
-                this.a(this.U(), this.U(), k, worldtype, s2);
+                try {
+                    this.a(this.U(), this.U(), k, worldtype, s2);
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(DedicatedServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    java.util.logging.Logger.getLogger(DedicatedServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    java.util.logging.Logger.getLogger(DedicatedServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", new Object[] { Double.valueOf((double) i1 / 1.0E9D)});
 
@@ -370,7 +379,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         System.exit(0);
     }
 
-    public void B() { // CraftBukkit - fix decompile error
+    public void B() throws InterruptedException, ExecutionException { // CraftBukkit - fix decompile error
         super.B();
         this.aO();
     }

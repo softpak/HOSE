@@ -13,6 +13,8 @@ import java.util.Queue;
 import java.util.LinkedList;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 // CraftBukkit end
 
 public class PlayerChunkMap {
@@ -28,7 +30,7 @@ public class PlayerChunkMap {
     private final int[][] i = new int[][] { { 1, 0}, { 0, 1}, { -1, 0}, { 0, -1}};
     private boolean wasNotEmpty; // CraftBukkit - add field
 
-    public PlayerChunkMap(WorldServer worldserver, int viewDistance /* Spigot */) {
+    public PlayerChunkMap(WorldServer worldserver, int viewDistance /* Spigot */) throws InterruptedException, ExecutionException, Exception {
         this.world = worldserver;
         this.a(viewDistance); // Spigot
     }
@@ -85,7 +87,7 @@ public class PlayerChunkMap {
         return this.d.getEntry(k) != null;
     }
 
-    private PlayerChunkMap.PlayerChunk a(int i, int j, boolean flag) {
+    private PlayerChunkMap.PlayerChunk a(int i, int j, boolean flag) throws InterruptedException, ExecutionException {
         long k = (long) i + 2147483647L | (long) j + 2147483647L << 32;
         PlayerChunkMap.PlayerChunk playerchunkmap_playerchunk = (PlayerChunkMap.PlayerChunk) this.d.getEntry(k);
 
@@ -99,7 +101,7 @@ public class PlayerChunkMap {
     }
 
     // CraftBukkit start - add method
-    public final boolean isChunkInUse(int x, int z) {
+    public final boolean isChunkInUse(int x, int z) throws InterruptedException, ExecutionException {
         PlayerChunk pi = a(x, z, false);
         if (pi != null) {
             return (pi.b.size() > 0);
@@ -108,7 +110,7 @@ public class PlayerChunkMap {
     }
     // CraftBukkit end
 
-    public void flagDirty(BlockPosition blockposition) {
+    public void flagDirty(BlockPosition blockposition) throws InterruptedException, ExecutionException {
         int i = blockposition.getX() >> 4;
         int j = blockposition.getZ() >> 4;
         PlayerChunkMap.PlayerChunk playerchunkmap_playerchunk = this.a(i, j, false);
@@ -119,7 +121,7 @@ public class PlayerChunkMap {
 
     }
 
-    public void addPlayer(EntityPlayer entityplayer) {
+    public void addPlayer(EntityPlayer entityplayer) throws InterruptedException, ExecutionException, Exception {
         int i = (int) entityplayer.locX >> 4;
         int j = (int) entityplayer.locZ >> 4;
 
@@ -145,7 +147,7 @@ public class PlayerChunkMap {
         this.b(entityplayer);
     }
 
-    public void b(EntityPlayer entityplayer) {
+    public void b(EntityPlayer entityplayer) throws InterruptedException, ExecutionException {
         ArrayList arraylist = Lists.newArrayList(entityplayer.chunkCoordIntPairQueue);
         int i = 0;
         int j = this.g;
@@ -190,7 +192,7 @@ public class PlayerChunkMap {
 
     }
 
-    public void removePlayer(EntityPlayer entityplayer) {
+    public void removePlayer(EntityPlayer entityplayer) throws InterruptedException, ExecutionException {
         int i = (int) entityplayer.d >> 4;
         int j = (int) entityplayer.e >> 4;
 
@@ -214,7 +216,7 @@ public class PlayerChunkMap {
         return j1 >= -i1 && j1 <= i1 ? k1 >= -i1 && k1 <= i1 : false;
     }
 
-    public void movePlayer(EntityPlayer entityplayer) {
+    public void movePlayer(EntityPlayer entityplayer) throws InterruptedException, ExecutionException, Exception {
         int i = (int) entityplayer.locX >> 4;
         int j = (int) entityplayer.locZ >> 4;
         double d0 = entityplayer.d - entityplayer.locX;
@@ -264,13 +266,13 @@ public class PlayerChunkMap {
         }
     }
 
-    public boolean a(EntityPlayer entityplayer, int i, int j) {
+    public boolean a(EntityPlayer entityplayer, int i, int j) throws InterruptedException, ExecutionException {
         PlayerChunkMap.PlayerChunk playerchunkmap_playerchunk = this.a(i, j, false);
 
         return playerchunkmap_playerchunk != null && playerchunkmap_playerchunk.b.contains(entityplayer) && !entityplayer.chunkCoordIntPairQueue.contains(playerchunkmap_playerchunk.location);
     }
 
-    public void a(int i) {
+    public void a(int i) throws InterruptedException, ExecutionException, Exception {
         i = MathHelper.clamp(i, 3, 32);
         if (i != this.g) {
             int j = i - this.g;
@@ -323,21 +325,37 @@ public class PlayerChunkMap {
         private long g;
 
         // CraftBukkit start - add fields
-        private final HashMap<EntityPlayer, Runnable> players = new HashMap<EntityPlayer, Runnable>();
+        //private final HashMap<EntityPlayer, Runnable> players = new HashMap<EntityPlayer, Runnable>();
+        private final HashMap<EntityPlayer, Callable> players = new HashMap<EntityPlayer, Callable>();
         private boolean loaded = false;
+        private Callable loadedRunnable = new Callable() {
+            public Chunk call() throws Exception {
+                PlayerChunk.this.loaded = true;
+                return null;
+            }
+        };
+        /*
         private Runnable loadedRunnable = new Runnable() {
             public void run() {
                 PlayerChunk.this.loaded = true;
             }
-        };
+        };*/
         // CraftBukkit end
 
-        public PlayerChunk(int i, int j) {
+        //gen chunk callable
+        public PlayerChunk(final int i, final int j) throws InterruptedException, ExecutionException {
             this.location = new ChunkCoordIntPair(i, j);
-            PlayerChunkMap.this.a().chunkProviderServer.getChunkAt(i, j, loadedRunnable); // CraftBukkit
+            new Callable<Object[]>() {                             
+                public Object[] call() throws Exception {
+                    PlayerChunkMap.this.a().chunkProviderServer.getChunkAt(i, j, loadedRunnable); // CraftBukkit
+                    return null;
+                }
+            };
+            
+            //PlayerChunkMap.this.a().chunkProviderServer.getChunkAt(i, j, loadedRunnable); // CraftBukkit
         }
 
-        public void a(final EntityPlayer entityplayer) {  // CraftBukkit - added final to argument
+        public void a(final EntityPlayer entityplayer) throws InterruptedException, ExecutionException, Exception {  // CraftBukkit - added final to argument
             if (this.b.contains(entityplayer)) {
                 PlayerChunkMap.a.debug("Failed to add player. {} already is in chunk {}, {}", new Object[] { entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z)});
             } else {
@@ -347,16 +365,24 @@ public class PlayerChunkMap {
 
                 this.b.add(entityplayer);
                 // CraftBukkit start - use async chunk io
-                Runnable playerRunnable;
+                //Runnable playerRunnable;
+                Callable playerRunnable;
                 if (this.loaded) {
                     playerRunnable = null;
                     entityplayer.chunkCoordIntPairQueue.add(this.location);
                 } else {
+                    playerRunnable = new Callable() {
+                        public Void call() throws Exception {
+                            entityplayer.chunkCoordIntPairQueue.add(PlayerChunk.this.location);
+                            return null;
+                        }
+                    };
+                    /*
                     playerRunnable = new Runnable() {
                         public void run() {
                             entityplayer.chunkCoordIntPairQueue.add(PlayerChunk.this.location);
                         }
-                    };
+                    };*/
                     PlayerChunkMap.this.a().chunkProviderServer.getChunkAt(this.location.x, this.location.z, playerRunnable);
                 }
 

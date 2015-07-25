@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommandSpreadPlayers extends CommandAbstract {
 
@@ -68,12 +71,20 @@ public class CommandSpreadPlayers extends CommandAbstract {
                 throw new ExceptionEntityNotFound();
             } else {
                 icommandlistener.sendMessage(new ChatMessage("commands.spreadplayers.spreading." + (flag ? "teams" : "players"), new Object[] { Integer.valueOf(arraylist.size()), Double.valueOf(d4), Double.valueOf(d1), Double.valueOf(d2), Double.valueOf(d3)}));
-                this.a(icommandlistener, arraylist, new CommandSpreadPlayers.Location2D(d1, d2), d3, d4, ((Entity) arraylist.get(0)).world, flag);
+                try {
+                    this.a(icommandlistener, arraylist, new CommandSpreadPlayers.Location2D(d1, d2), d3, d4, ((Entity) arraylist.get(0)).world, flag);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CommandSpreadPlayers.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(CommandSpreadPlayers.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(CommandSpreadPlayers.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
 
-    private void a(ICommandListener icommandlistener, List<Entity> list, CommandSpreadPlayers.Location2D commandspreadplayers_location2d, double d0, double d1, World world, boolean flag) throws CommandException {
+    private void a(ICommandListener icommandlistener, List<Entity> list, CommandSpreadPlayers.Location2D commandspreadplayers_location2d, double d0, double d1, World world, boolean flag) throws CommandException, InterruptedException, ExecutionException, Exception {
         Random random = new Random();
         double d2 = commandspreadplayers_location2d.a - d1;
         double d3 = commandspreadplayers_location2d.b - d1;
@@ -107,7 +118,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
         return hashset.size();
     }
 
-    private int a(CommandSpreadPlayers.Location2D commandspreadplayers_location2d, double d0, World world, Random random, double d1, double d2, double d3, double d4, CommandSpreadPlayers.Location2D[] acommandspreadplayers_location2d, boolean flag) throws CommandException {
+    private int a(CommandSpreadPlayers.Location2D commandspreadplayers_location2d, double d0, World world, Random random, double d1, double d2, double d3, double d4, CommandSpreadPlayers.Location2D[] acommandspreadplayers_location2d, boolean flag) throws CommandException ,InterruptedException, ExecutionException, Exception{
         boolean flag1 = true;
         double d5 = 3.4028234663852886E38D;
 
@@ -181,7 +192,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
         }
     }
 
-    private double a(List<Entity> list, World world, CommandSpreadPlayers.Location2D[] acommandspreadplayers_location2d, boolean flag) {
+    private double a(List<Entity> list, World world, CommandSpreadPlayers.Location2D[] acommandspreadplayers_location2d, boolean flag) throws InterruptedException, ExecutionException, Exception{
         double d0 = 0.0D;
         int i = 0;
         HashMap hashmap = Maps.newHashMap();
@@ -301,7 +312,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
             return flag;
         }
 
-        public int a(World world) {
+        public int a(World world) throws InterruptedException, ExecutionException, Exception{
             BlockPosition blockposition = new BlockPosition(this.a, 256.0D, this.b);
 
             do {
@@ -315,7 +326,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
             return blockposition.getY() + 1;
         }
 
-        public boolean b(World world) {
+        public boolean b(World world) throws InterruptedException, ExecutionException, Exception{
             BlockPosition blockposition = new BlockPosition(this.a, 256.0D, this.b);
 
             Material material;
@@ -338,7 +349,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
         }
 
         // CraftBukkit start - add a version of getType which force loads chunks
-        private static IBlockData getType(World world, BlockPosition position) {
+        private static IBlockData getType(World world, BlockPosition position) throws InterruptedException, ExecutionException, Exception {
             ((ChunkProviderServer) world.chunkProvider).getChunkAt(position.getX() >> 4, position.getZ() >> 4);
             return world.getType(position);
         }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +23,7 @@ public class EntityTracker {
         this.e = worldserver.getMinecraftServer().getPlayerList().d();
     }
 
-    public void track(Entity entity) {
+    public void track(Entity entity) throws InterruptedException, ExecutionException {
         if (entity instanceof EntityPlayer) {
             this.addEntity(entity, 512, 2);
             EntityPlayer entityplayer = (EntityPlayer) entity;
@@ -167,7 +168,7 @@ public class EntityTracker {
 
     }
 
-    public void updatePlayers() {
+    public void updatePlayers() throws InterruptedException, ExecutionException{
         ArrayList arraylist = Lists.newArrayList();
         Iterator iterator = this.c.iterator();
 
@@ -195,7 +196,7 @@ public class EntityTracker {
 
     }
 
-    public void a(EntityPlayer entityplayer) {
+    public void a(EntityPlayer entityplayer) throws InterruptedException, ExecutionException{
         Iterator iterator = this.c.iterator();
 
         while (iterator.hasNext()) {
@@ -239,7 +240,7 @@ public class EntityTracker {
 
     }
 
-    public void a(EntityPlayer entityplayer, Chunk chunk) {
+    public void a(EntityPlayer entityplayer, Chunk chunk) throws InterruptedException, ExecutionException{
         Iterator iterator = this.c.iterator();
 
         while (iterator.hasNext()) {

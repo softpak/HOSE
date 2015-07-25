@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -80,7 +81,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
         Task(final P parameter) {
             this.parameter = parameter;
         }
-
+        
         public void run() {
             if (initAsync()) {
                 finished.add(this);
@@ -228,6 +229,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
         this.provider = provider;
 
         // We have an unbound queue size so do not need a max thread size
+        //pool = new ThreadPoolExecutor(coreSize, Integer.MAX_VALUE, 60l, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), provider);
         pool = new ThreadPoolExecutor(coreSize, Integer.MAX_VALUE, 60l, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), provider);
     }
 

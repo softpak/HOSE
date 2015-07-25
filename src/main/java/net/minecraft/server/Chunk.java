@@ -804,7 +804,29 @@ public class Chunk {
 
     }
 
+
     public void addEntities() {
+        /*
+        new Callable<Void>() {                             
+            public Void call() throws Exception {
+                h = true;
+                world.a(tileEntities.values());
+
+                for (int i = 0; i < entitySlices.length; ++i) {
+                    Iterator iterator = entitySlices[i].iterator();
+
+                    while (iterator.hasNext()) {
+                        Entity entity = (Entity) iterator.next();
+
+                        entity.ah();
+                    }
+
+                    world.b((Collection) entitySlices[i]);
+                }
+                return null;
+            }
+        };*/
+        
         this.h = true;
         this.world.a(this.tileEntities.values());
 

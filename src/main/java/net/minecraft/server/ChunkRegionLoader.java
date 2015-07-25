@@ -10,7 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,9 +44,17 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
     // CraftBukkit end
 
     // CraftBukkit start - Add async variant, provide compatibility
+    //gen chunk
     public Chunk a(World world, int i, int j) throws IOException {
         world.timings.syncChunkLoadDataTimer.startTiming(); // Spigot
-        Object[] data = loadChunk(world, i, j);
+        Object[] data = null;
+        try {
+            data = loadChunk(world, i, j);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(ChunkRegionLoader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            java.util.logging.Logger.getLogger(ChunkRegionLoader.class.getName()).log(Level.SEVERE, null, ex);
+        }
         world.timings.syncChunkLoadDataTimer.stopTiming(); // Spigot
         if (data != null) {
             Chunk chunk = (Chunk) data[0];
@@ -54,7 +66,10 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
         return null;
     }
 
-    public Object[] loadChunk(World world, int i, int j) throws IOException {
+    //callable
+    //Callable<Object[]> lcp;
+    //NBTTagCompound nbttagcompound;
+    public Object[] loadChunk(final World world, final int i, final int j) throws IOException, InterruptedException, ExecutionException {
         // CraftBukkit end
         ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
         NBTTagCompound nbttagcompound = (NBTTagCompound) this.b.get(chunkcoordintpair);

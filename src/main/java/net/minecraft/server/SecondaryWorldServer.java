@@ -1,11 +1,13 @@
 package net.minecraft.server;
 
+import java.util.concurrent.ExecutionException;
+
 public class SecondaryWorldServer extends WorldServer {
 
     private WorldServer a;
 
     // CraftBukkit start - Add WorldData, Environment and ChunkGenerator arguments
-    public SecondaryWorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, int i, WorldServer worldserver, MethodProfiler methodprofiler, WorldData worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) {
+    public SecondaryWorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, int i, WorldServer worldserver, MethodProfiler methodprofiler, WorldData worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) throws InterruptedException, ExecutionException, Exception {
         super(minecraftserver, idatamanager, worldData, i, methodprofiler, env, gen);
         // CraftBukkit end
         this.a = worldserver;

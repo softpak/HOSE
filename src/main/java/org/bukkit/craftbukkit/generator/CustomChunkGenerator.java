@@ -2,6 +2,11 @@ package org.bukkit.craftbukkit.generator;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.minecraft.server.*;
 
@@ -40,6 +45,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
     }
 
     public Chunk getOrCreateChunk(int x, int z) {
+        //long st = System.nanoTime();
         random.setSeed((long) x * 341873128712L + (long) z * 132897987541L);
 
         Chunk chunk;
@@ -145,13 +151,23 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
         }
         // Initialize lighting
         chunk.initLighting();
-
+        //long et = System.nanoTime();
+        //System.out.println((et-st)+"ns.");
         return chunk;
     }
 
+    Chunk re;
     @Override
     public Chunk getChunkAt(BlockPosition blockPosition) {
-        return getChunkAt(blockPosition.getX() >> 4, blockPosition.getZ() >> 4);
+        try {
+            //return getChunkAt(blockPosition.getX() >> 4, blockPosition.getZ() >> 4);
+            re = getChunkAt(blockPosition.getX() >> 4, blockPosition.getZ() >> 4);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CustomChunkGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(CustomChunkGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return re;
     }
 
     public void getChunkAt(IChunkProvider icp, int i, int i1) {
@@ -188,8 +204,19 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
         return generator.generateExtBlockSections(world, random, x, z, biomes);
     }
 
-    public Chunk getChunkAt(int x, int z) {
-        return getOrCreateChunk(x, z);
+    //callable
+    Callable<Chunk> cnp;
+    public Chunk getChunkAt(final int x, final int z) throws InterruptedException, ExecutionException {
+        System.out.println("getChunkAt:"+x+","+z);
+        cnp = new Callable<Chunk>() {                             
+            public Chunk call() throws Exception {
+                return getOrCreateChunk(x, z);
+            }
+        };
+        FutureTask<Chunk> future = new FutureTask<Chunk>(cnp);  
+        new Thread(future).start();  
+        return future.get();
+        //return getOrCreateChunk(x, z);
     }
 
     @Override

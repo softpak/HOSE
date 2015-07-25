@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -468,7 +469,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         if (fromWorld == toWorld) {
             entity.playerConnection.teleport(to);
         } else {
-            server.getHandle().moveToWorld(entity, toWorld.dimension, true, to, true);
+            try {
+                server.getHandle().moveToWorld(entity, toWorld.dimension, true, to, true);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return true;
     }
@@ -845,7 +854,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         BlockPosition bed = getHandle().getBed();
 
         if (world != null && bed != null) {
-            bed = EntityHuman.getBed(((CraftWorld) world).getHandle(), bed, getHandle().isRespawnForced());
+            try {
+                bed = EntityHuman.getBed(((CraftWorld) world).getHandle(), bed, getHandle().isRespawnForced());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if (bed != null) {
                 return new Location(world, bed.getX(), bed.getY(), bed.getZ());
             }
@@ -903,7 +920,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
         EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(other.getId());
         if (entry != null && !entry.trackedPlayers.contains(getHandle())) {
-            entry.updatePlayer(getHandle());
+            try {
+                entry.updatePlayer(getHandle());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -1378,7 +1401,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         {
             if ( getHealth() <= 0 && isOnline() )
             {
-                server.getServer().getPlayerList().moveToWorld( getHandle(), 0, false );
+                try {
+                    server.getServer().getPlayerList().moveToWorld( getHandle(), 0, false );
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
 

@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.HashSet;
+import java.util.logging.Level;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -318,7 +319,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                             this.player.vehicle.al();
                         }
 
-                        this.minecraftServer.getPlayerList().d(this.player);
+                        try {
+                            this.minecraftServer.getPlayerList().d(this.player);
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (ExecutionException ex) {
+                            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         if (this.player.vehicle != null) {
                             this.player.vehicle.ai = true; // CraftBukkit - moved from below
                             if (d3 > 4.0D) {
@@ -451,7 +460,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                     }
 
                     this.player.onGround = packetplayinflying.f();
-                    this.minecraftServer.getPlayerList().d(this.player);
+                    try {
+                        this.minecraftServer.getPlayerList().d(this.player);
+                    } catch (InterruptedException ex) {
+                        java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     this.player.a(this.player.locY - d10, packetplayinflying.f());
                 } else if (this.e - this.f > 20) {
                     this.a(this.o, this.p, this.q, this.player.yaw, this.player.pitch);
@@ -841,7 +858,14 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         */
 
         this.player.q();
-        String quitMessage = this.minecraftServer.getPlayerList().disconnect(this.player);
+        String quitMessage = null;
+        try {
+            quitMessage = this.minecraftServer.getPlayerList().disconnect(this.player);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if ((quitMessage != null) && (quitMessage.length() > 0)) {
             this.minecraftServer.getPlayerList().sendMessage(CraftChatMessage.fromString(quitMessage));
         }
@@ -1346,8 +1370,16 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         switch (PlayerConnection.SyntheticClass_1.c[packetplayinclientcommand_enumclientcommand.ordinal()]) {
         case 1:
             if (this.player.viewingCredits) {
+            try {
                 // this.player = this.minecraftServer.getPlayerList().moveToWorld(this.player, 0, true);
                 this.minecraftServer.getPlayerList().changeDimension(this.player, 0, PlayerTeleportEvent.TeleportCause.END_PORTAL); // CraftBukkit - reroute logic through custom portal management
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
             } else if (this.player.u().getWorldData().isHardcore()) {
                 if (this.minecraftServer.T() && this.player.getName().equals(this.minecraftServer.S())) {
                     this.player.playerConnection.disconnect("You have died. Game over, man, it\'s game over!");
@@ -1363,7 +1395,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                     return;
                 }
 
+            try {
                 this.player = this.minecraftServer.getPlayerList().moveToWorld(this.player, 0, false);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
             }
             break;
 
