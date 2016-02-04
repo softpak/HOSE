@@ -1,1131 +1,1131 @@
-diff -Naur src_new/main/java/net/minecraft/server/Chunk.java src_origin/main/java/net/minecraft/server/Chunk.java
---- src_new/main/java/net/minecraft/server/Chunk.java	2016-02-05 01:38:24.048411075 +0800
-+++ src_origin/main/java/net/minecraft/server/Chunk.java	2016-02-05 01:52:04.131371288 +0800
-@@ -890,30 +890,26 @@
+diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src_new/main/java/net/minecraft/server/Chunk.java
+--- src_origin/main/java/net/minecraft/server/Chunk.java	2016-02-05 01:52:04.131371288 +0800
++++ src_new/main/java/net/minecraft/server/Chunk.java	2016-02-05 01:38:24.048411075 +0800
+@@ -890,26 +890,30 @@
          for (int k = i; k <= j; ++k) {
              if (!this.entitySlices[k].isEmpty()) {
                  Iterator iterator = this.entitySlices[k].iterator();
--                
--                try{
--                    while (iterator.hasNext()) {
--                        Entity entity1 = (Entity) iterator.next();
++                
++                try{
++                    while (iterator.hasNext()) {
++                        Entity entity1 = (Entity) iterator.next();
++
++                        if (entity1.getBoundingBox().b(axisalignedbb) && entity1 != entity) {
++                            if (predicate == null || predicate.apply(entity1)) {
++                                list.add(entity1);
++                            }
+ 
+-                while (iterator.hasNext()) {
+-                    Entity entity1 = (Entity) iterator.next();
 -
--                        if (entity1.getBoundingBox().b(axisalignedbb) && entity1 != entity) {
--                            if (predicate == null || predicate.apply(entity1)) {
--                                list.add(entity1);
--                            }
+-                    if (entity1.getBoundingBox().b(axisalignedbb) && entity1 != entity) {
+-                        if (predicate == null || predicate.apply(entity1)) {
+-                            list.add(entity1);
+-                        }
+-
+-                        Entity[] aentity = entity1.aB();
++                            Entity[] aentity = entity1.aB();
  
--                            Entity[] aentity = entity1.aB();
-+                while (iterator.hasNext()) {
-+                    Entity entity1 = (Entity) iterator.next();
-+
-+                    if (entity1.getBoundingBox().b(axisalignedbb) && entity1 != entity) {
-+                        if (predicate == null || predicate.apply(entity1)) {
-+                            list.add(entity1);
-+                        }
-+
-+                        Entity[] aentity = entity1.aB();
- 
--                            if (aentity != null) {
--                                for (int l = 0; l < aentity.length; ++l) {
--                                    entity1 = aentity[l];
--                                    if (entity1 != entity && entity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entity1))) {
--                                        list.add(entity1);
--                                    }
-+                        if (aentity != null) {
-+                            for (int l = 0; l < aentity.length; ++l) {
-+                                entity1 = aentity[l];
-+                                if (entity1 != entity && entity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entity1))) {
-+                                    list.add(entity1);
+-                        if (aentity != null) {
+-                            for (int l = 0; l < aentity.length; ++l) {
+-                                entity1 = aentity[l];
+-                                if (entity1 != entity && entity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entity1))) {
+-                                    list.add(entity1);
++                            if (aentity != null) {
++                                for (int l = 0; l < aentity.length; ++l) {
++                                    entity1 = aentity[l];
++                                    if (entity1 != entity && entity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entity1))) {
++                                        list.add(entity1);
++                                    }
                                  }
                              }
                          }
                      }
--                }catch(Exception ex){
--                    
++                }catch(Exception ex){
++                    
                  }
              }
          }
-@@ -926,19 +922,16 @@
+@@ -922,16 +926,19 @@
  
          i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
          j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
--        
-+
+-
++        
          for (int k = i; k <= j; ++k) {
              Iterator iterator = this.entitySlices[k].iterator(); // Spigot
--            try{
--                while (iterator.hasNext()) {
--                    Entity entity = (Entity) iterator.next();
++            try{
++                while (iterator.hasNext()) {
++                    Entity entity = (Entity) iterator.next();
  
--                    if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
--                        list.add((T) entity); // Fix decompile error
--                    }
-+            while (iterator.hasNext()) {
-+                Entity entity = (Entity) iterator.next();
-+
-+                if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
-+                    list.add((T) entity); // Fix decompile error
+-            while (iterator.hasNext()) {
+-                Entity entity = (Entity) iterator.next();
+-
+-                if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
+-                    list.add((T) entity); // Fix decompile error
++                    if (oclass.isInstance(entity) && entity.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply((T) entity))) { // CraftBukkit - fix decompile error // Spigot
++                        list.add((T) entity); // Fix decompile error
++                    }
                  }
--            }catch (Exception ex){
--                        
++            }catch (Exception ex){
++                        
              }
          }
  
-diff -Naur src_new/main/java/net/minecraft/server/DedicatedServer.java src_origin/main/java/net/minecraft/server/DedicatedServer.java
---- src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-02-05 01:38:24.736411042 +0800
-+++ src_origin/main/java/net/minecraft/server/DedicatedServer.java	2016-02-05 01:52:05.123371240 +0800
-@@ -17,7 +17,6 @@
+diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src_new/main/java/net/minecraft/server/DedicatedServer.java
+--- src_origin/main/java/net/minecraft/server/DedicatedServer.java	2016-02-05 01:52:05.123371240 +0800
++++ src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-02-05 01:38:24.736411042 +0800
+@@ -17,6 +17,7 @@
  
  // CraftBukkit start
  import java.io.PrintStream;
--import net.openhft.affinity.AffinityLock;
++import net.openhft.affinity.AffinityLock;
  import org.apache.logging.log4j.Level;
  
  import org.bukkit.craftbukkit.LoggerOutputStream;
-@@ -50,14 +49,11 @@
+@@ -49,11 +50,14 @@
              }
  
              public void run() {
--                AffinityLock al = AffinityLock.acquireLock();
++                AffinityLock al = AffinityLock.acquireLock();
                  while (true) {
                      try {
                          Thread.sleep(2147483647L);
                      } catch (InterruptedException interruptedexception) {
                          ;
--                    } finally {
--                        al.release();
++                    } finally {
++                        al.release();
                      }
                  }
              }
-diff -Naur src_new/main/java/net/minecraft/server/EntityEnderDragon.java src_origin/main/java/net/minecraft/server/EntityEnderDragon.java
---- src_new/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-05 01:38:25.415411009 +0800
-+++ src_origin/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-05 01:52:06.000371197 +0800
-@@ -676,8 +676,7 @@
+diff -Naur src_origin/main/java/net/minecraft/server/EntityEnderDragon.java src_new/main/java/net/minecraft/server/EntityEnderDragon.java
+--- src_origin/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-05 01:52:06.000371197 +0800
++++ src_new/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-05 01:38:25.415411009 +0800
+@@ -676,7 +676,8 @@
          // CraftBukkit end
      }
  
--    //protected void D() {}
--    public void D() {}
-+    protected void D() {}
+-    protected void D() {}
++    //protected void D() {}
++    public void D() {}
  
      public Entity[] aB() {
          return this.children;
-diff -Naur src_new/main/java/net/minecraft/server/EntityInsentient.java src_origin/main/java/net/minecraft/server/EntityInsentient.java
---- src_new/main/java/net/minecraft/server/EntityInsentient.java	2016-02-05 01:38:25.728410994 +0800
-+++ src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-02-05 01:52:06.407371177 +0800
-@@ -1,12 +1,8 @@
+diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_new/main/java/net/minecraft/server/EntityInsentient.java
+--- src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-02-05 01:52:06.407371177 +0800
++++ src_new/main/java/net/minecraft/server/EntityInsentient.java	2016-02-05 01:38:25.728410994 +0800
+@@ -1,8 +1,12 @@
  package net.minecraft.server;
  
--import java.util.ArrayList;
++import java.util.ArrayList;
  import java.util.Iterator;
  import java.util.List;
  import java.util.UUID;
--import java.util.concurrent.FutureTask;
--import net.openhft.affinity.AffinityLock;
--import net.openhft.affinity.AffinityStrategies;
++import java.util.concurrent.FutureTask;
++import net.openhft.affinity.AffinityLock;
++import net.openhft.affinity.AffinityStrategies;
  
  // CraftBukkit start
  import org.bukkit.craftbukkit.event.CraftEventFactory;
-@@ -15,28 +11,21 @@
+@@ -11,21 +15,28 @@
  import org.bukkit.event.entity.EntityTargetEvent;
  import org.bukkit.event.entity.EntityUnleashEvent;
  import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
--import org.hose.TickEntityPool;
--import org.spigotmc.SpigotWorldConfig;
--
++import org.hose.TickEntityPool;
++import org.spigotmc.SpigotWorldConfig;
++
  // CraftBukkit end
  
  public abstract class EntityInsentient extends EntityLiving {
  
      public int a_;
      protected int b_;
--    //private ControllerLook lookController;
--    public ControllerLook lookController;
--    //protected ControllerMove moveController;
--    public ControllerMove moveController;
--    //protected ControllerJump g;
--    public ControllerJump g;
-+    private ControllerLook lookController;
-+    protected ControllerMove moveController;
-+    protected ControllerJump g;
+-    private ControllerLook lookController;
+-    protected ControllerMove moveController;
+-    protected ControllerJump g;
++    //private ControllerLook lookController;
++    public ControllerLook lookController;
++    //protected ControllerMove moveController;
++    public ControllerMove moveController;
++    //protected ControllerJump g;
++    public ControllerJump g;
      private EntityAIBodyControl b;
      protected NavigationAbstract navigation;
      public PathfinderGoalSelector goalSelector;
      public PathfinderGoalSelector targetSelector;
      private EntityLiving goalTarget;
--    //private EntitySenses bk;
--    public EntitySenses bk;
-+    private EntitySenses bk;
+-    private EntitySenses bk;
++    //private EntitySenses bk;
++    public EntitySenses bk;
      private ItemStack[] equipment = new ItemStack[5];
      public float[] dropChances = new float[5];
      public boolean canPickUpLoot;
-@@ -328,8 +317,8 @@
+@@ -317,8 +328,8 @@
              }
          }
  
--        if (this.bo && nbttagcompound.hasKeyOfType("Leash", 10)) {
-         this.bo = nbttagcompound.getBoolean("Leashed");
-+        if (this.bo && nbttagcompound.hasKeyOfType("Leash", 10)) {
+-        this.bo = nbttagcompound.getBoolean("Leashed");
+         if (this.bo && nbttagcompound.hasKeyOfType("Leash", 10)) {
++        this.bo = nbttagcompound.getBoolean("Leashed");
              this.bq = nbttagcompound.getCompound("Leash");
          }
  
-@@ -437,8 +426,7 @@
+@@ -426,7 +437,8 @@
          return true;
      }
  
--    public void D() {
--    //protected void D() {
-+    protected void D() {
+-    protected void D() {
++    public void D() {
++    //protected void D() {
          if (this.persistent) {
              this.ticksFarFromPlayer = 0;
          } else {
-@@ -463,39 +451,11 @@
+@@ -451,11 +463,39 @@
  
          }
      }
--    
--    @Override
-+
+-
++    
++    @Override
      protected final void doTick() {
          ++this.ticksFarFromPlayer;
--        //AffinityLock al = AffinityLock.acquireLock();
--        try {
--            SpigotWorldConfig.futureTask = new FutureTask(new TickEntityPool(this));
--            SpigotWorldConfig.dotickpool_executor.submit(SpigotWorldConfig.futureTask);
--            //SpigotWorldConfig.dotickpool_executor.execute(new TickEntityPool(this));
--            this.world.methodProfiler.a("goalSelector");
--            this.goalSelector.a();
--            this.world.methodProfiler.a("navigation");
--            this.navigation.k();
--            this.world.methodProfiler.b();
--            this.world.methodProfiler.a("mob tick");
--            this.E();
--        } catch(Exception e) {
--            //e.printStackTrace();
--        } finally {
--            //al.release();
--        }
--        /*SpigotWorldConfig.dotickpool_executor.execute(new DoTickPool(this));
--        try{
--            this.world.methodProfiler.a("goalSelector");
--            this.goalSelector.a();
--            this.world.methodProfiler.b();
--        } catch (Exception ex) {
--
--        }*/
--        /*
++        //AffinityLock al = AffinityLock.acquireLock();
++        try {
++            SpigotWorldConfig.futureTask = new FutureTask(new TickEntityPool(this));
++            SpigotWorldConfig.dotickpool_executor.submit(SpigotWorldConfig.futureTask);
++            //SpigotWorldConfig.dotickpool_executor.execute(new TickEntityPool(this));
++            this.world.methodProfiler.a("goalSelector");
++            this.goalSelector.a();
++            this.world.methodProfiler.a("navigation");
++            this.navigation.k();
++            this.world.methodProfiler.b();
++            this.world.methodProfiler.a("mob tick");
++            this.E();
++        } catch(Exception e) {
++            //e.printStackTrace();
++        } finally {
++            //al.release();
++        }
++        /*SpigotWorldConfig.dotickpool_executor.execute(new DoTickPool(this));
++        try{
++            this.world.methodProfiler.a("goalSelector");
++            this.goalSelector.a();
++            this.world.methodProfiler.b();
++        } catch (Exception ex) {
++
++        }*/
++        /*
          this.world.methodProfiler.a("checkDespawn");
          this.D();
--        //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(this));
++        //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(this));
          this.world.methodProfiler.b();
          // Spigot Start
          if ( this.fromMobSpawner )
-@@ -526,7 +486,7 @@
+@@ -486,7 +526,7 @@
          this.world.methodProfiler.c("jump");
          this.g.b();
          this.world.methodProfiler.b();
--        this.world.methodProfiler.b();*/
-+        this.world.methodProfiler.b();
+-        this.world.methodProfiler.b();
++        this.world.methodProfiler.b();*/
      }
  
      protected void E() {}
-@@ -981,6 +941,4 @@
+@@ -941,4 +981,6 @@
  
          private EnumEntityPositionType() {}
      }
--    
--    
++    
++    
  }
-diff -Naur src_new/main/java/net/minecraft/server/EntityLiving.java src_origin/main/java/net/minecraft/server/EntityLiving.java
---- src_new/main/java/net/minecraft/server/EntityLiving.java	2016-02-05 01:38:25.900410985 +0800
-+++ src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-02-05 01:52:06.631371167 +0800
-@@ -1650,7 +1650,6 @@
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src_new/main/java/net/minecraft/server/EntityLiving.java
+--- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-02-05 01:52:06.631371167 +0800
++++ src_new/main/java/net/minecraft/server/EntityLiving.java	2016-02-05 01:38:25.900410985 +0800
+@@ -1650,6 +1650,7 @@
          this.bb *= 0.9F;
          SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
          this.g(this.aZ, this.ba);
--        //SpigotWorldConfig.movepool_executor.execute(new MovePool(this, this.aZ, this.ba));
++        //SpigotWorldConfig.movepool_executor.execute(new MovePool(this, this.aZ, this.ba));
          SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot
          this.world.methodProfiler.b();
          this.world.methodProfiler.a("push");
-@@ -1666,40 +1665,36 @@
+@@ -1665,36 +1666,40 @@
      protected void doTick() {}
  
      protected void bL() {
--        try {
--            List list = this.world.a((Entity) this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.and(IEntitySelector.d, new Predicate() {
--                public boolean a(Entity entity) {
--                    return entity.ae();
--                }
-+        List list = this.world.a((Entity) this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.and(IEntitySelector.d, new Predicate() {
-+            public boolean a(Entity entity) {
-+                return entity.ae();
-+            }
- 
--                public boolean apply(Object object) {
--                    return this.a((Entity) object);
--                }
--            }));
--        
-+            public boolean apply(Object object) {
-+                return this.a((Entity) object);
-+            }
-+        }));
- 
--            if (this.ad() && !list.isEmpty()) { // Spigot: Add this.ad() condition
--                numCollisions -= world.spigotConfig.maxCollisionsPerEntity; // Spigot
--                for (int i = 0; i < list.size(); ++i) {
--                    if (numCollisions > world.spigotConfig.maxCollisionsPerEntity) { break; } // Spigot
--                    Entity entity = (Entity) list.get(i);
+-        List list = this.world.a((Entity) this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.and(IEntitySelector.d, new Predicate() {
+-            public boolean a(Entity entity) {
+-                return entity.ae();
+-            }
 -
--                    // TODO better check now?
--                    // CraftBukkit start - Only handle mob (non-player) collisions every other tick
--                    if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
--                        continue;
--                    }
--                    // CraftBukkit end
+-            public boolean apply(Object object) {
+-                return this.a((Entity) object);
+-            }
+-        }));
++        try {
++            List list = this.world.a((Entity) this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.and(IEntitySelector.d, new Predicate() {
++                public boolean a(Entity entity) {
++                    return entity.ae();
++                }
+ 
+-        if (this.ad() && !list.isEmpty()) { // Spigot: Add this.ad() condition
+-            numCollisions -= world.spigotConfig.maxCollisionsPerEntity; // Spigot
+-            for (int i = 0; i < list.size(); ++i) {
+-                if (numCollisions > world.spigotConfig.maxCollisionsPerEntity) { break; } // Spigot
+-                Entity entity = (Entity) list.get(i);
 -
--                    entity.numCollisions++; // Spigot
--                    numCollisions++; // Spigot
--                    this.s(entity);
-+        if (this.ad() && !list.isEmpty()) { // Spigot: Add this.ad() condition
-+            numCollisions -= world.spigotConfig.maxCollisionsPerEntity; // Spigot
-+            for (int i = 0; i < list.size(); ++i) {
-+                if (numCollisions > world.spigotConfig.maxCollisionsPerEntity) { break; } // Spigot
-+                Entity entity = (Entity) list.get(i);
-+
-+                // TODO better check now?
-+                // CraftBukkit start - Only handle mob (non-player) collisions every other tick
-+                if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
-+                    continue;
+-                // TODO better check now?
+-                // CraftBukkit start - Only handle mob (non-player) collisions every other tick
+-                if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
+-                    continue;
++                public boolean apply(Object object) {
++                    return this.a((Entity) object);
                  }
--                numCollisions = 0; // Spigot
-+                // CraftBukkit end
+-                // CraftBukkit end
++            }));
++        
+ 
+-                entity.numCollisions++; // Spigot
+-                numCollisions++; // Spigot
+-                this.s(entity);
++            if (this.ad() && !list.isEmpty()) { // Spigot: Add this.ad() condition
++                numCollisions -= world.spigotConfig.maxCollisionsPerEntity; // Spigot
++                for (int i = 0; i < list.size(); ++i) {
++                    if (numCollisions > world.spigotConfig.maxCollisionsPerEntity) { break; } // Spigot
++                    Entity entity = (Entity) list.get(i);
 +
-+                entity.numCollisions++; // Spigot
-+                numCollisions++; // Spigot
-+                this.s(entity);
++                    // TODO better check now?
++                    // CraftBukkit start - Only handle mob (non-player) collisions every other tick
++                    if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
++                        continue;
++                    }
++                    // CraftBukkit end
++
++                    entity.numCollisions++; // Spigot
++                    numCollisions++; // Spigot
++                    this.s(entity);
++                }
++                numCollisions = 0; // Spigot
              }
--        } catch(Exception ex){
--            
-+            numCollisions = 0; // Spigot
+-            numCollisions = 0; // Spigot
++        } catch(Exception ex){
++            
          }
-+
+-
      }
  
      protected void s(Entity entity) {
-diff -Naur src_new/main/java/net/minecraft/server/EntityWither.java src_origin/main/java/net/minecraft/server/EntityWither.java
---- src_new/main/java/net/minecraft/server/EntityWither.java	2016-02-05 01:38:26.661410948 +0800
-+++ src_origin/main/java/net/minecraft/server/EntityWither.java	2016-02-05 01:52:07.464371126 +0800
-@@ -458,8 +458,7 @@
+diff -Naur src_origin/main/java/net/minecraft/server/EntityWither.java src_new/main/java/net/minecraft/server/EntityWither.java
+--- src_origin/main/java/net/minecraft/server/EntityWither.java	2016-02-05 01:52:07.464371126 +0800
++++ src_new/main/java/net/minecraft/server/EntityWither.java	2016-02-05 01:38:26.661410948 +0800
+@@ -458,7 +458,8 @@
  
      }
  
--    public void D() {
--    //protected void D() {
-+    protected void D() {
+-    protected void D() {
++    public void D() {
++    //protected void D() {
          this.ticksFarFromPlayer = 0;
      }
  
-diff -Naur src_new/main/java/net/minecraft/server/MinecraftServer.java src_origin/main/java/net/minecraft/server/MinecraftServer.java
---- src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-02-05 01:38:27.770410895 +0800
-+++ src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-02-05 01:52:08.748371064 +0800
-@@ -43,13 +43,9 @@
+diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_new/main/java/net/minecraft/server/MinecraftServer.java
+--- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-02-05 01:52:08.748371064 +0800
++++ src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-02-05 01:38:27.770410895 +0800
+@@ -43,9 +43,13 @@
  
  import jline.console.ConsoleReader;
  import joptsimple.OptionSet;
--import net.openhft.affinity.AffinityLock;
--import net.openhft.affinity.AffinitySupport;
++import net.openhft.affinity.AffinityLock;
++import net.openhft.affinity.AffinitySupport;
  
  import org.bukkit.craftbukkit.Main;
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
--import org.hose.MSPool;
--import org.spigotmc.SpigotWorldConfig;
++import org.hose.MSPool;
++import org.spigotmc.SpigotWorldConfig;
  // CraftBukkit end
  
  public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
-@@ -656,7 +652,6 @@
+@@ -652,6 +656,7 @@
  
          this.methodProfiler.a("root");
          this.B();
--        //SpigotWorldConfig.mspool_executor.submit(new MSPool(this));
++        //SpigotWorldConfig.mspool_executor.submit(new MSPool(this));
          if (i - this.X >= 5000000000L) {
              this.X = i;
              this.r.setPlayerSample(new ServerPing.ServerPingPlayerSample(this.J(), this.I()));
-@@ -718,7 +713,7 @@
+@@ -713,7 +718,7 @@
          int count = this.j.size();
          while (count-- > 0 && (entry = this.j.poll()) != null) {
              SystemUtils.a(entry, MinecraftServer.LOGGER);
--        }
-+         }
+-         }
++        }
          // Spigot end
  
          this.methodProfiler.c("levels");
-@@ -941,13 +936,8 @@
+@@ -936,8 +941,13 @@
              if (options.has("world")) {
                  dedicatedserver.setWorld((String) options.valueOf("world"));
              }
--            //
--            AffinityLock al = AffinityLock.acquireLock();
--            try {
--                dedicatedserver.primaryThread.start();
--            } finally {
--                al.release();
--            }
-+
-+            dedicatedserver.primaryThread.start();
+-
+-            dedicatedserver.primaryThread.start();
++            //
++            AffinityLock al = AffinityLock.acquireLock();
++            try {
++                dedicatedserver.primaryThread.start();
++            } finally {
++                al.release();
++            }
              // CraftBukkit end
          } catch (Exception exception) {
              MinecraftServer.LOGGER.fatal("Failed to start the minecraft server", exception);
-diff -Naur src_new/main/java/net/minecraft/server/World.java src_origin/main/java/net/minecraft/server/World.java
---- src_new/main/java/net/minecraft/server/World.java	2016-02-05 01:38:30.557410759 +0800
-+++ src_origin/main/java/net/minecraft/server/World.java	2016-02-05 01:52:11.643370923 +0800
-@@ -16,7 +16,6 @@
+diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/java/net/minecraft/server/World.java
+--- src_origin/main/java/net/minecraft/server/World.java	2016-02-05 01:52:11.643370923 +0800
++++ src_new/main/java/net/minecraft/server/World.java	2016-02-05 01:38:30.557410759 +0800
+@@ -16,6 +16,7 @@
  // CraftBukkit start
  import com.google.common.collect.Maps;
  import java.util.Map;
--import java.util.concurrent.TimeUnit;
++import java.util.concurrent.TimeUnit;
  
  import org.bukkit.Bukkit;
  import org.bukkit.block.BlockState;
-@@ -32,7 +31,6 @@
+@@ -31,6 +32,7 @@
  import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
  import org.bukkit.event.weather.WeatherChangeEvent;
  import org.bukkit.event.weather.ThunderChangeEvent;
--import org.spigotmc.SpigotWorldConfig;
++import org.spigotmc.SpigotWorldConfig;
  // CraftBukkit end
  
  public abstract class World implements IBlockAccess {
-@@ -1340,7 +1338,7 @@
+@@ -1338,7 +1340,7 @@
  
      public void b(BlockPosition blockposition, Block block, int i, int j) {}
  
--    public void tickEntities() throws InterruptedException {
-+    public void tickEntities() {
+-    public void tickEntities() {
++    public void tickEntities() throws InterruptedException {
          this.methodProfiler.a("entities");
          this.methodProfiler.a("global");
  
-@@ -1359,8 +1357,7 @@
+@@ -1357,7 +1359,8 @@
  
              try {
                  ++entity.ticksLived;
--                //entity.t_();
--                
-+                entity.t_();
+-                entity.t_();
++                //entity.t_();
++                
              } catch (Throwable throwable) {
                  crashreport = CrashReport.a(throwable, "Ticking entity");
                  crashreportsystemdetails = crashreport.a("Entity being ticked");
-@@ -1406,7 +1403,9 @@
+@@ -1403,9 +1406,7 @@
          // CraftBukkit start - Use field for loop variable
          int entitiesThisCycle = 0;
          if (tickPosition < 0) tickPosition = 0;
--        for (entityLimiter.initTick();entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());tickPosition++, entitiesThisCycle++) {
-+        for (entityLimiter.initTick();
-+                entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
-+                tickPosition++, entitiesThisCycle++) {
+-        for (entityLimiter.initTick();
+-                entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
+-                tickPosition++, entitiesThisCycle++) {
++        for (entityLimiter.initTick();entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());tickPosition++, entitiesThisCycle++) {
              tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
              entity = (Entity) this.entityList.get(this.tickPosition);
              // CraftBukkit end
-@@ -1450,16 +1449,8 @@
+@@ -1449,8 +1450,16 @@
  
              this.methodProfiler.b();
          }
--        /*
--        try {
--            SpigotWorldConfig.dotickpool_executor.submit(SpigotWorldConfig.futureTask);
--        } catch(Exception ex){
--            System.out.println(ex);
--        }*/
--        //
--        //SpigotWorldConfig.movepool_executor.awaitTermination(5, TimeUnit.MILLISECONDS);
++        /*
++        try {
++            SpigotWorldConfig.dotickpool_executor.submit(SpigotWorldConfig.futureTask);
++        } catch(Exception ex){
++            System.out.println(ex);
++        }*/
++        //
++        //SpigotWorldConfig.movepool_executor.awaitTermination(5, TimeUnit.MILLISECONDS);
          guardEntityList = false; // Spigot
--        
-+
+-
++        
          timings.entityTick.stopTiming(); // Spigot
          this.methodProfiler.c("blockEntities");
          timings.tileEntityTick.startTiming(); // Spigot
-@@ -1474,7 +1465,9 @@
+@@ -1465,9 +1474,7 @@
  
          // Spigot start
          int tilesThisCycle = 0;
--        for (tileLimiter.initTick();tilesThisCycle < tileEntityList.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());tileTickPosition++, tilesThisCycle++) {
-+        for (tileLimiter.initTick();
-+                tilesThisCycle < tileEntityList.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
-+                tileTickPosition++, tilesThisCycle++) {
+-        for (tileLimiter.initTick();
+-                tilesThisCycle < tileEntityList.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
+-                tileTickPosition++, tilesThisCycle++) {
++        for (tileLimiter.initTick();tilesThisCycle < tileEntityList.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());tileTickPosition++, tilesThisCycle++) {
              tileTickPosition = (tileTickPosition < tileEntityList.size()) ? tileTickPosition : 0;
              TileEntity tileentity = (TileEntity) this.tileEntityList.get(tileTickPosition);
              // Spigot start
-@@ -1492,7 +1485,6 @@
+@@ -1485,6 +1492,7 @@
                  if (this.isLoaded(blockposition) && this.N.a(blockposition)) {
                      try {
                          tileentity.tickTimer.startTiming(); // Spigot
--                        //((IUpdatePlayerListBox) tileentity).c();
++                        //((IUpdatePlayerListBox) tileentity).c();
                          ((IUpdatePlayerListBox) tileentity).c();
                      } catch (Throwable throwable2) {
                          CrashReport crashreport1 = CrashReport.a(throwable2, "Ticking block entity");
-@@ -1556,7 +1548,6 @@
+@@ -1548,6 +1556,7 @@
          timings.tileEntityPending.stopTiming(); // Spigot
          this.methodProfiler.b();
          this.methodProfiler.b();
--        //SpigotWorldConfig.dotickpool_executor.awaitTermination(5, TimeUnit.MILLISECONDS);
++        //SpigotWorldConfig.dotickpool_executor.awaitTermination(5, TimeUnit.MILLISECONDS);
      }
  
      public boolean a(TileEntity tileentity) {
-diff -Naur src_new/main/java/net/minecraft/server/WorldServer.java src_origin/main/java/net/minecraft/server/WorldServer.java
---- src_new/main/java/net/minecraft/server/WorldServer.java	2016-02-05 01:38:30.822410747 +0800
-+++ src_origin/main/java/net/minecraft/server/WorldServer.java	2016-02-05 01:52:12.055370903 +0800
-@@ -27,8 +27,6 @@
+diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src_new/main/java/net/minecraft/server/WorldServer.java
+--- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-02-05 01:52:12.055370903 +0800
++++ src_new/main/java/net/minecraft/server/WorldServer.java	2016-02-05 01:38:30.822410747 +0800
+@@ -27,6 +27,8 @@
  
  import org.bukkit.event.block.BlockFormEvent;
  import org.bukkit.event.weather.LightningStrikeEvent;
--import org.hose.TimeUpdateThread;
--import org.spigotmc.SpigotWorldConfig;
++import org.hose.TimeUpdateThread;
++import org.spigotmc.SpigotWorldConfig;
  // CraftBukkit end
  
  public class WorldServer extends World implements IAsyncTaskHandler {
-@@ -239,13 +237,11 @@
+@@ -237,11 +239,13 @@
          if (j != this.ab()) {
              this.c(j);
          }
--        
--        SpigotWorldConfig.timeupdatethread_executor.execute(new TimeUpdateThread(this));
--        /*
-+
+-
++        
++        SpigotWorldConfig.timeupdatethread_executor.execute(new TimeUpdateThread(this));
++        /*
          this.worldData.setTime(this.worldData.getTime() + 1L);
          if (this.getGameRules().getBoolean("doDaylightCycle")) {
              this.worldData.setDayTime(this.worldData.getDayTime() + 1L);
--        }*/
-+        }
+-        }
++        }*/
  
          timings.doChunkUnload.stopTiming(); // Spigot
          this.methodProfiler.c("tickPending");
-@@ -589,7 +585,7 @@
+@@ -585,7 +589,7 @@
  
      }
  
--    public void tickEntities() throws InterruptedException {
-+    public void tickEntities() {
+-    public void tickEntities() {
++    public void tickEntities() throws InterruptedException {
          if (false && this.players.isEmpty()) { // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
              if (this.emptyTime++ >= 1200) {
                  return;
-@@ -628,19 +624,16 @@
+@@ -624,16 +628,19 @@
                  this.methodProfiler.a("cleaning");
  
                  NextTickListEntry nextticklistentry;
--                try{
--                    for (int j = 0; j < i; ++j) {
--                        nextticklistentry = (NextTickListEntry) this.M.first();
--                        if (!flag && nextticklistentry.b > this.worldData.getTime()) {
--                            break;
--                        }
++                try{
++                    for (int j = 0; j < i; ++j) {
++                        nextticklistentry = (NextTickListEntry) this.M.first();
++                        if (!flag && nextticklistentry.b > this.worldData.getTime()) {
++                            break;
++                        }
  
--                        // CraftBukkit - use M, PAIL: Rename nextTickList
--                        this.M.remove(nextticklistentry);
--                        this.V.add(nextticklistentry);
-+                for (int j = 0; j < i; ++j) {
-+                    nextticklistentry = (NextTickListEntry) this.M.first();
-+                    if (!flag && nextticklistentry.b > this.worldData.getTime()) {
-+                        break;
+-                for (int j = 0; j < i; ++j) {
+-                    nextticklistentry = (NextTickListEntry) this.M.first();
+-                    if (!flag && nextticklistentry.b > this.worldData.getTime()) {
+-                        break;
++                        // CraftBukkit - use M, PAIL: Rename nextTickList
++                        this.M.remove(nextticklistentry);
++                        this.V.add(nextticklistentry);
                      }
--                }catch (Exception ex){
--                        
-+
-+                    // CraftBukkit - use M, PAIL: Rename nextTickList
-+                    this.M.remove(nextticklistentry);
-+                    this.V.add(nextticklistentry);
+-
+-                    // CraftBukkit - use M, PAIL: Rename nextTickList
+-                    this.M.remove(nextticklistentry);
+-                    this.V.add(nextticklistentry);
++                }catch (Exception ex){
++                        
                  }
  
                  this.methodProfiler.b();
-@@ -699,27 +692,24 @@
+@@ -692,24 +699,27 @@
              } else {
                  iterator = this.V.iterator();
              }
--            try{
--                while (iterator.hasNext()) {
--                    NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
--                    BlockPosition blockposition = nextticklistentry.a;
++            try{
++                while (iterator.hasNext()) {
++                    NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
++                    BlockPosition blockposition = nextticklistentry.a;
  
--                    if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
--                        if (flag) {
--                            // CraftBukkit - use M
--                            iterator.remove();
--                        }
-+            while (iterator.hasNext()) {
-+                NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
-+                BlockPosition blockposition = nextticklistentry.a;
+-            while (iterator.hasNext()) {
+-                NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
+-                BlockPosition blockposition = nextticklistentry.a;
++                    if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
++                        if (flag) {
++                            // CraftBukkit - use M
++                            iterator.remove();
++                        }
  
--                        if (arraylist == null) {
--                            arraylist = Lists.newArrayList();
--                        }
-+                if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
-+                    if (flag) {
-+                        // CraftBukkit - use M
-+                        iterator.remove();
-+                    }
+-                if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
+-                    if (flag) {
+-                        // CraftBukkit - use M
+-                        iterator.remove();
+-                    }
++                        if (arraylist == null) {
++                            arraylist = Lists.newArrayList();
++                        }
  
--                        arraylist.add(nextticklistentry);
-+                    if (arraylist == null) {
-+                        arraylist = Lists.newArrayList();
+-                    if (arraylist == null) {
+-                        arraylist = Lists.newArrayList();
++                        arraylist.add(nextticklistentry);
                      }
-+
-+                    arraylist.add(nextticklistentry);
+-
+-                    arraylist.add(nextticklistentry);
                  }
--            } catch(Exception ex) {
--            
--            }    
-+            }
+-            }
++            } catch(Exception ex) {
++            
++            }    
          }
  
          return arraylist;
-diff -Naur src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
---- src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-05 01:38:37.333410431 +0800
-+++ src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-05 01:52:19.515370541 +0800
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
+--- src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-05 01:52:19.515370541 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-05 01:38:37.333410431 +0800
 @@ -117,7 +117,7 @@
      }
  
      public boolean hasOwner() {
--        return profile != null;
-+        return profile != null && profile.getName() != null;
+-        return profile != null && profile.getName() != null;
++        return profile != null;
      }
  
      public String getOwner() {
-diff -Naur src_new/main/java/org/hose/BreakException.java src_origin/main/java/org/hose/BreakException.java
---- src_new/main/java/org/hose/BreakException.java	2016-02-05 01:38:20.664411239 +0800
-+++ src_origin/main/java/org/hose/BreakException.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,16 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--/**
-- *
-- * @author you
-- */
--public class BreakException extends RuntimeException {
--    
--    public BreakException() {
--    }
--}
-diff -Naur src_new/main/java/org/hose/ChunkPool.java src_origin/main/java/org/hose/ChunkPool.java
---- src_new/main/java/org/hose/ChunkPool.java	2016-02-05 01:38:20.668411239 +0800
-+++ src_origin/main/java/org/hose/ChunkPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,42 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import java.util.concurrent.Callable;
--import net.minecraft.server.Chunk;
--import net.minecraft.server.ChunkProviderServer;
--
--/**
-- *
-- * @author you
-- */
--public class ChunkPool implements Callable{
--
--    private ChunkProviderServer cps;
--    private Chunk c;
--    private int i;
--    private int j;
--    
--    public ChunkPool(ChunkProviderServer cps, Chunk c, int i, int j){
--        this.cps = cps;
--        this.c = c;
--        this.i = i;
--        this.j = j;
--    }
--
--
--    @Override
--    public Chunk call(){
--        try {
--            //chunk = this.chunkProvider.getOrCreateChunk(i, j);
--            c = cps.chunkProvider.getOrCreateChunk(i, i);
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--        return c;
--    }
--    
--}
-diff -Naur src_new/main/java/org/hose/DeSpawnPool.java src_origin/main/java/org/hose/DeSpawnPool.java
---- src_new/main/java/org/hose/DeSpawnPool.java	2016-02-05 01:38:20.720411237 +0800
-+++ src_origin/main/java/org/hose/DeSpawnPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,38 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import java.util.logging.Level;
--import java.util.logging.Logger;
--import net.minecraft.server.EntityInsentient;
--import net.minecraft.server.World;
--
--/**
-- *
-- * @author you
-- */
--public class DeSpawnPool  implements Runnable{
--    private EntityInsentient ei;
--
--    public DeSpawnPool(EntityInsentient ei) {
--        this.ei = ei;
--    }
--    
--    @Override
--    public void run() {
--        try {
--            ei.D();
--            //synchronized(this) {
--                //SpigotWorldConfig.itemDespawnCount = 0;
--            //}
--            //System.out.println(SpigotWorldConfig.itemDespawnCount);
--        } catch (Exception ex) {
--            
--        }
--        
--    }
--    
--}
-diff -Naur src_new/main/java/org/hose/MobSpawnerPool.java src_origin/main/java/org/hose/MobSpawnerPool.java
---- src_new/main/java/org/hose/MobSpawnerPool.java	2016-02-05 01:38:20.724411236 +0800
-+++ src_origin/main/java/org/hose/MobSpawnerPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,41 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import net.minecraft.server.Entity;
--import net.minecraft.server.World;
--import net.minecraft.server.WorldServer;
--import org.bukkit.Bukkit;
--
--/**
-- *
-- * @author you
-- */
--public class MobSpawnerPool implements Runnable{
--    private WorldServer ws;
--    private boolean flag;
--    private boolean flag1;
--    private boolean flag2;
--    
--    public MobSpawnerPool(WorldServer ws, boolean flag, boolean flag1, boolean flag2){
--        this.ws = ws;
--        this.flag = flag;
--        this.flag1 = flag1;
--        this.flag2 = flag2;
--    }
--    
--    @Override
--    public void run() {
--        try {
--            synchronized(this) {
--                //this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
--                //ws.R.a(ws, flag, flag1, flag2);
--            }
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MobSpawnerPool!");
--        }
--    }
--}
-diff -Naur src_new/main/java/org/hose/MovePool.java src_origin/main/java/org/hose/MovePool.java
---- src_new/main/java/org/hose/MovePool.java	2016-02-05 01:38:20.776411234 +0800
-+++ src_origin/main/java/org/hose/MovePool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,47 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import net.minecraft.server.EntityLiving;
--/**
-- *
-- * @author you
-- */
--//public class MovePool extends RecursiveAction{
--public class MovePool implements Runnable{
--    private EntityLiving el;
--    private float aZ;
--    private float ba;
--    
--    public MovePool(EntityLiving el, float aZ, float ba){
--        this.el = el;
--        this.aZ = aZ;
--        this.ba = ba;
--    }
--    /*
--    @Override
--    protected void compute() {
--        try {
--            //synchronized(this) {
--                //this.g(this.aZ, this.ba);
--                el.g(aZ, ba);
--                fork();
--            //}
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--    }*/
--
--    @Override
--    public void run() {
--        try {
--            //this.g(this.aZ, this.ba);
--            el.g(aZ, ba);
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--    }
--}
-diff -Naur src_new/main/java/org/hose/MSPool.java src_origin/main/java/org/hose/MSPool.java
---- src_new/main/java/org/hose/MSPool.java	2016-02-05 01:38:20.784411234 +0800
-+++ src_origin/main/java/org/hose/MSPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,55 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import java.util.concurrent.RecursiveAction;
--import net.minecraft.server.MinecraftServer;
--/**
-- *
-- * @author you
-- */
--public class MSPool extends RecursiveAction{
--    private MinecraftServer ms;
--    public MSPool(MinecraftServer ms){
--        //this.el = el;
--        this.ms = ms;
--    }
--    /*
--    @Override
--    public void run() {
--        try {
--            //synchronized(this) {
--                el.move(motX, motY, motZ);
--            //}
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--    }*/
--    /*
--    @Override
--    protected void compute() {
--        try {
--            //synchronized(this) {
--                //this.g(this.aZ, this.ba);
--                el.g(aZ, ba);
--                fork();
--            //}
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--    }*/
--    
--
--    @Override
--    protected void compute() {
--        try {
--            ms.B();
--            fork();
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
--        }
--    }
--}
-diff -Naur src_new/main/java/org/hose/TickEntityPool.java src_origin/main/java/org/hose/TickEntityPool.java
---- src_new/main/java/org/hose/TickEntityPool.java	2016-02-05 01:38:20.820411232 +0800
-+++ src_origin/main/java/org/hose/TickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,122 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--//import java.util.concurrent.RecursiveAction;
--import java.util.concurrent.Callable;
--import net.minecraft.server.EntityInsentient;
--
--
--/**
-- *
-- * @author you
-- */
--public class TickEntityPool implements Callable{
--    private EntityInsentient ei;
--        
--    
--    public TickEntityPool(EntityInsentient ei){
--        this.ei = ei;
--    }
--    /*
--    @Override
--    public void run() {
--        try {
--            ei.world.methodProfiler.a("checkDespawn");
--            ei.D();
--            //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(ei));
--            ei.world.methodProfiler.b();
--            // Spigot Start
--            if ( ei.fromMobSpawner )
--            {
--                return;
--            }
--            // Spigot End
--            ei.world.methodProfiler.a("sensing");
--            ei.bk.a();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.a("targetSelector");
--            ei.targetSelector.a();
--            ei.world.methodProfiler.b();
--            //ei.world.methodProfiler.a("goalSelector");
--            //ei.goalSelector.a();
--            ei.world.methodProfiler.b();
--            //ei.world.methodProfiler.a("navigation");
--            //ei.navigation.k();
--            //ei.world.methodProfiler.b();
--            //ei.world.methodProfiler.a("mob tick");
--            //ei.E();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.a("controls");
--            
--            ei.world.methodProfiler.a("move");
--            ei.moveController.c();
--            ei.world.methodProfiler.c("look");
--            ei.lookController.a();
--            ei.world.methodProfiler.c("jump");
--            ei.g.b();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.b();
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
--        }
--    }*/
--    /*
--    @Override
--    protected void compute() {
--        try {
--            //w.runtick(entity);
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
--        }
--    }*/
--
--    @Override
--    public Object call() throws Exception {
--        try {
--            ei.world.methodProfiler.a("checkDespawn");
--            ei.D();
--            //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(ei));
--            ei.world.methodProfiler.b();
--            // Spigot Start
--            if ( ei.fromMobSpawner )
--            {
--                return null;
--            }
--            // Spigot End
--            ei.world.methodProfiler.a("sensing");
--            ei.bk.a();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.a("targetSelector");
--            ei.targetSelector.a();
--            ei.world.methodProfiler.b();
--            /*ei.world.methodProfiler.a("goalSelector");
--            ei.goalSelector.a();*/
--            ei.world.methodProfiler.b();
--            /*ei.world.methodProfiler.a("navigation");
--            ei.navigation.k();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.a("mob tick");
--            ei.E();*/
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.a("controls");
--            
--            ei.world.methodProfiler.a("move");
--            ei.moveController.c();
--            ei.world.methodProfiler.c("look");
--            ei.lookController.a();
--            ei.world.methodProfiler.c("jump");
--            ei.g.b();
--            ei.world.methodProfiler.b();
--            ei.world.methodProfiler.b();
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
--        }
--        return null;
--    }
--
--
--}
-diff -Naur src_new/main/java/org/hose/TimeUpdateThread.java src_origin/main/java/org/hose/TimeUpdateThread.java
---- src_new/main/java/org/hose/TimeUpdateThread.java	2016-02-05 01:38:20.832411231 +0800
-+++ src_origin/main/java/org/hose/TimeUpdateThread.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,41 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--import net.minecraft.server.EntityPlayer;
--import net.minecraft.server.MinecraftServer;
--import net.minecraft.server.PacketPlayOutUpdateTime;
--import net.minecraft.server.WorldServer;
--import net.openhft.affinity.AffinityLock;
--
--/**
-- *
-- * @author softpak
-- */
--public class TimeUpdateThread implements Runnable{
--    private WorldServer ws;
--
--    
--    public TimeUpdateThread(WorldServer ws){
--        this.ws = ws;
--    }
--    
--    @Override
--    public void run() {
--        AffinityLock al = AffinityLock.acquireLock();
--        try {
--            ws.worldData.setTime(ws.worldData.getTime() + 1L);
--            if (ws.getGameRules().getBoolean("doDaylightCycle")) {
--                ws.worldData.setDayTime(ws.worldData.getDayTime() + 1L);
--            }
--        }catch(Exception ex){
--            
--        }finally{
--            al.release();
--        }
--    }
--    
--}
-diff -Naur src_new/main/java/org/hose/WorldTickEntityPool.java src_origin/main/java/org/hose/WorldTickEntityPool.java
---- src_new/main/java/org/hose/WorldTickEntityPool.java	2016-02-05 01:38:20.864411230 +0800
-+++ src_origin/main/java/org/hose/WorldTickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
-@@ -1,44 +0,0 @@
--/*
-- * To change this license header, choose License Headers in Project Properties.
-- * To change this template file, choose Tools | Templates
-- * and open the template in the editor.
-- */
--package org.hose;
--
--//import java.util.concurrent.RecursiveAction;
--import net.minecraft.server.Entity;
--import net.minecraft.server.EntityInsentient;
--
--
--/**
-- *
-- * @author you
-- */
--public class WorldTickEntityPool implements Runnable{
--    private Entity en;
--        
--    
--    public WorldTickEntityPool(Entity en){
--        this.en = en;
--    }
--    
--    @Override
--    public void run() {
--        try {
--            en.t_();
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
--        }
--    }
--    /*
--    @Override
--    protected void compute() {
--        try {
--            //w.runtick(entity);
--        } catch(Exception ex) {
--            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
--        }
--    }*/
--
--
--}
-diff -Naur src_new/main/java/org/spigotmc/SpigotWorldConfig.java src_origin/main/java/org/spigotmc/SpigotWorldConfig.java
---- src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-05 01:38:21.281411209 +0800
-+++ src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-05 01:52:01.120371434 +0800
-@@ -1,54 +1,13 @@
+diff -Naur src_origin/main/java/org/hose/BreakException.java src_new/main/java/org/hose/BreakException.java
+--- src_origin/main/java/org/hose/BreakException.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/BreakException.java	2016-02-05 01:38:20.664411239 +0800
+@@ -0,0 +1,16 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++/**
++ *
++ * @author you
++ */
++public class BreakException extends RuntimeException {
++    
++    public BreakException() {
++    }
++}
+diff -Naur src_origin/main/java/org/hose/ChunkPool.java src_new/main/java/org/hose/ChunkPool.java
+--- src_origin/main/java/org/hose/ChunkPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/ChunkPool.java	2016-02-05 01:38:20.668411239 +0800
+@@ -0,0 +1,42 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.concurrent.Callable;
++import net.minecraft.server.Chunk;
++import net.minecraft.server.ChunkProviderServer;
++
++/**
++ *
++ * @author you
++ */
++public class ChunkPool implements Callable{
++
++    private ChunkProviderServer cps;
++    private Chunk c;
++    private int i;
++    private int j;
++    
++    public ChunkPool(ChunkProviderServer cps, Chunk c, int i, int j){
++        this.cps = cps;
++        this.c = c;
++        this.i = i;
++        this.j = j;
++    }
++
++
++    @Override
++    public Chunk call(){
++        try {
++            //chunk = this.chunkProvider.getOrCreateChunk(i, j);
++            c = cps.chunkProvider.getOrCreateChunk(i, i);
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++        return c;
++    }
++    
++}
+diff -Naur src_origin/main/java/org/hose/DeSpawnPool.java src_new/main/java/org/hose/DeSpawnPool.java
+--- src_origin/main/java/org/hose/DeSpawnPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/DeSpawnPool.java	2016-02-05 01:38:20.720411237 +0800
+@@ -0,0 +1,38 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.logging.Level;
++import java.util.logging.Logger;
++import net.minecraft.server.EntityInsentient;
++import net.minecraft.server.World;
++
++/**
++ *
++ * @author you
++ */
++public class DeSpawnPool  implements Runnable{
++    private EntityInsentient ei;
++
++    public DeSpawnPool(EntityInsentient ei) {
++        this.ei = ei;
++    }
++    
++    @Override
++    public void run() {
++        try {
++            ei.D();
++            //synchronized(this) {
++                //SpigotWorldConfig.itemDespawnCount = 0;
++            //}
++            //System.out.println(SpigotWorldConfig.itemDespawnCount);
++        } catch (Exception ex) {
++            
++        }
++        
++    }
++    
++}
+diff -Naur src_origin/main/java/org/hose/MobSpawnerPool.java src_new/main/java/org/hose/MobSpawnerPool.java
+--- src_origin/main/java/org/hose/MobSpawnerPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/MobSpawnerPool.java	2016-02-05 01:38:20.724411236 +0800
+@@ -0,0 +1,41 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import net.minecraft.server.Entity;
++import net.minecraft.server.World;
++import net.minecraft.server.WorldServer;
++import org.bukkit.Bukkit;
++
++/**
++ *
++ * @author you
++ */
++public class MobSpawnerPool implements Runnable{
++    private WorldServer ws;
++    private boolean flag;
++    private boolean flag1;
++    private boolean flag2;
++    
++    public MobSpawnerPool(WorldServer ws, boolean flag, boolean flag1, boolean flag2){
++        this.ws = ws;
++        this.flag = flag;
++        this.flag1 = flag1;
++        this.flag2 = flag2;
++    }
++    
++    @Override
++    public void run() {
++        try {
++            synchronized(this) {
++                //this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
++                //ws.R.a(ws, flag, flag1, flag2);
++            }
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MobSpawnerPool!");
++        }
++    }
++}
+diff -Naur src_origin/main/java/org/hose/MovePool.java src_new/main/java/org/hose/MovePool.java
+--- src_origin/main/java/org/hose/MovePool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/MovePool.java	2016-02-05 01:38:20.776411234 +0800
+@@ -0,0 +1,47 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import net.minecraft.server.EntityLiving;
++/**
++ *
++ * @author you
++ */
++//public class MovePool extends RecursiveAction{
++public class MovePool implements Runnable{
++    private EntityLiving el;
++    private float aZ;
++    private float ba;
++    
++    public MovePool(EntityLiving el, float aZ, float ba){
++        this.el = el;
++        this.aZ = aZ;
++        this.ba = ba;
++    }
++    /*
++    @Override
++    protected void compute() {
++        try {
++            //synchronized(this) {
++                //this.g(this.aZ, this.ba);
++                el.g(aZ, ba);
++                fork();
++            //}
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++    }*/
++
++    @Override
++    public void run() {
++        try {
++            //this.g(this.aZ, this.ba);
++            el.g(aZ, ba);
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++    }
++}
+diff -Naur src_origin/main/java/org/hose/MSPool.java src_new/main/java/org/hose/MSPool.java
+--- src_origin/main/java/org/hose/MSPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/MSPool.java	2016-02-05 01:38:20.784411234 +0800
+@@ -0,0 +1,55 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.concurrent.RecursiveAction;
++import net.minecraft.server.MinecraftServer;
++/**
++ *
++ * @author you
++ */
++public class MSPool extends RecursiveAction{
++    private MinecraftServer ms;
++    public MSPool(MinecraftServer ms){
++        //this.el = el;
++        this.ms = ms;
++    }
++    /*
++    @Override
++    public void run() {
++        try {
++            //synchronized(this) {
++                el.move(motX, motY, motZ);
++            //}
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++    }*/
++    /*
++    @Override
++    protected void compute() {
++        try {
++            //synchronized(this) {
++                //this.g(this.aZ, this.ba);
++                el.g(aZ, ba);
++                fork();
++            //}
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++    }*/
++    
++
++    @Override
++    protected void compute() {
++        try {
++            ms.B();
++            fork();
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
++        }
++    }
++}
+diff -Naur src_origin/main/java/org/hose/TickEntityPool.java src_new/main/java/org/hose/TickEntityPool.java
+--- src_origin/main/java/org/hose/TickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/TickEntityPool.java	2016-02-05 01:38:20.820411232 +0800
+@@ -0,0 +1,122 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++//import java.util.concurrent.RecursiveAction;
++import java.util.concurrent.Callable;
++import net.minecraft.server.EntityInsentient;
++
++
++/**
++ *
++ * @author you
++ */
++public class TickEntityPool implements Callable{
++    private EntityInsentient ei;
++        
++    
++    public TickEntityPool(EntityInsentient ei){
++        this.ei = ei;
++    }
++    /*
++    @Override
++    public void run() {
++        try {
++            ei.world.methodProfiler.a("checkDespawn");
++            ei.D();
++            //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(ei));
++            ei.world.methodProfiler.b();
++            // Spigot Start
++            if ( ei.fromMobSpawner )
++            {
++                return;
++            }
++            // Spigot End
++            ei.world.methodProfiler.a("sensing");
++            ei.bk.a();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.a("targetSelector");
++            ei.targetSelector.a();
++            ei.world.methodProfiler.b();
++            //ei.world.methodProfiler.a("goalSelector");
++            //ei.goalSelector.a();
++            ei.world.methodProfiler.b();
++            //ei.world.methodProfiler.a("navigation");
++            //ei.navigation.k();
++            //ei.world.methodProfiler.b();
++            //ei.world.methodProfiler.a("mob tick");
++            //ei.E();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.a("controls");
++            
++            ei.world.methodProfiler.a("move");
++            ei.moveController.c();
++            ei.world.methodProfiler.c("look");
++            ei.lookController.a();
++            ei.world.methodProfiler.c("jump");
++            ei.g.b();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.b();
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
++        }
++    }*/
++    /*
++    @Override
++    protected void compute() {
++        try {
++            //w.runtick(entity);
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
++        }
++    }*/
++
++    @Override
++    public Object call() throws Exception {
++        try {
++            ei.world.methodProfiler.a("checkDespawn");
++            ei.D();
++            //SpigotWorldConfig.despawnpool_executor.execute(new DeSpawnPool(ei));
++            ei.world.methodProfiler.b();
++            // Spigot Start
++            if ( ei.fromMobSpawner )
++            {
++                return null;
++            }
++            // Spigot End
++            ei.world.methodProfiler.a("sensing");
++            ei.bk.a();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.a("targetSelector");
++            ei.targetSelector.a();
++            ei.world.methodProfiler.b();
++            /*ei.world.methodProfiler.a("goalSelector");
++            ei.goalSelector.a();*/
++            ei.world.methodProfiler.b();
++            /*ei.world.methodProfiler.a("navigation");
++            ei.navigation.k();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.a("mob tick");
++            ei.E();*/
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.a("controls");
++            
++            ei.world.methodProfiler.a("move");
++            ei.moveController.c();
++            ei.world.methodProfiler.c("look");
++            ei.lookController.a();
++            ei.world.methodProfiler.c("jump");
++            ei.g.b();
++            ei.world.methodProfiler.b();
++            ei.world.methodProfiler.b();
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
++        }
++        return null;
++    }
++
++
++}
+diff -Naur src_origin/main/java/org/hose/TimeUpdateThread.java src_new/main/java/org/hose/TimeUpdateThread.java
+--- src_origin/main/java/org/hose/TimeUpdateThread.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/TimeUpdateThread.java	2016-02-05 01:38:20.832411231 +0800
+@@ -0,0 +1,41 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import net.minecraft.server.EntityPlayer;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.PacketPlayOutUpdateTime;
++import net.minecraft.server.WorldServer;
++import net.openhft.affinity.AffinityLock;
++
++/**
++ *
++ * @author softpak
++ */
++public class TimeUpdateThread implements Runnable{
++    private WorldServer ws;
++
++    
++    public TimeUpdateThread(WorldServer ws){
++        this.ws = ws;
++    }
++    
++    @Override
++    public void run() {
++        AffinityLock al = AffinityLock.acquireLock();
++        try {
++            ws.worldData.setTime(ws.worldData.getTime() + 1L);
++            if (ws.getGameRules().getBoolean("doDaylightCycle")) {
++                ws.worldData.setDayTime(ws.worldData.getDayTime() + 1L);
++            }
++        }catch(Exception ex){
++            
++        }finally{
++            al.release();
++        }
++    }
++    
++}
+diff -Naur src_origin/main/java/org/hose/WorldTickEntityPool.java src_new/main/java/org/hose/WorldTickEntityPool.java
+--- src_origin/main/java/org/hose/WorldTickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/WorldTickEntityPool.java	2016-02-05 01:38:20.864411230 +0800
+@@ -0,0 +1,44 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++//import java.util.concurrent.RecursiveAction;
++import net.minecraft.server.Entity;
++import net.minecraft.server.EntityInsentient;
++
++
++/**
++ *
++ * @author you
++ */
++public class WorldTickEntityPool implements Runnable{
++    private Entity en;
++        
++    
++    public WorldTickEntityPool(Entity en){
++        this.en = en;
++    }
++    
++    @Override
++    public void run() {
++        try {
++            en.t_();
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
++        }
++    }
++    /*
++    @Override
++    protected void compute() {
++        try {
++            //w.runtick(entity);
++        } catch(Exception ex) {
++            //Bukkit.getLogger().warning("An entity is missing in TickEntityPool!");
++        }
++    }*/
++
++
++}
+diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src_new/main/java/org/spigotmc/SpigotWorldConfig.java
+--- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-05 01:52:01.120371434 +0800
++++ src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-05 01:38:21.281411209 +0800
+@@ -1,13 +1,54 @@
  package org.spigotmc;
  
--import com.google.common.util.concurrent.ThreadFactoryBuilder;
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
  import java.util.Arrays;
  import java.util.List;
--import java.util.concurrent.Executor;
--import java.util.concurrent.ExecutorService;
--import java.util.concurrent.Executors;
--import java.util.concurrent.ForkJoinPool;
--import java.util.concurrent.FutureTask;
--import java.util.concurrent.ThreadFactory;
++import java.util.concurrent.Executor;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++import java.util.concurrent.ForkJoinPool;
++import java.util.concurrent.FutureTask;
++import java.util.concurrent.ThreadFactory;
  import org.bukkit.Bukkit;
  import org.bukkit.configuration.file.YamlConfiguration;
  
--
++
  public class SpigotWorldConfig
  {
--    static final ThreadFactory tfmp = new ThreadFactoryBuilder().setNameFormat("MovePool-%d").build();
--    static public final ExecutorService movepool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfmp);
--    
--    static public FutureTask futureTask;
--    
--    static final ThreadFactory tftut = new ThreadFactoryBuilder().setNameFormat("MSPool-%d").build();
--    static public final Executor timeupdatethread_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tftut);
--    
--    //static final ThreadFactory tfmsp = new ThreadFactoryBuilder().setNameFormat("MSPool-%d").build();
--    //static public final Executor mspool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfmsp);
--    static public final ForkJoinPool mspool_executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
--    
--    static final ThreadFactory tfdsp = new ThreadFactoryBuilder().setNameFormat("DoTickPool-%d").build();
--    static public final ExecutorService dotickpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfdsp);
--    
--    static final ThreadFactory tfwtep = new ThreadFactoryBuilder().setNameFormat("WorldTickEntityPool-%d").build();
--    static public final ExecutorService wtepool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfwtep);
--    
--    /*
--    static final ThreadFactory tptep = new ThreadFactoryBuilder().setNameFormat("TickEntityPool-%d").build();
--    static public final ExecutorService tickentitypool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tptep);
--    */
--    //static public final ForkJoinPool tickentitypool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
--    
--    
--    static final ThreadFactory tpmsp = new ThreadFactoryBuilder().setNameFormat("MobSpawnerPool-%d").build();
--    static public final Executor mobspawnerpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tpmsp);
--    /*
--    static final ThreadFactory tpcps = new ThreadFactoryBuilder().setNameFormat("ChunkPool-%d").build();
--    static public final ExecutorService chunkpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tpcps);
--    */
++    static final ThreadFactory tfmp = new ThreadFactoryBuilder().setNameFormat("MovePool-%d").build();
++    static public final ExecutorService movepool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfmp);
++    
++    static public FutureTask futureTask;
++    
++    static final ThreadFactory tftut = new ThreadFactoryBuilder().setNameFormat("MSPool-%d").build();
++    static public final Executor timeupdatethread_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tftut);
++    
++    //static final ThreadFactory tfmsp = new ThreadFactoryBuilder().setNameFormat("MSPool-%d").build();
++    //static public final Executor mspool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfmsp);
++    static public final ForkJoinPool mspool_executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
++    
++    static final ThreadFactory tfdsp = new ThreadFactoryBuilder().setNameFormat("DoTickPool-%d").build();
++    static public final ExecutorService dotickpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfdsp);
++    
++    static final ThreadFactory tfwtep = new ThreadFactoryBuilder().setNameFormat("WorldTickEntityPool-%d").build();
++    static public final ExecutorService wtepool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfwtep);
++    
++    /*
++    static final ThreadFactory tptep = new ThreadFactoryBuilder().setNameFormat("TickEntityPool-%d").build();
++    static public final ExecutorService tickentitypool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tptep);
++    */
++    //static public final ForkJoinPool tickentitypool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
++    
++    
++    static final ThreadFactory tpmsp = new ThreadFactoryBuilder().setNameFormat("MobSpawnerPool-%d").build();
++    static public final Executor mobspawnerpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tpmsp);
++    /*
++    static final ThreadFactory tpcps = new ThreadFactoryBuilder().setNameFormat("ChunkPool-%d").build();
++    static public final ExecutorService chunkpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tpcps);
++    */
  
--    
--    
++    
++    
      private final String worldName;
      private final YamlConfiguration config;
      private boolean verbose;
