@@ -19,3 +19,5 @@ Hardware :
 *     IP address : 59.127.231.87 (static)
 *     Version : 1.8 ~ 1.8.9
 *     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server. If you are getting lag. You can try /tps command to check the ticks. Maybe it is you PCs. The map will be wiped out every month or the map data reaches 10GB. You are welcome to leave any messages.`     
+
+#[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
