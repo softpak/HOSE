@@ -33,4 +33,5 @@ Hardware :
 ####Settings
 *     wetp-core-multiple:1(default) #Using threads that are multiple by the numbers of your cpu cores. If your cpu has 2 cores. It will use 2 threads to calculate EntityTicks. Set it to 10 will use 20 threads.
 
-#[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
+#[贊助(NTD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
+#[Donate(USD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYUVSZYQBPXF2)
