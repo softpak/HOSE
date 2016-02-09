@@ -34,8 +34,8 @@ Hardware :
 *     wetp-core-multiple:1(default) #Using threads that are multiple by the numbers of your cpu cores. If your cpu has 2 cores. It will use 2 threads to calculate EntityTicks. Set it to 10 will use 20 threads.
 
 ####Issues
-*     Some plugins will cause null pointer exception. It is beacause some entities were destroyed before excute. It does not matter if it does not cause the server shoutdown immediatly
-
+*     Some plugins will cause null pointer exception. It is beacause some entities were destroyed before excuting. It does not matter if it does not cause the server shoutdown immediatly.
+*     Still need a lot of work to do.
 
 #[贊助(NTD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
 #[Donate(USD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYUVSZYQBPXF2)
