@@ -1,6 +1,6 @@
 diff -Naur src_origin/main/java/net/minecraft/server/BlockFalling.java src_new/main/java/net/minecraft/server/BlockFalling.java
 --- src_origin/main/java/net/minecraft/server/BlockFalling.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/BlockFalling.java	2016-02-13 14:25:02.854760728 +0800
++++ src_new/main/java/net/minecraft/server/BlockFalling.java	2016-02-14 00:18:29.571092329 +0800
 @@ -0,0 +1,81 @@
 +package net.minecraft.server;
 +
@@ -85,7 +85,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockFalling.java src_new/m
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/BlockFlowing.java src_new/main/java/net/minecraft/server/BlockFlowing.java
 --- src_origin/main/java/net/minecraft/server/BlockFlowing.java	2016-02-05 01:52:02.795371353 +0800
-+++ src_new/main/java/net/minecraft/server/BlockFlowing.java	2016-02-13 14:25:02.870760729 +0800
++++ src_new/main/java/net/minecraft/server/BlockFlowing.java	2016-02-14 00:18:29.592092331 +0800
 @@ -4,21 +4,26 @@
  import java.util.Iterator;
  import java.util.Random;
@@ -190,7 +190,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockFlowing.java src_new/m
          return material != this.material && material != Material.LAVA && !this.g(world, blockposition, iblockdata);
 diff -Naur src_origin/main/java/net/minecraft/server/BlockFluids.java src_new/main/java/net/minecraft/server/BlockFluids.java
 --- src_origin/main/java/net/minecraft/server/BlockFluids.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/BlockFluids.java	2016-02-13 14:25:02.879760730 +0800
++++ src_new/main/java/net/minecraft/server/BlockFluids.java	2016-02-14 00:18:29.598092331 +0800
 @@ -0,0 +1,215 @@
 +package net.minecraft.server;
 +
@@ -409,7 +409,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockFluids.java src_new/ma
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/Block.java src_new/main/java/net/minecraft/server/Block.java
 --- src_origin/main/java/net/minecraft/server/Block.java	2016-02-05 01:52:02.263371378 +0800
-+++ src_new/main/java/net/minecraft/server/Block.java	2016-02-13 14:25:02.725760716 +0800
++++ src_new/main/java/net/minecraft/server/Block.java	2016-02-14 00:18:29.405092313 +0800
 @@ -73,7 +73,8 @@
      protected double maxZ;
      public Block.StepSound stepSound;
@@ -422,7 +422,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Block.java src_new/main/jav
      protected final BlockStateList blockStateList;
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src_new/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-02-05 01:52:04.131371288 +0800
-+++ src_new/main/java/net/minecraft/server/Chunk.java	2016-02-13 14:25:03.170760757 +0800
++++ src_new/main/java/net/minecraft/server/Chunk.java	2016-02-14 00:18:29.958092365 +0800
 @@ -890,26 +890,30 @@
          for (int k = i; k <= j; ++k) {
              if (!this.entitySlices[k].isEmpty()) {
@@ -494,9 +494,37 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src_new/main/jav
              }
          }
  
+diff -Naur src_origin/main/java/net/minecraft/server/ControllerJump.java src_new/main/java/net/minecraft/server/ControllerJump.java
+--- src_origin/main/java/net/minecraft/server/ControllerJump.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/net/minecraft/server/ControllerJump.java	2016-02-14 00:18:30.145092382 +0800
+@@ -0,0 +1,24 @@
++package net.minecraft.server;
++
++public class ControllerJump {
++
++    private EntityInsentient b;
++    protected boolean a;
++
++    public ControllerJump(EntityInsentient entityinsentient) {
++        this.b = entityinsentient;
++    }
++
++    public void a() {
++        this.a = true;
++    }
++
++    //fix villager drowned in water
++    public void b() {
++        if (this.b.inWater){
++            a();
++        }
++        this.b.i(this.a);
++        this.a = false;
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src_new/main/java/net/minecraft/server/DedicatedServer.java
 --- src_origin/main/java/net/minecraft/server/DedicatedServer.java	2016-02-05 01:52:05.123371240 +0800
-+++ src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-02-13 14:25:03.359760775 +0800
++++ src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-02-14 00:18:30.179092386 +0800
 @@ -17,6 +17,7 @@
  
  // CraftBukkit start
@@ -522,7 +550,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src_ne
              }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityEnderDragon.java src_new/main/java/net/minecraft/server/EntityEnderDragon.java
 --- src_origin/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-05 01:52:06.000371197 +0800
-+++ src_new/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-13 14:25:03.502760788 +0800
++++ src_new/main/java/net/minecraft/server/EntityEnderDragon.java	2016-02-14 00:18:30.356092402 +0800
 @@ -676,7 +676,8 @@
          // CraftBukkit end
      }
@@ -535,7 +563,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityEnderDragon.java src_
          return this.children;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_new/main/java/net/minecraft/server/EntityInsentient.java
 --- src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-02-05 01:52:06.407371177 +0800
-+++ src_new/main/java/net/minecraft/server/EntityInsentient.java	2016-02-13 14:25:03.583760796 +0800
++++ src_new/main/java/net/minecraft/server/EntityInsentient.java	2016-02-14 00:18:30.507092416 +0800
 @@ -1,8 +1,10 @@
  package net.minecraft.server;
  
@@ -602,7 +630,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_n
          if (this.persistent) {
              this.ticksFarFromPlayer = 0;
          } else {
-@@ -451,11 +462,36 @@
+@@ -451,11 +462,39 @@
  
          }
      }
@@ -620,6 +648,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_n
 +            this.goalSelector.a();
 +            this.world.methodProfiler.a("mob tick");
 +            this.E();
++            /*this.world.methodProfiler.c("jump");
++            this.g.b();
++            this.world.methodProfiler.b();*/
 +        } catch(Exception e) {
 +            //e.printStackTrace();
 +        } finally {
@@ -640,7 +671,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_n
          this.world.methodProfiler.b();
          // Spigot Start
          if ( this.fromMobSpawner )
-@@ -486,7 +522,7 @@
+@@ -486,7 +525,7 @@
          this.world.methodProfiler.c("jump");
          this.g.b();
          this.world.methodProfiler.b();
@@ -649,7 +680,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_n
      }
  
      protected void E() {}
-@@ -941,4 +977,6 @@
+@@ -941,4 +980,6 @@
  
          private EnumEntityPositionType() {}
      }
@@ -658,7 +689,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src_n
  }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src_new/main/java/net/minecraft/server/EntityLiving.java
 --- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-02-05 01:52:06.631371167 +0800
-+++ src_new/main/java/net/minecraft/server/EntityLiving.java	2016-02-13 14:25:03.634760801 +0800
++++ src_new/main/java/net/minecraft/server/EntityLiving.java	2016-02-14 00:18:30.570092422 +0800
 @@ -1650,6 +1650,7 @@
          this.bb *= 0.9F;
          SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
@@ -735,8 +766,30 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src_new/m
      protected void s(Entity entity) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-02-05 01:52:07.363371131 +0800
-+++ src_new/main/java/net/minecraft/server/EntityTracker.java	2016-02-13 14:25:03.801760816 +0800
-@@ -95,6 +95,10 @@
++++ src_new/main/java/net/minecraft/server/EntityTracker.java	2016-02-14 00:18:30.787092442 +0800
+@@ -6,8 +6,11 @@
+ import java.util.Iterator;
+ import java.util.Set;
+ import java.util.concurrent.Callable;
++import java.util.concurrent.FutureTask;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
++import org.hose.TrackUpdatePool;
++import org.spigotmc.SpigotWorldConfig;
+ 
+ public class EntityTracker {
+ 
+@@ -33,6 +36,9 @@
+ 
+                 if (entitytrackerentry.tracker != entityplayer) {
+                     entitytrackerentry.updatePlayer(entityplayer);
++                    /*
++                    SpigotWorldConfig.TrackUpdateTask = new FutureTask(new TrackUpdatePool(entitytrackerentry, entityplayer));
++                    SpigotWorldConfig.trackupdatepool_executor.submit(SpigotWorldConfig.TrackUpdateTask);*/
+                 }
+             }
+         } else if (entity instanceof EntityFishingHook) {
+@@ -95,6 +101,10 @@
  
      public void addEntity(Entity entity, int i, final int j, boolean flag) {
          org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
@@ -747,7 +800,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
          i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
          if (i > this.e) {
              i = this.e;
-@@ -144,7 +148,7 @@
+@@ -144,7 +154,7 @@
          }
  
      }
@@ -758,7 +811,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
          if (entity instanceof EntityPlayer) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityWither.java src_new/main/java/net/minecraft/server/EntityWither.java
 --- src_origin/main/java/net/minecraft/server/EntityWither.java	2016-02-05 01:52:07.464371126 +0800
-+++ src_new/main/java/net/minecraft/server/EntityWither.java	2016-02-13 14:25:03.824760818 +0800
++++ src_new/main/java/net/minecraft/server/EntityWither.java	2016-02-14 00:18:30.810092445 +0800
 @@ -458,7 +458,8 @@
  
      }
@@ -771,7 +824,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityWither.java src_new/m
  
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_new/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-02-05 01:52:08.748371064 +0800
-+++ src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-02-13 14:25:04.132760847 +0800
++++ src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-02-14 00:18:31.225092483 +0800
 @@ -43,9 +43,12 @@
  
  import jline.console.ConsoleReader;
@@ -793,16 +846,26 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
          if (i - this.X >= 5000000000L) {
              this.X = i;
              this.r.setPlayerSample(new ServerPing.ServerPingPlayerSample(this.J(), this.I()));
-@@ -713,7 +717,7 @@
+@@ -710,10 +714,16 @@
+ 
+         // Spigot start
+         FutureTask<?> entry;
++        
          int count = this.j.size();
          while (count-- > 0 && (entry = this.j.poll()) != null) {
-             SystemUtils.a(entry, MinecraftServer.LOGGER);
+-            SystemUtils.a(entry, MinecraftServer.LOGGER);
 -         }
++            try {
++                SystemUtils.a(entry, MinecraftServer.LOGGER);
++            }catch(Exception ex){
++
++            }
 +        }
++        
          // Spigot end
  
          this.methodProfiler.c("levels");
-@@ -768,6 +772,13 @@
+@@ -768,6 +778,13 @@
                  try {
                      worldserver.timings.doTick.startTiming(); // Spigot
                      worldserver.doTick();
@@ -816,7 +879,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
                      worldserver.timings.doTick.stopTiming(); // Spigot
                  } catch (Throwable throwable) {
                      // Spigot Start
-@@ -936,8 +947,13 @@
+@@ -936,8 +953,13 @@
              if (options.has("world")) {
                  dedicatedserver.setWorld((String) options.valueOf("world"));
              }
@@ -832,7 +895,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
              // CraftBukkit end
          } catch (Exception exception) {
              MinecraftServer.LOGGER.fatal("Failed to start the minecraft server", exception);
-@@ -1023,7 +1039,7 @@
+@@ -1023,7 +1045,7 @@
      }
  
      public String getServerModName() {
@@ -841,7 +904,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
      }
  
      public CrashReport b(CrashReport crashreport) {
-@@ -1105,7 +1121,8 @@
+@@ -1105,7 +1127,8 @@
      }
  
      public String getName() {
@@ -853,7 +916,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src_new/main/java/net/minecraft/server/SpawnerCreature.java
 --- src_origin/main/java/net/minecraft/server/SpawnerCreature.java	2016-02-05 01:52:11.035370953 +0800
-+++ src_new/main/java/net/minecraft/server/SpawnerCreature.java	2016-02-13 14:25:04.609760892 +0800
++++ src_new/main/java/net/minecraft/server/SpawnerCreature.java	2016-02-14 00:18:32.358092589 +0800
 @@ -4,7 +4,6 @@
  import java.util.Iterator;
  import java.util.List;
@@ -891,7 +954,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src_ne
                                                              // Spigot start
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-02-05 01:52:11.643370923 +0800
-+++ src_new/main/java/net/minecraft/server/World.java	2016-02-13 14:25:04.754760905 +0800
++++ src_new/main/java/net/minecraft/server/World.java	2016-02-14 00:18:32.528092605 +0800
 @@ -2,25 +2,23 @@
  
  import com.google.common.base.Predicate;
@@ -919,7 +982,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
  import org.bukkit.generator.ChunkGenerator;
  import org.bukkit.craftbukkit.CraftServer;
-@@ -29,8 +27,11 @@
+@@ -29,8 +27,12 @@
  import org.bukkit.event.block.BlockCanBuildEvent;
  import org.bukkit.event.block.BlockPhysicsEvent;
  import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -927,13 +990,24 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
 -import org.bukkit.event.weather.ThunderChangeEvent;
 +import org.hose.AddParticlePool;
 +import org.hose.EntityAKTPool;
++import org.hose.EntityValidPool;
 +import org.hose.InactivePool;
 +import org.hose.WorldTickEntityPool;
 +import org.spigotmc.SpigotWorldConfig;
  // CraftBukkit end
  
  public abstract class World implements IBlockAccess {
-@@ -474,12 +475,14 @@
+@@ -63,7 +65,8 @@
+         }
+     };
+     // Spigot end
+-    protected final List<Entity> g = Lists.newArrayList();
++    //protected final List<Entity> g = Lists.newArrayList();
++    public final List<Entity> g = Lists.newArrayList();
+     public final List<TileEntity> h = Lists.newArrayList();
+     public final List<TileEntity> tileEntityList = Lists.newArrayList();
+     private final List<TileEntity> b = Lists.newArrayList();
+@@ -474,12 +477,14 @@
      public boolean setTypeUpdate(BlockPosition blockposition, IBlockData iblockdata) {
          return this.setTypeAndData(blockposition, iblockdata, 3);
      }
@@ -950,7 +1024,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
      }
  
      public void update(BlockPosition blockposition, Block block) {
-@@ -967,10 +970,14 @@
+@@ -967,10 +972,14 @@
      }
  
      public void addParticle(EnumParticle enumparticle, double d0, double d1, double d2, double d3, double d4, double d5, int... aint) {
@@ -967,7 +1041,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          for (int j = 0; j < this.u.size(); ++j) {
              ((IWorldAccess) this.u.get(j)).a(i, flag, d0, d1, d2, d3, d4, d5, aint);
          }
-@@ -987,8 +994,24 @@
+@@ -987,8 +996,24 @@
          return addEntity(entity, SpawnReason.DEFAULT);
      }
  
@@ -993,7 +1067,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          if (entity == null) return false;
          // CraftBukkit end
          int i = MathHelper.floor(entity.locX / 16.0D);
-@@ -998,7 +1021,7 @@
+@@ -998,7 +1023,7 @@
          if (entity instanceof EntityHuman) {
              flag = true;
          }
@@ -1002,7 +1076,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          // CraftBukkit start
          org.bukkit.event.Cancellable event = null;
          if (entity instanceof EntityLiving && !(entity instanceof EntityPlayer)) {
-@@ -1012,7 +1035,7 @@
+@@ -1012,7 +1037,7 @@
                  }
              }
  
@@ -1011,7 +1085,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          } else if (entity instanceof EntityItem) {
              event = CraftEventFactory.callItemSpawnEvent((EntityItem) entity);
          } else if (entity.getBukkitEntity() instanceof org.bukkit.entity.Projectile) {
-@@ -1048,17 +1071,19 @@
+@@ -1048,17 +1073,19 @@
              return false;
          } else {
              if (entity instanceof EntityHuman) {
@@ -1039,7 +1113,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
      }
  
      protected void a(Entity entity) {
-@@ -1338,16 +1363,19 @@
+@@ -1069,11 +1096,12 @@
+         entity.valid = true; // CraftBukkit
+     }
+ 
+-    protected void b(Entity entity) {
++    public void b(Entity entity) {
++    //protected void b(Entity entity) {
+         for (int i = 0; i < this.u.size(); ++i) {
+             ((IWorldAccess) this.u.get(i)).b(entity);
+         }
+-
++        
+         entity.valid = false; // CraftBukkit
+     }
+ 
+@@ -1338,16 +1366,19 @@
  
      public void b(BlockPosition blockposition, Block block, int i, int j) {}
  
@@ -1061,7 +1150,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
              entity = (Entity) this.k.get(i);
              // CraftBukkit start - Fixed an NPE
              if (entity == null) {
-@@ -1358,6 +1386,7 @@
+@@ -1358,6 +1389,7 @@
              try {
                  ++entity.ticksLived;
                  entity.t_();
@@ -1069,7 +1158,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
              } catch (Throwable throwable) {
                  crashreport = CrashReport.a(throwable, "Ticking entity");
                  crashreportsystemdetails = crashreport.a("Entity being ticked");
-@@ -1372,7 +1401,7 @@
+@@ -1372,7 +1404,7 @@
  
              if (entity.dead) {
                  this.k.remove(i--);
@@ -1078,7 +1167,23 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          }
  
          this.methodProfiler.c("remove");
-@@ -1403,9 +1432,7 @@
+@@ -1387,11 +1419,15 @@
+             k = entity.ag;
+             if (entity.ad && this.isChunkLoaded(j, k, true)) {
+                 this.getChunkAt(j, k).b(entity);
++                /*SpigotWorldConfig.WorldTickEntityTask = new FutureTask(new EntityValidPool(this, entity, j ,k));
++                SpigotWorldConfig.worldtickentitypool_executor.submit(SpigotWorldConfig.WorldTickEntityTask);*/
+             }
+         }
+ 
+         for (i = 0; i < this.g.size(); ++i) {
+             this.b((Entity) this.g.get(i));
++            SpigotWorldConfig.WorldTickEntityTask = new FutureTask(new EntityValidPool(this, i));
++            SpigotWorldConfig.worldtickentitypool_executor.submit(SpigotWorldConfig.WorldTickEntityTask);
+         }
+ 
+         this.g.clear();
+@@ -1403,9 +1439,7 @@
          // CraftBukkit start - Use field for loop variable
          int entitiesThisCycle = 0;
          if (tickPosition < 0) tickPosition = 0;
@@ -1089,7 +1194,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
              tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
              entity = (Entity) this.entityList.get(this.tickPosition);
              // CraftBukkit end
-@@ -1449,8 +1476,16 @@
+@@ -1449,8 +1483,16 @@
  
              this.methodProfiler.b();
          }
@@ -1107,7 +1212,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          timings.entityTick.stopTiming(); // Spigot
          this.methodProfiler.c("blockEntities");
          timings.tileEntityTick.startTiming(); // Spigot
-@@ -1465,9 +1500,7 @@
+@@ -1465,9 +1507,7 @@
  
          // Spigot start
          int tilesThisCycle = 0;
@@ -1118,7 +1223,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
              tileTickPosition = (tileTickPosition < tileEntityList.size()) ? tileTickPosition : 0;
              TileEntity tileentity = (TileEntity) this.tileEntityList.get(tileTickPosition);
              // Spigot start
-@@ -1485,6 +1518,7 @@
+@@ -1485,6 +1525,7 @@
                  if (this.isLoaded(blockposition) && this.N.a(blockposition)) {
                      try {
                          tileentity.tickTimer.startTiming(); // Spigot
@@ -1126,7 +1231,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
                          ((IUpdatePlayerListBox) tileentity).c();
                      } catch (Throwable throwable2) {
                          CrashReport crashreport1 = CrashReport.a(throwable2, "Ticking block entity");
-@@ -1548,6 +1582,7 @@
+@@ -1548,6 +1589,7 @@
          timings.tileEntityPending.stopTiming(); // Spigot
          this.methodProfiler.b();
          this.methodProfiler.b();
@@ -1134,7 +1239,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
      }
  
      public boolean a(TileEntity tileentity) {
-@@ -1590,7 +1625,13 @@
+@@ -1590,7 +1632,13 @@
          // Spigot start
          if (!org.spigotmc.ActivationRange.checkIfActive(entity)) {
              entity.ticksLived++;
@@ -1149,7 +1254,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          } else {
              entity.tickTimer.startTiming(); // Spigot
              // CraftBukkit end
-@@ -1602,9 +1643,13 @@
+@@ -1602,9 +1650,13 @@
              if (flag && entity.ad) {
                  ++entity.ticksLived;
                  if (entity.vehicle != null) {
@@ -1166,7 +1271,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
  
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src_new/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-02-05 01:52:12.055370903 +0800
-+++ src_new/main/java/net/minecraft/server/WorldServer.java	2016-02-13 14:25:04.895760919 +0800
++++ src_new/main/java/net/minecraft/server/WorldServer.java	2016-02-14 00:18:32.654092617 +0800
 @@ -3,30 +3,30 @@
  import com.google.common.base.Predicate;
  import com.google.common.collect.Lists;
@@ -1343,9 +1448,19 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src_new/ma
          }
  
          return arraylist;
+@@ -993,7 +1010,8 @@
+ 
+     }
+ 
+-    protected void b(Entity entity) {
++    public void b(Entity entity) {
++    //protected void b(Entity entity) {
+         super.b(entity);
+         this.entitiesById.d(entity.getId());
+         this.entitiesByUUID.remove(entity.getUniqueID());
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java
 --- src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-05 01:52:19.515370541 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-13 14:25:06.774761094 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java	2016-02-14 00:18:34.491092789 +0800
 @@ -117,7 +117,7 @@
      }
  
@@ -1357,7 +1472,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.
      public String getOwner() {
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/Main.java src_new/main/java/org/bukkit/craftbukkit/Main.java
 --- src_origin/main/java/org/bukkit/craftbukkit/Main.java	2016-02-05 01:52:12.823370866 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/Main.java	2016-02-13 14:25:05.059760934 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/Main.java	2016-02-14 00:18:32.839092634 +0800
 @@ -2,8 +2,10 @@
  
  import java.io.File;
@@ -1394,7 +1509,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/Main.java src_new/main/ja
                  acceptsAll(asList("?", "help"), "Show the help");
 diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src_new/main/java/org/hose/AddParticlePool.java
 --- src_origin/main/java/org/hose/AddParticlePool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/AddParticlePool.java	2016-02-13 14:25:02.328760678 +0800
++++ src_new/main/java/org/hose/AddParticlePool.java	2016-02-14 00:18:28.884092264 +0800
 @@ -0,0 +1,41 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1439,7 +1554,7 @@ diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src_new/main/java/
 +}
 diff -Naur src_origin/main/java/org/hose/AntiXrayPool.java src_new/main/java/org/hose/AntiXrayPool.java
 --- src_origin/main/java/org/hose/AntiXrayPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/AntiXrayPool.java	2016-02-13 14:25:02.353760681 +0800
++++ src_new/main/java/org/hose/AntiXrayPool.java	2016-02-14 00:18:28.891092265 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1475,7 +1590,7 @@ diff -Naur src_origin/main/java/org/hose/AntiXrayPool.java src_new/main/java/org
 +}
 diff -Naur src_origin/main/java/org/hose/BreakException.java src_new/main/java/org/hose/BreakException.java
 --- src_origin/main/java/org/hose/BreakException.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/BreakException.java	2016-02-13 14:25:02.365760682 +0800
++++ src_new/main/java/org/hose/BreakException.java	2016-02-14 00:18:28.899092266 +0800
 @@ -0,0 +1,16 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1493,55 +1608,9 @@ diff -Naur src_origin/main/java/org/hose/BreakException.java src_new/main/java/o
 +    public BreakException() {
 +    }
 +}
-diff -Naur src_origin/main/java/org/hose/ChunkPool.java src_new/main/java/org/hose/ChunkPool.java
---- src_origin/main/java/org/hose/ChunkPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/ChunkPool.java	2016-02-13 14:25:02.374760683 +0800
-@@ -0,0 +1,42 @@
-+/*
-+ * To change this license header, choose License Headers in Project Properties.
-+ * To change this template file, choose Tools | Templates
-+ * and open the template in the editor.
-+ */
-+package org.hose;
-+
-+import java.util.concurrent.Callable;
-+import net.minecraft.server.Chunk;
-+import net.minecraft.server.ChunkProviderServer;
-+
-+/**
-+ *
-+ * @author you
-+ */
-+public class ChunkPool implements Callable{
-+
-+    private ChunkProviderServer cps;
-+    private Chunk c;
-+    private int i;
-+    private int j;
-+    
-+    public ChunkPool(ChunkProviderServer cps, Chunk c, int i, int j){
-+        this.cps = cps;
-+        this.c = c;
-+        this.i = i;
-+        this.j = j;
-+    }
-+
-+
-+    @Override
-+    public Chunk call(){
-+        try {
-+            //chunk = this.chunkProvider.getOrCreateChunk(i, j);
-+            c = cps.chunkProvider.getOrCreateChunk(i, i);
-+        } catch(Exception ex) {
-+            //Bukkit.getLogger().warning("An entity is missing in MovePool!");
-+        }
-+        return c;
-+    }
-+    
-+}
 diff -Naur src_origin/main/java/org/hose/DeSpawnPool.java src_new/main/java/org/hose/DeSpawnPool.java
 --- src_origin/main/java/org/hose/DeSpawnPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/DeSpawnPool.java	2016-02-13 14:25:02.381760683 +0800
++++ src_new/main/java/org/hose/DeSpawnPool.java	2016-02-14 00:18:28.919092268 +0800
 @@ -0,0 +1,38 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1583,7 +1652,7 @@ diff -Naur src_origin/main/java/org/hose/DeSpawnPool.java src_new/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/EntityAKTPool.java src_new/main/java/org/hose/EntityAKTPool.java
 --- src_origin/main/java/org/hose/EntityAKTPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/EntityAKTPool.java	2016-02-13 14:25:02.389760684 +0800
++++ src_new/main/java/org/hose/EntityAKTPool.java	2016-02-14 00:18:28.929092269 +0800
 @@ -0,0 +1,27 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1612,9 +1681,46 @@ diff -Naur src_origin/main/java/org/hose/EntityAKTPool.java src_new/main/java/or
 +        return null;
 +    }
 +}
+diff -Naur src_origin/main/java/org/hose/EntityValidPool.java src_new/main/java/org/hose/EntityValidPool.java
+--- src_origin/main/java/org/hose/EntityValidPool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/EntityValidPool.java	2016-02-14 00:18:28.971092273 +0800
+@@ -0,0 +1,33 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.concurrent.Callable;
++import net.minecraft.server.Entity;
++import net.minecraft.server.World;
++
++/**
++ *
++ * @author softpak
++ */
++public class EntityValidPool implements Callable{
++    private World w;
++    private int i;
++    
++    public EntityValidPool(World w, int i){
++        this.w = w;
++        this.i = i;
++    }
++
++
++    @Override
++    public Object call(){
++        //this.b((Entity) this.g.get(i));
++        w.b((Entity) w.g.get(i));
++        return null;
++    }
++    
++}
 diff -Naur src_origin/main/java/org/hose/InactivePool.java src_new/main/java/org/hose/InactivePool.java
 --- src_origin/main/java/org/hose/InactivePool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/InactivePool.java	2016-02-13 14:25:02.397760685 +0800
++++ src_new/main/java/org/hose/InactivePool.java	2016-02-14 00:18:28.953092271 +0800
 @@ -0,0 +1,28 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1646,7 +1752,7 @@ diff -Naur src_origin/main/java/org/hose/InactivePool.java src_new/main/java/org
 +}
 diff -Naur src_origin/main/java/org/hose/MovePool.java src_new/main/java/org/hose/MovePool.java
 --- src_origin/main/java/org/hose/MovePool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/MovePool.java	2016-02-13 14:25:02.405760686 +0800
++++ src_new/main/java/org/hose/MovePool.java	2016-02-14 00:18:28.981092273 +0800
 @@ -0,0 +1,47 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1697,7 +1803,7 @@ diff -Naur src_origin/main/java/org/hose/MovePool.java src_new/main/java/org/hos
 +}
 diff -Naur src_origin/main/java/org/hose/MSPool.java src_new/main/java/org/hose/MSPool.java
 --- src_origin/main/java/org/hose/MSPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/MSPool.java	2016-02-13 14:25:02.410760686 +0800
++++ src_new/main/java/org/hose/MSPool.java	2016-02-14 00:18:28.987092274 +0800
 @@ -0,0 +1,26 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1727,7 +1833,7 @@ diff -Naur src_origin/main/java/org/hose/MSPool.java src_new/main/java/org/hose/
 +}
 diff -Naur src_origin/main/java/org/hose/pendingpool/BlockTickPendingPool.java src_new/main/java/org/hose/pendingpool/BlockTickPendingPool.java
 --- src_origin/main/java/org/hose/pendingpool/BlockTickPendingPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/pendingpool/BlockTickPendingPool.java	2016-02-13 14:25:05.096760937 +0800
++++ src_new/main/java/org/hose/pendingpool/BlockTickPendingPool.java	2016-02-14 00:18:32.882092638 +0800
 @@ -0,0 +1,48 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1779,7 +1885,7 @@ diff -Naur src_origin/main/java/org/hose/pendingpool/BlockTickPendingPool.java s
 +}
 diff -Naur src_origin/main/java/org/hose/pendingpool/FallingPendingPool.java src_new/main/java/org/hose/pendingpool/FallingPendingPool.java
 --- src_origin/main/java/org/hose/pendingpool/FallingPendingPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/pendingpool/FallingPendingPool.java	2016-02-13 14:25:05.121760940 +0800
++++ src_new/main/java/org/hose/pendingpool/FallingPendingPool.java	2016-02-14 00:18:32.901092640 +0800
 @@ -0,0 +1,36 @@
 +/*
 + * To change bf license header, choose License Headers in Project Properties.
@@ -1819,7 +1925,7 @@ diff -Naur src_origin/main/java/org/hose/pendingpool/FallingPendingPool.java src
 +}
 diff -Naur src_origin/main/java/org/hose/pendingpool/FlowPendingPool.java src_new/main/java/org/hose/pendingpool/FlowPendingPool.java
 --- src_origin/main/java/org/hose/pendingpool/FlowPendingPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/pendingpool/FlowPendingPool.java	2016-02-13 14:25:05.117760939 +0800
++++ src_new/main/java/org/hose/pendingpool/FlowPendingPool.java	2016-02-14 00:18:32.900092640 +0800
 @@ -0,0 +1,41 @@
 +/*
 + * To change bf license header, choose License Headers in Project Properties.
@@ -1864,7 +1970,7 @@ diff -Naur src_origin/main/java/org/hose/pendingpool/FlowPendingPool.java src_ne
 +}
 diff -Naur src_origin/main/java/org/hose/pendingpool/TickPendingPool.java src_new/main/java/org/hose/pendingpool/TickPendingPool.java
 --- src_origin/main/java/org/hose/pendingpool/TickPendingPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/pendingpool/TickPendingPool.java	2016-02-13 14:25:05.125760940 +0800
++++ src_new/main/java/org/hose/pendingpool/TickPendingPool.java	2016-02-14 00:18:32.913092641 +0800
 @@ -0,0 +1,43 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1911,7 +2017,7 @@ diff -Naur src_origin/main/java/org/hose/pendingpool/TickPendingPool.java src_ne
 +}
 diff -Naur src_origin/main/java/org/hose/TickEntityPool.java src_new/main/java/org/hose/TickEntityPool.java
 --- src_origin/main/java/org/hose/TickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/TickEntityPool.java	2016-02-13 14:25:02.416760687 +0800
++++ src_new/main/java/org/hose/TickEntityPool.java	2016-02-14 00:18:28.996092275 +0800
 @@ -0,0 +1,71 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1986,7 +2092,7 @@ diff -Naur src_origin/main/java/org/hose/TickEntityPool.java src_new/main/java/o
 +}
 diff -Naur src_origin/main/java/org/hose/TimeUpdateThread.java src_new/main/java/org/hose/TimeUpdateThread.java
 --- src_origin/main/java/org/hose/TimeUpdateThread.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/TimeUpdateThread.java	2016-02-13 14:25:02.422760687 +0800
++++ src_new/main/java/org/hose/TimeUpdateThread.java	2016-02-14 00:18:28.999092275 +0800
 @@ -0,0 +1,38 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2026,9 +2132,45 @@ diff -Naur src_origin/main/java/org/hose/TimeUpdateThread.java src_new/main/java
 +    }
 +    
 +}
+diff -Naur src_origin/main/java/org/hose/TrackUpdatePool.java src_new/main/java/org/hose/TrackUpdatePool.java
+--- src_origin/main/java/org/hose/TrackUpdatePool.java	1970-01-01 08:00:00.000000000 +0800
++++ src_new/main/java/org/hose/TrackUpdatePool.java	2016-02-14 00:18:29.012092276 +0800
+@@ -0,0 +1,32 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.concurrent.Callable;
++import net.minecraft.server.EntityPlayer;
++import net.minecraft.server.EntityTrackerEntry;
++/**
++ *
++ * @author softpak
++ */
++public class TrackUpdatePool implements Callable{
++    private EntityTrackerEntry ete;
++    private EntityPlayer ep;
++    
++    public TrackUpdatePool(EntityTrackerEntry ete, EntityPlayer ep){
++        this.ete = ete;
++        this.ep = ep;
++    }
++    
++    @Override
++    public Object call() throws Exception {
++        //entitytrackerentry.updatePlayer(entityplayer);
++        ete.updatePlayer(ep);
++        return null;
++    }
++    
++    
++}
 diff -Naur src_origin/main/java/org/hose/WorldTickEntityPool.java src_new/main/java/org/hose/WorldTickEntityPool.java
 --- src_origin/main/java/org/hose/WorldTickEntityPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/WorldTickEntityPool.java	2016-02-13 14:25:02.432760688 +0800
++++ src_new/main/java/org/hose/WorldTickEntityPool.java	2016-02-14 00:18:29.023092277 +0800
 @@ -0,0 +1,68 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2100,7 +2242,7 @@ diff -Naur src_origin/main/java/org/hose/WorldTickEntityPool.java src_new/main/j
 +}
 diff -Naur src_origin/main/java/org/spigotmc/AntiXray.java src_new/main/java/org/spigotmc/AntiXray.java
 --- src_origin/main/java/org/spigotmc/AntiXray.java	2016-02-05 01:52:00.808371449 +0800
-+++ src_new/main/java/org/spigotmc/AntiXray.java	2016-02-13 14:25:02.477760692 +0800
++++ src_new/main/java/org/spigotmc/AntiXray.java	2016-02-14 00:18:29.085092283 +0800
 @@ -2,11 +2,13 @@
  
  import gnu.trove.set.TByteSet;
@@ -2129,7 +2271,7 @@ diff -Naur src_origin/main/java/org/spigotmc/AntiXray.java src_new/main/java/org
              // Check other blocks for updates
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src_new/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-02-05 01:52:00.859371447 +0800
-+++ src_new/main/java/org/spigotmc/AsyncCatcher.java	2016-02-13 14:25:02.475760692 +0800
++++ src_new/main/java/org/spigotmc/AsyncCatcher.java	2016-02-14 00:18:29.091092284 +0800
 @@ -8,7 +8,7 @@
      public static boolean enabled = true;
  
@@ -2141,8 +2283,8 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src_new/main/java
              throw new IllegalStateException( "Asynchronous " + reason + "!" );
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src_new/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-05 01:52:01.120371434 +0800
-+++ src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-13 14:25:02.526760697 +0800
-@@ -1,13 +1,104 @@
++++ src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-14 00:18:29.149092289 +0800
+@@ -1,13 +1,108 @@
  package org.spigotmc;
  
 +import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -2175,6 +2317,10 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src_new/main
 +    static public FutureTask InactiveTask;
 +    static public FutureTask EntityAKTTask;
 +    static public FutureTask AddParticleTask;
++    static public FutureTask TrackUpdateTask;
++    
++    static final ThreadFactory tftup = new ThreadFactoryBuilder().setNameFormat("TrackUpdatePool-%d").build();
++    static public final ExecutorService trackupdatepool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tftup);        
 +    
 +    static final ThreadFactory tfbfp = new ThreadFactoryBuilder().setNameFormat("BlockFallingPool-%d").build();
 +    static public final ExecutorService blockfallingpool_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tfbfp);
@@ -2247,7 +2393,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src_new/main
      private final String worldName;
      private final YamlConfiguration config;
      private boolean verbose;
-@@ -341,4 +432,10 @@
+@@ -341,4 +436,10 @@
          entityMaxTickTime = getInt("max-tick-time.entity", 50);
          log("Tile Max Tick Time: " + tileMaxTickTime + "ms Entity max Tick Time: " + entityMaxTickTime + "ms");
      }
