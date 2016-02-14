@@ -24,11 +24,10 @@ Hardware :
 *     Linux
   1. Build Spigot using BuildTools.jar.
   2. Import the project in Netbeans or Eclipse.
-  3. Add a new Dependency(lib) named [Java-Thread-Affinity](https://github.com/OpenHFT/Java-Thread-Affinity).
-  4. Patch src.patch with "patch -p1 < ../src.patch" command in src folder.
-  5. Then build the project in your IDE tools.
-  6. The jar file can be found in target folder like "spigot-1.X.X-R0.1-SNAPSHOT.jar".
-  7. Enjoy the new server with multi-core CPU.
+  3. Patch src.patch with "patch -p1 < ../src.patch" command in src folder.
+  4. Then build the project in your IDE tools.
+  5. The jar file can be found in target folder like "spigot-1.X.X-R0.1-SNAPSHOT.jar".
+  6. Enjoy the new server with multi-core CPU.
 
 ####Settings
 *     wetp-core-multiple:1(default) #Using threads that are multiple by the numbers of your cpu cores. If your cpu has 2 cores. It will use 2 threads to calculate EntityTicks. Set it to 10 will use 20 threads.
