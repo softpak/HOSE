@@ -16,9 +16,9 @@ Hardware :
 *   CPU : Any muilti-core CPUs.
 
 ####Test Server
-*     IP address : 59.127.231.87 (static)
+*     IP address : 220.132.245.136:25585 (static)
 *     Version : 1.8 ~ 1.8.9
-*     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server. If you are getting lag. You can try /tps command to check the ticks. Maybe it is you PCs. The map will be wiped out every month or the map data reaches 10GB. You are welcome to leave any messages.`
+*     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server except red stone clock devices. Most of players are Taiwanese. If you are getting lag. You can try /gc command to check the ticks. Maybe your FPS is too low . You are welcome to leave any messages.`
 
 ####How to build this patch
 *     Linux
