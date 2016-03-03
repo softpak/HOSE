@@ -1,6 +1,6 @@
 diff -Naur src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java src_new/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java
 --- src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-02-26 15:27:07.267203267 +0800
-+++ src_new/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-03-03 01:40:33.063067853 +0800
++++ src_new/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-03-03 23:54:31.689556799 +0800
 @@ -3,6 +3,7 @@
  import com.google.common.collect.Lists;
  import java.util.Iterator;
@@ -21,7 +21,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.
              this.b = world;
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java src_new/main/java/net/minecraft/server/BlockRedstoneTorch.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-02-26 15:27:07.667203304 +0800
-+++ src_new/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-03-03 01:40:33.427067887 +0800
++++ src_new/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-03-03 23:54:32.070556835 +0800
 @@ -1,7 +1,6 @@
  package net.minecraft.server;
  
@@ -42,7 +42,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java src
          List list = (List) BlockRedstoneTorch.b.get(world);
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src_new/main/java/net/minecraft/server/BlockRedstoneWire.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-02-26 15:27:07.697203307 +0800
-+++ src_new/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-03-03 01:40:33.453067890 +0800
++++ src_new/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-03-03 23:54:32.079556836 +0800
 @@ -5,8 +5,10 @@
  import java.util.ArrayList;
  import java.util.EnumSet;
@@ -76,7 +76,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src_
          Iterator iterator = arraylist.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/ChatBaseComponent.java src_new/main/java/net/minecraft/server/ChatBaseComponent.java
 --- src_origin/main/java/net/minecraft/server/ChatBaseComponent.java	2016-02-26 15:27:08.023203337 +0800
-+++ src_new/main/java/net/minecraft/server/ChatBaseComponent.java	2016-03-03 01:40:33.722067915 +0800
++++ src_new/main/java/net/minecraft/server/ChatBaseComponent.java	2016-03-03 23:54:32.368556863 +0800
 @@ -8,7 +8,8 @@
  
  public abstract class ChatBaseComponent implements IChatBaseComponent {
@@ -89,7 +89,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChatBaseComponent.java src_
      public ChatBaseComponent() {}
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src_new/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-02-26 15:27:08.084203343 +0800
-+++ src_new/main/java/net/minecraft/server/Chunk.java	2016-03-03 01:40:33.772067920 +0800
++++ src_new/main/java/net/minecraft/server/Chunk.java	2016-03-03 23:54:32.418556867 +0800
 @@ -15,6 +15,7 @@
  import org.apache.logging.log4j.Logger;
  
@@ -166,7 +166,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src_new/main/jav
  
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java src_new/main/java/net/minecraft/server/ChunkProviderGenerate.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-03-03 01:40:33.801067922 +0800
++++ src_new/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-03-03 23:54:32.431556869 +0800
 @@ -0,0 +1,499 @@
 +package net.minecraft.server;
 +
@@ -669,15 +669,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java 
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src_new/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-02-26 15:27:08.093203344 +0800
-+++ src_new/main/java/net/minecraft/server/ChunkProviderServer.java	2016-03-03 01:40:33.821067924 +0800
-@@ -1,25 +1,21 @@
++++ src_new/main/java/net/minecraft/server/ChunkProviderServer.java	2016-03-03 23:54:32.463556872 +0800
+@@ -1,25 +1,24 @@
  package net.minecraft.server;
  
 -import com.google.common.collect.Lists;
  import java.io.IOException;
 -import java.util.ArrayList;
 -import java.util.Collections;
++import java.util.Arrays;
  import java.util.Iterator;
++import java.util.LinkedHashSet;
  import java.util.List;
 -import java.util.Set;
 -import java.util.concurrent.ConcurrentHashMap;
@@ -687,6 +689,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  // CraftBukkit start
  import java.util.Random;
 -import java.util.logging.Level;
++import java.util.Set;
 +import java.util.concurrent.ConcurrentHashMap;
  
  import org.bukkit.Server;
@@ -698,7 +701,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  import org.bukkit.event.world.ChunkUnloadEvent;
  // CraftBukkit end
  
-@@ -31,7 +27,8 @@
+@@ -31,7 +30,8 @@
      public IChunkProvider chunkProvider;
      private IChunkLoader chunkLoader;
      public boolean forceChunkLoad = false; // CraftBukkit - true -> false
@@ -708,11 +711,12 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
      public WorldServer world;
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, IChunkProvider ichunkprovider) {
-@@ -42,10 +39,12 @@
+@@ -42,12 +42,18 @@
      }
  
      public boolean isChunkLoaded(int i, int j) {
 +        //return this.chunks.containsKey(LongHash.toLong(i, j)); // CraftBukkit
++        //System.out.println(this.chunks.size()+","+this.chunks.values().size());
          return this.chunks.containsKey(LongHash.toLong(i, j)); // CraftBukkit
      }
  
@@ -720,8 +724,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
 +    //public java.util.Collection a() {
      public java.util.Collection a() {
          // return this.chunkList;
++        //remove dup value
++        /*Set temp = new LinkedHashSet(Arrays.asList(this.chunks));
++        return ((ConcurrentHashMap)temp).values();*/
          return this.chunks.values();
-@@ -58,6 +57,7 @@
+         // CraftBukkit end
+     }
+@@ -58,6 +64,7 @@
                  // CraftBukkit start
                  this.unloadQueue.add(i, j);
  
@@ -729,7 +738,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
                  Chunk c = chunks.get(LongHash.toLong(i, j));
                  if (c != null) {
                      c.mustSave = true;
-@@ -68,6 +68,7 @@
+@@ -68,6 +75,7 @@
              // CraftBukkit start
              this.unloadQueue.add(i, j);
  
@@ -737,7 +746,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
              Chunk c = chunks.get(LongHash.toLong(i, j));
              if (c != null) {
                  c.mustSave = true;
-@@ -85,20 +86,23 @@
+@@ -85,20 +93,23 @@
  
              this.queueUnload(chunk.locX, chunk.locZ);
          }
@@ -764,7 +773,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
          Chunk chunk = chunks.get(LongHash.toLong(i, j));
          ChunkRegionLoader loader = null;
  
-@@ -127,6 +131,7 @@
+@@ -127,6 +138,7 @@
      }
      public Chunk originalGetChunkAt(int i, int j) {
          this.unloadQueue.remove(i, j);
@@ -772,7 +781,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
          Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
          boolean newChunk = false;
          // CraftBukkit end
-@@ -152,7 +157,8 @@
+@@ -152,7 +164,8 @@
                  }
                  newChunk = true; // CraftBukkit
              }
@@ -782,7 +791,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
              this.chunks.put(LongHash.toLong(i, j), chunk);
              
              chunk.addEntities();
-@@ -192,6 +198,7 @@
+@@ -192,6 +205,7 @@
  
      public Chunk getOrCreateChunk(int i, int j) {
          // CraftBukkit start
@@ -790,7 +799,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
          Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
  
          chunk = chunk == null ? (!this.world.ad() && !this.forceChunkLoad ? this.emptyChunk : this.getChunkAt(i, j)) : chunk;
-@@ -286,7 +293,10 @@
+@@ -286,7 +300,10 @@
                      }
                  }
                  BlockSand.instaFall = false;
@@ -802,7 +811,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
                  // CraftBukkit end
                  
                  chunk.e();
-@@ -345,6 +355,7 @@
+@@ -345,6 +362,7 @@
              Server server = this.world.getServer();
              for (int i = 0; i < 100 && !this.unloadQueue.isEmpty(); ++i) {
                  long chunkcoordinates = this.unloadQueue.popFirst();
@@ -810,7 +819,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
                  Chunk chunk = this.chunks.get(chunkcoordinates);
                  if (chunk == null) continue;
  
-@@ -356,9 +367,10 @@
+@@ -356,9 +374,10 @@
                          chunk.removeEntities();
                          this.saveChunk(chunk);
                          this.saveChunkNOP(chunk);
@@ -824,7 +833,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
                      // Update neighbor counts
 diff -Naur src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java src_new/main/java/net/minecraft/server/CommandSpreadPlayers.java
 --- src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-02-26 15:27:08.290203362 +0800
-+++ src_new/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-03-03 01:40:33.989067940 +0800
++++ src_new/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-03-03 23:54:32.634556888 +0800
 @@ -40,6 +40,7 @@
              double d4 = a(astring[i++], d3 + 1.0D);
              boolean flag = d(astring[i++]);
@@ -835,7 +844,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java s
                  String s = astring[i++];
 diff -Naur src_origin/main/java/net/minecraft/server/Container.java src_new/main/java/net/minecraft/server/Container.java
 --- src_origin/main/java/net/minecraft/server/Container.java	2016-02-26 15:27:08.349203368 +0800
-+++ src_new/main/java/net/minecraft/server/Container.java	2016-03-03 01:40:34.039067945 +0800
++++ src_new/main/java/net/minecraft/server/Container.java	2016-03-03 23:54:32.685556892 +0800
 @@ -10,6 +10,8 @@
  // CraftBukkit start
  import java.util.HashMap;
@@ -873,7 +882,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Container.java src_new/main
              arraylist.add(((Slot) this.c.get(i)).getItem());
 diff -Naur src_origin/main/java/net/minecraft/server/CraftingManager.java src_new/main/java/net/minecraft/server/CraftingManager.java
 --- src_origin/main/java/net/minecraft/server/CraftingManager.java	2016-02-26 15:27:08.668203398 +0800
-+++ src_new/main/java/net/minecraft/server/CraftingManager.java	2016-03-03 01:40:34.320067971 +0800
++++ src_new/main/java/net/minecraft/server/CraftingManager.java	2016-03-03 23:54:33.016556923 +0800
 @@ -14,6 +14,7 @@
  public class CraftingManager {
  
@@ -884,7 +893,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/CraftingManager.java src_ne
      public IRecipe lastRecipe;
 diff -Naur src_origin/main/java/net/minecraft/server/CrashReport.java src_new/main/java/net/minecraft/server/CrashReport.java
 --- src_origin/main/java/net/minecraft/server/CrashReport.java	2016-02-26 15:27:08.705203401 +0800
-+++ src_new/main/java/net/minecraft/server/CrashReport.java	2016-03-03 01:40:34.340067973 +0800
++++ src_new/main/java/net/minecraft/server/CrashReport.java	2016-03-03 23:54:33.078556929 +0800
 @@ -12,6 +12,7 @@
  import java.util.Iterator;
  import java.util.List;
@@ -905,7 +914,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/CrashReport.java src_new/ma
      private StackTraceElement[] h = new StackTraceElement[0];
 diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src_new/main/java/net/minecraft/server/DedicatedServer.java
 --- src_origin/main/java/net/minecraft/server/DedicatedServer.java	2016-02-26 15:27:08.757203406 +0800
-+++ src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-03-03 01:40:34.387067977 +0800
++++ src_new/main/java/net/minecraft/server/DedicatedServer.java	2016-03-03 23:54:33.142556935 +0800
 @@ -29,7 +29,8 @@
  public class DedicatedServer extends MinecraftServer implements IMinecraftServer {
  
@@ -918,7 +927,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src_ne
      public PropertyManager propertyManager;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityFallingBlock.java src_new/main/java/net/minecraft/server/EntityFallingBlock.java
 --- src_origin/main/java/net/minecraft/server/EntityFallingBlock.java	2016-02-26 15:27:09.384203465 +0800
-+++ src_new/main/java/net/minecraft/server/EntityFallingBlock.java	2016-03-03 01:40:34.924068027 +0800
++++ src_new/main/java/net/minecraft/server/EntityFallingBlock.java	2016-03-03 23:54:33.817556998 +0800
 @@ -3,6 +3,8 @@
  import com.google.common.collect.Lists;
  import java.util.ArrayList;
@@ -940,7 +949,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityFallingBlock.java src
                  Iterator iterator = arraylist.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/EntityItem.java src_new/main/java/net/minecraft/server/EntityItem.java
 --- src_origin/main/java/net/minecraft/server/EntityItem.java	2016-02-26 15:27:09.641203489 +0800
-+++ src_new/main/java/net/minecraft/server/EntityItem.java	2016-03-03 01:40:35.165068050 +0800
++++ src_new/main/java/net/minecraft/server/EntityItem.java	2016-03-03 23:54:34.059557021 +0800
 @@ -81,10 +81,10 @@
                      this.motZ = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
                      this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
@@ -978,7 +987,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityItem.java src_new/mai
  
 diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src_new/main/java/net/minecraft/server/Entity.java
 --- src_origin/main/java/net/minecraft/server/Entity.java	2016-02-26 15:27:08.930203422 +0800
-+++ src_new/main/java/net/minecraft/server/Entity.java	2016-03-03 01:40:34.572067994 +0800
++++ src_new/main/java/net/minecraft/server/Entity.java	2016-03-03 23:54:33.432556962 +0800
 @@ -263,12 +263,12 @@
              this.world.methodProfiler.a("portal");
              MinecraftServer minecraftserver = ((WorldServer) this.world).getMinecraftServer();
@@ -1034,7 +1043,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src_new/main/ja
              int i = worldserver1.dimension;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src_new/main/java/net/minecraft/server/EntityLiving.java
 --- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-02-26 15:27:09.784203502 +0800
-+++ src_new/main/java/net/minecraft/server/EntityLiving.java	2016-03-03 01:40:35.291068062 +0800
++++ src_new/main/java/net/minecraft/server/EntityLiving.java	2016-03-03 23:54:34.162557031 +0800
 @@ -461,7 +461,8 @@
  
      // CraftBukkit start
@@ -1047,7 +1056,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src_new/m
      protected void bi() {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java src_new/main/java/net/minecraft/server/EntityMinecartAbstract.java
 --- src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-02-26 15:27:09.793203503 +0800
-+++ src_new/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-03-03 01:40:35.306068063 +0800
++++ src_new/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-03-03 23:54:34.207557035 +0800
 @@ -238,9 +238,14 @@
                      this.al = 0;
                  }
@@ -1066,7 +1075,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java
              this.world.methodProfiler.b();
 diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src_new/main/java/net/minecraft/server/EntityPlayer.java
 --- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2016-02-26 15:27:09.996203522 +0800
-+++ src_new/main/java/net/minecraft/server/EntityPlayer.java	2016-03-03 01:40:35.487068080 +0800
++++ src_new/main/java/net/minecraft/server/EntityPlayer.java	2016-03-03 23:54:34.385557051 +0800
 @@ -10,6 +10,7 @@
  import java.util.HashSet;
  import java.util.Iterator;
@@ -1127,7 +1136,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src_new/m
      protected void a(MobEffect mobeffect) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntitySlice.java src_new/main/java/net/minecraft/server/EntitySlice.java
 --- src_origin/main/java/net/minecraft/server/EntitySlice.java	2016-02-26 15:27:10.178203539 +0800
-+++ src_new/main/java/net/minecraft/server/EntitySlice.java	2016-03-03 01:40:35.658068096 +0800
++++ src_new/main/java/net/minecraft/server/EntitySlice.java	2016-03-03 23:54:34.524557064 +0800
 @@ -7,16 +7,19 @@
  import java.util.AbstractSet;
  import java.util.Iterator;
@@ -1161,7 +1170,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntitySlice.java src_new/ma
              list.add(t0);
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src_new/main/java/net/minecraft/server/EntityTrackerEntry.java
 --- src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-02-26 15:27:10.392203559 +0800
-+++ src_new/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-03-03 01:40:35.859068115 +0800
++++ src_new/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-03-03 23:54:34.736557084 +0800
 @@ -1,10 +1,10 @@
  package net.minecraft.server;
  
@@ -1202,14 +1211,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src
  
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-02-26 15:27:10.352203555 +0800
-+++ src_new/main/java/net/minecraft/server/EntityTracker.java	2016-03-03 01:40:35.828068112 +0800
-@@ -1,11 +1,14 @@
++++ src_new/main/java/net/minecraft/server/EntityTracker.java	2016-03-03 23:54:34.702557081 +0800
+@@ -1,11 +1,16 @@
  package net.minecraft.server;
  
  import com.google.common.collect.Lists;
 -import com.google.common.collect.Sets;
  import java.util.ArrayList;
++import java.util.Arrays;
  import java.util.Iterator;
++import java.util.LinkedHashSet;
 +import java.util.List;
  import java.util.Set;
 -import java.util.concurrent.Callable;
@@ -1220,16 +1231,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
-@@ -13,10 +16,18 @@
+@@ -13,10 +18,18 @@
  
      private static final Logger a = LogManager.getLogger();
      private final WorldServer world;
 -    private Set<EntityTrackerEntry> c = Sets.newHashSet();
 -    public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
 +    //private Set<EntityTrackerEntry> c = Sets.newHashSet();
-+    private CopyOnWriteArraySet<EntityTrackerEntry> c = new CopyOnWriteArraySet<EntityTrackerEntry>();
++    private Set<EntityTrackerEntry> c = new CopyOnWriteArraySet<EntityTrackerEntry>();
 +    //public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
-+    public ConcurrentHashMap<Integer, EntityTrackerEntry> trackedEntities = new ConcurrentHashMap();
++    public ConcurrentHashMap<Integer, EntityTrackerEntry> trackedEntities = new ConcurrentHashMap<Integer, EntityTrackerEntry>();
      private int e;
  
 +    //for spigot
@@ -1241,46 +1252,60 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
      public EntityTracker(WorldServer worldserver) {
          this.world = worldserver;
          this.e = worldserver.getMinecraftServer().getPlayerList().d();
-@@ -100,17 +111,32 @@
-             i = this.e;
-         }
+@@ -94,23 +107,39 @@
+     }
+ 
+     public void addEntity(Entity entity, int i, final int j, boolean flag) {
+-        org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
+-        i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
+-        if (i > this.e) {
+-            i = this.e;
+-        }
++        synchronized (this) {
++            org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
++            i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
++            if (i > this.e) {
++                i = this.e;
++            }
  
 -        try {
 -            if (this.trackedEntities.b(entity.getId())) {
--                throw new IllegalStateException("Entity is already tracked!");
--            }
-+        
++
 +            //just track once
 +            //if (this.trackedEntities.b(entity.getId())) {
 +            if (this.trackedEntities.containsKey(this.g(entity.getId()))) {
-+                //throw new IllegalStateException("Entity is already tracked!");
+                 throw new IllegalStateException("Entity is already tracked!");
+-            }
 +                //throw new Exception();
 +            } else {
 +                EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, j, flag);
  
+-            EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, j, flag);
 +                this.c.add(entitytrackerentry);
 +                //key point causing error
 +                //this.trackedEntities.a(entity.getId(), entitytrackerentry);
-+                this.trackedEntities.put(this.g(entity.getId()), entitytrackerentry);
-+                
-+                entitytrackerentry.scanPlayers(this.world.players);
-+            }
-+            
-+            /*
-             EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, j, flag);
++                this.trackedEntities.putIfAbsent(this.g(entity.getId()), entitytrackerentry);
  
-             this.c.add(entitytrackerentry);
-+            //key point causing error
-             this.trackedEntities.a(entity.getId(), entitytrackerentry);
+-            this.c.add(entitytrackerentry);
+-            this.trackedEntities.a(entity.getId(), entitytrackerentry);
 -            entitytrackerentry.scanPlayers(this.world.players);
 -        } catch (Throwable throwable) {
-+            entitytrackerentry.scanPlayers(this.world.players);*/
++                entitytrackerentry.scanPlayers(this.world.players);
++            }
++        }
++        /*
++        EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, j, flag);
++
++        this.c.add(entitytrackerentry);
++        //key point causing error
++        this.trackedEntities.a(entity.getId(), entitytrackerentry);
++        entitytrackerentry.scanPlayers(this.world.players);*/
 +        
 +        /*} catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity To Track");
  
-@@ -141,7 +167,7 @@
+@@ -141,7 +170,7 @@
              } catch (ReportedException reportedexception) {
                  EntityTracker.a.error("\"Silently\" catching entity tracking error.", reportedexception);
              }
@@ -1289,17 +1314,21 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
  
      }
  
-@@ -158,7 +184,8 @@
+@@ -158,8 +187,11 @@
              }
          }
  
 -        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
+-
 +        //EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
 +        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.get(this.g(entity.getId()));
- 
++        //remember to remove trackedEntities.
++        this.trackedEntities.remove(this.g(entity.getId()));
++        
          if (entitytrackerentry1 != null) {
              this.c.remove(entitytrackerentry1);
-@@ -168,7 +195,8 @@
+             entitytrackerentry1.a();
+@@ -168,8 +200,10 @@
      }
  
      public void updatePlayers() {
@@ -1307,9 +1336,11 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
 +        //ArrayList arraylist = Lists.newArrayList();
 +        List arraylist = Lists.newCopyOnWriteArrayList();
          Iterator iterator = this.c.iterator();
++        //System.out.println(this.c.size()+","+this.trackedEntities.size()+","+arraylist.size());
  
          while (iterator.hasNext()) {
-@@ -211,7 +239,8 @@
+             EntityTrackerEntry entitytrackerentry = (EntityTrackerEntry) iterator.next();
+@@ -211,7 +245,8 @@
      }
  
      public void a(Entity entity, Packet packet) {
@@ -1319,7 +1350,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
  
          if (entitytrackerentry != null) {
              entitytrackerentry.broadcast(packet);
-@@ -220,7 +249,8 @@
+@@ -220,7 +255,8 @@
      }
  
      public void sendPacketToEntity(Entity entity, Packet packet) {
@@ -1331,7 +1362,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src_new/
              entitytrackerentry.broadcastIncludingSelf(packet);
 diff -Naur src_origin/main/java/net/minecraft/server/Explosion.java src_new/main/java/net/minecraft/server/Explosion.java
 --- src_origin/main/java/net/minecraft/server/Explosion.java	2016-02-26 15:27:10.556203574 +0800
-+++ src_new/main/java/net/minecraft/server/Explosion.java	2016-03-03 01:40:36.013068129 +0800
++++ src_new/main/java/net/minecraft/server/Explosion.java	2016-03-03 23:54:34.895557099 +0800
 @@ -28,6 +28,7 @@
      public final Entity source;
      private final float size;
@@ -1342,7 +1373,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Explosion.java src_new/main
  
 diff -Naur src_origin/main/java/net/minecraft/server/IntCache.java src_new/main/java/net/minecraft/server/IntCache.java
 --- src_origin/main/java/net/minecraft/server/IntCache.java	2016-02-26 15:27:10.750203593 +0800
-+++ src_new/main/java/net/minecraft/server/IntCache.java	2016-03-03 01:40:36.186068145 +0800
++++ src_new/main/java/net/minecraft/server/IntCache.java	2016-03-03 23:54:35.055557114 +0800
 @@ -10,7 +10,7 @@
      private static List<int[]> c = Lists.newArrayList();
      private static List<int[]> d = Lists.newArrayList();
@@ -1354,7 +1385,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/IntCache.java src_new/main/
  
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_new/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-02-26 15:27:11.493203662 +0800
-+++ src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-03-03 01:40:36.881068211 +0800
++++ src_new/main/java/net/minecraft/server/MinecraftServer.java	2016-03-03 23:54:35.819557186 +0800
 @@ -2,7 +2,6 @@
  
  import com.google.common.base.Charsets;
@@ -1450,7 +1481,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src_ne
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java src_new/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 --- src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-02-26 15:27:12.026203712 +0800
-+++ src_new/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-03-03 01:40:37.338068253 +0800
++++ src_new/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-03-03 23:54:36.404557240 +0800
 @@ -4,6 +4,7 @@
  import java.io.IOException;
  import java.util.ArrayList;
@@ -1469,326 +1500,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java 
  
          int j;
  
-diff -Naur src_origin/main/java/net/minecraft/server/PathfinderAbstract.java src_new/main/java/net/minecraft/server/PathfinderAbstract.java
---- src_origin/main/java/net/minecraft/server/PathfinderAbstract.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/PathfinderAbstract.java	2016-03-03 01:40:37.466068265 +0800
-@@ -0,0 +1,50 @@
-+package net.minecraft.server;
-+
-+import java.util.concurrent.ConcurrentHashMap;
-+
-+public abstract class PathfinderAbstract {
-+
-+    protected IBlockAccess a;
-+    //protected IntHashMap<PathPoint> b = new IntHashMap();
-+    protected ConcurrentHashMap<Integer, PathPoint> b = new ConcurrentHashMap();
-+    protected int c;
-+    protected int d;
-+    protected int e;
-+
-+    public PathfinderAbstract() {}
-+    
-+    //for spigot
-+    private int g(int i) {
-+        i ^= i >>> 20 ^ i >>> 12;
-+        return i ^ i >>> 7 ^ i >>> 4;
-+    }
-+
-+    public void a(IBlockAccess iblockaccess, Entity entity) {
-+        this.a = iblockaccess;
-+        //this.b.c();
-+        this.b.clear();
-+        this.c = MathHelper.d(entity.width + 1.0F);
-+        this.d = MathHelper.d(entity.length + 1.0F);
-+        this.e = MathHelper.d(entity.width + 1.0F);
-+    }
-+
-+    public void a() {}
-+
-+    protected PathPoint a(int i, int j, int k) {
-+        int l = PathPoint.a(i, j, k);
-+        //PathPoint pathpoint = (PathPoint) this.b.get(l);
-+        PathPoint pathpoint = (PathPoint) this.b.get(this.g(l));
-+        if (pathpoint == null) {
-+            pathpoint = new PathPoint(i, j, k);
-+            //this.b.a(l, pathpoint);
-+            this.b.put(this.g(l), pathpoint);
-+        }
-+        return pathpoint;
-+    }
-+
-+    public abstract PathPoint a(Entity entity);
-+
-+    public abstract PathPoint a(Entity entity, double d0, double d1, double d2);
-+
-+    public abstract int a(PathPoint[] apathpoint, Entity entity, PathPoint pathpoint, PathPoint pathpoint1, float f);
-+}
-diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalRandomStroll.java src_new/main/java/net/minecraft/server/PathfinderGoalRandomStroll.java
---- src_origin/main/java/net/minecraft/server/PathfinderGoalRandomStroll.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/PathfinderGoalRandomStroll.java	2016-03-03 01:40:37.722068289 +0800
-@@ -0,0 +1,63 @@
-+package net.minecraft.server;
-+
-+public class PathfinderGoalRandomStroll extends PathfinderGoal {
-+
-+    private EntityCreature a;
-+    private double b;
-+    private double c;
-+    private double d;
-+    private double e;
-+    private int f;
-+    private boolean g;
-+
-+    public PathfinderGoalRandomStroll(EntityCreature entitycreature, double d0) {
-+        this(entitycreature, d0, 120);
-+    }
-+
-+    public PathfinderGoalRandomStroll(EntityCreature entitycreature, double d0, int i) {
-+        this.a = entitycreature;
-+        this.e = d0;
-+        this.f = i;
-+        this.a(1);
-+    }
-+
-+    public boolean a() {
-+        if (!this.g) {
-+            if (this.a.bh() >= 100) {
-+                return false;
-+            }
-+
-+            if (this.a.bc().nextInt(this.f) != 0) {
-+                return false;
-+            }
-+        }
-+
-+        Vec3D vec3d = RandomPositionGenerator.a(this.a, 10, 7);
-+
-+        if (vec3d == null) {
-+            return false;
-+        } else {
-+            this.b = vec3d.a;
-+            this.c = vec3d.b;
-+            this.d = vec3d.c;
-+            this.g = false;
-+            return true;
-+        }
-+    }
-+
-+    public boolean b() {
-+        return !this.a.getNavigation().m();
-+    }
-+
-+    public void c() {
-+        this.a.getNavigation().a(this.b, this.c, this.d, this.e);
-+    }
-+
-+    public void f() {
-+        this.g = true;
-+    }
-+
-+    public void setTimeBetweenMovement(int i) {
-+        this.f = i;
-+    }
-+}
-diff -Naur src_origin/main/java/net/minecraft/server/Pathfinder.java src_new/main/java/net/minecraft/server/Pathfinder.java
---- src_origin/main/java/net/minecraft/server/Pathfinder.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/Pathfinder.java	2016-03-03 01:40:37.450068264 +0800
-@@ -0,0 +1,103 @@
-+package net.minecraft.server;
-+
-+import java.util.Arrays;
-+
-+public class Pathfinder {
-+
-+    private Path a = new Path();
-+    private PathPoint[] b = new PathPoint[32];
-+    private PathfinderAbstract c;
-+
-+    public Pathfinder(PathfinderAbstract pathfinderabstract) {
-+        this.c = pathfinderabstract;
-+    }
-+
-+    public PathEntity a(IBlockAccess iblockaccess, Entity entity, Entity entity1, float f) {
-+        return this.a(iblockaccess, entity, entity1.locX, entity1.getBoundingBox().b, entity1.locZ, f);
-+    }
-+
-+    public PathEntity a(IBlockAccess iblockaccess, Entity entity, BlockPosition blockposition, float f) {
-+        return this.a(iblockaccess, entity, (double) ((float) blockposition.getX() + 0.5F), (double) ((float) blockposition.getY() + 0.5F), (double) ((float) blockposition.getZ() + 0.5F), f);
-+    }
-+
-+    private PathEntity a(IBlockAccess iblockaccess, Entity entity, double d0, double d1, double d2, float f) {
-+        this.a.a();
-+        this.c.a(iblockaccess, entity);
-+        PathPoint pathpoint = this.c.a(entity);
-+        PathPoint pathpoint1 = this.c.a(entity, d0, d1, d2);
-+        PathEntity pathentity = this.a(entity, pathpoint, pathpoint1, f);
-+
-+        this.c.a();
-+        return pathentity;
-+    }
-+
-+    private PathEntity a(Entity entity, PathPoint pathpoint, PathPoint pathpoint1, float f) {
-+        pathpoint.e = 0.0F;
-+        pathpoint.f = pathpoint.b(pathpoint1);
-+        pathpoint.g = pathpoint.f;
-+        this.a.a();
-+        this.a.a(pathpoint);
-+        PathPoint pathpoint2 = pathpoint;
-+
-+        while (!this.a.e()) {
-+            PathPoint pathpoint3 = this.a.c();
-+
-+            if (pathpoint3.equals(pathpoint1)) {
-+                return this.a(pathpoint, pathpoint1);
-+            }
-+
-+            if (pathpoint3.b(pathpoint1) < pathpoint2.b(pathpoint1)) {
-+                pathpoint2 = pathpoint3;
-+            }
-+
-+            pathpoint3.i = true;
-+            int i = this.c.a(this.b, entity, pathpoint3, pathpoint1, f);
-+            for (int j = 0; j < i; ++j) {
-+                PathPoint pathpoint4 = this.b[j];
-+                float f1 = pathpoint3.e + pathpoint3.b(pathpoint4);
-+
-+                if (f1 < f * 2.0F && (!pathpoint4.a() || f1 < pathpoint4.e)) {
-+                    pathpoint4.h = pathpoint3;
-+                    pathpoint4.e = f1;
-+                    pathpoint4.f = pathpoint4.b(pathpoint1);
-+                    if (pathpoint4.a()) {
-+                        this.a.a(pathpoint4, pathpoint4.e + pathpoint4.f);
-+                    } else {
-+                        pathpoint4.g = pathpoint4.e + pathpoint4.f;
-+                        this.a.a(pathpoint4);
-+                    }
-+                }
-+            }
-+            //cleat PathPoint
-+            Arrays.fill(this.b, null);
-+        }
-+
-+        if (pathpoint2 == pathpoint) {
-+            return null;
-+        } else {
-+            return this.a(pathpoint, pathpoint2);
-+        }
-+    }
-+
-+    private PathEntity a(PathPoint pathpoint, PathPoint pathpoint1) {
-+        int i = 1;
-+
-+        PathPoint pathpoint2;
-+
-+        for (pathpoint2 = pathpoint1; pathpoint2.h != null; pathpoint2 = pathpoint2.h) {
-+            ++i;
-+        }
-+
-+        PathPoint[] apathpoint = new PathPoint[i];
-+
-+        pathpoint2 = pathpoint1;
-+        --i;
-+
-+        for (apathpoint[i] = pathpoint1; pathpoint2.h != null; apathpoint[i] = pathpoint2) {
-+            pathpoint2 = pathpoint2.h;
-+            --i;
-+        }
-+
-+        return new PathEntity(apathpoint);
-+    }
-+}
-diff -Naur src_origin/main/java/net/minecraft/server/Path.java src_new/main/java/net/minecraft/server/Path.java
---- src_origin/main/java/net/minecraft/server/Path.java	2016-02-26 15:27:12.114203720 +0800
-+++ src_new/main/java/net/minecraft/server/Path.java	2016-03-03 01:40:37.422068261 +0800
-@@ -1,5 +1,7 @@
- package net.minecraft.server;
- 
-+import java.util.Arrays;
-+
- public class Path {
- 
-     private PathPoint[] a = new PathPoint[128]; // CraftBukkit - reduce default size
-@@ -16,6 +18,8 @@
- 
-                 System.arraycopy(this.a, 0, apathpoint, 0, this.b);
-                 this.a = apathpoint;
-+                //clear PathPoint
-+                Arrays.fill(apathpoint, null);
-             }
- 
-             this.a[this.b] = pathpoint;
-diff -Naur src_origin/main/java/net/minecraft/server/PathPoint.java src_new/main/java/net/minecraft/server/PathPoint.java
---- src_origin/main/java/net/minecraft/server/PathPoint.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/net/minecraft/server/PathPoint.java	2016-03-03 01:40:37.850068301 +0800
-@@ -0,0 +1,65 @@
-+package net.minecraft.server;
-+
-+public class PathPoint {
-+
-+    public final int a;
-+    public final int b;
-+    public final int c;
-+    private final int j;
-+    int d = -1;
-+    float e;
-+    float f;
-+    float g;
-+    PathPoint h;
-+    public boolean i;
-+
-+    public PathPoint(int i, int j, int k) {
-+        this.a = i;
-+        this.b = j;
-+        this.c = k;
-+        this.j = a(i, j, k);
-+    }
-+
-+    public static int a(int i, int j, int k) {
-+        return j & 255 | (i & 32767) << 8 | (k & 32767) << 24 | (i < 0 ? Integer.MIN_VALUE : 0) | (k < 0 ? '\u8000' : 0);
-+    }
-+
-+    public float a(PathPoint pathpoint) {
-+        float f = (float) (pathpoint.a - this.a);
-+        float f1 = (float) (pathpoint.b - this.b);
-+        float f2 = (float) (pathpoint.c - this.c);
-+
-+        return MathHelper.c(f * f + f1 * f1 + f2 * f2);
-+    }
-+
-+    public float b(PathPoint pathpoint) {
-+        float f = (float) (pathpoint.a - this.a);
-+        float f1 = (float) (pathpoint.b - this.b);
-+        float f2 = (float) (pathpoint.c - this.c);
-+
-+        return f * f + f1 * f1 + f2 * f2;
-+    }
-+
-+    public boolean equals(Object object) {
-+        //System.out.println();
-+        if (!(object instanceof PathPoint)) {
-+            return false;
-+        } else {
-+            PathPoint pathpoint = (PathPoint) object;
-+
-+            return this.j == pathpoint.j && this.a == pathpoint.a && this.b == pathpoint.b && this.c == pathpoint.c;
-+        }
-+    }
-+
-+    public int hashCode() {
-+        return this.j;
-+    }
-+
-+    public boolean a() {
-+        return this.d >= 0;
-+    }
-+
-+    public String toString() {
-+        return this.a + ", " + this.b + ", " + this.c;
-+    }
-+}
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src_new/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-02-26 15:27:12.591203765 +0800
-+++ src_new/main/java/net/minecraft/server/PlayerChunkMap.java	2016-03-03 01:40:37.899068306 +0800
++++ src_new/main/java/net/minecraft/server/PlayerChunkMap.java	2016-03-03 23:54:36.868557284 +0800
 @@ -1,7 +1,6 @@
  package net.minecraft.server;
  
@@ -1877,7 +1591,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src_new
          private int f;
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerConnection.java src_new/main/java/net/minecraft/server/PlayerConnection.java
 --- src_origin/main/java/net/minecraft/server/PlayerConnection.java	2016-02-26 15:27:12.653203771 +0800
-+++ src_new/main/java/net/minecraft/server/PlayerConnection.java	2016-03-03 01:40:37.945068310 +0800
++++ src_new/main/java/net/minecraft/server/PlayerConnection.java	2016-03-03 23:54:36.914557288 +0800
 @@ -3,7 +3,6 @@
  import com.google.common.collect.Lists;
  import com.google.common.primitives.Doubles;
@@ -1937,7 +1651,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerConnection.java src_n
              this.player.activeContainer.a(this.player, true);
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src_new/main/java/net/minecraft/server/PlayerList.java
 --- src_origin/main/java/net/minecraft/server/PlayerList.java	2016-02-26 15:27:12.726203777 +0800
-+++ src_new/main/java/net/minecraft/server/PlayerList.java	2016-03-03 01:40:38.010068316 +0800
++++ src_new/main/java/net/minecraft/server/PlayerList.java	2016-03-03 23:54:36.979557294 +0800
 @@ -48,7 +48,8 @@
      private static final Logger f = LogManager.getLogger();
      private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
@@ -1966,7 +1680,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src_new/mai
          while (iterator.hasNext()) {
 diff -Naur src_origin/main/java/net/minecraft/server/PortalTravelAgent.java src_new/main/java/net/minecraft/server/PortalTravelAgent.java
 --- src_origin/main/java/net/minecraft/server/PortalTravelAgent.java	2016-02-26 15:27:12.766203781 +0800
-+++ src_new/main/java/net/minecraft/server/PortalTravelAgent.java	2016-03-03 01:40:38.038068319 +0800
++++ src_new/main/java/net/minecraft/server/PortalTravelAgent.java	2016-03-03 23:54:37.007557297 +0800
 @@ -1,9 +1,9 @@
  package net.minecraft.server;
  
@@ -1991,7 +1705,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PortalTravelAgent.java src_
          this.a = worldserver;
 diff -Naur src_origin/main/java/net/minecraft/server/ScoreboardServer.java src_new/main/java/net/minecraft/server/ScoreboardServer.java
 --- src_origin/main/java/net/minecraft/server/ScoreboardServer.java	2016-02-26 15:27:13.079203810 +0800
-+++ src_new/main/java/net/minecraft/server/ScoreboardServer.java	2016-03-03 01:40:38.295068343 +0800
++++ src_new/main/java/net/minecraft/server/ScoreboardServer.java	2016-03-03 23:54:37.249557319 +0800
 @@ -7,11 +7,13 @@
  import java.util.Iterator;
  import java.util.List;
@@ -2009,7 +1723,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ScoreboardServer.java src_n
      public ScoreboardServer(MinecraftServer minecraftserver) {
 diff -Naur src_origin/main/java/net/minecraft/server/ServerConnection.java src_new/main/java/net/minecraft/server/ServerConnection.java
 --- src_origin/main/java/net/minecraft/server/ServerConnection.java	2016-02-26 15:27:13.131203815 +0800
-+++ src_new/main/java/net/minecraft/server/ServerConnection.java	2016-03-03 01:40:38.340068347 +0800
++++ src_new/main/java/net/minecraft/server/ServerConnection.java	2016-03-03 23:54:37.299557324 +0800
 @@ -23,7 +23,9 @@
  import java.util.Collections;
  import java.util.Iterator;
@@ -2029,27 +1743,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/ServerConnection.java src_n
  
      public ServerConnection(MinecraftServer minecraftserver) {
          this.f = minecraftserver;
-@@ -120,14 +124,15 @@
-     }
- 
-     public void c() {
--        List list = this.h;
-+        //List list = this.h;
-+        //Queue list = this.h;
- 
-         synchronized (this.h) {
-             // Spigot Start
-             // This prevents players from 'gaming' the server, and strategically relogging to increase their position in the tick order
-             if ( org.spigotmc.SpigotConfig.playerShuffle > 0 && MinecraftServer.currentTick % org.spigotmc.SpigotConfig.playerShuffle == 0 )
-             {
--                Collections.shuffle( this.h );
-+                Collections.shuffle( (List)this.h );
-             }
-             // Spigot End
-             Iterator iterator = this.h.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/ServerStatisticManager.java src_new/main/java/net/minecraft/server/ServerStatisticManager.java
 --- src_origin/main/java/net/minecraft/server/ServerStatisticManager.java	2016-02-26 15:27:13.135203816 +0800
-+++ src_new/main/java/net/minecraft/server/ServerStatisticManager.java	2016-03-03 01:40:38.368068350 +0800
++++ src_new/main/java/net/minecraft/server/ServerStatisticManager.java	2016-03-03 23:54:37.330557327 +0800
 @@ -15,6 +15,7 @@
  import java.util.Map;
  import java.util.Set;
@@ -2070,7 +1766,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ServerStatisticManager.java
  
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntityBeacon.java src_new/main/java/net/minecraft/server/TileEntityBeacon.java
 --- src_origin/main/java/net/minecraft/server/TileEntityBeacon.java	2016-02-26 15:27:13.400203841 +0800
-+++ src_new/main/java/net/minecraft/server/TileEntityBeacon.java	2016-03-03 01:40:38.588068370 +0800
++++ src_new/main/java/net/minecraft/server/TileEntityBeacon.java	2016-03-03 23:54:37.542557347 +0800
 @@ -14,6 +14,7 @@
  
      public static final MobEffectList[][] a = new MobEffectList[][] { { MobEffectList.FASTER_MOVEMENT, MobEffectList.FASTER_DIG}, { MobEffectList.RESISTANCE, MobEffectList.JUMP}, { MobEffectList.INCREASE_DAMAGE}, { MobEffectList.REGENERATION}};
@@ -2081,7 +1777,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntityBeacon.java src_n
      private int k;
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntityPiston.java src_new/main/java/net/minecraft/server/TileEntityPiston.java
 --- src_origin/main/java/net/minecraft/server/TileEntityPiston.java	2016-02-26 15:27:13.607203860 +0800
-+++ src_new/main/java/net/minecraft/server/TileEntityPiston.java	2016-03-03 01:40:38.771068387 +0800
++++ src_new/main/java/net/minecraft/server/TileEntityPiston.java	2016-03-03 23:54:37.789557370 +0800
 @@ -12,7 +12,8 @@
      private boolean h;
      private float i;
@@ -2094,7 +1790,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntityPiston.java src_n
  
 diff -Naur src_origin/main/java/net/minecraft/server/UserCache.java src_new/main/java/net/minecraft/server/UserCache.java
 --- src_origin/main/java/net/minecraft/server/UserCache.java	2016-02-26 15:27:13.676203866 +0800
-+++ src_new/main/java/net/minecraft/server/UserCache.java	2016-03-03 01:40:38.857068395 +0800
++++ src_new/main/java/net/minecraft/server/UserCache.java	2016-03-03 23:54:37.862557377 +0800
 @@ -155,6 +155,7 @@
  
      public String[] a() {
@@ -2105,7 +1801,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/UserCache.java src_new/main
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldBorder.java src_new/main/java/net/minecraft/server/WorldBorder.java
 --- src_origin/main/java/net/minecraft/server/WorldBorder.java	2016-02-26 15:27:13.784203876 +0800
-+++ src_new/main/java/net/minecraft/server/WorldBorder.java	2016-03-03 01:40:38.967068406 +0800
++++ src_new/main/java/net/minecraft/server/WorldBorder.java	2016-03-03 23:54:37.971557387 +0800
 @@ -7,6 +7,7 @@
  public class WorldBorder {
  
@@ -2124,7 +1820,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldBorder.java src_new/ma
      public void a(IWorldBorderListener iworldborderlistener) {
 diff -Naur src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java src_new/main/java/net/minecraft/server/WorldGenLargeFeature.java
 --- src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-02-26 15:27:13.882203886 +0800
-+++ src_new/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-03-03 01:40:39.054068414 +0800
++++ src_new/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-03-03 23:54:38.130557402 +0800
 @@ -17,6 +17,7 @@
  
      public WorldGenLargeFeature() {
@@ -2135,7 +1831,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java s
          this.f.add(new BiomeBase.BiomeMeta(EntityWitch.class, 1, 1, 1));
 diff -Naur src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java src_new/main/java/net/minecraft/server/WorldGenVillagePieces.java
 --- src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-02-26 15:27:14.039203900 +0800
-+++ src_new/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-03-03 01:40:39.175068425 +0800
++++ src_new/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-03-03 23:54:38.369557424 +0800
 @@ -2,9 +2,13 @@
  
  import com.google.common.collect.Lists;
@@ -2164,7 +1860,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java 
          arraylist.add(new WorldGenVillagePieces.WorldGenVillagePieceWeight(WorldGenVillagePieces.WorldGenVillageLibrary.class, 20, MathHelper.nextInt(random, 0 + i, 2 + i)));
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-02-26 15:27:13.782203876 +0800
-+++ src_new/main/java/net/minecraft/server/World.java	2016-03-03 01:40:38.931068402 +0800
++++ src_new/main/java/net/minecraft/server/World.java	2016-03-03 23:54:37.969557387 +0800
 @@ -2,25 +2,26 @@
  
  import com.google.common.base.Predicate;
@@ -2402,7 +2098,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
          this.methodProfiler.a("entities");
          this.methodProfiler.a("global");
 -
-+        //System.out.println(this.entityList.size()+","+this.g.size()+","+this.k.size());
++        //System.out.println(this.players.size()+","+this.entitiesById.size());
          int i;
 -        Entity entity;
 +        //Entity entity;
@@ -2606,7 +2302,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src_new/main/jav
  
 diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src_new/main/java/net/minecraft/server/WorldMap.java
 --- src_origin/main/java/net/minecraft/server/WorldMap.java	2016-02-26 15:27:14.088203905 +0800
-+++ src_new/main/java/net/minecraft/server/WorldMap.java	2016-03-03 01:40:39.228068430 +0800
++++ src_new/main/java/net/minecraft/server/WorldMap.java	2016-03-03 23:54:38.411557428 +0800
 @@ -6,9 +6,11 @@
  import java.util.Iterator;
  import java.util.List;
@@ -2661,7 +2357,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src_new/main/
              EntityItemFrame entityitemframe = itemstack.z();
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src_new/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-02-26 15:27:14.144203910 +0800
-+++ src_new/main/java/net/minecraft/server/WorldServer.java	2016-03-03 01:40:39.284068435 +0800
++++ src_new/main/java/net/minecraft/server/WorldServer.java	2016-03-03 23:54:38.462557433 +0800
 @@ -3,26 +3,24 @@
  import com.google.common.base.Predicate;
  import com.google.common.collect.Lists;
@@ -2848,7 +2544,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src_new/ma
  
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java src_new/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java
 --- src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-02-26 15:27:16.164204099 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-03-03 01:40:41.143068609 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-03-03 23:54:40.414557616 +0800
 @@ -10,10 +10,7 @@
  import org.bukkit.craftbukkit.util.LongHash;
  
@@ -2875,7 +2571,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.j
          // Update neighbor counts
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src_new/main/java/org/bukkit/craftbukkit/CraftWorld.java
 --- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-02-26 15:27:14.770203969 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-03-03 01:40:39.878068491 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-03-03 23:54:38.991557482 +0800
 @@ -1371,7 +1371,12 @@
          }
  
@@ -2914,7 +2610,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src_new/m
      private final Spigot spigot = new Spigot()
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 --- src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-02-26 15:27:20.478204503 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-03-03 01:40:44.930068964 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-03-03 23:54:44.319557981 +0800
 @@ -42,6 +42,7 @@
  import java.util.HashSet;
  import java.util.Iterator;
@@ -2935,7 +2631,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.j
  
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src_new/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-02-26 15:27:22.350204678 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-03-03 01:40:46.674069127 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-03-03 23:54:46.137558151 +0800
 @@ -1,15 +1,17 @@
  package org.bukkit.craftbukkit.util;
  
@@ -2968,7 +2664,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
  }
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java src_new/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	2016-02-26 15:27:22.480204690 +0800
-+++ src_new/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	2016-03-03 01:40:46.772069136 +0800
++++ src_new/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	2016-03-03 23:54:46.230558160 +0800
 @@ -14,6 +14,7 @@
  import java.util.Map;
  import java.util.NoSuchElementException;
@@ -3045,7 +2741,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.ja
              }
 diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src_new/main/java/org/hose/AddParticlePool.java
 --- src_origin/main/java/org/hose/AddParticlePool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/AddParticlePool.java	2016-03-03 01:40:31.094067669 +0800
++++ src_new/main/java/org/hose/AddParticlePool.java	2016-03-03 23:54:29.699556613 +0800
 @@ -0,0 +1,41 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3090,7 +2786,7 @@ diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src_new/main/java/
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkGenPool.java src_new/main/java/org/hose/ChunkGenPool.java
 --- src_origin/main/java/org/hose/ChunkGenPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/ChunkGenPool.java	2016-03-03 01:40:31.094067669 +0800
++++ src_new/main/java/org/hose/ChunkGenPool.java	2016-03-03 23:54:29.699556613 +0800
 @@ -0,0 +1,38 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3132,7 +2828,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkGenPool.java src_new/main/java/org
 +}
 diff -Naur src_origin/main/java/org/hose/GetChunkATPool.java src_new/main/java/org/hose/GetChunkATPool.java
 --- src_origin/main/java/org/hose/GetChunkATPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/GetChunkATPool.java	2016-03-03 01:40:31.134067673 +0800
++++ src_new/main/java/org/hose/GetChunkATPool.java	2016-03-03 23:54:29.749556618 +0800
 @@ -0,0 +1,35 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3171,7 +2867,7 @@ diff -Naur src_origin/main/java/org/hose/GetChunkATPool.java src_new/main/java/o
 +}
 diff -Naur src_origin/main/java/org/hose/GetCreateChunkPool.java src_new/main/java/org/hose/GetCreateChunkPool.java
 --- src_origin/main/java/org/hose/GetCreateChunkPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/GetCreateChunkPool.java	2016-03-03 01:40:31.138067673 +0800
++++ src_new/main/java/org/hose/GetCreateChunkPool.java	2016-03-03 23:54:29.749556618 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3207,7 +2903,7 @@ diff -Naur src_origin/main/java/org/hose/GetCreateChunkPool.java src_new/main/ja
 +}
 diff -Naur src_origin/main/java/org/hose/t_Pool.java src_new/main/java/org/hose/t_Pool.java
 --- src_origin/main/java/org/hose/t_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src_new/main/java/org/hose/t_Pool.java	2016-03-03 01:40:31.174067677 +0800
++++ src_new/main/java/org/hose/t_Pool.java	2016-03-03 23:54:29.815556624 +0800
 @@ -0,0 +1,56 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3267,7 +2963,7 @@ diff -Naur src_origin/main/java/org/hose/t_Pool.java src_new/main/java/org/hose/
 +}
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src_new/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-02-26 15:27:05.386203091 +0800
-+++ src_new/main/java/org/spigotmc/ActivationRange.java	2016-03-03 01:40:31.320067690 +0800
++++ src_new/main/java/org/spigotmc/ActivationRange.java	2016-03-03 23:54:29.977556639 +0800
 @@ -1,8 +1,7 @@
  package org.spigotmc;
  
@@ -3306,7 +3002,7 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src_new/main/j
              {
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src_new/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-02-26 15:27:05.429203095 +0800
-+++ src_new/main/java/org/spigotmc/AsyncCatcher.java	2016-03-03 01:40:31.361067694 +0800
++++ src_new/main/java/org/spigotmc/AsyncCatcher.java	2016-03-03 23:54:30.015556643 +0800
 @@ -5,7 +5,7 @@
  public class AsyncCatcher
  {
@@ -3318,7 +3014,7 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src_new/main/java
      {
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src_new/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-26 15:27:05.636203114 +0800
-+++ src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-03-03 01:40:31.533067710 +0800
++++ src_new/main/java/org/spigotmc/SpigotWorldConfig.java	2016-03-03 23:54:30.186556659 +0800
 @@ -1,13 +1,70 @@
  package org.spigotmc;
  
