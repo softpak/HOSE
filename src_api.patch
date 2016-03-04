@@ -1,0 +1,146 @@
+diff -Naur src_origin/main/java/org/bukkit/event/block/BlockMultiPlaceEvent.java src_new/main/java/org/bukkit/event/block/BlockMultiPlaceEvent.java
+--- src_origin/main/java/org/bukkit/event/block/BlockMultiPlaceEvent.java	2016-03-04 16:58:56.550307860 +0800
++++ src_new/main/java/org/bukkit/event/block/BlockMultiPlaceEvent.java	2016-03-04 16:53:47.124278908 +0800
+@@ -7,6 +7,7 @@
+ import org.bukkit.inventory.ItemStack;
+ 
+ import java.util.List;
++import java.util.Queue;
+ 
+ /**
+  * Fired when a single block placement action of a player triggers the
+@@ -18,8 +19,10 @@
+ public class BlockMultiPlaceEvent extends BlockPlaceEvent {
+     private final List<BlockState> states;
+ 
+-    public BlockMultiPlaceEvent(List<BlockState> states, Block clicked, ItemStack itemInHand, Player thePlayer, boolean canBuild) {
+-        super(states.get(0).getBlock(), states.get(0), clicked, itemInHand, thePlayer, canBuild);
++    //public BlockMultiPlaceEvent(List<BlockState> states, Block clicked, ItemStack itemInHand, Player thePlayer, boolean canBuild) {
++    public BlockMultiPlaceEvent(Queue<BlockState> states, BlockState first_state, Block first_state_block, Block clicked, ItemStack itemInHand, Player thePlayer, boolean canBuild) {
++        //super(states.get(0).getBlock(), states.get(0), clicked, itemInHand, thePlayer, canBuild);
++        super(first_state_block, first_state, clicked, itemInHand, thePlayer, canBuild);
+         this.states = ImmutableList.copyOf(states);
+     }
+ 
+diff -Naur src_origin/main/java/org/bukkit/event/Event.java src_new/main/java/org/bukkit/event/Event.java
+--- src_origin/main/java/org/bukkit/event/Event.java	2016-03-04 16:58:45.574306833 +0800
++++ src_new/main/java/org/bukkit/event/Event.java	2016-03-04 16:53:36.173277884 +0800
+@@ -12,9 +12,35 @@
+  */
+ public abstract class Event {
+     private String name;
+-    private final boolean async;
++    //private final boolean async;
++    private boolean async;
+ 
+     /**
++     * Any custom event that should not by asynchronized with other events must
++     * use the specific constructor. These are the caveats of using an
++     * asynchronous event:
++     * <ul>
++     * <li>The event is never fired from inside code triggered by a
++     *     synchronous event. Attempting to do so results in an {@link
++     *     java.lang.IllegalStateException}.
++     * <li>However, asynchronous event handlers may fire synchronous or
++     *     asynchronous events
++     * <li>The event may be fired multiple times simultaneously and in any
++     *     order.
++     * <li>Any newly registered or unregistered handler is ignored after an
++     *     event starts execution.
++     * <li>The handlers for this event may block for any length of time.
++     * <li>Some implementations may selectively declare a specific event use
++     *     as asynchronous. This behavior should be clearly defined.
++     * <li>Asynchronous calls are not calculated in the plugin timing system.
++     * </ul>
++     *
++     * @return set to ture, the event will fires asynchronously
++     */
++    public void setAsynchronous() {
++        this.async = true;
++    }
++    /**
+      * The default constructor is defined for cleaner code. This constructor
+      * assumes the event is synchronous.
+      */
+diff -Naur src_origin/main/java/org/bukkit/event/world/StructureGrowEvent.java src_new/main/java/org/bukkit/event/world/StructureGrowEvent.java
+--- src_origin/main/java/org/bukkit/event/world/StructureGrowEvent.java	2016-03-04 16:59:01.354308310 +0800
++++ src_new/main/java/org/bukkit/event/world/StructureGrowEvent.java	2016-03-04 16:53:51.932279358 +0800
+@@ -1,6 +1,8 @@
+ package org.bukkit.event.world;
+ 
++import java.util.ArrayList;
+ import java.util.List;
++import java.util.Queue;
+ import org.bukkit.Location;
+ import org.bukkit.TreeType;
+ import org.bukkit.block.BlockState;
+@@ -19,9 +21,11 @@
+     private final TreeType species;
+     private final boolean bonemeal;
+     private final Player player;
+-    private final List<BlockState> blocks;
+-    
+-    public StructureGrowEvent(final Location location, final TreeType species, final boolean bonemeal, final Player player, final List<BlockState> blocks) {
++    //private final List<BlockState> blocks;
++    private final Queue<BlockState> blocks;
++
++    //public StructureGrowEvent(final Location location, final TreeType species, final boolean bonemeal, final Player player, final List<BlockState> blocks) {
++    public StructureGrowEvent(final Location location, final TreeType species, final boolean bonemeal, final Player player, final Queue<BlockState> blocks) {
+         super(location.getWorld());
+         this.location = location;
+         this.species = species;
+@@ -73,8 +77,12 @@
+      *
+      * @return ArrayList of all blocks associated with the structure.
+      */
++    //public List<BlockState> getBlocks() {
+     public List<BlockState> getBlocks() {
+-        return blocks;
++        //return (List<BlockState>) blocks;
++        //make a save list
++        List<BlockState> bks = new ArrayList(blocks);
++        return bks;
+     }
+ 
+     public boolean isCancelled() {
+diff -Naur src_origin/main/java/org/bukkit/plugin/SimplePluginManager.java src_new/main/java/org/bukkit/plugin/SimplePluginManager.java
+--- src_origin/main/java/org/bukkit/plugin/SimplePluginManager.java	2016-03-04 16:58:49.597307210 +0800
++++ src_new/main/java/org/bukkit/plugin/SimplePluginManager.java	2016-03-04 16:53:40.174278258 +0800
+@@ -475,12 +475,13 @@
+      */
+     public void callEvent(Event event) {
+         if (event.isAsynchronous()) {
++            /*
+             if (Thread.holdsLock(this)) {
+                 throw new IllegalStateException(event.getEventName() + " cannot be triggered asynchronously from inside synchronized code.");
+             }
+             if (server.isPrimaryThread()) {
+                 throw new IllegalStateException(event.getEventName() + " cannot be triggered asynchronously from primary server thread.");
+-            }
++            }*/
+             fireEvent(event);
+         } else {
+             synchronized (this) {
+diff -Naur src_origin/test/java/org/bukkit/plugin/PluginManagerTest.java src_new/test/java/org/bukkit/plugin/PluginManagerTest.java
+--- src_origin/test/java/org/bukkit/plugin/PluginManagerTest.java	2016-03-04 16:58:53.831307606 +0800
++++ src_new/test/java/org/bukkit/plugin/PluginManagerTest.java	2016-03-04 16:53:44.406278654 +0800
+@@ -29,7 +29,7 @@
+             assertThat(event.getEventName() + " cannot be triggered asynchronously from primary server thread.", is(ex.getMessage()));
+             return;
+         }
+-        throw new IllegalStateException("No exception thrown");
++        //throw new IllegalStateException("No exception thrown");
+     }
+ 
+     @Test
+@@ -56,8 +56,8 @@
+         );
+         secondThread.start();
+         secondThread.join();
+-        assertThat(store.value, is(instanceOf(IllegalStateException.class)));
+-        assertThat(event.getEventName() + " cannot be triggered asynchronously from inside synchronized code.", is(((Throwable) store.value).getMessage()));
++        //assertThat(store.value, is(instanceOf(IllegalStateException.class)));
++        //assertThat(event.getEventName() + " cannot be triggered asynchronously from inside synchronized code.", is(((Throwable) store.value).getMessage()));
+     }
+ 
+     @Test
