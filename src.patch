@@ -1,7 +1,7 @@
 diff -Naur src_origin/main/java/net/minecraft/server/AttributeModifiable.java src/main/java/net/minecraft/server/AttributeModifiable.java
 --- src_origin/main/java/net/minecraft/server/AttributeModifiable.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/AttributeModifiable.java	2016-03-06 18:35:54.021020498 +0800
-@@ -0,0 +1,169 @@
++++ src/main/java/net/minecraft/server/AttributeModifiable.java	2016-03-07 17:08:40.206614946 +0800
+@@ -0,0 +1,168 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.Maps;
@@ -9,7 +9,6 @@ diff -Naur src_origin/main/java/net/minecraft/server/AttributeModifiable.java sr
 +import java.util.Collection;
 +import java.util.HashSet;
 +import java.util.Iterator;
-+import java.util.Map;
 +import java.util.Set;
 +import java.util.UUID;
 +import java.util.concurrent.ConcurrentMap;
@@ -173,7 +172,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/AttributeModifiable.java sr
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java src/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java
 --- src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-02-26 15:27:07.267203267 +0800
-+++ src/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-03-06 18:35:55.053020595 +0800
++++ src/main/java/net/minecraft/server/BlockMinecartTrackAbstract.java	2016-03-07 17:08:40.866615008 +0800
 @@ -3,6 +3,7 @@
  import com.google.common.collect.Lists;
  import java.util.Iterator;
@@ -192,9 +191,48 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockMinecartTrackAbstract.
  
          public MinecartTrackLogic(World world, BlockPosition blockposition, IBlockData iblockdata) {
              this.b = world;
+diff -Naur src_origin/main/java/net/minecraft/server/BlockPiston.java src/main/java/net/minecraft/server/BlockPiston.java
+--- src_origin/main/java/net/minecraft/server/BlockPiston.java	2016-02-26 15:27:07.429203282 +0800
++++ src/main/java/net/minecraft/server/BlockPiston.java	2016-03-07 17:08:41.029615023 +0800
+@@ -4,11 +4,9 @@
+ 
+ // CraftBukkit start
+ import java.util.AbstractList;
+-import java.util.Collection;
+-import java.util.Iterator;
+-import java.util.ListIterator;
+ 
+ import com.google.common.collect.ImmutableList;
++import java.util.concurrent.CopyOnWriteArrayList;
+ import org.bukkit.craftbukkit.block.CraftBlock;
+ import org.bukkit.event.block.BlockPistonRetractEvent;
+ import org.bukkit.event.block.BlockPistonExtendEvent;
+@@ -72,6 +70,7 @@
+             if (!this.sticky) {
+                 org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+                 BlockPistonRetractEvent event = new BlockPistonRetractEvent(block, ImmutableList.<org.bukkit.block.Block>of(), CraftBlock.notchToBlockFace(enumdirection));
++                event.setAsynchronous();
+                 world.getServer().getPluginManager().callEvent(event);
+ 
+                 if (event.isCancelled()) {
+@@ -312,9 +311,11 @@
+             // CraftBukkit start
+             final org.bukkit.block.Block bblock = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+ 
+-            final List<BlockPosition> moved = pistonextendschecker.getMovedBlocks();
+-            final List<BlockPosition> broken = pistonextendschecker.getBrokenBlocks();
+-
++            /*final List<BlockPosition> moved = pistonextendschecker.getMovedBlocks();
++            final List<BlockPosition> broken = pistonextendschecker.getBrokenBlocks();*/
++            final CopyOnWriteArrayList<BlockPosition> moved = pistonextendschecker.getMovedBlocks();
++            final CopyOnWriteArrayList<BlockPosition> broken = pistonextendschecker.getBrokenBlocks();
++            
+             List<org.bukkit.block.Block> blocks = new AbstractList<org.bukkit.block.Block>() {
+ 
+                 @Override
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java src/main/java/net/minecraft/server/BlockRedstoneTorch.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-02-26 15:27:07.667203304 +0800
-+++ src/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-03-06 18:35:55.629020649 +0800
++++ src/main/java/net/minecraft/server/BlockRedstoneTorch.java	2016-03-07 17:08:41.243615043 +0800
 @@ -1,7 +1,6 @@
  package net.minecraft.server;
  
@@ -215,7 +253,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneTorch.java src
          List list = (List) BlockRedstoneTorch.b.get(world);
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/main/java/net/minecraft/server/BlockRedstoneWire.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-02-26 15:27:07.697203307 +0800
-+++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-03-06 18:35:55.671020652 +0800
++++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-03-07 17:08:41.253615044 +0800
 @@ -2,11 +2,16 @@
  
  import com.google.common.collect.Lists;
@@ -255,7 +293,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/
          Iterator iterator = arraylist.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/BlockSapling.java src/main/java/net/minecraft/server/BlockSapling.java
 --- src_origin/main/java/net/minecraft/server/BlockSapling.java	2016-02-26 15:27:07.744203311 +0800
-+++ src/main/java/net/minecraft/server/BlockSapling.java	2016-03-06 18:35:55.743020659 +0800
++++ src/main/java/net/minecraft/server/BlockSapling.java	2016-03-07 17:08:41.299615048 +0800
 @@ -4,6 +4,9 @@
  
  // CraftBukkit start
@@ -279,7 +317,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockSapling.java src/main/
                      if (treeType != null) {
 diff -Naur src_origin/main/java/net/minecraft/server/ChatBaseComponent.java src/main/java/net/minecraft/server/ChatBaseComponent.java
 --- src_origin/main/java/net/minecraft/server/ChatBaseComponent.java	2016-02-26 15:27:08.023203337 +0800
-+++ src/main/java/net/minecraft/server/ChatBaseComponent.java	2016-03-06 18:35:56.136020696 +0800
++++ src/main/java/net/minecraft/server/ChatBaseComponent.java	2016-03-07 17:08:41.546615071 +0800
 @@ -8,7 +8,8 @@
  
  public abstract class ChatBaseComponent implements IChatBaseComponent {
@@ -292,8 +330,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChatBaseComponent.java src/
      public ChatBaseComponent() {}
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-02-26 15:27:08.084203343 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2016-03-06 18:35:56.216020703 +0800
-@@ -15,6 +15,9 @@
++++ src/main/java/net/minecraft/server/Chunk.java	2016-03-07 17:08:41.599615076 +0800
+@@ -1,13 +1,11 @@
+ package net.minecraft.server;
+ 
+ import com.google.common.base.Predicate;
+-import com.google.common.collect.Maps;
+ import com.google.common.collect.Queues;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Iterator;
+ import java.util.List;
+-import java.util.Map;
+ import java.util.Random;
+ import java.util.concurrent.Callable;
+ import java.util.concurrent.ConcurrentLinkedQueue;
+@@ -15,6 +13,9 @@
  import org.apache.logging.log4j.Logger;
  
  import com.google.common.collect.Lists; // CraftBukkit
@@ -303,7 +355,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
  import org.bukkit.Bukkit; // CraftBukkit
  
  public class Chunk {
-@@ -30,8 +33,10 @@
+@@ -30,8 +31,10 @@
      public final int locX;
      public final int locZ;
      private boolean k;
@@ -316,7 +368,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
      private boolean done;
      private boolean lit;
      private boolean p;
-@@ -77,17 +82,20 @@
+@@ -77,17 +80,20 @@
          this.e = new byte[256];
          this.f = new int[256];
          this.g = new boolean[256];
@@ -340,7 +392,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          }
  
          Arrays.fill(this.f, -999);
-@@ -832,6 +840,7 @@
+@@ -832,6 +838,7 @@
              if ( tileentity instanceof IInventory )
              {
                  for ( org.bukkit.entity.HumanEntity h : Lists.<org.bukkit.entity.HumanEntity>newArrayList((List<org.bukkit.entity.HumanEntity>) ( (IInventory) tileentity ).getViewers() ) )
@@ -348,7 +400,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
                  {
                      if ( h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity )
                      {
-@@ -846,7 +855,8 @@
+@@ -846,7 +853,8 @@
  
          for (int i = 0; i < this.entitySlices.length; ++i) {
              // CraftBukkit start
@@ -358,7 +410,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
              java.util.Iterator<Entity> iter = newList.iterator();
              while (iter.hasNext()) {
                  Entity entity = iter.next();
-@@ -956,7 +966,7 @@
+@@ -956,7 +964,7 @@
      public boolean isEmpty() {
          return false;
      }
@@ -367,7 +419,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
      public void loadNearby(IChunkProvider ichunkprovider, IChunkProvider ichunkprovider1, int i, int j) {
          world.timings.syncChunkLoadPostTimer.startTiming(); // Spigot
          boolean flag = ichunkprovider.isChunkLoaded(i, j - 1);
-@@ -1305,11 +1315,13 @@
+@@ -1305,11 +1313,13 @@
          }
      }
  
@@ -385,7 +437,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
  
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java src/main/java/net/minecraft/server/ChunkProviderGenerate.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-03-06 18:35:56.247020706 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-03-07 17:08:41.603615077 +0800
 @@ -0,0 +1,499 @@
 +package net.minecraft.server;
 +
@@ -888,7 +940,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java 
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-02-26 15:27:08.093203344 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-03-06 18:35:56.295020711 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-03-07 17:08:41.645615081 +0800
 @@ -1,37 +1,35 @@
  package net.minecraft.server;
  
@@ -1100,7 +1152,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
                      // Update neighbor counts
 diff -Naur src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java src/main/java/net/minecraft/server/CommandSpreadPlayers.java
 --- src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-02-26 15:27:08.290203362 +0800
-+++ src/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-03-06 18:35:56.567020736 +0800
++++ src/main/java/net/minecraft/server/CommandSpreadPlayers.java	2016-03-07 17:08:41.812615096 +0800
 @@ -40,6 +40,7 @@
              double d4 = a(astring[i++], d3 + 1.0D);
              boolean flag = d(astring[i++]);
@@ -1111,17 +1163,8 @@ diff -Naur src_origin/main/java/net/minecraft/server/CommandSpreadPlayers.java s
                  String s = astring[i++];
 diff -Naur src_origin/main/java/net/minecraft/server/Container.java src/main/java/net/minecraft/server/Container.java
 --- src_origin/main/java/net/minecraft/server/Container.java	2016-02-26 15:27:08.349203368 +0800
-+++ src/main/java/net/minecraft/server/Container.java	2016-03-06 18:35:56.638020743 +0800
-@@ -10,6 +10,8 @@
- // CraftBukkit start
- import java.util.HashMap;
- import java.util.Map;
-+import java.util.concurrent.CopyOnWriteArrayList;
-+import java.util.concurrent.CopyOnWriteArraySet;
- import org.bukkit.craftbukkit.inventory.CraftInventory;
- import org.bukkit.craftbukkit.inventory.CraftItemStack;
- import org.bukkit.event.Event.Result;
-@@ -22,12 +24,17 @@
++++ src/main/java/net/minecraft/server/Container.java	2016-03-07 17:08:41.863615101 +0800
+@@ -22,12 +22,17 @@
  
      public List<ItemStack> b = Lists.newArrayList();
      public List<Slot> c = Lists.newArrayList();
@@ -1139,7 +1182,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Container.java src/main/jav
      private int tickCount; // Spigot
  
      // CraftBukkit start
-@@ -63,6 +70,7 @@
+@@ -63,6 +68,7 @@
  
      public List<ItemStack> a() {
          ArrayList arraylist = Lists.newArrayList();
@@ -1149,7 +1192,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Container.java src/main/jav
              arraylist.add(((Slot) this.c.get(i)).getItem());
 diff -Naur src_origin/main/java/net/minecraft/server/CraftingManager.java src/main/java/net/minecraft/server/CraftingManager.java
 --- src_origin/main/java/net/minecraft/server/CraftingManager.java	2016-02-26 15:27:08.668203398 +0800
-+++ src/main/java/net/minecraft/server/CraftingManager.java	2016-03-06 18:35:57.082020784 +0800
++++ src/main/java/net/minecraft/server/CraftingManager.java	2016-03-07 17:08:42.132615126 +0800
 @@ -8,12 +8,14 @@
  import java.util.HashMap;
  import java.util.Iterator;
@@ -1181,7 +1224,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/CraftingManager.java src/ma
  
 diff -Naur src_origin/main/java/net/minecraft/server/CrashReport.java src/main/java/net/minecraft/server/CrashReport.java
 --- src_origin/main/java/net/minecraft/server/CrashReport.java	2016-02-26 15:27:08.705203401 +0800
-+++ src/main/java/net/minecraft/server/CrashReport.java	2016-03-06 18:35:57.130020789 +0800
++++ src/main/java/net/minecraft/server/CrashReport.java	2016-03-07 17:08:42.160615129 +0800
 @@ -12,6 +12,7 @@
  import java.util.Iterator;
  import java.util.List;
@@ -1202,7 +1245,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/CrashReport.java src/main/j
      private StackTraceElement[] h = new StackTraceElement[0];
 diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src/main/java/net/minecraft/server/DedicatedServer.java
 --- src_origin/main/java/net/minecraft/server/DedicatedServer.java	2016-02-26 15:27:08.757203406 +0800
-+++ src/main/java/net/minecraft/server/DedicatedServer.java	2016-03-06 18:35:57.206020796 +0800
++++ src/main/java/net/minecraft/server/DedicatedServer.java	2016-03-07 17:08:42.211615134 +0800
 @@ -29,7 +29,8 @@
  public class DedicatedServer extends MinecraftServer implements IMinecraftServer {
  
@@ -1215,17 +1258,43 @@ diff -Naur src_origin/main/java/net/minecraft/server/DedicatedServer.java src/ma
      public PropertyManager propertyManager;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityFallingBlock.java src/main/java/net/minecraft/server/EntityFallingBlock.java
 --- src_origin/main/java/net/minecraft/server/EntityFallingBlock.java	2016-02-26 15:27:09.384203465 +0800
-+++ src/main/java/net/minecraft/server/EntityFallingBlock.java	2016-03-06 18:35:58.090020879 +0800
-@@ -3,6 +3,8 @@
++++ src/main/java/net/minecraft/server/EntityFallingBlock.java	2016-03-07 17:08:42.775615186 +0800
+@@ -1,8 +1,8 @@
+ package net.minecraft.server;
+ 
  import com.google.common.collect.Lists;
- import java.util.ArrayList;
+-import java.util.ArrayList;
  import java.util.Iterator;
 +import java.util.List;
-+import java.util.concurrent.CopyOnWriteArrayList;
  
  import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
  
-@@ -138,7 +140,8 @@
+@@ -16,6 +16,8 @@
+     private int fallHurtMax = 40;
+     private float fallHurtAmount = 2.0F;
+     public NBTTagCompound tileEntityData;
++    //add drop tag
++    protected boolean is_droped;
+ 
+     public EntityFallingBlock(World world) {
+         super(world);
+@@ -115,7 +117,14 @@
+                                     }
+                                 }
+                             } else if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+-                                this.a(new ItemStack(block, 1, block.getDropData(this.block)), 0.0F);
++                                //casue sand dup
++                                //this.a(new ItemStack(block, 1, block.getDropData(this.block)), 0.0F);
++                                if (is_droped) {
++                                    //do nothing
++                                } else {
++                                    is_droped = true;
++                                    this.a(new ItemStack(block, 1, block.getDropData(this.block)), 0.0F);
++                                }
+                             }
+                         }
+                     }
+@@ -138,7 +147,8 @@
              int i = MathHelper.f(f - 1.0F);
  
              if (i > 0) {
@@ -1237,7 +1306,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityFallingBlock.java src
                  Iterator iterator = arraylist.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/EntityItem.java src/main/java/net/minecraft/server/EntityItem.java
 --- src_origin/main/java/net/minecraft/server/EntityItem.java	2016-02-26 15:27:09.641203489 +0800
-+++ src/main/java/net/minecraft/server/EntityItem.java	2016-03-06 18:35:58.467020914 +0800
++++ src/main/java/net/minecraft/server/EntityItem.java	2016-03-07 17:08:43.025615210 +0800
 @@ -81,10 +81,10 @@
                      this.motZ = (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
                      this.makeSound("random.fizz", 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
@@ -1275,7 +1344,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityItem.java src/main/ja
  
 diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/net/minecraft/server/Entity.java
 --- src_origin/main/java/net/minecraft/server/Entity.java	2016-02-26 15:27:08.930203422 +0800
-+++ src/main/java/net/minecraft/server/Entity.java	2016-03-06 18:35:57.453020819 +0800
++++ src/main/java/net/minecraft/server/Entity.java	2016-03-07 17:08:42.386615150 +0800
 @@ -263,12 +263,12 @@
              this.world.methodProfiler.a("portal");
              MinecraftServer minecraftserver = ((WorldServer) this.world).getMinecraftServer();
@@ -1331,7 +1400,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
              int i = worldserver1.dimension;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
 --- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-02-26 15:27:09.784203502 +0800
-+++ src/main/java/net/minecraft/server/EntityLiving.java	2016-03-06 18:35:58.625020929 +0800
++++ src/main/java/net/minecraft/server/EntityLiving.java	2016-03-07 17:08:43.151615221 +0800
 @@ -461,7 +461,8 @@
  
      // CraftBukkit start
@@ -1344,7 +1413,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
      protected void bi() {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java src/main/java/net/minecraft/server/EntityMinecartAbstract.java
 --- src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-02-26 15:27:09.793203503 +0800
-+++ src/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-03-06 18:35:58.688020935 +0800
++++ src/main/java/net/minecraft/server/EntityMinecartAbstract.java	2016-03-07 17:08:43.159615222 +0800
 @@ -238,9 +238,14 @@
                      this.al = 0;
                  }
@@ -1363,7 +1432,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityMinecartAbstract.java
              this.world.methodProfiler.b();
 diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/java/net/minecraft/server/EntityPlayer.java
 --- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2016-02-26 15:27:09.996203522 +0800
-+++ src/main/java/net/minecraft/server/EntityPlayer.java	2016-03-06 18:35:58.974020961 +0800
++++ src/main/java/net/minecraft/server/EntityPlayer.java	2016-03-07 17:08:43.343615239 +0800
 @@ -10,6 +10,7 @@
  import java.util.HashSet;
  import java.util.Iterator;
@@ -1424,7 +1493,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/
      protected void a(MobEffect mobeffect) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntitySlice.java src/main/java/net/minecraft/server/EntitySlice.java
 --- src_origin/main/java/net/minecraft/server/EntitySlice.java	2016-02-26 15:27:10.178203539 +0800
-+++ src/main/java/net/minecraft/server/EntitySlice.java	2016-03-06 18:35:59.188020982 +0800
++++ src/main/java/net/minecraft/server/EntitySlice.java	2016-03-07 17:08:43.518615256 +0800
 @@ -7,16 +7,19 @@
  import java.util.AbstractSet;
  import java.util.Iterator;
@@ -1458,30 +1527,31 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntitySlice.java src/main/j
              list.add(t0);
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src/main/java/net/minecraft/server/EntityTrackerEntry.java
 --- src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-02-26 15:27:10.392203559 +0800
-+++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-03-06 18:35:59.541021015 +0800
-@@ -1,10 +1,10 @@
++++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-03-07 17:08:43.711615274 +0800
+@@ -1,10 +1,11 @@
  package net.minecraft.server;
  
 -import com.google.common.collect.Sets;
  import java.util.Collection;
  import java.util.Iterator;
++import java.util.LinkedHashSet;
  import java.util.List;
  import java.util.Set;
 +import java.util.concurrent.CopyOnWriteArraySet;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
-@@ -39,7 +39,8 @@
+@@ -39,7 +40,8 @@
      private boolean x;
      private boolean y;
      public boolean n;
 -    public Set<EntityPlayer> trackedPlayers = Sets.newHashSet();
 +    //public Set<EntityPlayer> trackedPlayers = Sets.newHashSet();
-+    public CopyOnWriteArraySet<EntityPlayer> trackedPlayers = new CopyOnWriteArraySet<EntityPlayer>();
++    public LinkedHashSet<EntityPlayer> trackedPlayers = new LinkedHashSet<EntityPlayer>();
  
      public EntityTrackerEntry(Entity entity, int i, int j, boolean flag) {
          this.tracker = entity;
-@@ -424,9 +425,14 @@
+@@ -424,9 +426,14 @@
      }
  
      public void scanPlayers(List<EntityHuman> list) {
@@ -1499,7 +1569,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src
  
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-02-26 15:27:10.352203555 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2016-03-06 18:35:59.474021008 +0800
++++ src/main/java/net/minecraft/server/EntityTracker.java	2016-03-07 17:08:43.687615272 +0800
 @@ -1,11 +1,11 @@
  package net.minecraft.server;
  
@@ -1649,7 +1719,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
              entitytrackerentry.broadcastIncludingSelf(packet);
 diff -Naur src_origin/main/java/net/minecraft/server/Explosion.java src/main/java/net/minecraft/server/Explosion.java
 --- src_origin/main/java/net/minecraft/server/Explosion.java	2016-02-26 15:27:10.556203574 +0800
-+++ src/main/java/net/minecraft/server/Explosion.java	2016-03-06 18:35:59.770021036 +0800
++++ src/main/java/net/minecraft/server/Explosion.java	2016-03-07 17:08:43.876615289 +0800
 @@ -8,6 +8,8 @@
  import java.util.List;
  import java.util.Map;
@@ -1680,9 +1750,30 @@ diff -Naur src_origin/main/java/net/minecraft/server/Explosion.java src/main/jav
          return this.k;
      }
  
+diff -Naur src_origin/main/java/net/minecraft/server/HandshakeListener.java src/main/java/net/minecraft/server/HandshakeListener.java
+--- src_origin/main/java/net/minecraft/server/HandshakeListener.java	2016-02-26 15:27:10.687203587 +0800
++++ src/main/java/net/minecraft/server/HandshakeListener.java	2016-03-07 17:08:43.987615300 +0800
+@@ -2,14 +2,15 @@
+ 
+ // CraftBukkit start
+ import java.net.InetAddress;
+-import java.util.HashMap;
++import java.util.concurrent.ConcurrentHashMap;
+ // CraftBukkit end
+ 
+ public class HandshakeListener implements PacketHandshakingInListener {
+ 
+     private static final com.google.gson.Gson gson = new com.google.gson.Gson(); // Spigot
+     // CraftBukkit start - add fields
+-    private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
++    //private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
++    private static final ConcurrentHashMap<InetAddress, Long> throttleTracker = new ConcurrentHashMap<InetAddress, Long>();
+     private static int throttleCounter = 0;
+     // CraftBukkit end
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/IntCache.java src/main/java/net/minecraft/server/IntCache.java
 --- src_origin/main/java/net/minecraft/server/IntCache.java	2016-02-26 15:27:10.750203593 +0800
-+++ src/main/java/net/minecraft/server/IntCache.java	2016-03-06 18:36:00.047021062 +0800
++++ src/main/java/net/minecraft/server/IntCache.java	2016-03-07 17:08:44.041615305 +0800
 @@ -10,7 +10,7 @@
      private static List<int[]> c = Lists.newArrayList();
      private static List<int[]> d = Lists.newArrayList();
@@ -1694,7 +1785,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/IntCache.java src/main/java
  
 diff -Naur src_origin/main/java/net/minecraft/server/ItemStack.java src/main/java/net/minecraft/server/ItemStack.java
 --- src_origin/main/java/net/minecraft/server/ItemStack.java	2016-02-26 15:27:11.336203647 +0800
-+++ src/main/java/net/minecraft/server/ItemStack.java	2016-03-06 18:36:00.936021145 +0800
++++ src/main/java/net/minecraft/server/ItemStack.java	2016-03-07 17:08:44.591615356 +0800
 @@ -8,6 +8,9 @@
  // CraftBukkit start
  import java.util.List;
@@ -1740,7 +1831,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ItemStack.java src/main/jav
              if (placeEvent != null && (placeEvent.isCancelled() || !placeEvent.canBuild())) {
 diff -Naur src_origin/main/java/net/minecraft/server/JsonList.java src/main/java/net/minecraft/server/JsonList.java
 --- src_origin/main/java/net/minecraft/server/JsonList.java	2016-02-26 15:27:11.423203656 +0800
-+++ src/main/java/net/minecraft/server/JsonList.java	2016-03-06 18:36:01.029021154 +0800
++++ src/main/java/net/minecraft/server/JsonList.java	2016-03-07 17:08:44.641615361 +0800
 @@ -25,6 +25,8 @@
  import java.util.Iterator;
  import java.util.List;
@@ -1760,19 +1851,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/JsonList.java src/main/java
      private boolean e = true;
      private static final ParameterizedType f = new ParameterizedType() {
          public Type[] getActualTypeArguments() {
-@@ -145,7 +148,8 @@
+@@ -145,6 +148,7 @@
          return new JsonListEntry((Object) null, jsonobject);
      }
  
--    protected Map<String, V> e() {
-+    //protected Map<String, V> e() {
-+    protected ConcurrentMap<String, V> e() {
++    //do not change it
+     protected Map<String, V> e() {
          return this.d;
      }
- 
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-02-26 15:27:11.493203662 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-03-06 18:36:01.166021167 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-03-07 17:08:44.736615370 +0800
 @@ -2,7 +2,6 @@
  
  import com.google.common.base.Charsets;
@@ -1868,7 +1957,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 --- src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-02-26 15:27:12.026203712 +0800
-+++ src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-03-06 18:36:01.875021233 +0800
++++ src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java	2016-03-07 17:08:45.182615412 +0800
 @@ -4,6 +4,7 @@
  import java.io.IOException;
  import java.util.ArrayList;
@@ -1889,7 +1978,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PacketPlayOutMapChunk.java 
  
 diff -Naur src_origin/main/java/net/minecraft/server/PersistentCollection.java src/main/java/net/minecraft/server/PersistentCollection.java
 --- src_origin/main/java/net/minecraft/server/PersistentCollection.java	2016-02-26 15:27:12.587203764 +0800
-+++ src/main/java/net/minecraft/server/PersistentCollection.java	2016-03-06 18:36:02.840021323 +0800
++++ src/main/java/net/minecraft/server/PersistentCollection.java	2016-03-07 17:08:45.627615453 +0800
 @@ -1,7 +1,6 @@
  package net.minecraft.server;
  
@@ -1919,9 +2008,208 @@ diff -Naur src_origin/main/java/net/minecraft/server/PersistentCollection.java s
  
      public PersistentCollection(IDataManager idatamanager) {
          this.b = idatamanager;
+diff -Naur src_origin/main/java/net/minecraft/server/PistonExtendsChecker.java src/main/java/net/minecraft/server/PistonExtendsChecker.java
+--- src_origin/main/java/net/minecraft/server/PistonExtendsChecker.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/PistonExtendsChecker.java	2016-03-07 17:08:45.658615456 +0800
+@@ -0,0 +1,195 @@
++package net.minecraft.server;
++
++import com.google.common.collect.Lists;
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.List;
++import java.util.concurrent.CopyOnWriteArrayList;
++
++public class PistonExtendsChecker {
++
++    private final World a;
++    private final BlockPosition b;
++    private final BlockPosition c;
++    private final EnumDirection d;
++    /*
++    private final List<BlockPosition> e = Lists.newArrayList();
++    private final List<BlockPosition> f = Lists.newArrayList();*/
++    private final CopyOnWriteArrayList<BlockPosition> e = Lists.newCopyOnWriteArrayList();
++    private final CopyOnWriteArrayList<BlockPosition> f = Lists.newCopyOnWriteArrayList();
++    
++
++    public PistonExtendsChecker(World world, BlockPosition blockposition, EnumDirection enumdirection, boolean flag) {
++        this.a = world;
++        this.b = blockposition;
++        if (flag) {
++            this.d = enumdirection;
++            this.c = blockposition.shift(enumdirection);
++        } else {
++            this.d = enumdirection.opposite();
++            this.c = blockposition.shift(enumdirection, 2);
++        }
++
++    }
++
++    public boolean a() {
++        this.e.clear();
++        this.f.clear();
++        Block block = this.a.getType(this.c).getBlock();
++
++        if (!BlockPiston.a(block, this.a, this.c, this.d, false)) {
++            if (block.k() != 1) {
++                return false;
++            } else {
++                this.f.add(this.c);
++                return true;
++            }
++        } else if (!this.a(this.c)) {
++            return false;
++        } else {
++            Iterator it = this.e.iterator();
++            while (it.hasNext()){
++                BlockPosition blockposition = (BlockPosition) it.next();
++
++                if (this.a.getType(blockposition).getBlock() == Blocks.SLIME && !this.b(blockposition)) {
++                    return false;
++                }
++            }
++            /*
++            for (int i = 0; i < this.e.size(); ++i) {
++                BlockPosition blockposition = (BlockPosition) this.e.get(i);
++
++                if (this.a.getType(blockposition).getBlock() == Blocks.SLIME && !this.b(blockposition)) {
++                    return false;
++                }
++            }*/
++
++            return true;
++        }
++    }
++
++    private boolean a(BlockPosition blockposition) {
++        Block block = this.a.getType(blockposition).getBlock();
++
++        if (block.getMaterial() == Material.AIR) {
++            return true;
++        } else if (!BlockPiston.a(block, this.a, blockposition, this.d, false)) {
++            return true;
++        } else if (blockposition.equals(this.b)) {
++            return true;
++        } else if (this.e.contains(blockposition)) {
++            return true;
++        } else {
++            int i = 1;
++
++            if (i + this.e.size() > 12) {
++                return false;
++            } else {
++                while (block == Blocks.SLIME) {
++                    BlockPosition blockposition1 = blockposition.shift(this.d.opposite(), i);
++
++                    block = this.a.getType(blockposition1).getBlock();
++                    if (block.getMaterial() == Material.AIR || !BlockPiston.a(block, this.a, blockposition1, this.d, false) || blockposition1.equals(this.b)) {
++                        break;
++                    }
++
++                    ++i;
++                    if (i + this.e.size() > 12) {
++                        return false;
++                    }
++                }
++
++                int j = 0;
++
++                int k;
++
++                for (k = i - 1; k >= 0; --k) {
++                    this.e.add(blockposition.shift(this.d.opposite(), k));
++                    ++j;
++                }
++
++                k = 1;
++
++                while (true) {
++                    BlockPosition blockposition2 = blockposition.shift(this.d, k);
++                    int l = this.e.indexOf(blockposition2);
++
++                    if (l > -1) {
++                        this.a(j, l);
++
++                        for (int i1 = 0; i1 <= l + j; ++i1) {
++                            BlockPosition blockposition3 = (BlockPosition) this.e.get(i1);
++
++                            if (this.a.getType(blockposition3).getBlock() == Blocks.SLIME && !this.b(blockposition3)) {
++                                return false;
++                            }
++                        }
++
++                        return true;
++                    }
++
++                    block = this.a.getType(blockposition2).getBlock();
++                    if (block.getMaterial() == Material.AIR) {
++                        return true;
++                    }
++
++                    if (!BlockPiston.a(block, this.a, blockposition2, this.d, true) || blockposition2.equals(this.b)) {
++                        return false;
++                    }
++
++                    if (block.k() == 1) {
++                        this.f.add(blockposition2);
++                        return true;
++                    }
++
++                    if (this.e.size() >= 12) {
++                        return false;
++                    }
++
++                    this.e.add(blockposition2);
++                    ++j;
++                    ++k;
++                }
++            }
++        }
++    }
++
++    private void a(int i, int j) {
++        ArrayList arraylist = Lists.newArrayList();
++        ArrayList arraylist1 = Lists.newArrayList();
++        ArrayList arraylist2 = Lists.newArrayList();
++
++        arraylist.addAll(this.e.subList(0, j));
++        arraylist1.addAll(this.e.subList(this.e.size() - i, this.e.size()));
++        arraylist2.addAll(this.e.subList(j, this.e.size() - i));
++        this.e.clear();
++        this.e.addAll(arraylist);
++        this.e.addAll(arraylist1);
++        this.e.addAll(arraylist2);
++    }
++
++    private boolean b(BlockPosition blockposition) {
++        EnumDirection[] aenumdirection = EnumDirection.values();
++        int i = aenumdirection.length;
++
++        for (int j = 0; j < i; ++j) {
++            EnumDirection enumdirection = aenumdirection[j];
++
++            if (enumdirection.k() != this.d.k() && !this.a(blockposition.shift(enumdirection))) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++
++    //public List<BlockPosition> getMovedBlocks() {
++    public CopyOnWriteArrayList<BlockPosition> getMovedBlocks() {
++        return this.e;
++    }
++
++    //public List<BlockPosition> getBrokenBlocks() {
++    public CopyOnWriteArrayList<BlockPosition> getBrokenBlocks() {
++        return this.f;
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-02-26 15:27:12.591203765 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-03-06 18:36:02.892021328 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-03-07 17:08:45.670615457 +0800
 @@ -1,7 +1,6 @@
  package net.minecraft.server;
  
@@ -1940,7 +2228,15 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
      private final LongHashMap<PlayerChunkMap.PlayerChunk> d = new LongHashMap();
      private final Queue<PlayerChunkMap.PlayerChunk> e = new java.util.concurrent.ConcurrentLinkedQueue<PlayerChunkMap.PlayerChunk>(); // CraftBukkit ArrayList -> ConcurrentLinkedQueue
      private final Queue<PlayerChunkMap.PlayerChunk> f = new java.util.concurrent.ConcurrentLinkedQueue<PlayerChunkMap.PlayerChunk>(); // CraftBukkit ArrayList -> ConcurrentLinkedQueue
-@@ -85,7 +85,8 @@
+@@ -68,6 +68,7 @@
+             WorldProvider worldprovider = this.world.worldProvider;
+ 
+             if (!worldprovider.e()) {
++                //async this
+                 this.world.chunkProviderServer.b();
+             }
+             // CraftBukkit start
+@@ -85,7 +86,8 @@
          return this.d.getEntry(k) != null;
      }
  
@@ -1950,7 +2246,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          long k = (long) i + 2147483647L | (long) j + 2147483647L << 32;
          PlayerChunkMap.PlayerChunk playerchunkmap_playerchunk = (PlayerChunkMap.PlayerChunk) this.d.getEntry(k);
  
-@@ -146,7 +147,8 @@
+@@ -146,7 +148,8 @@
      }
  
      public void b(EntityPlayer entityplayer) {
@@ -1960,7 +2256,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          int i = 0;
          int j = this.g;
          int k = (int) entityplayer.locX >> 4;
-@@ -178,7 +180,7 @@
+@@ -178,7 +181,7 @@
          }
  
          i %= 4;
@@ -1969,7 +2265,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          for (k1 = 0; k1 < j * 2; ++k1) {
              i1 += this.i[i][0];
              j1 += this.i[i][1];
-@@ -256,9 +258,11 @@
+@@ -256,9 +259,11 @@
                      this.a(pair.x, pair.z, true).a(entityplayer);
                  }
  
@@ -1982,7 +2278,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
                  // CraftBukkit end
              }
          }
-@@ -274,7 +278,8 @@
+@@ -274,7 +279,8 @@
          i = MathHelper.clamp(i, 3, 32);
          if (i != this.g) {
              int j = i - this.g;
@@ -1992,7 +2288,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
              Iterator iterator = arraylist.iterator();
  
              while (iterator.hasNext()) {
-@@ -313,10 +318,12 @@
+@@ -313,10 +319,12 @@
          return i * 16 - 16;
      }
  
@@ -2010,7 +2306,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          private int f;
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerConnection.java src/main/java/net/minecraft/server/PlayerConnection.java
 --- src_origin/main/java/net/minecraft/server/PlayerConnection.java	2016-02-26 15:27:12.653203771 +0800
-+++ src/main/java/net/minecraft/server/PlayerConnection.java	2016-03-06 18:36:02.931021332 +0800
++++ src/main/java/net/minecraft/server/PlayerConnection.java	2016-03-07 17:08:45.720615462 +0800
 @@ -3,7 +3,6 @@
  import com.google.common.collect.Lists;
  import com.google.common.primitives.Doubles;
@@ -2070,7 +2366,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerConnection.java src/m
              this.player.activeContainer.a(this.player, true);
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
 --- src_origin/main/java/net/minecraft/server/PlayerList.java	2016-02-26 15:27:12.726203777 +0800
-+++ src/main/java/net/minecraft/server/PlayerList.java	2016-03-06 18:36:03.059021344 +0800
++++ src/main/java/net/minecraft/server/PlayerList.java	2016-03-07 17:08:45.789615468 +0800
 @@ -15,6 +15,8 @@
  import java.util.List;
  import java.util.Map;
@@ -2128,7 +2424,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/ja
          while (iterator.hasNext()) {
 diff -Naur src_origin/main/java/net/minecraft/server/PortalTravelAgent.java src/main/java/net/minecraft/server/PortalTravelAgent.java
 --- src_origin/main/java/net/minecraft/server/PortalTravelAgent.java	2016-02-26 15:27:12.766203781 +0800
-+++ src/main/java/net/minecraft/server/PortalTravelAgent.java	2016-03-06 18:36:03.075021345 +0800
++++ src/main/java/net/minecraft/server/PortalTravelAgent.java	2016-03-07 17:08:45.818615471 +0800
 @@ -1,9 +1,9 @@
  package net.minecraft.server;
  
@@ -2153,7 +2449,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PortalTravelAgent.java src/
          this.a = worldserver;
 diff -Naur src_origin/main/java/net/minecraft/server/RecipesFurnace.java src/main/java/net/minecraft/server/RecipesFurnace.java
 --- src_origin/main/java/net/minecraft/server/RecipesFurnace.java	2016-02-26 15:27:12.987203802 +0800
-+++ src/main/java/net/minecraft/server/RecipesFurnace.java	2016-03-06 18:36:03.351021371 +0800
++++ src/main/java/net/minecraft/server/RecipesFurnace.java	2016-03-07 17:08:46.006615489 +0800
 @@ -4,13 +4,18 @@
  import java.util.Iterator;
  import java.util.Map;
@@ -2177,7 +2473,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/RecipesFurnace.java src/mai
          return RecipesFurnace.a;
 diff -Naur src_origin/main/java/net/minecraft/server/RegionFileCache.java src/main/java/net/minecraft/server/RegionFileCache.java
 --- src_origin/main/java/net/minecraft/server/RegionFileCache.java	2016-02-26 15:27:13.038203807 +0800
-+++ src/main/java/net/minecraft/server/RegionFileCache.java	2016-03-06 18:36:03.422021378 +0800
++++ src/main/java/net/minecraft/server/RegionFileCache.java	2016-03-07 17:08:46.046615492 +0800
 @@ -1,16 +1,17 @@
  package net.minecraft.server;
  
@@ -2201,7 +2497,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/RegionFileCache.java src/ma
          File file1 = new File(file, "region");
 diff -Naur src_origin/main/java/net/minecraft/server/ScoreboardServer.java src/main/java/net/minecraft/server/ScoreboardServer.java
 --- src_origin/main/java/net/minecraft/server/ScoreboardServer.java	2016-02-26 15:27:13.079203810 +0800
-+++ src/main/java/net/minecraft/server/ScoreboardServer.java	2016-03-06 18:36:03.489021384 +0800
++++ src/main/java/net/minecraft/server/ScoreboardServer.java	2016-03-07 17:08:46.087615496 +0800
 @@ -7,11 +7,13 @@
  import java.util.Iterator;
  import java.util.List;
@@ -2219,7 +2515,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ScoreboardServer.java src/m
      public ScoreboardServer(MinecraftServer minecraftserver) {
 diff -Naur src_origin/main/java/net/minecraft/server/ServerConnection.java src/main/java/net/minecraft/server/ServerConnection.java
 --- src_origin/main/java/net/minecraft/server/ServerConnection.java	2016-02-26 15:27:13.131203815 +0800
-+++ src/main/java/net/minecraft/server/ServerConnection.java	2016-03-06 18:36:03.561021391 +0800
++++ src/main/java/net/minecraft/server/ServerConnection.java	2016-03-07 17:08:46.135615501 +0800
 @@ -23,7 +23,9 @@
  import java.util.Collections;
  import java.util.Iterator;
@@ -2241,7 +2537,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ServerConnection.java src/m
          this.f = minecraftserver;
 diff -Naur src_origin/main/java/net/minecraft/server/ServerStatisticManager.java src/main/java/net/minecraft/server/ServerStatisticManager.java
 --- src_origin/main/java/net/minecraft/server/ServerStatisticManager.java	2016-02-26 15:27:13.135203816 +0800
-+++ src/main/java/net/minecraft/server/ServerStatisticManager.java	2016-03-06 18:36:03.628021397 +0800
++++ src/main/java/net/minecraft/server/ServerStatisticManager.java	2016-03-07 17:08:46.159615503 +0800
 @@ -15,6 +15,7 @@
  import java.util.Map;
  import java.util.Set;
@@ -2262,8 +2558,8 @@ diff -Naur src_origin/main/java/net/minecraft/server/ServerStatisticManager.java
  
 diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/main/java/net/minecraft/server/SpawnerCreature.java
 --- src_origin/main/java/net/minecraft/server/SpawnerCreature.java	2016-02-26 15:27:13.289203830 +0800
-+++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-03-06 18:36:03.770021410 +0800
-@@ -1,21 +1,23 @@
++++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-03-07 17:08:46.274615514 +0800
+@@ -1,21 +1,26 @@
  package net.minecraft.server;
  
 -import com.google.common.collect.Sets;
@@ -2272,7 +2568,10 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
  import java.util.List;
  import java.util.Random;
 -import java.util.Set;
++import java.util.concurrent.ExecutionException;
 +import java.util.concurrent.FutureTask;
++import java.util.logging.Level;
++import java.util.logging.Logger;
  
  // CraftBukkit start
  import org.bukkit.craftbukkit.util.LongHash;
@@ -2291,7 +2590,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
  
      public SpawnerCreature() {}
  
-@@ -23,13 +25,15 @@
+@@ -23,13 +28,15 @@
      private int getEntityCount(WorldServer server, Class oClass)
      {
          int i = 0;
@@ -2309,7 +2608,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
              {
                  i += server.getChunkAt( x, z ).entityCount.get( oClass );
              }
-@@ -37,7 +41,22 @@
+@@ -37,7 +44,22 @@
          return i;
      }
      // Spigot end
@@ -2333,7 +2632,19 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
      public int a(WorldServer worldserver, boolean flag, boolean flag1, boolean flag2) {
          if (!flag && !flag1) {
              return 0;
-@@ -70,10 +89,12 @@
+@@ -47,8 +69,9 @@
+             Iterator iterator = worldserver.players.iterator();
+ 
+             int j;
+-            int k;
+-
++            //int k;
++            int k = 0;
++            //long st01 = System.nanoTime();
+             while (iterator.hasNext()) {
+                 EntityHuman entityhuman = (EntityHuman) iterator.next();
+ 
+@@ -70,10 +93,12 @@
                              // ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i1 + l, k + j);
  
                              long chunkCoords = LongHash.toLong(i1 + l, k + j);
@@ -2348,30 +2659,365 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
                                  }
                              }
                              // CraftBukkit end
-@@ -119,7 +140,8 @@
-                     int l1 = limit * i / a; // CraftBukkit - use per-world limits
+@@ -81,17 +106,26 @@
+                     }
+                 }
+             }
+-
++            /*long et01 = System.nanoTime();
++            System.out.println("01: "+(et01-st01)+"ns");*/
++            
+             int j1 = 0;
+             BlockPosition blockposition = worldserver.getSpawn();
+             EnumCreatureType[] aenumcreaturetype = EnumCreatureType.values();
  
-                     if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 256) {
+             j = aenumcreaturetype.length;
+ 
++            //long st02 = System.nanoTime();
+             for (int k1 = 0; k1 < j; ++k1) {
++                //create callable evry type
++                //j1 = spawn_calc_hose(aenumcreaturetype, blockposition, i, j1, k, k1, worldserver, flag, flag1, flag2);
++                SpigotWorldConfig.SpawnerCreatureTask = new FutureTask(new SpawnerCreature_Pool(this, aenumcreaturetype, blockposition, i, j1, k, k1, worldserver, flag, flag1, flag2));
++                SpigotWorldConfig.spawncreaturepool_executor.submit(SpigotWorldConfig.SpawnerCreatureTask);
++                
++                /*
+                 EnumCreatureType enumcreaturetype = aenumcreaturetype[k1];
+ 
+-               // CraftBukkit start - Use per-world spawn limits
++                // CraftBukkit start - Use per-world spawn limits
+                 int limit = enumcreaturetype.b();
+                 switch (enumcreaturetype) {
+                     case MONSTER:
+@@ -111,111 +145,244 @@
+                 if (limit == 0) {
+                     continue;
+                 }
+-				int mobcnt = 0; // Spigot
++                int mobcnt = 0; // Spigot
+                 // CraftBukkit end
+ 
+                 if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && (!enumcreaturetype.e() || flag2)) {
+-                    k = worldserver.a(enumcreaturetype.a());
+-                    int l1 = limit * i / a; // CraftBukkit - use per-world limits
++                k = worldserver.a(enumcreaturetype.a());
++                int l1 = limit * i / a; // CraftBukkit - use per-world limits
++
++                if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 256) {
++                //Iterator iterator1 = this.b.iterator();
++                Iterator iterator1 = this.b.keySet().iterator();
++
++                int moblimit = (limit * i / 256) - mobcnt + 1; // Spigot - up to 1 more than limit
++                label115:
++                while (iterator1.hasNext() && (moblimit > 0)) { // Spigot - while more allowed
++                // CraftBukkit start = use LongHash and LongObjectHashMap
++                long key = ((Long) iterator1.next()).longValue();
++                BlockPosition blockposition1 = getRandomPosition(worldserver, LongHash.msw(key), LongHash.lsw(key));
++                // CraftBukkit
++                int i2 = blockposition1.getX();
++                int j2 = blockposition1.getY();
++                int k2 = blockposition1.getZ();
++                Block block = worldserver.getType(blockposition1).getBlock();
++
++                if (!block.isOccluding()) {
++                int l2 = 0;
++                int i3 = 0;
++
++                while (i3 < 3) {
++                int j3 = i2;
++                int k3 = j2;
++                int l3 = k2;
++                byte b1 = 6;
++                BiomeBase.BiomeMeta biomebase_biomemeta = null;
++                GroupDataEntity groupdataentity = null;
++                int i4 = 0;
++
++                while (true) {
++                if (i4 < 4) {
++                label108: {
++                j3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                k3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1);
++                l3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                BlockPosition blockposition2 = new BlockPosition(j3, k3, l3);
++                float f = (float) j3 + 0.5F;
++                float f1 = (float) l3 + 0.5F;
++
++                if (!worldserver.isPlayerNearby((double) f, (double) k3, (double) f1, 24.0D) && blockposition.c((double) f, (double) k3, (double) f1) >= 576.0D) {
++                    if (biomebase_biomemeta == null) {
++                        biomebase_biomemeta = worldserver.a(enumcreaturetype, blockposition2);
++                    if (biomebase_biomemeta == null) {
++                        break label108;
++                    }
++                }
+ 
+-                    if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 256) {
 -                        Iterator iterator1 = this.b.iterator();
-+                        //Iterator iterator1 = this.b.iterator();
-+                        Iterator iterator1 = this.b.keySet().iterator();
++                if (worldserver.a(enumcreaturetype, biomebase_biomemeta, blockposition2) && a(EntityPositionTypes.a(biomebase_biomemeta.b), worldserver, blockposition2)) {
++                EntityInsentient entityinsentient;
  
-                         int moblimit = (limit * i / 256) - mobcnt + 1; // Spigot - up to 1 more than limit
-                         label115:
-@@ -179,7 +201,9 @@
-                                                             groupdataentity = entityinsentient.prepare(worldserver.E(new BlockPosition(entityinsentient)), groupdataentity);
-                                                             if (entityinsentient.canSpawn()) {
-                                                                 ++l2;
+-                        int moblimit = (limit * i / 256) - mobcnt + 1; // Spigot - up to 1 more than limit
+-                        label115:
+-                        while (iterator1.hasNext() && (moblimit > 0)) { // Spigot - while more allowed
+-                            // CraftBukkit start = use LongHash and LongObjectHashMap
+-                            long key = ((Long) iterator1.next()).longValue();
+-                            BlockPosition blockposition1 = getRandomPosition(worldserver, LongHash.msw(key), LongHash.lsw(key));
+-                            // CraftBukkit
+-                            int i2 = blockposition1.getX();
+-                            int j2 = blockposition1.getY();
+-                            int k2 = blockposition1.getZ();
+-                            Block block = worldserver.getType(blockposition1).getBlock();
+-
+-                            if (!block.isOccluding()) {
+-                                int l2 = 0;
+-                                int i3 = 0;
+-
+-                                while (i3 < 3) {
+-                                    int j3 = i2;
+-                                    int k3 = j2;
+-                                    int l3 = k2;
+-                                    byte b1 = 6;
+-                                    BiomeBase.BiomeMeta biomebase_biomemeta = null;
+-                                    GroupDataEntity groupdataentity = null;
+-                                    int i4 = 0;
+-
+-                                    while (true) {
+-                                        if (i4 < 4) {
+-                                            label108: {
+-                                                j3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
+-                                                k3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1);
+-                                                l3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
+-                                                BlockPosition blockposition2 = new BlockPosition(j3, k3, l3);
+-                                                float f = (float) j3 + 0.5F;
+-                                                float f1 = (float) l3 + 0.5F;
+-
+-                                                if (!worldserver.isPlayerNearby((double) f, (double) k3, (double) f1, 24.0D) && blockposition.c((double) f, (double) k3, (double) f1) >= 576.0D) {
+-                                                    if (biomebase_biomemeta == null) {
+-                                                        biomebase_biomemeta = worldserver.a(enumcreaturetype, blockposition2);
+-                                                        if (biomebase_biomemeta == null) {
+-                                                            break label108;
+-                                                        }
+-                                                    }
++                try {
++                entityinsentient = (EntityInsentient) biomebase_biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { worldserver});
++                } catch (Exception exception) {
++                exception.printStackTrace();
++                return j1;
++                }
++
++                entityinsentient.setPositionRotation((double) f, (double) k3, (double) f1, worldserver.random.nextFloat() * 360.0F, 0.0F);
++                if (entityinsentient.bR() && entityinsentient.canSpawn()) {
++                groupdataentity = entityinsentient.prepare(worldserver.E(new BlockPosition(entityinsentient)), groupdataentity);
++                if (entityinsentient.canSpawn()) {
++                ++l2;
++                worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
++                //SpigotWorldConfig.SpawnerCreatureTask = new FutureTask(new SpawnerCreature_Pool(worldserver, entityinsentient));
++                //SpigotWorldConfig.spawncreaturepool_executor.submit(SpigotWorldConfig.SpawnerCreatureTask);
++                }
++
++                // Spigot start
++                if ( --moblimit <= 0 )
++                {
++                // If we're past limit, stop spawn
++                continue label115;
++                }
++                // Spigot end
++                if (l2 >= entityinsentient.bV()) {
++                continue label115;
++                }
++                }
++
++                j1 += l2;
++                }
++                }
++
++                ++i4;
++                continue;
++                }
++                }
++
++                ++i3;
++                break;
++                }
++                }
++                }
++                }
++                }
++                }*/
++            }
++            /*long et02 = System.nanoTime();
++            System.out.println("02: "+(et02-st02)+"ns");
++            System.out.println("j1: "+j1);*/
++            return j1;
++        }
++    }
++    
++    public int spawn_calc_hose(EnumCreatureType[] aenumcreaturetype, BlockPosition blockposition, int i, int j1, int k, int k1, WorldServer worldserver, boolean flag, boolean flag1, boolean flag2){
++        EnumCreatureType enumcreaturetype = aenumcreaturetype[k1];
++
++        // CraftBukkit start - Use per-world spawn limits
++        int limit = enumcreaturetype.b();
++        switch (enumcreaturetype) {
++            case MONSTER:
++                limit = worldserver.getWorld().getMonsterSpawnLimit();
++                break;
++            case CREATURE:
++                limit = worldserver.getWorld().getAnimalSpawnLimit();
++                break;
++            case WATER_CREATURE:
++                limit = worldserver.getWorld().getWaterAnimalSpawnLimit();
++                break;
++            case AMBIENT:
++                limit = worldserver.getWorld().getAmbientSpawnLimit();
++                break;
++        }
+ 
+-                                                    if (worldserver.a(enumcreaturetype, biomebase_biomemeta, blockposition2) && a(EntityPositionTypes.a(biomebase_biomemeta.b), worldserver, blockposition2)) {
+-                                                        EntityInsentient entityinsentient;
++        if (limit == 0) {
++            return 0;
++        }
++                        int mobcnt = 0; // Spigot
++        // CraftBukkit end
+ 
+-                                                        try {
+-                                                            entityinsentient = (EntityInsentient) biomebase_biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { worldserver});
+-                                                        } catch (Exception exception) {
+-                                                            exception.printStackTrace();
+-                                                            return j1;
+-                                                        }
+-
+-                                                        entityinsentient.setPositionRotation((double) f, (double) k3, (double) f1, worldserver.random.nextFloat() * 360.0F, 0.0F);
+-                                                        if (entityinsentient.bR() && entityinsentient.canSpawn()) {
+-                                                            groupdataentity = entityinsentient.prepare(worldserver.E(new BlockPosition(entityinsentient)), groupdataentity);
+-                                                            if (entityinsentient.canSpawn()) {
+-                                                                ++l2;
 -                                                                worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
-+                                                                //worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
-+                                                                SpigotWorldConfig.SpawnerCreatureTask = new FutureTask(new SpawnerCreature_Pool(worldserver, entityinsentient));
-+                                                                SpigotWorldConfig.spawncreaturepool_executor.submit(SpigotWorldConfig.SpawnerCreatureTask);
-                                                             }
+-                                                            }
+-
+-                                                            // Spigot start
+-                                                            if ( --moblimit <= 0 )
+-                                                            {
+-                                                                // If we're past limit, stop spawn
+-                                                                continue label115;
+-                                                            }
+-                                                            // Spigot end
+-                                                            if (l2 >= entityinsentient.bV()) {
+-                                                                continue label115;
+-                                                            }
+-                                                        }
++        if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && (!enumcreaturetype.e() || flag2)) {
++            k = worldserver.a(enumcreaturetype.a());
++            int l1 = limit * i / a; // CraftBukkit - use per-world limits
++
++            if ((mobcnt = getEntityCount(worldserver, enumcreaturetype.a())) <= limit * i / 256) {
++                //Iterator iterator1 = this.b.iterator();
++                Iterator iterator1 = this.b.keySet().iterator();
++
++                int moblimit = (limit * i / 256) - mobcnt + 1; // Spigot - up to 1 more than limit
++                label115:
++                while (iterator1.hasNext() && (moblimit > 0)) { // Spigot - while more allowed
++                    // CraftBukkit start = use LongHash and LongObjectHashMap
++                    long key = ((Long) iterator1.next()).longValue();
++                    BlockPosition blockposition1 = getRandomPosition(worldserver, LongHash.msw(key), LongHash.lsw(key));
++                    // CraftBukkit
++                    int i2 = blockposition1.getX();
++                    int j2 = blockposition1.getY();
++                    int k2 = blockposition1.getZ();
++                    Block block = worldserver.getType(blockposition1).getBlock();
++
++                    if (!block.isOccluding()) {
++                        int l2 = 0;
++                        int i3 = 0;
++
++                        while (i3 < 3) {
++                            int j3 = i2;
++                            int k3 = j2;
++                            int l3 = k2;
++                            byte b1 = 6;
++                            BiomeBase.BiomeMeta biomebase_biomemeta = null;
++                            GroupDataEntity groupdataentity = null;
++                            int i4 = 0;
++
++                            while (true) {
++                                if (i4 < 4) {
++                                    label108: {
++                                        j3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                                        k3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1);
++                                        l3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                                        BlockPosition blockposition2 = new BlockPosition(j3, k3, l3);
++                                        float f = (float) j3 + 0.5F;
++                                        float f1 = (float) l3 + 0.5F;
++
++                                        if (!worldserver.isPlayerNearby((double) f, (double) k3, (double) f1, 24.0D) && blockposition.c((double) f, (double) k3, (double) f1) >= 576.0D) {
++                                            if (biomebase_biomemeta == null) {
++                                                biomebase_biomemeta = worldserver.a(enumcreaturetype, blockposition2);
++                                                if (biomebase_biomemeta == null) {
++                                                    break label108;
++                                                }
++                                            }
++
++                                            if (worldserver.a(enumcreaturetype, biomebase_biomemeta, blockposition2) && a(EntityPositionTypes.a(biomebase_biomemeta.b), worldserver, blockposition2)) {
++                                                EntityInsentient entityinsentient;
  
-                                                             // Spigot start
+-                                                        j1 += l2;
++                                                try {
++                                                    entityinsentient = (EntityInsentient) biomebase_biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { worldserver});
++                                                } catch (Exception exception) {
++                                                    exception.printStackTrace();
++                                                    return j1;
++                                                }
++
++                                                entityinsentient.setPositionRotation((double) f, (double) k3, (double) f1, worldserver.random.nextFloat() * 360.0F, 0.0F);
++                                                if (entityinsentient.bR() && entityinsentient.canSpawn()) {
++                                                    groupdataentity = entityinsentient.prepare(worldserver.E(new BlockPosition(entityinsentient)), groupdataentity);
++                                                    if (entityinsentient.canSpawn()) {
++                                                        ++l2;
++                                                        worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
++                                                    }
++
++                                                    // Spigot start
++                                                    if ( --moblimit <= 0 )
++                                                    {
++                                                        // If we're past limit, stop spawn
++                                                        continue label115;
++                                                    }
++                                                    // Spigot end
++                                                    if (l2 >= entityinsentient.bV()) {
++                                                        continue label115;
+                                                     }
+                                                 }
+ 
+-                                                ++i4;
+-                                                continue;
++                                                j1 += l2;
+                                             }
+                                         }
+ 
+-                                        ++i3;
+-                                        break;
++                                        ++i4;
++                                        continue;
+                                     }
+                                 }
++
++                                ++i3;
++                                break;
+                             }
+                         }
+                     }
+                 }
+             }
+-
+-            return j1;
+         }
++        return j1;
+     }
++    
+ 
+     protected static BlockPosition getRandomPosition(World world, int i, int j) {
+         Chunk chunk = world.getChunkAt(i, j);
 diff -Naur src_origin/main/java/net/minecraft/server/StructureGenerator.java src/main/java/net/minecraft/server/StructureGenerator.java
 --- src_origin/main/java/net/minecraft/server/StructureGenerator.java	2016-02-26 15:27:13.339203835 +0800
-+++ src/main/java/net/minecraft/server/StructureGenerator.java	2016-03-06 18:36:03.837021417 +0800
++++ src/main/java/net/minecraft/server/StructureGenerator.java	2016-03-07 17:08:46.319615518 +0800
 @@ -1,16 +1,17 @@
  package net.minecraft.server;
  
@@ -2395,7 +3041,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/StructureGenerator.java src
  
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntityBeacon.java src/main/java/net/minecraft/server/TileEntityBeacon.java
 --- src_origin/main/java/net/minecraft/server/TileEntityBeacon.java	2016-02-26 15:27:13.400203841 +0800
-+++ src/main/java/net/minecraft/server/TileEntityBeacon.java	2016-03-06 18:36:03.978021430 +0800
++++ src/main/java/net/minecraft/server/TileEntityBeacon.java	2016-03-07 17:08:46.392615525 +0800
 @@ -14,6 +14,7 @@
  
      public static final MobEffectList[][] a = new MobEffectList[][] { { MobEffectList.FASTER_MOVEMENT, MobEffectList.FASTER_DIG}, { MobEffectList.RESISTANCE, MobEffectList.JUMP}, { MobEffectList.INCREASE_DAMAGE}, { MobEffectList.REGENERATION}};
@@ -2406,7 +3052,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntityBeacon.java src/m
      private int k;
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/java/net/minecraft/server/TileEntity.java
 --- src_origin/main/java/net/minecraft/server/TileEntity.java	2016-02-26 15:27:13.351203836 +0800
-+++ src/main/java/net/minecraft/server/TileEntity.java	2016-03-06 18:36:03.901021422 +0800
++++ src/main/java/net/minecraft/server/TileEntity.java	2016-03-07 17:08:46.335615519 +0800
 @@ -3,6 +3,8 @@
  import com.google.common.collect.Maps;
  import java.util.Map;
@@ -2431,7 +3077,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/ja
      protected boolean d;
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntityPiston.java src/main/java/net/minecraft/server/TileEntityPiston.java
 --- src_origin/main/java/net/minecraft/server/TileEntityPiston.java	2016-02-26 15:27:13.607203860 +0800
-+++ src/main/java/net/minecraft/server/TileEntityPiston.java	2016-03-06 18:36:04.256021456 +0800
++++ src/main/java/net/minecraft/server/TileEntityPiston.java	2016-03-07 17:08:46.578615542 +0800
 @@ -12,7 +12,8 @@
      private boolean h;
      private float i;
@@ -2444,10 +3090,12 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntityPiston.java src/m
  
 diff -Naur src_origin/main/java/net/minecraft/server/UserCache.java src/main/java/net/minecraft/server/UserCache.java
 --- src_origin/main/java/net/minecraft/server/UserCache.java	2016-02-26 15:27:13.676203866 +0800
-+++ src/main/java/net/minecraft/server/UserCache.java	2016-03-06 18:36:04.350021465 +0800
-@@ -35,13 +35,17 @@
++++ src/main/java/net/minecraft/server/UserCache.java	2016-03-07 17:08:46.652615549 +0800
+@@ -33,15 +33,18 @@
+ import java.util.LinkedList;
+ import java.util.List;
  import java.util.Locale;
- import java.util.Map;
+-import java.util.Map;
  import java.util.UUID;
 +import java.util.concurrent.ConcurrentHashMap;
 +import java.util.concurrent.ConcurrentMap;
@@ -2465,7 +3113,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/UserCache.java src/main/jav
      private final java.util.Deque<GameProfile> e = new java.util.concurrent.LinkedBlockingDeque<GameProfile>(); // CraftBukkit
      private final MinecraftServer f;
      protected final Gson b;
-@@ -155,6 +159,7 @@
+@@ -155,6 +158,7 @@
  
      public String[] a() {
          ArrayList arraylist = Lists.newArrayList(this.c.keySet());
@@ -2475,7 +3123,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/UserCache.java src/main/jav
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldBorder.java src/main/java/net/minecraft/server/WorldBorder.java
 --- src_origin/main/java/net/minecraft/server/WorldBorder.java	2016-02-26 15:27:13.784203876 +0800
-+++ src/main/java/net/minecraft/server/WorldBorder.java	2016-03-06 18:36:04.500021479 +0800
++++ src/main/java/net/minecraft/server/WorldBorder.java	2016-03-07 17:08:46.759615559 +0800
 @@ -7,6 +7,7 @@
  public class WorldBorder {
  
@@ -2494,7 +3142,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldBorder.java src/main/j
      public void a(IWorldBorderListener iworldborderlistener) {
 diff -Naur src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java src/main/java/net/minecraft/server/WorldGenLargeFeature.java
 --- src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-02-26 15:27:13.882203886 +0800
-+++ src/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-03-06 18:36:04.640021492 +0800
++++ src/main/java/net/minecraft/server/WorldGenLargeFeature.java	2016-03-07 17:08:46.846615567 +0800
 @@ -17,6 +17,7 @@
  
      public WorldGenLargeFeature() {
@@ -2505,7 +3153,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldGenLargeFeature.java s
          this.f.add(new BiomeBase.BiomeMeta(EntityWitch.class, 1, 1, 1));
 diff -Naur src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java src/main/java/net/minecraft/server/WorldGenVillagePieces.java
 --- src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-02-26 15:27:14.039203900 +0800
-+++ src/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-03-06 18:36:04.851021511 +0800
++++ src/main/java/net/minecraft/server/WorldGenVillagePieces.java	2016-03-07 17:08:46.987615580 +0800
 @@ -2,9 +2,13 @@
  
  import com.google.common.collect.Lists;
@@ -2534,7 +3182,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldGenVillagePieces.java 
          arraylist.add(new WorldGenVillagePieces.WorldGenVillagePieceWeight(WorldGenVillagePieces.WorldGenVillageLibrary.class, 20, MathHelper.nextInt(random, 0 + i, 2 + i)));
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-02-26 15:27:13.782203876 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-03-06 18:36:04.486021477 +0800
++++ src/main/java/net/minecraft/server/World.java	2016-03-07 17:08:46.731615556 +0800
 @@ -2,25 +2,27 @@
  
  import com.google.common.base.Predicate;
@@ -2692,7 +3340,48 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          return ((ChunkProviderServer) this.chunkProvider).getChunkIfLoaded(x, z);
      }
  
-@@ -569,6 +596,7 @@
+@@ -225,7 +252,7 @@
+ 
+             public void c(WorldBorder worldborder, double d0) {}
+         }); 
+-        this.getServer().addWorld(this.world); 
++        this.getServer().addWorld(this.world);
+         // CraftBukkit end
+         timings = new SpigotTimings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings 
+         this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
+@@ -476,9 +503,14 @@
+     }
+ 
+     public void notify(BlockPosition blockposition) {
++        Iterator it = this.u.iterator();
++        while (it.hasNext()){
++            ((IWorldAccess) it.next()).a(blockposition);
++        }
++        /*
+         for (int i = 0; i < this.u.size(); ++i) {
+             ((IWorldAccess) this.u.get(i)).a(blockposition);
+-        }
++        }*/
+ 
+     }
+ 
+@@ -517,9 +549,14 @@
+     }
+ 
+     public void b(int i, int j, int k, int l, int i1, int j1) {
++        Iterator it = this.u.iterator();
++        while (it.hasNext()){
++            ((IWorldAccess) it.next()).a(i, j, k, l, i1, j1);
++        }
++        /*
+         for (int k1 = 0; k1 < this.u.size(); ++k1) {
+             ((IWorldAccess) this.u.get(k1)).a(i, j, k, l, i1, j1);
+-        }
++        }*/
+ 
+     }
+ 
+@@ -569,6 +606,7 @@
                  CraftWorld world = ((WorldServer) this).getWorld();
                  if (world != null) {
                      BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), CraftMagicNumbers.getId(block));
@@ -2700,7 +3389,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      this.getServer().getPluginManager().callEvent(event);
  
                      if (event.isCancelled()) {
-@@ -768,7 +796,7 @@
+@@ -768,7 +806,7 @@
      public IBlockData getType(BlockPosition blockposition, boolean useCaptured) {
          // CraftBukkit start - tree generation
          if (captureTreeGeneration && useCaptured) {
@@ -2709,7 +3398,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
              Iterator<BlockState> it = capturedBlockStates.iterator();
              while (it.hasNext()) {
                  BlockState previous = it.next();
-@@ -967,10 +995,13 @@
+@@ -967,10 +1005,13 @@
      }
  
      public void addParticle(EnumParticle enumparticle, double d0, double d1, double d2, double d3, double d4, double d5, int... aint) {
@@ -2725,7 +3414,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (int j = 0; j < this.u.size(); ++j) {
              ((IWorldAccess) this.u.get(j)).a(i, flag, d0, d1, d2, d3, d4, d5, aint);
          }
-@@ -1062,17 +1093,25 @@
+@@ -1062,17 +1103,25 @@
      }
  
      protected void a(Entity entity) {
@@ -2755,7 +3444,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          entity.valid = false; // CraftBukkit
      }
-@@ -1120,13 +1159,13 @@
+@@ -1120,13 +1169,13 @@
              this.everyoneSleeping();
          }
  
@@ -2771,7 +3460,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          // CraftBukkit start - Decrement loop variable field if we've already ticked this entity
          int index = this.entityList.indexOf(entity);
-@@ -1146,7 +1185,8 @@
+@@ -1146,7 +1195,8 @@
      }
  
      public List<AxisAlignedBB> getCubes(Entity entity, AxisAlignedBB axisalignedbb) {
@@ -2781,7 +3470,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.floor(axisalignedbb.d + 1.0D);
          int k = MathHelper.floor(axisalignedbb.b);
-@@ -1253,7 +1293,8 @@
+@@ -1253,7 +1303,8 @@
      }
  
      public List<AxisAlignedBB> a(AxisAlignedBB axisalignedbb) {
@@ -2791,7 +3480,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.floor(axisalignedbb.d + 1.0D);
          int k = MathHelper.floor(axisalignedbb.b);
-@@ -1337,13 +1378,14 @@
+@@ -1337,13 +1388,14 @@
      public void a(BlockPosition blockposition, Block block, int i, int j) {}
  
      public void b(BlockPosition blockposition, Block block, int i, int j) {}
@@ -2809,7 +3498,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          CrashReport crashreport;
          CrashReportSystemDetails crashreportsystemdetails;
  
-@@ -1396,10 +1438,11 @@
+@@ -1396,10 +1448,11 @@
  
          this.g.clear();
          this.methodProfiler.c("regular");
@@ -2823,7 +3512,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          // CraftBukkit start - Use field for loop variable
          int entitiesThisCycle = 0;
          if (tickPosition < 0) tickPosition = 0;
-@@ -1422,7 +1465,9 @@
+@@ -1422,7 +1475,9 @@
              if (!entity.dead) {
                  try {
                      SpigotTimings.tickEntityTimer.startTiming(); // Spigot
@@ -2834,7 +3523,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
                  } catch (Throwable throwable1) {
                      crashreport = CrashReport.a(throwable1, "Ticking entity");
-@@ -1449,7 +1494,7 @@
+@@ -1449,7 +1504,7 @@
  
              this.methodProfiler.b();
          }
@@ -2843,7 +3532,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          timings.entityTick.stopTiming(); // Spigot
          this.methodProfiler.c("blockEntities");
-@@ -1485,7 +1530,14 @@
+@@ -1485,7 +1540,14 @@
                  if (this.isLoaded(blockposition) && this.N.a(blockposition)) {
                      try {
                          tileentity.tickTimer.startTiming(); // Spigot
@@ -2859,7 +3548,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      } catch (Throwable throwable2) {
                          CrashReport crashreport1 = CrashReport.a(throwable2, "Ticking block entity");
                          CrashReportSystemDetails crashreportsystemdetails1 = crashreport1.a("Block entity being ticked");
-@@ -1524,8 +1576,9 @@
+@@ -1524,8 +1586,9 @@
  
          this.methodProfiler.c("pendingBlockEntities");
          if (!this.b.isEmpty()) {
@@ -2871,7 +3560,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
                  if (!tileentity1.x()) {
                      /* CraftBukkit start - Order matters, moved down
-@@ -1533,7 +1586,7 @@
+@@ -1533,7 +1596,7 @@
                          this.a(tileentity1);
                      }
                      // CraftBukkit end */
@@ -2880,7 +3569,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      if (this.isLoaded(tileentity1.getPosition())) {
                          this.getChunkAtWorldCoords(tileentity1.getPosition()).a(tileentity1.getPosition(), tileentity1);
                      }
-@@ -1541,6 +1594,24 @@
+@@ -1541,6 +1604,24 @@
                      this.notify(tileentity1.getPosition());
                  }
              }
@@ -2905,7 +3594,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
              this.b.clear();
          }
-@@ -1912,7 +1983,8 @@
+@@ -1912,7 +1993,8 @@
          }
      }
  
@@ -2915,7 +3604,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
      public TileEntity getTileEntity(BlockPosition blockposition) {
          if (!this.isValidLocation(blockposition)) {
-@@ -1929,13 +2001,26 @@
+@@ -1929,13 +2011,26 @@
              TileEntity tileentity1;
  
              if (this.M) {
@@ -2943,7 +3632,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
              }
  
              if (tileentity == null) {
-@@ -1943,13 +2028,22 @@
+@@ -1943,13 +2038,22 @@
              }
  
              if (tileentity == null) {
@@ -2967,7 +3656,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
              }
  
              return tileentity;
-@@ -2171,8 +2265,10 @@
+@@ -2171,8 +2275,10 @@
  
              // Spigot start - Always update the chunk the player is on
              long key = chunkToKey( j, k );
@@ -2980,7 +3669,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
              // Check and see if we update the chunks surrounding the player this tick
              for ( int chunk = 0; chunk < chunksPerPlayer; chunk++ )
-@@ -2180,9 +2276,11 @@
+@@ -2180,9 +2286,11 @@
                  int dx = ( random.nextBoolean() ? 1 : -1 ) * random.nextInt( randRange );
                  int dz = ( random.nextBoolean() ? 1 : -1 ) * random.nextInt( randRange );
                  long hash = chunkToKey( dx + j, dz + k );
@@ -2995,7 +3684,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                  }
              }
          }
-@@ -2504,7 +2602,8 @@
+@@ -2504,7 +2612,8 @@
      }
  
      public List<Entity> a(Entity entity, AxisAlignedBB axisalignedbb, Predicate<? super Entity> predicate) {
@@ -3005,7 +3694,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
          int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
          int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
-@@ -2522,7 +2621,8 @@
+@@ -2522,7 +2631,8 @@
      }
  
      public <T extends Entity> List<T> a(Class<? extends T> oclass, Predicate<? super T> predicate) {
@@ -3015,7 +3704,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          Iterator iterator = this.entityList.iterator();
  
          while (iterator.hasNext()) {
-@@ -2537,7 +2637,8 @@
+@@ -2537,7 +2647,8 @@
      }
  
      public <T extends Entity> List<T> b(Class<? extends T> oclass, Predicate<? super T> predicate) {
@@ -3025,7 +3714,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          Iterator iterator = this.players.iterator();
  
          while (iterator.hasNext()) {
-@@ -2560,7 +2661,8 @@
+@@ -2560,7 +2671,8 @@
          int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
          int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
          int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
@@ -3035,7 +3724,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          for (int i1 = i; i1 <= j; ++i1) {
              for (int j1 = k; j1 <= l; ++j1) {
-@@ -2595,7 +2697,8 @@
+@@ -2595,7 +2707,8 @@
      }
  
      public Entity a(int i) {
@@ -3045,7 +3734,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      }
  
      public void b(BlockPosition blockposition, TileEntity tileentity) {
-@@ -2618,14 +2721,14 @@
+@@ -2618,14 +2731,14 @@
                      continue;
                  }
              }
@@ -3064,7 +3753,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
 diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src/main/java/net/minecraft/server/WorldMap.java
 --- src_origin/main/java/net/minecraft/server/WorldMap.java	2016-02-26 15:27:14.088203905 +0800
-+++ src/main/java/net/minecraft/server/WorldMap.java	2016-03-06 18:36:04.921021518 +0800
++++ src/main/java/net/minecraft/server/WorldMap.java	2016-03-07 17:08:47.036615585 +0800
 @@ -6,9 +6,13 @@
  import java.util.Iterator;
  import java.util.List;
@@ -3124,7 +3813,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src/main/java
              EntityItemFrame entityitemframe = itemstack.z();
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-02-26 15:27:14.144203910 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-03-06 18:36:04.994021525 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-03-07 17:08:47.100615591 +0800
 @@ -3,27 +3,26 @@
  import com.google.common.base.Predicate;
  import com.google.common.collect.Lists;
@@ -3567,7 +4256,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java
 --- src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-02-26 15:27:16.164204099 +0800
-+++ src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-03-06 18:36:07.759021783 +0800
++++ src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.java	2016-03-07 17:08:48.882615758 +0800
 @@ -10,10 +10,7 @@
  import org.bukkit.craftbukkit.util.LongHash;
  
@@ -3594,7 +4283,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOProvider.j
          // Update neighbor counts
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 --- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-02-26 15:27:14.770203969 +0800
-+++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-03-06 18:36:05.849021605 +0800
++++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-03-07 17:08:47.650615642 +0800
 @@ -194,8 +194,9 @@
              world.chunkProviderServer.saveChunk(chunk);
              world.chunkProviderServer.saveChunkNOP(chunk);
@@ -3670,7 +4359,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/
      private final Spigot spigot = new Spigot()
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 --- src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-02-26 15:27:19.207204384 +0800
-+++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-03-06 18:36:11.965022177 +0800
++++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-03-07 17:08:51.531616006 +0800
 @@ -8,6 +8,8 @@
  
  import com.google.common.base.Function;
@@ -3725,7 +4414,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.j
          return event;
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 --- src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-02-26 15:27:20.478204503 +0800
-+++ src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-03-06 18:36:13.964022364 +0800
++++ src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java	2016-03-07 17:08:52.666616112 +0800
 @@ -42,6 +42,7 @@
  import java.util.HashSet;
  import java.util.Iterator;
@@ -3746,7 +4435,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.j
  
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.java src/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.java
 --- src_origin/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.java	2016-02-26 15:27:21.354204585 +0800
-+++ src/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.java	2016-03-06 18:36:15.256022485 +0800
++++ src/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.java	2016-03-07 17:08:53.534616193 +0800
 @@ -3,7 +3,6 @@
  import java.util.ArrayList;
  import java.util.Collection;
@@ -3770,9 +4459,32 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrewer.
  
      public Collection<PotionEffect> getEffectsFromDamage(int damage) {
          if (cache.containsKey(damage))
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java
+--- src_origin/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java	2016-02-26 15:27:22.149204659 +0800
++++ src/main/java/org/bukkit/craftbukkit/util/AsynchronousExecutor.java	2016-03-07 17:08:54.344616269 +0800
+@@ -5,7 +5,9 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Queue;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.ConcurrentLinkedQueue;
++import java.util.concurrent.ConcurrentMap;
+ import java.util.concurrent.LinkedBlockingQueue;
+ import java.util.concurrent.ThreadFactory;
+ import java.util.concurrent.ThreadPoolExecutor;
+@@ -216,7 +218,8 @@
+ 
+     final CallBackProvider<P, T, C, E> provider;
+     final Queue<Task> finished = new ConcurrentLinkedQueue<Task>();
+-    final Map<P, Task> tasks = new HashMap<P, Task>();
++    //final Map<P, Task> tasks = new HashMap<P, Task>();
++    final ConcurrentMap<P, Task> tasks = new ConcurrentHashMap<P, Task>();
+     final ThreadPoolExecutor pool;
+ 
+     /**
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-02-26 15:27:22.350204678 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-03-06 18:36:16.731022623 +0800
++++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-03-07 17:08:54.585616291 +0800
 @@ -1,15 +1,17 @@
  package org.bukkit.craftbukkit.util;
  
@@ -3805,75 +4517,433 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
  }
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java src/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	2016-02-26 15:27:22.480204690 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	2016-03-06 18:36:16.895022638 +0800
-@@ -14,6 +14,7 @@
- import java.util.Map;
- import java.util.NoSuchElementException;
- import java.util.Set;
-+import java.util.concurrent.ConcurrentMap;
- 
- @SuppressWarnings("unchecked")
- public class LongObjectHashMap<V> implements Cloneable, Serializable {
-@@ -31,7 +32,7 @@
-         initialize();
-     }
- 
--    public LongObjectHashMap(Map<? extends Long, ? extends V> map) {
-+    public LongObjectHashMap(ConcurrentMap<? extends Long, ? extends V> map) {
-         this();
-         putAll(map);
-     }
-@@ -127,7 +128,7 @@
-         if (inner == null) {
-             return null;
-         }
++++ src/main/java/org/bukkit/craftbukkit/util/LongObjectHashMap.java	1970-01-01 08:00:00.000000000 +0800
+@@ -1,422 +0,0 @@
+-package org.bukkit.craftbukkit.util;
 -
-+        
-         for (int i = 0; i < inner.length; i++) {
-             // hit the end of the chain, didn't find this entry
-             if (inner[i] == EMPTY_KEY) {
-@@ -157,10 +158,16 @@
-         return null;
-     }
- 
+-import java.io.IOException;
+-import java.io.ObjectInputStream;
+-import java.io.ObjectOutputStream;
+-import java.io.Serializable;
+-import java.util.AbstractCollection;
+-import java.util.AbstractSet;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.ConcurrentModificationException;
+-import java.util.HashSet;
+-import java.util.Iterator;
+-import java.util.Map;
+-import java.util.NoSuchElementException;
+-import java.util.Set;
+-
+-@SuppressWarnings("unchecked")
+-public class LongObjectHashMap<V> implements Cloneable, Serializable {
+-    static final long serialVersionUID = 2841537710170573815L;
+-
+-    private static final long EMPTY_KEY = Long.MIN_VALUE;
+-    private static final int  BUCKET_SIZE = 4096;
+-
+-    private transient long[][] keys;
+-    private transient V[][]    values;
+-    private transient int      modCount;
+-    private transient int      size;
+-
+-    public LongObjectHashMap() {
+-        initialize();
+-    }
+-
+-    public LongObjectHashMap(Map<? extends Long, ? extends V> map) {
+-        this();
+-        putAll(map);
+-    }
+-
+-    public int size() {
+-        return size;
+-    }
+-
+-    public boolean isEmpty() {
+-        return size == 0;
+-    }
+-
+-    public boolean containsKey(long key) {
+-        return get(key) != null;
+-    }
+-
+-    public boolean containsValue(V value) {
+-        for (V val : values()) {
+-            if (val == value || val.equals(value)) {
+-                return true;
+-            }
+-        }
+-
+-        return false;
+-    }
+-
+-    public V get(long key) {
+-        int index = (int) (keyIndex(key) & (BUCKET_SIZE - 1));
+-        long[] inner = keys[index];
+-        if (inner == null) return null;
+-
+-        for (int i = 0; i < inner.length; i++) {
+-            long innerKey = inner[i];
+-            if (innerKey == EMPTY_KEY) {
+-                return null;
+-            } else if (innerKey == key) {
+-                return values[index][i];
+-            }
+-        }
+-
+-        return null;
+-    }
+-
+-    public V put(long key, V value) {
+-        int index = (int) (keyIndex(key) & (BUCKET_SIZE - 1));
+-        long[] innerKeys = keys[index];
+-        V[] innerValues = values[index];
+-        modCount++;
+-
+-        if (innerKeys == null) {
+-            // need to make a new chain
+-            keys[index] = innerKeys = new long[8];
+-            Arrays.fill(innerKeys, EMPTY_KEY);
+-            values[index] = innerValues = (V[]) new Object[8];
+-            innerKeys[0] = key;
+-            innerValues[0] = value;
+-            size++;
+-        } else {
+-            int i;
+-            for (i = 0; i < innerKeys.length; i++) {
+-                // found an empty spot in the chain to put this
+-                if (innerKeys[i] == EMPTY_KEY) {
+-                    size++;
+-                    innerKeys[i] = key;
+-                    innerValues[i] = value;
+-                    return null;
+-                }
+-
+-                // found an existing entry in the chain with this key, replace it
+-                if (innerKeys[i] == key) {
+-                    V oldValue = innerValues[i];
+-                    innerKeys[i] = key;
+-                    innerValues[i] = value;
+-                    return oldValue;
+-                }
+-            }
+-
+-            // chain is full, resize it and add our new entry
+-            keys[index] = innerKeys = Arrays.copyOf(innerKeys, i << 1);
+-            Arrays.fill(innerKeys, i, innerKeys.length, EMPTY_KEY);
+-            values[index] = innerValues = Arrays.copyOf(innerValues, i << 1);
+-            innerKeys[i] = key;
+-            innerValues[i] = value;
+-            size++;
+-        }
+-
+-        return null;
+-    }
+-
+-    public V remove(long key) {
+-        int index = (int) (keyIndex(key) & (BUCKET_SIZE - 1));
+-        long[] inner = keys[index];
+-        if (inner == null) {
+-            return null;
+-        }
+-
+-        for (int i = 0; i < inner.length; i++) {
+-            // hit the end of the chain, didn't find this entry
+-            if (inner[i] == EMPTY_KEY) {
+-                break;
+-            }
+-
+-            if (inner[i] == key) {
+-                V value = values[index][i];
+-
+-                for (i++; i < inner.length; i++) {
+-                    if (inner[i] == EMPTY_KEY) {
+-                        break;
+-                    }
+-
+-                    inner[i - 1] = inner[i];
+-                    values[index][i - 1] = values[index][i];
+-                }
+-
+-                inner[i - 1] = EMPTY_KEY;
+-                values[index][i - 1] = null;
+-                size--;
+-                modCount++;
+-                return value;
+-            }
+-        }
+-
+-        return null;
+-    }
+-
 -    public void putAll(Map<? extends Long, ? extends V> map) {
 -        for (Map.Entry entry : map.entrySet()) {
-+    //public void putAll(Map<? extends Long, ? extends V> map) {
-+    public void putAll(ConcurrentMap<? extends Long, ? extends V> map) {
-+        Iterator it = map.entrySet().iterator();
-+        while (it.hasNext()){
-+            ConcurrentMap.Entry entry = (ConcurrentMap.Entry) it.next();
-             put((Long) entry.getKey(), (V) entry.getValue());
-         }
-+        /*for (ConcurrentMap.Entry entry : map.entrySet()) {
-+            put((Long) entry.getKey(), (V) entry.getValue());
-+        }*/
-     }
- 
-     public void clear() {
-@@ -191,8 +198,8 @@
-      * @deprecated
-      */
-     @Deprecated
+-            put((Long) entry.getKey(), (V) entry.getValue());
+-        }
+-    }
+-
+-    public void clear() {
+-        if (size == 0) {
+-            return;
+-        }
+-
+-        modCount++;
+-        size = 0;
+-        Arrays.fill(keys, null);
+-        Arrays.fill(values, null);
+-    }
+-
+-    public Set<Long> keySet() {
+-        return new KeySet();
+-    }
+-
+-    public Collection<V> values() {
+-        return new ValueCollection();
+-    }
+-
+-    /**
+-     * Returns a Set of Entry objects for the HashMap. This is not how the internal
+-     * implementation is laid out so this constructs the entire Set when called. For
+-     * this reason it should be avoided if at all possible.
+-     *
+-     * @return Set of Entry objects
+-     * @deprecated
+-     */
+-    @Deprecated
 -    public Set<Map.Entry<Long, V>> entrySet() {
 -        HashSet<Map.Entry<Long, V>> set = new HashSet<Map.Entry<Long, V>>();
-+    public Set<ConcurrentMap.Entry<Long, V>> entrySet() {
-+        HashSet<ConcurrentMap.Entry<Long, V>> set = new HashSet<Map.Entry<Long, V>>();
-         for (long key : keySet()) {
-             set.add(new Entry(key, get(key)));
-         }
-@@ -228,6 +235,8 @@
-         key *= 0xc4ceb9fe1a85ec53L;
-         key ^= key >>> 33;
-         return key;
-+        //return (key ^ (key >>> 16)) & 0x7fffffff;
-+        
-     }
- 
-     private void writeObject(ObjectOutputStream outputStream) throws IOException {
+-        for (long key : keySet()) {
+-            set.add(new Entry(key, get(key)));
+-        }
+-
+-        return set;
+-    }
+-
+-    public Object clone() throws CloneNotSupportedException {
+-        LongObjectHashMap clone = (LongObjectHashMap) super.clone();
+-        // Make sure we clear any existing information from the clone
+-        clone.clear();
+-        // Make sure the clone is properly setup for new entries
+-        clone.initialize();
+-
+-        // Iterate through the data normally to do a safe clone
+-        for (long key : keySet()) {
+-            final V value = get(key);
+-            clone.put(key, value);
+-        }
+-
+-        return clone;
+-    }
+-
+-    private void initialize() {
+-        keys = new long[BUCKET_SIZE][];
+-        values = (V[][]) new Object[BUCKET_SIZE][];
+-    }
+-
+-    private long keyIndex(long key) {
+-        key ^= key >>> 33;
+-        key *= 0xff51afd7ed558ccdL;
+-        key ^= key >>> 33;
+-        key *= 0xc4ceb9fe1a85ec53L;
+-        key ^= key >>> 33;
+-        return key;
+-    }
+-
+-    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+-        outputStream.defaultWriteObject();
+-
+-        for (long key : keySet()) {
+-            V value = get(key);
+-            outputStream.writeLong(key);
+-            outputStream.writeObject(value);
+-        }
+-
+-        outputStream.writeLong(EMPTY_KEY);
+-        outputStream.writeObject(null);
+-    }
+-
+-    private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {
+-        inputStream.defaultReadObject();
+-        initialize();
+-
+-        while (true) {
+-            long key = inputStream.readLong();
+-            V value = (V) inputStream.readObject();
+-            if (key == EMPTY_KEY && value == null) {
+-                break;
+-            }
+-
+-            put(key, value);
+-        }
+-    }
+-
+-
+-    private class ValueIterator implements Iterator<V> {
+-        private int count;
+-        private int index;
+-        private int innerIndex;
+-        private int expectedModCount;
+-        private long lastReturned = EMPTY_KEY;
+-
+-        long prevKey = EMPTY_KEY;
+-        V prevValue;
+-
+-        ValueIterator() {
+-            expectedModCount = LongObjectHashMap.this.modCount;
+-        }
+-
+-        public boolean hasNext() {
+-            return count < LongObjectHashMap.this.size;
+-        }
+-
+-        public void remove() {
+-            if (LongObjectHashMap.this.modCount != expectedModCount) {
+-                throw new ConcurrentModificationException();
+-            }
+-
+-            if (lastReturned == EMPTY_KEY) {
+-                throw new IllegalStateException();
+-            }
+-
+-            count--;
+-            LongObjectHashMap.this.remove(lastReturned);
+-            lastReturned = EMPTY_KEY;
+-            expectedModCount = LongObjectHashMap.this.modCount;
+-        }
+-
+-        public V next() {
+-            if (LongObjectHashMap.this.modCount != expectedModCount) {
+-                throw new ConcurrentModificationException();
+-            }
+-
+-            if (!hasNext()) {
+-                throw new NoSuchElementException();
+-            }
+-
+-            long[][] keys = LongObjectHashMap.this.keys;
+-            count++;
+-
+-            if (prevKey != EMPTY_KEY) {
+-                innerIndex++;
+-            }
+-
+-            for (; index < keys.length; index++) {
+-                if (keys[index] != null) {
+-                    for (; innerIndex < keys[index].length; innerIndex++) {
+-                        long key = keys[index][innerIndex];
+-                        V value = values[index][innerIndex];
+-                        if (key == EMPTY_KEY) {
+-                            break;
+-                        }
+-
+-                        lastReturned = key;
+-                        prevKey = key;
+-                        prevValue = value;
+-                        return prevValue;
+-                    }
+-                    innerIndex = 0;
+-                }
+-            }
+-
+-            throw new NoSuchElementException();
+-        }
+-    }
+-
+-    private class KeyIterator implements Iterator<Long> {
+-        final ValueIterator iterator;
+-
+-        public KeyIterator() {
+-            iterator = new ValueIterator();
+-        }
+-
+-        public void remove() {
+-            iterator.remove();
+-        }
+-
+-        public boolean hasNext() {
+-            return iterator.hasNext();
+-        }
+-
+-        public Long next() {
+-            iterator.next();
+-            return iterator.prevKey;
+-        }
+-    }
+-
+-
+-    private class KeySet extends AbstractSet<Long> {
+-        public void clear() {
+-            LongObjectHashMap.this.clear();
+-        }
+-
+-        public int size() {
+-            return LongObjectHashMap.this.size();
+-        }
+-
+-        public boolean contains(Object key) {
+-            return key instanceof Long && LongObjectHashMap.this.containsKey((Long) key);
+-
+-        }
+-
+-        public boolean remove(Object key) {
+-            return LongObjectHashMap.this.remove((Long) key) != null;
+-        }
+-
+-        public Iterator<Long> iterator() {
+-            return new KeyIterator();
+-        }
+-    }
+-
+-
+-    private class ValueCollection extends AbstractCollection<V> {
+-        public void clear() {
+-            LongObjectHashMap.this.clear();
+-        }
+-
+-        public int size() {
+-            return LongObjectHashMap.this.size();
+-        }
+-
+-        public boolean contains(Object value) {
+-            return LongObjectHashMap.this.containsValue((V) value);
+-        }
+-
+-        public Iterator<V> iterator() {
+-            return new ValueIterator();
+-        }
+-    }
+-
+-
+-    private class Entry implements Map.Entry<Long, V> {
+-        private final Long key;
+-        private V value;
+-
+-        Entry(long k, V v) {
+-            key = k;
+-            value = v;
+-        }
+-
+-        public Long getKey() {
+-            return key;
+-        }
+-
+-        public V getValue() {
+-            return value;
+-        }
+-
+-        public V setValue(V v) {
+-            V old = value;
+-            value = v;
+-            put(key, v);
+-            return old;
+-        }
+-    }
+-}
 diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src/main/java/org/hose/AddParticlePool.java
 --- src_origin/main/java/org/hose/AddParticlePool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/AddParticlePool.java	2016-03-06 18:35:51.175020232 +0800
++++ src/main/java/org/hose/AddParticlePool.java	2016-03-07 17:08:38.065614746 +0800
 @@ -0,0 +1,41 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -3918,7 +4988,7 @@ diff -Naur src_origin/main/java/org/hose/AddParticlePool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/ChangeEntityThreadCommand.java src/main/java/org/hose/ChangeEntityThreadCommand.java
 --- src_origin/main/java/org/hose/ChangeEntityThreadCommand.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChangeEntityThreadCommand.java	2016-03-06 18:35:51.239020238 +0800
++++ src/main/java/org/hose/ChangeEntityThreadCommand.java	2016-03-07 17:08:38.109614750 +0800
 @@ -0,0 +1,52 @@
 +package org.hose;
 +
@@ -3974,7 +5044,7 @@ diff -Naur src_origin/main/java/org/hose/ChangeEntityThreadCommand.java src/main
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkGenPool.java src/main/java/org/hose/ChunkGenPool.java
 --- src_origin/main/java/org/hose/ChunkGenPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkGenPool.java	2016-03-06 18:35:51.303020244 +0800
++++ src/main/java/org/hose/ChunkGenPool.java	2016-03-07 17:08:38.149614753 +0800
 @@ -0,0 +1,38 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -4016,7 +5086,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkGenPool.java src/main/java/org/hos
 +}
 diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/hose/EntityTick_Pool.java
 --- src_origin/main/java/org/hose/EntityTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/EntityTick_Pool.java	2016-03-06 18:35:51.368020250 +0800
++++ src/main/java/org/hose/EntityTick_Pool.java	2016-03-07 17:08:38.189614757 +0800
 @@ -0,0 +1,56 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -4076,7 +5146,7 @@ diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/GetChunkATPool.java src/main/java/org/hose/GetChunkATPool.java
 --- src_origin/main/java/org/hose/GetChunkATPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/GetChunkATPool.java	2016-03-06 18:35:51.434020256 +0800
++++ src/main/java/org/hose/GetChunkATPool.java	2016-03-07 17:08:38.229614761 +0800
 @@ -0,0 +1,35 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -4115,7 +5185,7 @@ diff -Naur src_origin/main/java/org/hose/GetChunkATPool.java src/main/java/org/h
 +}
 diff -Naur src_origin/main/java/org/hose/GetCreateChunkPool.java src/main/java/org/hose/GetCreateChunkPool.java
 --- src_origin/main/java/org/hose/GetCreateChunkPool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/GetCreateChunkPool.java	2016-03-06 18:35:51.498020262 +0800
++++ src/main/java/org/hose/GetCreateChunkPool.java	2016-03-07 17:08:38.269614765 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -4151,8 +5221,8 @@ diff -Naur src_origin/main/java/org/hose/GetCreateChunkPool.java src/main/java/o
 +}
 diff -Naur src_origin/main/java/org/hose/SpawnerCreature_Pool.java src/main/java/org/hose/SpawnerCreature_Pool.java
 --- src_origin/main/java/org/hose/SpawnerCreature_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/SpawnerCreature_Pool.java	2016-03-06 18:35:51.563020268 +0800
-@@ -0,0 +1,41 @@
++++ src/main/java/org/hose/SpawnerCreature_Pool.java	2016-03-07 17:08:38.309614768 +0800
+@@ -0,0 +1,50 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
 + * To change this template file, choose Tools | Templates
@@ -4161,7 +5231,9 @@ diff -Naur src_origin/main/java/org/hose/SpawnerCreature_Pool.java src/main/java
 +package org.hose;
 +
 +import java.util.concurrent.Callable;
++import net.minecraft.server.BlockPosition;
 +import net.minecraft.server.EntityInsentient;
++import net.minecraft.server.EnumCreatureType;
 +import net.minecraft.server.IUpdatePlayerListBox;
 +import net.minecraft.server.SpawnerCreature;
 +import net.minecraft.server.WorldServer;
@@ -4171,24 +5243,31 @@ diff -Naur src_origin/main/java/org/hose/SpawnerCreature_Pool.java src/main/java
 + *
 + * @author softpak
 + */
-+public class SpawnerCreature_Pool  implements Callable{
-+    /*
++public class SpawnerCreature_Pool  implements Callable<Integer>{
 +    SpawnerCreature sc;
-+    boolean flag, flag1, flag2;*/
++    boolean flag, flag1, flag2;
 +    WorldServer worldserver;
-+    EntityInsentient entityinsentient;
++    EnumCreatureType[] aenumcreaturetype;
++    BlockPosition blockposition;
++    int i, j1, k, k1;
 +
-+    public SpawnerCreature_Pool(WorldServer worldserver, EntityInsentient entityinsentient) {
-+        this.entityinsentient = entityinsentient;
++    public SpawnerCreature_Pool(SpawnerCreature sc, EnumCreatureType[] aenumcreaturetype, BlockPosition blockposition, int i, int j1, int k, int k1, WorldServer worldserver, boolean flag, boolean flag1, boolean flag2) {
++        this.sc = sc;
++        this.flag = flag;
++        this.flag2 = flag1;
++        this.flag2 = flag2;
 +        this.worldserver = worldserver;
++        this.aenumcreaturetype = aenumcreaturetype;
++        this.i = i;
++        this.k = k;
++        this.j1 = j1;
++        this.k1 = k1;
++        this.blockposition = blockposition;
 +    }
 +
 +    @Override
-+    public Object call() throws Exception {
-+        //worldserver.addEntity(entityinsentient, CreatureSpawnEvent.SpawnReason.NATURAL);
-+        //return sc.a_hose(worldserver, flag, flag1, flag2);
-+        worldserver.addEntity(entityinsentient, CreatureSpawnEvent.SpawnReason.NATURAL);
-+        return null;
++    public Integer call() throws Exception {
++        return sc.spawn_calc_hose(aenumcreaturetype, blockposition, i, j1, k, k1, worldserver, flag, flag1, flag2);
 +    }
 +    
 +
@@ -4196,7 +5275,7 @@ diff -Naur src_origin/main/java/org/hose/SpawnerCreature_Pool.java src/main/java
 +}
 diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/hose/TileTick_Pool.java
 --- src_origin/main/java/org/hose/TileTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/TileTick_Pool.java	2016-03-06 18:35:51.626020274 +0800
++++ src/main/java/org/hose/TileTick_Pool.java	2016-03-07 17:08:38.349614772 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -4232,7 +5311,7 @@ diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-02-26 15:27:05.386203091 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2016-03-06 18:35:51.911020301 +0800
++++ src/main/java/org/spigotmc/ActivationRange.java	2016-03-07 17:08:38.531614789 +0800
 @@ -1,8 +1,7 @@
  package org.spigotmc;
  
@@ -4271,7 +5350,7 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/
              {
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-02-26 15:27:05.429203095 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-03-06 18:35:52.048020313 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-03-07 17:08:38.618614797 +0800
 @@ -5,7 +5,7 @@
  public class AsyncCatcher
  {
@@ -4283,7 +5362,7 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org
      {
 diff -Naur src_origin/main/java/org/spigotmc/SpigotConfig.java src/main/java/org/spigotmc/SpigotConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotConfig.java	2016-02-26 15:27:05.584203109 +0800
-+++ src/main/java/org/spigotmc/SpigotConfig.java	2016-03-06 18:35:52.591020364 +0800
++++ src/main/java/org/spigotmc/SpigotConfig.java	2016-03-07 17:08:38.948614828 +0800
 @@ -26,6 +26,7 @@
  import org.bukkit.configuration.ConfigurationSection;
  import org.bukkit.configuration.InvalidConfigurationException;
@@ -4306,7 +5385,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotConfig.java src/main/java/org
      private static void playerSample()
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-02-26 15:27:05.636203114 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-03-06 18:35:52.532020359 +0800
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-03-07 17:08:38.996614833 +0800
 @@ -1,13 +1,74 @@
  package org.spigotmc;
  
@@ -4384,7 +5463,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
      private boolean verbose;
 diff -Naur src_origin/test/java/org/bukkit/MaterialTest.java src/test/java/org/bukkit/MaterialTest.java
 --- src_origin/test/java/org/bukkit/MaterialTest.java	2016-02-26 15:27:06.194203166 +0800
-+++ src/test/java/org/bukkit/MaterialTest.java	2016-03-06 18:35:53.451020445 +0800
++++ src/test/java/org/bukkit/MaterialTest.java	2016-03-07 17:08:39.722614901 +0800
 @@ -4,22 +4,23 @@
  import static org.hamcrest.Matchers.*;
  
