@@ -34,7 +34,7 @@ Hardware :
 
 ####Issues
 *     Some plugins will cause null pointer exception. It is beacause some entities were destroyed before excuting. It does not matter if it does not cause the server shoutdown immediatly.
-*     Tripwire sometimes causes stackoverflow error.
+*     Items in chests sometimes disapear from the server.
 
 #[贊助(NTD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
 #[Donate(USD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYUVSZYQBPXF2)
