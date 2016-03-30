@@ -2,22 +2,23 @@
 `A flexible tube conveying data.`
 
 ####Minecraft Server with Multi-core CPU.
-Now I use some parallel and Callable functions.
+ForkJoin maybe the way to solve ticking issues.
 
-*   It`s based on SpigotMC v1.8.8 And is compatible with v1.8 and above. See http://www.spigotmc.org/ for details.
+*   Working on 1.9 now.
+*   It`s based on SpigotMC v1.9. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
 Software :
 *   OS : Anything that can run JDK or other JVM.
-*   JVM : Oricale & Open JDK 1.6 or higher.
+*   JVM : Oricale & Open JDK 1.7 or higher.
 
 Hardware :
 *   CPU : Any muilti-core CPUs.
 
 ####Test Server
 *     IP address : 220.132.245.136:25585 (static)
-*     Version : 1.8 ~ 1.8.9
+*     Version : 1.8 ~ 1.8.8
 *     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server except red stone clock devices. Most of players are Taiwanese. If you are getting lag. You can try /gc command to check the ticks. Maybe your FPS is too low . You are welcome to leave any messages.`
 
 ####How to build this patch
