@@ -1,6 +1,99 @@
+diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
+--- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-04-03 23:27:22.612613930 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-04-04 01:55:38.875622454 +0800
+@@ -33,6 +33,7 @@
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.Date;
++import java.util.LinkedList;
+ import java.util.List;
+ import java.util.Queue;
+ import java.util.Random;
+@@ -46,6 +47,8 @@
+ // CraftBukkit start
+ // CraftBukkit end
+ import org.bukkit.craftbukkit.SpigotTimings; // Spigot
++import org.hose.ChunkGen_Pool;
++import org.spigotmc.SpigotWorldConfig;
+ 
+ public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
+ 
+@@ -353,7 +356,8 @@
+             BlockPosition blockposition = worldserver.getSpawn();
+             long j = av();
+             i = 0;
+-
++            List<int[]> chunkgen_list = new LinkedList();
++            int[] pos = new int[2];
+             for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
+                 for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
+                     long i1 = av();
+@@ -364,9 +368,13 @@
+                     }
+ 
+                     ++i;
+-                    worldserver.getChunkProviderServer().getChunkAt(blockposition.getX() + k >> 4, blockposition.getZ() + l >> 4);
++                    //worldserver.getChunkProviderServer().getChunkAt(blockposition.getX() + k >> 4, blockposition.getZ() + l >> 4);
++                    pos[0] = blockposition.getX() + k >> 4;
++                    pos[1] = blockposition.getZ() + l >> 4;
++                    chunkgen_list.add(pos);
+                 }
+             }
++            SpigotWorldConfig.ChunkPool.invoke(new ChunkGen_Pool(worldserver, chunkgen_list));
+         }
+ 
+         for (WorldServer world : this.worlds) {
+diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
+--- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-03 23:27:22.917613931 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-04 01:55:39.048622454 +0800
+@@ -14,6 +14,8 @@
+ 
+ // CraftBukkit start
+ import java.util.LinkedList;
++import org.hose.PlayerChunkMap_Pool;
++import org.spigotmc.SpigotWorldConfig;
+ // CraftBukkit end
+ 
+ public class PlayerChunkMap {
+@@ -212,7 +214,8 @@
+         return (PlayerChunk) this.e.getEntry(d(i, j));
+     }
+ 
+-    private PlayerChunk c(int i, int j) {
++    public PlayerChunk c(int i, int j) {
++    //private PlayerChunk c(int i, int j) {
+         long k = d(i, j);
+         PlayerChunk playerchunk = (PlayerChunk) this.e.getEntry(k);
+ 
+@@ -271,9 +274,11 @@
+         }
+ 
+         Collections.sort(chunkList, new ChunkCoordComparator(entityplayer));
++        /*
+         for (ChunkCoordIntPair pair : chunkList) {
+             this.c(pair.x, pair.z).a(entityplayer);
+-        }
++        }*/
++        SpigotWorldConfig.PlayerChunkPool.invoke(new PlayerChunkMap_Pool(this, chunkList, entityplayer));
+         // CraftBukkit end
+ 
+         this.managedPlayers.add(entityplayer);
+@@ -345,9 +350,11 @@
+ 
+                 // CraftBukkit start - send nearest chunks first
+                 Collections.sort(chunksToLoad, new ChunkCoordComparator(entityplayer));
++                /*
+                 for (ChunkCoordIntPair pair : chunksToLoad) {
+                     this.c(pair.x, pair.z).a(entityplayer);
+-                }
++                }*/
++                SpigotWorldConfig.PlayerChunkPool.invoke(new PlayerChunkMap_Pool(this, chunksToLoad, entityplayer));
+                 // CraftBukkit end
+             }
+         }
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/java/net/minecraft/server/TileEntity.java
 --- src_origin/main/java/net/minecraft/server/TileEntity.java	2016-04-03 23:27:23.114613931 +0800
-+++ src/main/java/net/minecraft/server/TileEntity.java	2016-04-03 23:28:26.898613992 +0800
++++ src/main/java/net/minecraft/server/TileEntity.java	2016-04-04 01:55:39.173622454 +0800
 @@ -20,11 +20,19 @@
      protected boolean d;
      private int h;
@@ -23,7 +116,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/ja
          if (TileEntity.f.containsKey(s)) {
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-04-03 23:27:23.228613931 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-04-03 23:28:27.002613992 +0800
++++ src/main/java/net/minecraft/server/World.java	2016-04-04 01:55:39.252622454 +0800
 @@ -15,7 +15,9 @@
  
  // CraftBukkit start
@@ -402,7 +495,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-04-03 23:27:23.309613931 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-04-03 23:28:27.067613992 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-04-04 01:55:39.305622454 +0800
 @@ -669,7 +669,8 @@
                      this.getChunkAt(j, k).b(entity);
                  }
@@ -425,7 +518,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          }
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 --- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-03 23:27:23.448613931 +0800
-+++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-03 23:28:27.177613992 +0800
++++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-04 01:55:39.398622454 +0800
 @@ -8,6 +8,7 @@
  import java.util.HashSet;
  import java.util.List;
@@ -562,9 +655,71 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/
  
          return list;
      }
+diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/hose/ChunkGen_Pool.java
+--- src_origin/main/java/org/hose/ChunkGen_Pool.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/org/hose/ChunkGen_Pool.java	2016-04-04 01:55:37.803622453 +0800
+@@ -0,0 +1,58 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.LinkedList;
++import java.util.List;
++import java.util.concurrent.RecursiveAction;
++import net.minecraft.server.WorldServer;
++
++/**
++ *
++ * @author softpak
++ */
++public class ChunkGen_Pool extends RecursiveAction {
++    WorldServer worldserver;
++    List<int[]> position;
++    
++    public ChunkGen_Pool(WorldServer worldserver, List<int[]> position){
++        this.worldserver = worldserver;
++        this.position = position;
++        
++    }
++    
++    @Override
++    protected void compute() {
++        List<RecursiveAction> forks = new LinkedList();
++        for (int[] pt : position) {
++            dotick task = new dotick(worldserver, pt);
++            forks.add(task);
++            task.fork();
++            task.join();
++        }
++        /*
++        for (RecursiveAction task : forks) {
++            task.join();
++        }*/
++    }
++    
++    
++    class dotick extends RecursiveAction {
++        WorldServer worldserver;
++        int[] pt;
++        
++        dotick(WorldServer worldserver, int[] pt) {
++            this.worldserver = worldserver;
++            this.pt = pt;
++        }
++        
++        @Override
++        protected void compute() {
++            worldserver.getChunkProviderServer().getChunkAt(pt[0], pt[1]);
++        }
++                 
++    }
++}
 diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/hose/EntityTick_Pool.java
 --- src_origin/main/java/org/hose/EntityTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/EntityTick_Pool.java	2016-04-03 23:28:25.180613990 +0800
++++ src/main/java/org/hose/EntityTick_Pool.java	2016-04-04 01:55:50.791622465 +0800
 @@ -0,0 +1,58 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -624,9 +779,79 @@ diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/
 +                 
 +    }
 +}
+diff -Naur src_origin/main/java/org/hose/PlayerChunkMap_Pool.java src/main/java/org/hose/PlayerChunkMap_Pool.java
+--- src_origin/main/java/org/hose/PlayerChunkMap_Pool.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/org/hose/PlayerChunkMap_Pool.java	2016-04-04 01:55:37.814622453 +0800
+@@ -0,0 +1,66 @@
++/*
++ * To change this license header, choose License Headers in Project Properties.
++ * To change this template file, choose Tools | Templates
++ * and open the template in the editor.
++ */
++package org.hose;
++
++import java.util.LinkedList;
++import java.util.List;
++import java.util.concurrent.RecursiveAction;
++import net.minecraft.server.ChunkCoordIntPair;
++import net.minecraft.server.EntityPlayer;
++import net.minecraft.server.PlayerChunkMap;
++import net.minecraft.server.World;
++
++/**
++ *
++ * @author softpak
++ */
++public class PlayerChunkMap_Pool extends RecursiveAction {
++    PlayerChunkMap pcm;
++    List<ChunkCoordIntPair> chunkList;
++    EntityPlayer entityplayer;
++    
++    public PlayerChunkMap_Pool(PlayerChunkMap pcm, List<ChunkCoordIntPair> chunkList, EntityPlayer entityplayer){
++        this.pcm = pcm;
++        this.chunkList = chunkList;
++        this.entityplayer = entityplayer;
++        
++    }
++    
++    @Override
++    protected void compute() {
++        List<RecursiveAction> forks = new LinkedList();
++        for (ChunkCoordIntPair cp : chunkList) {
++            getchunk task = new getchunk(pcm, cp.x, cp.z ,entityplayer);
++            forks.add(task);
++            task.fork();
++            task.join();
++        }
++        /*
++        for (RecursiveAction task : forks) {
++            task.join();
++        }*/
++    }
++    
++    
++    class getchunk extends RecursiveAction {
++        PlayerChunkMap pcm;
++        int x, z;
++        EntityPlayer entityplayer;
++        
++        getchunk(PlayerChunkMap pcm, int x, int z, EntityPlayer entityplayer) {
++            this.pcm = pcm;
++            this.x = x;
++            this.z = z;
++            this.entityplayer = entityplayer;
++        }
++        
++        @Override
++        protected void compute() {
++            pcm.c(x, z).a(entityplayer);
++        }
++                 
++    }
++}
 diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/hose/TileTick_Pool.java
 --- src_origin/main/java/org/hose/TileTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/TileTick_Pool.java	2016-04-03 23:28:25.179613990 +0800
++++ src/main/java/org/hose/TileTick_Pool.java	2016-04-04 01:55:47.282622462 +0800
 @@ -0,0 +1,58 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -688,7 +913,7 @@ diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-04-03 23:27:20.714613929 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-04-03 23:28:25.178613990 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-04-04 01:55:46.161622461 +0800
 @@ -5,7 +5,8 @@
  public class AsyncCatcher
  {
@@ -701,8 +926,8 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org
      {
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-03 23:27:20.782613929 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-03 23:28:25.207613990 +0800
-@@ -1,11 +1,17 @@
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-04 01:55:37.870622453 +0800
+@@ -1,11 +1,19 @@
  package org.spigotmc;
  
  import java.util.List;
@@ -715,6 +940,8 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +    //hose start
 +    public static final ForkJoinPool EntityTickPool = new ForkJoinPool();
 +    public static final ForkJoinPool TileTickPool = new ForkJoinPool();
++    public static final ForkJoinPool ChunkPool = new ForkJoinPool();
++    public static final ForkJoinPool PlayerChunkPool = new ForkJoinPool();
 +    
 +    //hose end
  
