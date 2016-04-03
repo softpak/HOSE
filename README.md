@@ -4,8 +4,7 @@
 ####Minecraft Server with Multi-core CPU.
 ForkJoin maybe the way to solve ticking issues.
 
-*   Working on 1.9 now.
-*   It`s based on SpigotMC v1.9. See http://www.spigotmc.org/ for details.
+*   It`s based on SpigotMC v1.9.2. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
@@ -34,8 +33,7 @@ Hardware :
 *     wetp-core-multiple:1(default) #Using threads that are multiple by the numbers of your cpu cores. If your cpu has 2 cores. It will use 2 threads to calculate EntityTicks. Set it to 10 will use 20 threads.
 
 ####Issues
-*     Some plugins will cause null pointer exception. It is beacause some entities were destroyed before excuting. It does not matter if it does not cause the server shoutdown immediatly.
-*     Items in chests sometimes disapear from the server.
+*     No issues for now.
 
 #[贊助(NTD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
 #[Donate(USD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYUVSZYQBPXF2)
