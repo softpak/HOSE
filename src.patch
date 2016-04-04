@@ -1,6 +1,6 @@
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-04-03 23:27:22.612613930 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-04-04 01:55:38.875622454 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-04-04 11:13:55.160654546 +0800
 @@ -33,6 +33,7 @@
  import java.util.Arrays;
  import java.util.Collections;
@@ -43,9 +43,29 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
          }
  
          for (WorldServer world : this.worlds) {
+@@ -1022,7 +1030,8 @@
+     }
+ 
+     public String getServerModName() {
+-        return "Spigot"; // Spigot - Spigot > // CraftBukkit - cb > vanilla!
++        //return "Spigot"; // Spigot - Spigot > // CraftBukkit - cb > vanilla!
++        return "HOSE"; // HOSE -> Spigot - Spigot > // CraftBukkit - cb > vanilla!
+     }
+ 
+     public CrashReport b(CrashReport crashreport) {
+@@ -1104,7 +1113,8 @@
+     }
+ 
+     public String getName() {
+-        return "Server";
++        //return "Server";
++        return org.bukkit.ChatColor.GREEN + "Server";
+     }
+ 
+     public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-03 23:27:22.917613931 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-04 01:55:39.048622454 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-04 11:13:55.505654546 +0800
 @@ -14,6 +14,8 @@
  
  // CraftBukkit start
@@ -93,7 +113,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          }
 diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/java/net/minecraft/server/TileEntity.java
 --- src_origin/main/java/net/minecraft/server/TileEntity.java	2016-04-03 23:27:23.114613931 +0800
-+++ src/main/java/net/minecraft/server/TileEntity.java	2016-04-04 01:55:39.173622454 +0800
++++ src/main/java/net/minecraft/server/TileEntity.java	2016-04-04 11:13:55.766654547 +0800
 @@ -20,11 +20,19 @@
      protected boolean d;
      private int h;
@@ -116,7 +136,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/ja
          if (TileEntity.f.containsKey(s)) {
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-04-03 23:27:23.228613931 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-04-04 01:55:39.252622454 +0800
++++ src/main/java/net/minecraft/server/World.java	2016-04-04 11:13:55.930654547 +0800
 @@ -15,7 +15,9 @@
  
  // CraftBukkit start
@@ -495,7 +515,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-04-03 23:27:23.309613931 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-04-04 01:55:39.305622454 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-04-04 11:13:56.028654547 +0800
 @@ -669,7 +669,8 @@
                      this.getChunkAt(j, k).b(entity);
                  }
@@ -518,7 +538,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          }
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 --- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-03 23:27:23.448613931 +0800
-+++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-04 01:55:39.398622454 +0800
++++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-04 11:13:56.224654547 +0800
 @@ -8,6 +8,7 @@
  import java.util.HashSet;
  import java.util.List;
@@ -657,7 +677,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/
      }
 diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/hose/ChunkGen_Pool.java
 --- src_origin/main/java/org/hose/ChunkGen_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkGen_Pool.java	2016-04-04 01:55:37.803622453 +0800
++++ src/main/java/org/hose/ChunkGen_Pool.java	2016-04-04 11:13:53.470654545 +0800
 @@ -0,0 +1,58 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -719,7 +739,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/hose/EntityTick_Pool.java
 --- src_origin/main/java/org/hose/EntityTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/EntityTick_Pool.java	2016-04-04 01:55:50.791622465 +0800
++++ src/main/java/org/hose/EntityTick_Pool.java	2016-04-04 11:13:53.380654544 +0800
 @@ -0,0 +1,58 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -781,7 +801,7 @@ diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/PlayerChunkMap_Pool.java src/main/java/org/hose/PlayerChunkMap_Pool.java
 --- src_origin/main/java/org/hose/PlayerChunkMap_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/PlayerChunkMap_Pool.java	2016-04-04 01:55:37.814622453 +0800
++++ src/main/java/org/hose/PlayerChunkMap_Pool.java	2016-04-04 11:13:53.465654545 +0800
 @@ -0,0 +1,66 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -851,7 +871,7 @@ diff -Naur src_origin/main/java/org/hose/PlayerChunkMap_Pool.java src/main/java/
 +}
 diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/hose/TileTick_Pool.java
 --- src_origin/main/java/org/hose/TileTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/TileTick_Pool.java	2016-04-04 01:55:47.282622462 +0800
++++ src/main/java/org/hose/TileTick_Pool.java	2016-04-04 11:13:53.406654544 +0800
 @@ -0,0 +1,58 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -913,7 +933,7 @@ diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-04-03 23:27:20.714613929 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-04-04 01:55:46.161622461 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-04-04 11:13:53.425654544 +0800
 @@ -5,7 +5,8 @@
  public class AsyncCatcher
  {
@@ -926,7 +946,7 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org
      {
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-03 23:27:20.782613929 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-04 01:55:37.870622453 +0800
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-04 11:13:53.473654545 +0800
 @@ -1,11 +1,19 @@
  package org.spigotmc;
  
