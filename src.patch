@@ -1,258 +1,1301 @@
-diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/main/java/net/minecraft/server/BlockRedstoneWire.java
---- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-04-03 23:27:21.334613929 +0800
-+++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-04-17 03:42:14.362951678 +0800
-@@ -9,6 +9,7 @@
- import java.util.Set;
- 
- import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
-+import org.spigotmc.SpigotWorldConfig;
- 
- public class BlockRedstoneWire extends Block {
- 
-@@ -19,7 +20,8 @@
-     public static final BlockStateInteger POWER = BlockStateInteger.of("power", 0, 15);
-     protected static final AxisAlignedBB[] f = new AxisAlignedBB[] { new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D)};
-     private boolean g = true;
--    private final Set<BlockPosition> B = Sets.newHashSet();
-+    //private final Set<BlockPosition> B = Sets.newHashSet();
-+    private final Set<BlockPosition> B = Sets.newConcurrentHashSet();
- 
-     public BlockRedstoneWire() {
-         super(Material.ORIENTABLE);
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
---- src_origin/main/java/net/minecraft/server/Chunk.java	2016-04-03 23:27:21.438613929 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2016-04-17 03:42:14.454951670 +0800
-@@ -15,6 +15,7 @@
- import org.apache.logging.log4j.Logger;
+--- src_origin/main/java/net/minecraft/server/Chunk.java	2016-05-29 15:00:14.024641615 +0800
++++ src/main/java/net/minecraft/server/Chunk.java	2016-05-29 15:02:12.871630723 +0800
+@@ -16,6 +16,8 @@
  
  import com.google.common.collect.Lists; // CraftBukkit
-+import java.util.Queue;
  import org.bukkit.Bukkit; // CraftBukkit
++import org.hose.ChunkPopulate_Pool;
++import org.spigotmc.SpigotWorldConfig;
  
  public class Chunk {
-@@ -32,7 +33,8 @@
-     public final int locZ;
-     private boolean l;
-     public final Map<BlockPosition, TileEntity> tileEntities;
--    public final List<Entity>[] entitySlices; // Spigot
-+    //public final List<Entity>[] entitySlices; // Spigot
-+    public final Queue<Entity>[] entitySlices; // Spigot
-     private boolean done;
-     private boolean lit;
-     private boolean q;
-@@ -81,14 +83,16 @@
-         this.tileEntities = Maps.newHashMap();
-         this.w = 4096;
-         this.x = Queues.newConcurrentLinkedQueue();
--        this.entitySlices = (List[]) (new List[16]); // Spigot
-+        //this.entitySlices = (List[]) (new List[16]); // Spigot
-+        this.entitySlices = (Queue[]) (new ConcurrentLinkedQueue[16]); // Spigot
-         this.world = world;
-         this.locX = i;
-         this.locZ = j;
-         this.heightMap = new int[256];
  
-         for (int k = 0; k < this.entitySlices.length; ++k) {
--            this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
-+            //this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
-+            this.entitySlices[k] = new ConcurrentLinkedQueue(); // Spigot
-         }
- 
-         Arrays.fill(this.g, -999);
-@@ -1260,7 +1264,8 @@
-         return this.tileEntities;
-     }
- 
--    public List<Entity>[] getEntitySlices() {
-+    //public List<Entity>[] getEntitySlices() {
-+    public Queue<Entity>[] getEntitySlices() {
-         return this.entitySlices;
-     }
- 
+@@ -945,9 +947,13 @@
+             if (world != null) {
+                 this.world.populating = true;
+                 try {
++                    //fork join
+                     for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
+-                        populator.populate(world, random, bukkitChunk);
++                        //populator.populate(world, random, bukkitChunk);
++                        ChunkPopulate_Pool task = new ChunkPopulate_Pool(world, random, bukkitChunk, populator);
++                        task.fork();
+                     }
++                    
+                 } finally {
+                     this.world.populating = false;
+                 }
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java src/main/java/net/minecraft/server/ChunkProviderGenerate.java
+--- src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-05-29 15:02:12.864630724 +0800
+@@ -0,0 +1,451 @@
++package net.minecraft.server;
++
++import java.util.List;
++import java.util.Random;
++import javax.annotation.Nullable;
++
++public class ChunkProviderGenerate implements ChunkGenerator {
++
++    protected static final IBlockData a = Blocks.STONE.getBlockData();
++    private final Random i;
++    private final NoiseGeneratorOctaves j;
++    private final NoiseGeneratorOctaves k;
++    private final NoiseGeneratorOctaves l;
++    private final NoiseGenerator3 m;
++    public NoiseGeneratorOctaves b;
++    public NoiseGeneratorOctaves c;
++    public NoiseGeneratorOctaves d;
++    private final World n;
++    private final boolean o;
++    private final WorldType p;
++    private final double[] q;
++    private final float[] r;
++    private CustomWorldSettingsFinal s;
++    private IBlockData t;
++    private double[] u;
++    private final WorldGenBase v;
++    private final WorldGenStronghold w;
++    private final WorldGenVillage x;
++    private final WorldGenMineshaft y;
++    private final WorldGenLargeFeature z;
++    private final WorldGenBase A;
++    private final WorldGenMonument B;
++    private BiomeBase[] C;
++    double[] e;
++    double[] f;
++    double[] g;
++    double[] h;
++
++    public ChunkProviderGenerate(World world, long i, boolean flag, String s) {
++        this.t = Blocks.WATER.getBlockData();
++        this.u = new double[256];
++        this.v = new WorldGenCaves();
++        this.w = new WorldGenStronghold();
++        this.x = new WorldGenVillage();
++        this.y = new WorldGenMineshaft();
++        this.z = new WorldGenLargeFeature();
++        this.A = new WorldGenCanyon();
++        this.B = new WorldGenMonument();
++        this.n = world;
++        this.o = flag;
++        this.p = world.getWorldData().getType();
++        this.i = new Random(i);
++        this.j = new NoiseGeneratorOctaves(this.i, 16);
++        this.k = new NoiseGeneratorOctaves(this.i, 16);
++        this.l = new NoiseGeneratorOctaves(this.i, 8);
++        this.m = new NoiseGenerator3(this.i, 4);
++        this.b = new NoiseGeneratorOctaves(this.i, 10);
++        this.c = new NoiseGeneratorOctaves(this.i, 16);
++        this.d = new NoiseGeneratorOctaves(this.i, 8);
++        this.q = new double[825];
++        this.r = new float[25];
++
++        for (int j = -2; j <= 2; ++j) {
++            for (int k = -2; k <= 2; ++k) {
++                float f = 10.0F / MathHelper.c((float) (j * j + k * k) + 0.2F);
++
++                this.r[j + 2 + (k + 2) * 5] = f;
++            }
++        }
++
++        if (s != null) {
++            this.s = CustomWorldSettingsFinal.CustomWorldSettings.a(s).b();
++            this.t = this.s.E ? Blocks.LAVA.getBlockData() : Blocks.WATER.getBlockData();
++            world.b(this.s.q);
++        }
++
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot) {
++        this.C = this.n.getWorldChunkManager().getBiomes(this.C, i * 4 - 2, j * 4 - 2, 10, 10);
++        this.a(i * 4, 0, j * 4);
++
++        for (int k = 0; k < 4; ++k) {
++            int l = k * 5;
++            int i1 = (k + 1) * 5;
++
++            for (int j1 = 0; j1 < 4; ++j1) {
++                int k1 = (l + j1) * 33;
++                int l1 = (l + j1 + 1) * 33;
++                int i2 = (i1 + j1) * 33;
++                int j2 = (i1 + j1 + 1) * 33;
++
++                for (int k2 = 0; k2 < 32; ++k2) {
++                    double d0 = 0.125D;
++                    double d1 = this.q[k1 + k2];
++                    double d2 = this.q[l1 + k2];
++                    double d3 = this.q[i2 + k2];
++                    double d4 = this.q[j2 + k2];
++                    double d5 = (this.q[k1 + k2 + 1] - d1) * d0;
++                    double d6 = (this.q[l1 + k2 + 1] - d2) * d0;
++                    double d7 = (this.q[i2 + k2 + 1] - d3) * d0;
++                    double d8 = (this.q[j2 + k2 + 1] - d4) * d0;
++
++                    for (int l2 = 0; l2 < 8; ++l2) {
++                        double d9 = 0.25D;
++                        double d10 = d1;
++                        double d11 = d2;
++                        double d12 = (d3 - d1) * d9;
++                        double d13 = (d4 - d2) * d9;
++
++                        for (int i3 = 0; i3 < 4; ++i3) {
++                            double d14 = 0.25D;
++                            double d15 = (d11 - d10) * d14;
++                            double d16 = d10 - d15;
++
++                            for (int j3 = 0; j3 < 4; ++j3) {
++                                if ((d16 += d15) > 0.0D) {
++                                    chunksnapshot.a(k * 4 + i3, k2 * 8 + l2, j1 * 4 + j3, ChunkProviderGenerate.a);
++                                } else if (k2 * 8 + l2 < this.s.q) {
++                                    chunksnapshot.a(k * 4 + i3, k2 * 8 + l2, j1 * 4 + j3, this.t);
++                                }
++                            }
++
++                            d10 += d12;
++                            d11 += d13;
++                        }
++
++                        d1 += d5;
++                        d2 += d6;
++                        d3 += d7;
++                        d4 += d8;
++                    }
++                }
++            }
++        }
++
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot, BiomeBase[] abiomebase) {
++        double d0 = 0.03125D;
++
++        this.u = this.m.a(this.u, (double) (i * 16), (double) (j * 16), 16, 16, d0 * 2.0D, d0 * 2.0D, 1.0D);
++
++        for (int k = 0; k < 16; ++k) {
++            for (int l = 0; l < 16; ++l) {
++                BiomeBase biomebase = abiomebase[l + k * 16];
++
++                biomebase.a(this.n, this.i, chunksnapshot, i * 16 + k, j * 16 + l, this.u[l + k * 16]);
++            }
++        }
++
++    }
++
++    public Chunk getOrCreateChunk(int i, int j) {
++        this.i.setSeed((long) i * 341873128712L + (long) j * 132897987541L);
++        ChunkSnapshot chunksnapshot = new ChunkSnapshot();
++
++        this.a(i, j, chunksnapshot);
++        this.C = this.n.getWorldChunkManager().getBiomeBlock(this.C, i * 16, j * 16, 16, 16);
++        this.a(i, j, chunksnapshot, this.C);
++        if (this.s.r) {
++            this.v.a(this.n, i, j, chunksnapshot);
++        }
++
++        if (this.s.z) {
++            this.A.a(this.n, i, j, chunksnapshot);
++        }
++
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.v) {
++                this.x.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, i, j, chunksnapshot);
++            }
++        }
++
++        Chunk chunk = new Chunk(this.n, chunksnapshot, i, j);
++        byte[] abyte = chunk.getBiomeIndex();
++
++        for (int k = 0; k < abyte.length; ++k) {
++            abyte[k] = (byte) BiomeBase.a(this.C[k]);
++        }
++
++        chunk.initLighting();
++        return chunk;
++    }
++
++    private void a(int i, int j, int k) {
++        this.h = this.c.a(this.h, i, k, 5, 5, (double) this.s.e, (double) this.s.f, (double) this.s.g);
++        float f = this.s.a;
++        float f1 = this.s.b;
++
++        this.e = this.l.a(this.e, i, j, k, 5, 33, 5, (double) (f / this.s.h), (double) (f1 / this.s.i), (double) (f / this.s.j));
++        this.f = this.j.a(this.f, i, j, k, 5, 33, 5, (double) f, (double) f1, (double) f);
++        this.g = this.k.a(this.g, i, j, k, 5, 33, 5, (double) f, (double) f1, (double) f);
++        boolean flag = false;
++        boolean flag1 = false;
++        int l = 0;
++        int i1 = 0;
++
++        for (int j1 = 0; j1 < 5; ++j1) {
++            for (int k1 = 0; k1 < 5; ++k1) {
++                float f2 = 0.0F;
++                float f3 = 0.0F;
++                float f4 = 0.0F;
++                byte b0 = 2;
++                BiomeBase biomebase = this.C[j1 + 2 + (k1 + 2) * 10];
++
++                for (int l1 = -b0; l1 <= b0; ++l1) {
++                    for (int i2 = -b0; i2 <= b0; ++i2) {
++                        BiomeBase biomebase1 = this.C[j1 + l1 + 2 + (k1 + i2 + 2) * 10];
++                        float f5 = this.s.n + biomebase1.j() * this.s.m;
++                        float f6 = this.s.p + biomebase1.m() * this.s.o;
++
++                        if (this.p == WorldType.AMPLIFIED && f5 > 0.0F) {
++                            f5 = 1.0F + f5 * 2.0F;
++                            f6 = 1.0F + f6 * 4.0F;
++                        }
++
++                        float f7 = this.r[l1 + 2 + (i2 + 2) * 5] / (f5 + 2.0F);
++
++                        if (biomebase1.j() > biomebase.j()) {
++                            f7 /= 2.0F;
++                        }
++
++                        f2 += f6 * f7;
++                        f3 += f5 * f7;
++                        f4 += f7;
++                    }
++                }
++
++                f2 /= f4;
++                f3 /= f4;
++                f2 = f2 * 0.9F + 0.1F;
++                f3 = (f3 * 4.0F - 1.0F) / 8.0F;
++                double d0 = this.h[i1] / 8000.0D;
++
++                if (d0 < 0.0D) {
++                    d0 = -d0 * 0.3D;
++                }
++
++                d0 = d0 * 3.0D - 2.0D;
++                if (d0 < 0.0D) {
++                    d0 /= 2.0D;
++                    if (d0 < -1.0D) {
++                        d0 = -1.0D;
++                    }
++
++                    d0 /= 1.4D;
++                    d0 /= 2.0D;
++                } else {
++                    if (d0 > 1.0D) {
++                        d0 = 1.0D;
++                    }
++
++                    d0 /= 8.0D;
++                }
++
++                ++i1;
++                double d1 = (double) f3;
++                double d2 = (double) f2;
++
++                d1 += d0 * 0.2D;
++                d1 = d1 * (double) this.s.k / 8.0D;
++                double d3 = (double) this.s.k + d1 * 4.0D;
++
++                for (int j2 = 0; j2 < 33; ++j2) {
++                    double d4 = ((double) j2 - d3) * (double) this.s.l * 128.0D / 256.0D / d2;
++
++                    if (d4 < 0.0D) {
++                        d4 *= 4.0D;
++                    }
++
++                    double d5 = this.f[l] / (double) this.s.d;
++                    double d6 = this.g[l] / (double) this.s.c;
++                    double d7 = (this.e[l] / 10.0D + 1.0D) / 2.0D;
++                    double d8 = MathHelper.b(d5, d6, d7) - d4;
++
++                    if (j2 > 29) {
++                        double d9 = (double) ((float) (j2 - 29) / 3.0F);
++
++                        d8 = d8 * (1.0D - d9) + -10.0D * d9;
++                    }
++
++                    this.q[l] = d8;
++                    ++l;
++                }
++            }
++        }
++
++    }
++
++    public void recreateStructures(int i, int j) {
++        BlockFalling.instaFall = true;
++        int k = i * 16;
++        int l = j * 16;
++        BlockPosition blockposition = new BlockPosition(k, 0, l);
++        BiomeBase biomebase = this.n.getBiome(blockposition.a(16, 0, 16));
++
++        this.i.setSeed(this.n.getSeed());
++        long i1 = this.i.nextLong() / 2L * 2L + 1L;
++        long j1 = this.i.nextLong() / 2L * 2L + 1L;
++
++        this.i.setSeed((long) i * i1 + (long) j * j1 ^ this.n.getSeed());
++        boolean flag = false;
++        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
++
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.v) {
++                flag = this.x.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, this.i, chunkcoordintpair);
++            }
++        }
++
++        int k1;
++        int l1;
++        int i2;
++
++        if (biomebase != Biomes.d && biomebase != Biomes.s && this.s.A && !flag && this.i.nextInt(this.s.B) == 0) {
++            k1 = this.i.nextInt(16) + 8;
++            l1 = this.i.nextInt(256);
++            i2 = this.i.nextInt(16) + 8;
++            (new WorldGenLakes(Blocks.WATER)).generate(this.n, this.i, blockposition.a(k1, l1, i2));
++        }
++
++        if (!flag && this.i.nextInt(this.s.D / 10) == 0 && this.s.C) {
++            k1 = this.i.nextInt(16) + 8;
++            l1 = this.i.nextInt(this.i.nextInt(248) + 8);
++            i2 = this.i.nextInt(16) + 8;
++            if (l1 < this.n.K() || this.i.nextInt(this.s.D / 8) == 0) {
++                (new WorldGenLakes(Blocks.LAVA)).generate(this.n, this.i, blockposition.a(k1, l1, i2));
++            }
++        }
++
++        if (this.s.s) {
++            for (k1 = 0; k1 < this.s.t; ++k1) {
++                l1 = this.i.nextInt(16) + 8;
++                i2 = this.i.nextInt(256);
++                int j2 = this.i.nextInt(16) + 8;
++
++                (new WorldGenDungeons()).generate(this.n, this.i, blockposition.a(l1, i2, j2));
++            }
++        }
++
++        biomebase.a(this.n, this.i, new BlockPosition(k, 0, l));
++        SpawnerCreature.a(this.n, biomebase, k + 8, l + 8, 16, 16, this.i);
++        blockposition = blockposition.a(8, 0, 8);
++
++        for (k1 = 0; k1 < 16; ++k1) {
++            for (l1 = 0; l1 < 16; ++l1) {
++                BlockPosition blockposition1 = this.n.p(blockposition.a(k1, 0, l1));
++                BlockPosition blockposition2 = blockposition1.down();
++
++                if (this.n.u(blockposition2)) {
++                    this.n.setTypeAndData(blockposition2, Blocks.ICE.getBlockData(), 2);
++                }
++
++                if (this.n.f(blockposition1, true)) {
++                    this.n.setTypeAndData(blockposition1, Blocks.SNOW_LAYER.getBlockData(), 2);
++                }
++            }
++        }
++
++        BlockFalling.instaFall = false;
++    }
++
++    public boolean a(Chunk chunk, int i, int j) {
++        boolean flag = false;
++
++        if (this.s.y && this.o && chunk.x() < 3600L) {
++            flag |= this.B.a(this.n, this.i, new ChunkCoordIntPair(i, j));
++        }
++
++        return flag;
++    }
++
++    public List<BiomeBase.BiomeMeta> getMobsFor(EnumCreatureType enumcreaturetype, BlockPosition blockposition) {
++        BiomeBase biomebase = this.n.getBiome(blockposition);
++
++        if (this.o) {
++            if (enumcreaturetype == EnumCreatureType.MONSTER && this.z.a(blockposition)) {
++                return this.z.b();
++            }
++
++            if (enumcreaturetype == EnumCreatureType.MONSTER && this.s.y && this.B.b(this.n, blockposition)) {
++                return this.B.b();
++            }
++        }
++
++        return biomebase.getMobs(enumcreaturetype);
++    }
++
++    @Nullable
++    public BlockPosition findNearestMapFeature(World world, String s, BlockPosition blockposition) {
++        return "Stronghold".equals(s) && this.w != null ? this.w.getNearestGeneratedFeature(world, blockposition) : null;
++    }
++
++    public void recreateStructures(Chunk chunk, int i, int j) {
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.v) {
++                this.x.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++        }
++
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderHell.java src/main/java/net/minecraft/server/ChunkProviderHell.java
+--- src_origin/main/java/net/minecraft/server/ChunkProviderHell.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderHell.java	2016-05-29 15:02:12.858630724 +0800
+@@ -0,0 +1,371 @@
++package net.minecraft.server;
++
++import java.util.List;
++import java.util.Random;
++import javax.annotation.Nullable;
++
++public class ChunkProviderHell implements ChunkGenerator {
++
++    protected static final IBlockData a = Blocks.AIR.getBlockData();
++    protected static final IBlockData b = Blocks.NETHERRACK.getBlockData();
++    protected static final IBlockData c = Blocks.BEDROCK.getBlockData();
++    protected static final IBlockData d = Blocks.LAVA.getBlockData();
++    protected static final IBlockData e = Blocks.GRAVEL.getBlockData();
++    protected static final IBlockData f = Blocks.SOUL_SAND.getBlockData();
++    private final World n;
++    private final boolean o;
++    private final Random p;
++    private double[] q = new double[256];
++    private double[] r = new double[256];
++    private double[] s = new double[256];
++    private double[] t;
++    private final NoiseGeneratorOctaves u;
++    private final NoiseGeneratorOctaves v;
++    private final NoiseGeneratorOctaves w;
++    private final NoiseGeneratorOctaves x;
++    private final NoiseGeneratorOctaves y;
++    public final NoiseGeneratorOctaves g;
++    public final NoiseGeneratorOctaves h;
++    private final WorldGenFire z = new WorldGenFire();
++    private final WorldGenLightStone1 A = new WorldGenLightStone1();
++    private final WorldGenLightStone2 B = new WorldGenLightStone2();
++    private final WorldGenerator C;
++    private final WorldGenHellLava D;
++    private final WorldGenHellLava E;
++    private final WorldGenMushrooms F;
++    private final WorldGenMushrooms G;
++    private final WorldGenNether H;
++    private final WorldGenBase I;
++    double[] i;
++    double[] j;
++    double[] k;
++    double[] l;
++    double[] m;
++
++    public ChunkProviderHell(World world, boolean flag, long i) {
++        this.C = new WorldGenMinable(Blocks.QUARTZ_ORE.getBlockData(), 14, BlockPredicate.a(Blocks.NETHERRACK));
++        this.D = new WorldGenHellLava(Blocks.FLOWING_LAVA, true);
++        this.E = new WorldGenHellLava(Blocks.FLOWING_LAVA, false);
++        this.F = new WorldGenMushrooms(Blocks.BROWN_MUSHROOM);
++        this.G = new WorldGenMushrooms(Blocks.RED_MUSHROOM);
++        this.H = new WorldGenNether();
++        this.I = new WorldGenCavesHell();
++        this.n = world;
++        this.o = flag;
++        this.p = new Random(i);
++        this.u = new NoiseGeneratorOctaves(this.p, 16);
++        this.v = new NoiseGeneratorOctaves(this.p, 16);
++        this.w = new NoiseGeneratorOctaves(this.p, 8);
++        this.x = new NoiseGeneratorOctaves(this.p, 4);
++        this.y = new NoiseGeneratorOctaves(this.p, 4);
++        this.g = new NoiseGeneratorOctaves(this.p, 10);
++        this.h = new NoiseGeneratorOctaves(this.p, 16);
++        world.b(63);
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot) {
++        byte b0 = 4;
++        int k = this.n.K() / 2 + 1;
++        int l = b0 + 1;
++        byte b1 = 17;
++        int i1 = b0 + 1;
++
++        this.t = this.a(this.t, i * b0, 0, j * b0, l, b1, i1);
++
++        for (int j1 = 0; j1 < b0; ++j1) {
++            for (int k1 = 0; k1 < b0; ++k1) {
++                for (int l1 = 0; l1 < 16; ++l1) {
++                    double d0 = 0.125D;
++                    double d1 = this.t[((j1 + 0) * i1 + k1 + 0) * b1 + l1 + 0];
++                    double d2 = this.t[((j1 + 0) * i1 + k1 + 1) * b1 + l1 + 0];
++                    double d3 = this.t[((j1 + 1) * i1 + k1 + 0) * b1 + l1 + 0];
++                    double d4 = this.t[((j1 + 1) * i1 + k1 + 1) * b1 + l1 + 0];
++                    double d5 = (this.t[((j1 + 0) * i1 + k1 + 0) * b1 + l1 + 1] - d1) * d0;
++                    double d6 = (this.t[((j1 + 0) * i1 + k1 + 1) * b1 + l1 + 1] - d2) * d0;
++                    double d7 = (this.t[((j1 + 1) * i1 + k1 + 0) * b1 + l1 + 1] - d3) * d0;
++                    double d8 = (this.t[((j1 + 1) * i1 + k1 + 1) * b1 + l1 + 1] - d4) * d0;
++
++                    for (int i2 = 0; i2 < 8; ++i2) {
++                        double d9 = 0.25D;
++                        double d10 = d1;
++                        double d11 = d2;
++                        double d12 = (d3 - d1) * d9;
++                        double d13 = (d4 - d2) * d9;
++
++                        for (int j2 = 0; j2 < 4; ++j2) {
++                            double d14 = 0.25D;
++                            double d15 = d10;
++                            double d16 = (d11 - d10) * d14;
++
++                            for (int k2 = 0; k2 < 4; ++k2) {
++                                IBlockData iblockdata = null;
++
++                                if (l1 * 8 + i2 < k) {
++                                    iblockdata = ChunkProviderHell.d;
++                                }
++
++                                if (d15 > 0.0D) {
++                                    iblockdata = ChunkProviderHell.b;
++                                }
++
++                                int l2 = j2 + j1 * 4;
++                                int i3 = i2 + l1 * 8;
++                                int j3 = k2 + k1 * 4;
++
++                                chunksnapshot.a(l2, i3, j3, iblockdata);
++                                d15 += d16;
++                            }
++
++                            d10 += d12;
++                            d11 += d13;
++                        }
++
++                        d1 += d5;
++                        d2 += d6;
++                        d3 += d7;
++                        d4 += d8;
++                    }
++                }
++            }
++        }
++
++    }
++
++    public void b(int i, int j, ChunkSnapshot chunksnapshot) {
++        int k = this.n.K() + 1;
++        double d0 = 0.03125D;
++
++        this.q = this.x.a(this.q, i * 16, j * 16, 0, 16, 16, 1, d0, d0, 1.0D);
++        this.r = this.x.a(this.r, i * 16, 109, j * 16, 16, 1, 16, d0, 1.0D, d0);
++        this.s = this.y.a(this.s, i * 16, j * 16, 0, 16, 16, 1, d0 * 2.0D, d0 * 2.0D, d0 * 2.0D);
++
++        for (int l = 0; l < 16; ++l) {
++            for (int i1 = 0; i1 < 16; ++i1) {
++                boolean flag = this.q[l + i1 * 16] + this.p.nextDouble() * 0.2D > 0.0D;
++                boolean flag1 = this.r[l + i1 * 16] + this.p.nextDouble() * 0.2D > 0.0D;
++                int j1 = (int) (this.s[l + i1 * 16] / 3.0D + 3.0D + this.p.nextDouble() * 0.25D);
++                int k1 = -1;
++                IBlockData iblockdata = ChunkProviderHell.b;
++                IBlockData iblockdata1 = ChunkProviderHell.b;
++
++                for (int l1 = 127; l1 >= 0; --l1) {
++                    if (l1 < 127 - this.p.nextInt(5) && l1 > this.p.nextInt(5)) {
++                        IBlockData iblockdata2 = chunksnapshot.a(i1, l1, l);
++
++                        if (iblockdata2.getBlock() != null && iblockdata2.getMaterial() != Material.AIR) {
++                            if (iblockdata2.getBlock() == Blocks.NETHERRACK) {
++                                if (k1 == -1) {
++                                    if (j1 <= 0) {
++                                        iblockdata = ChunkProviderHell.a;
++                                        iblockdata1 = ChunkProviderHell.b;
++                                    } else if (l1 >= k - 4 && l1 <= k + 1) {
++                                        iblockdata = ChunkProviderHell.b;
++                                        iblockdata1 = ChunkProviderHell.b;
++                                        if (flag1) {
++                                            iblockdata = ChunkProviderHell.e;
++                                            iblockdata1 = ChunkProviderHell.b;
++                                        }
++
++                                        if (flag) {
++                                            iblockdata = ChunkProviderHell.f;
++                                            iblockdata1 = ChunkProviderHell.f;
++                                        }
++                                    }
++
++                                    if (l1 < k && (iblockdata == null || iblockdata.getMaterial() == Material.AIR)) {
++                                        iblockdata = ChunkProviderHell.d;
++                                    }
++
++                                    k1 = j1;
++                                    if (l1 >= k - 1) {
++                                        chunksnapshot.a(i1, l1, l, iblockdata);
++                                    } else {
++                                        chunksnapshot.a(i1, l1, l, iblockdata1);
++                                    }
++                                } else if (k1 > 0) {
++                                    --k1;
++                                    chunksnapshot.a(i1, l1, l, iblockdata1);
++                                }
++                            }
++                        } else {
++                            k1 = -1;
++                        }
++                    } else {
++                        chunksnapshot.a(i1, l1, l, ChunkProviderHell.c);
++                    }
++                }
++            }
++        }
++
++    }
++
++    public Chunk getOrCreateChunk(int i, int j) {
++        this.p.setSeed((long) i * 341873128712L + (long) j * 132897987541L);
++        ChunkSnapshot chunksnapshot = new ChunkSnapshot();
++
++        this.a(i, j, chunksnapshot);
++        this.b(i, j, chunksnapshot);
++        this.I.a(this.n, i, j, chunksnapshot);
++        if (this.o) {
++            this.H.a(this.n, i, j, chunksnapshot);
++        }
++
++        Chunk chunk = new Chunk(this.n, chunksnapshot, i, j);
++        BiomeBase[] abiomebase = this.n.getWorldChunkManager().getBiomeBlock((BiomeBase[]) null, i * 16, j * 16, 16, 16);
++        byte[] abyte = chunk.getBiomeIndex();
++
++        for (int k = 0; k < abyte.length; ++k) {
++            abyte[k] = (byte) BiomeBase.a(abiomebase[k]);
++        }
++
++        chunk.m();
++        return chunk;
++    }
++
++    private double[] a(double[] adouble, int i, int j, int k, int l, int i1, int j1) {
++        if (adouble == null) {
++            adouble = new double[l * i1 * j1];
++        }
++
++        double d0 = 684.412D;
++        double d1 = 2053.236D;
++
++        this.l = this.g.a(this.l, i, j, k, l, 1, j1, 1.0D, 0.0D, 1.0D);
++        this.m = this.h.a(this.m, i, j, k, l, 1, j1, 100.0D, 0.0D, 100.0D);
++        this.i = this.w.a(this.i, i, j, k, l, i1, j1, d0 / 80.0D, d1 / 60.0D, d0 / 80.0D);
++        this.j = this.u.a(this.j, i, j, k, l, i1, j1, d0, d1, d0);
++        this.k = this.v.a(this.k, i, j, k, l, i1, j1, d0, d1, d0);
++        int k1 = 0;
++        double[] adouble1 = new double[i1];
++
++        int l1;
++
++        for (l1 = 0; l1 < i1; ++l1) {
++            adouble1[l1] = Math.cos((double) l1 * 3.141592653589793D * 6.0D / (double) i1) * 2.0D;
++            double d2 = (double) l1;
++
++            if (l1 > i1 / 2) {
++                d2 = (double) (i1 - 1 - l1);
++            }
++
++            if (d2 < 4.0D) {
++                d2 = 4.0D - d2;
++                adouble1[l1] -= d2 * d2 * d2 * 10.0D;
++            }
++        }
++
++        for (l1 = 0; l1 < l; ++l1) {
++            for (int i2 = 0; i2 < j1; ++i2) {
++                double d3 = 0.0D;
++
++                for (int j2 = 0; j2 < i1; ++j2) {
++                    double d4 = 0.0D;
++                    double d5 = adouble1[j2];
++                    double d6 = this.j[k1] / 512.0D;
++                    double d7 = this.k[k1] / 512.0D;
++                    double d8 = (this.i[k1] / 10.0D + 1.0D) / 2.0D;
++
++                    if (d8 < 0.0D) {
++                        d4 = d6;
++                    } else if (d8 > 1.0D) {
++                        d4 = d7;
++                    } else {
++                        d4 = d6 + (d7 - d6) * d8;
++                    }
++
++                    d4 -= d5;
++                    double d9;
++
++                    if (j2 > i1 - 4) {
++                        d9 = (double) ((float) (j2 - (i1 - 4)) / 3.0F);
++                        d4 = d4 * (1.0D - d9) + -10.0D * d9;
++                    }
++
++                    if ((double) j2 < d3) {
++                        d9 = (d3 - (double) j2) / 4.0D;
++                        d9 = MathHelper.a(d9, 0.0D, 1.0D);
++                        d4 = d4 * (1.0D - d9) + -10.0D * d9;
++                    }
++
++                    adouble[k1] = d4;
++                    ++k1;
++                }
++            }
++        }
++
++        return adouble;
++    }
++
++    public void recreateStructures(int i, int j) {
++        BlockFalling.instaFall = true;
++        BlockPosition blockposition = new BlockPosition(i * 16, 0, j * 16);
++        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
++
++        this.H.a(this.n, this.p, chunkcoordintpair);
++
++        int k;
++
++        for (k = 0; k < 8; ++k) {
++            this.E.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(120) + 4, this.p.nextInt(16) + 8));
++        }
++
++        for (k = 0; k < this.p.nextInt(this.p.nextInt(10) + 1) + 1; ++k) {
++            this.z.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(120) + 4, this.p.nextInt(16) + 8));
++        }
++
++        for (k = 0; k < this.p.nextInt(this.p.nextInt(10) + 1); ++k) {
++            this.A.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(120) + 4, this.p.nextInt(16) + 8));
++        }
++
++        for (k = 0; k < 10; ++k) {
++            this.B.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(128), this.p.nextInt(16) + 8));
++        }
++
++        if (this.p.nextBoolean()) {
++            this.F.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(128), this.p.nextInt(16) + 8));
++        }
++
++        if (this.p.nextBoolean()) {
++            this.G.generate(this.n, this.p, blockposition.a(this.p.nextInt(16) + 8, this.p.nextInt(128), this.p.nextInt(16) + 8));
++        }
++
++        for (k = 0; k < 16; ++k) {
++            this.C.generate(this.n, this.p, blockposition.a(this.p.nextInt(16), this.p.nextInt(108) + 10, this.p.nextInt(16)));
++        }
++
++        for (k = 0; k < 16; ++k) {
++            this.D.generate(this.n, this.p, blockposition.a(this.p.nextInt(16), this.p.nextInt(108) + 10, this.p.nextInt(16)));
++        }
++
++        BlockFalling.instaFall = false;
++    }
++
++    public boolean a(Chunk chunk, int i, int j) {
++        return false;
++    }
++
++    public List<BiomeBase.BiomeMeta> getMobsFor(EnumCreatureType enumcreaturetype, BlockPosition blockposition) {
++        if (enumcreaturetype == EnumCreatureType.MONSTER) {
++            if (this.H.b(blockposition)) {
++                return this.H.b();
++            }
++
++            if (this.H.b(this.n, blockposition) && this.n.getType(blockposition.down()).getBlock() == Blocks.NETHER_BRICK) {
++                return this.H.b();
++            }
++        }
++
++        BiomeBase biomebase = this.n.getBiome(blockposition);
++
++        return biomebase.getMobs(enumcreaturetype);
++    }
++
++    @Nullable
++    public BlockPosition findNearestMapFeature(World world, String s, BlockPosition blockposition) {
++        return null;
++    }
++
++    public void recreateStructures(Chunk chunk, int i, int j) {
++        this.H.a(this.n, i, j, (ChunkSnapshot) null);
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
---- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-04-03 23:27:21.447613929 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-04-17 03:42:14.441951671 +0800
-@@ -3,6 +3,8 @@
- import java.io.IOException;
- import java.util.Iterator;
- import java.util.List;
-+import java.util.Map;
-+import java.util.concurrent.ConcurrentHashMap;
- 
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
-@@ -13,7 +15,7 @@
- import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
- import org.bukkit.craftbukkit.util.LongHash;
- import org.bukkit.craftbukkit.util.LongHashSet;
--import org.bukkit.craftbukkit.util.LongObjectHashMap;
-+//import org.bukkit.craftbukkit.util.LongObjectHashMap;
- import org.bukkit.event.world.ChunkUnloadEvent;
- // CraftBukkit end
- 
-@@ -23,7 +25,8 @@
-     public final LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
-     public final ChunkGenerator chunkGenerator; // CraftBukkit - public
-     private final IChunkLoader chunkLoader;
--    public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>(); // CraftBukkit
-+    //public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>(); // CraftBukkit
-+    public Map<Long, Chunk> chunks = new ConcurrentHashMap<Long, Chunk>(); // CraftBukkit
-     // private final LongHashMap<Chunk> chunks = new LongHashMap();
-     // private final List<Chunk> chunkList = Lists.newArrayList();
-     public final WorldServer world;
-@@ -118,7 +121,7 @@
-         return getChunkAt(i, j, null);
-     }
- 
--    public Chunk getChunkAt(int i, int j, Runnable runnable) {
-+    synchronized public Chunk getChunkAt(int i, int j, Runnable runnable) {
-         unloadQueue.remove(i, j);
-         Chunk chunk = chunks.get(LongHash.toLong(i, j));
-         ChunkRegionLoader loader = null;
-diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
---- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-04-03 23:27:22.056613930 +0800
-+++ src/main/java/net/minecraft/server/EntityLiving.java	2016-04-17 03:42:14.934951626 +0800
-@@ -13,6 +13,7 @@
- import java.util.ArrayList;
- import com.google.common.base.Function;
- import com.google.common.collect.Lists;
-+import java.util.concurrent.FutureTask;
- import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
- import org.bukkit.craftbukkit.event.CraftEventFactory;
- import org.bukkit.craftbukkit.inventory.CraftItemStack;
-@@ -2003,6 +2004,8 @@
- 
-     protected void C(Entity entity) {
-         entity.collide(this);
-+        /*SpigotWorldConfig.CollideTask = new FutureTask(new Collide_Pool(this, entity));
-+        SpigotWorldConfig.collidepool_executor.submit(SpigotWorldConfig.CollideTask);*/
-     }
- 
-     public void stopRiding() {
-diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/java/net/minecraft/server/EntityPlayer.java
---- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2016-04-03 23:27:22.123613930 +0800
-+++ src/main/java/net/minecraft/server/EntityPlayer.java	2016-04-17 03:42:14.996951620 +0800
-@@ -1,13 +1,18 @@
- package net.minecraft.server;
- 
- import com.google.common.collect.Lists;
-+import com.google.common.collect.Queues;
- import com.google.common.collect.Sets;
- import com.mojang.authlib.GameProfile;
- import io.netty.buffer.Unpooled;
- import java.util.Collection;
-+import java.util.Collections;
- import java.util.HashSet;
- import java.util.Iterator;
- import java.util.List;
-+import java.util.Queue;
-+import java.util.concurrent.ConcurrentLinkedDeque;
-+import java.util.concurrent.ConcurrentLinkedQueue;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
- 
-@@ -31,7 +36,7 @@
-     public final PlayerInteractManager playerInteractManager;
-     public double d;
-     public double e;
--    public final List<Integer> removeQueue = Lists.newLinkedList();
-+    public final List<Integer> removeQueue = Collections.synchronizedList(Lists.newLinkedList());
-     private final ServerStatisticManager bT;
-     private float bU = Float.MIN_VALUE;
-     private int bV = Integer.MIN_VALUE;
-@@ -1033,9 +1038,6 @@
-         if ("@".equals(s)) {
-             return getBukkitEntity().hasPermission("minecraft.command.selector");
-         }
--        if ("".equals(s)) {
--            return getBukkitEntity().isOp();
--        }
-         return true;
-         // CraftBukkit end
-     }
-diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src/main/java/net/minecraft/server/EntityTrackerEntry.java
---- src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-04-03 23:27:22.299613930 +0800
-+++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2016-04-17 03:42:15.120951608 +0800
-@@ -41,7 +41,8 @@
-     private boolean x;
-     private boolean y;
-     public boolean b;
--    public Set<EntityPlayer> trackedPlayers = Sets.newHashSet();
-+    //public Set<EntityPlayer> trackedPlayers = Sets.newHashSet();
-+    public Set<EntityPlayer> trackedPlayers = Sets.newConcurrentHashSet();
- 
-     public EntityTrackerEntry(Entity entity, int i, int j, int k, boolean flag) {
-         this.tracker = entity;
-diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
---- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-04-03 23:27:22.293613930 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2016-04-17 03:42:15.097951611 +0800
-@@ -1,9 +1,11 @@
+--- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-05-29 15:00:14.015641616 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-05-29 15:02:12.877630722 +0800
+@@ -1,6 +1,7 @@
  package net.minecraft.server;
  
  import com.google.common.collect.Lists;
 +import com.google.common.collect.Maps;
  import com.google.common.collect.Sets;
- import java.util.ArrayList;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+@@ -10,6 +11,7 @@
  import java.util.Iterator;
-+import java.util.Map;
+ import java.util.List;
  import java.util.Set;
- import java.util.concurrent.Callable;
++import java.util.concurrent.ConcurrentMap;
+ import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
-@@ -13,8 +15,10 @@
+ import org.apache.logging.log4j.Logger;
+@@ -27,6 +29,8 @@
+     public final ChunkGenerator chunkGenerator;
+     private final IChunkLoader chunkLoader;
+     public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
++    //need to paste some copies according to cpu-cores and read from them
++    public ConcurrentMap<Long2ObjectMap<Chunk>, Boolean> chunks_clus = Maps.newConcurrentMap();
+     public final WorldServer world;
  
-     private static final Logger a = LogManager.getLogger();
-     private final WorldServer world;
--    private Set<EntityTrackerEntry> c = Sets.newHashSet();
--    public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
-+    //private Set<EntityTrackerEntry> c = Sets.newHashSet();
-+    private Set<EntityTrackerEntry> c = Sets.newConcurrentHashSet();
-+    //public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
-+    public Map<Integer, EntityTrackerEntry> trackedEntities = Maps.newConcurrentMap();
-     private int e;
- 
-     public EntityTracker(WorldServer worldserver) {
-@@ -105,14 +109,16 @@
-         org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
-         i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
-         try {
--            if (this.trackedEntities.b(entity.getId())) {
-+            //if (this.trackedEntities.b(entity.getId())) {
-+            if (this.trackedEntities.containsKey(entity.getId())) {
-                 throw new IllegalStateException("Entity is already tracked!");
-             }
- 
-             EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, this.e, j, flag);
- 
-             this.c.add(entitytrackerentry);
--            this.trackedEntities.a(entity.getId(), entitytrackerentry);
-+            //this.trackedEntities.a(entity.getId(), entitytrackerentry);
-+            this.trackedEntities.put(entity.getId(), entitytrackerentry);
-             entitytrackerentry.scanPlayers(this.world.players);
-         } catch (Throwable throwable) {
-             CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
-@@ -160,7 +166,9 @@
-             }
-         }
- 
--        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
-+        //EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
-+        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.get(entity.getId());
-+        this.trackedEntities.remove(entity.getId());
- 
-         if (entitytrackerentry1 != null) {
-             this.c.remove(entitytrackerentry1);
-diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
---- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-04-03 23:27:22.612613930 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-04-17 03:42:15.420951581 +0800
-@@ -2,7 +2,6 @@
- 
- import com.google.common.base.Charsets;
+     public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderTheEnd.java src/main/java/net/minecraft/server/ChunkProviderTheEnd.java
+--- src_origin/main/java/net/minecraft/server/ChunkProviderTheEnd.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderTheEnd.java	2016-05-29 15:02:12.881630722 +0800
+@@ -0,0 +1,326 @@
++package net.minecraft.server;
++
++import java.util.List;
++import java.util.Random;
++import javax.annotation.Nullable;
++
++public class ChunkProviderTheEnd implements ChunkGenerator {
++
++    private Random h;
++    protected static final IBlockData a = Blocks.END_STONE.getBlockData();
++    protected static final IBlockData b = Blocks.AIR.getBlockData();
++    private final NoiseGeneratorOctaves i;
++    private final NoiseGeneratorOctaves j;
++    private final NoiseGeneratorOctaves k;
++    public NoiseGeneratorOctaves c;
++    public NoiseGeneratorOctaves d;
++    private final World l;
++    private final boolean m;
++    private final WorldGenEndCity n = new WorldGenEndCity(this);
++    private final NoiseGenerator3Handler o;
++    private double[] p;
++    private BiomeBase[] q;
++    double[] e;
++    double[] f;
++    double[] g;
++    private final WorldGenEndIsland r = new WorldGenEndIsland();
++
++    public ChunkProviderTheEnd(World world, boolean flag, long i) {
++        this.l = world;
++        this.m = flag;
++        this.h = new Random(i);
++        this.i = new NoiseGeneratorOctaves(this.h, 16);
++        this.j = new NoiseGeneratorOctaves(this.h, 16);
++        this.k = new NoiseGeneratorOctaves(this.h, 8);
++        this.c = new NoiseGeneratorOctaves(this.h, 10);
++        this.d = new NoiseGeneratorOctaves(this.h, 16);
++        this.o = new NoiseGenerator3Handler(this.h);
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot) {
++        byte b0 = 2;
++        int k = b0 + 1;
++        byte b1 = 33;
++        int l = b0 + 1;
++
++        this.p = this.a(this.p, i * b0, 0, j * b0, k, b1, l);
++
++        for (int i1 = 0; i1 < b0; ++i1) {
++            for (int j1 = 0; j1 < b0; ++j1) {
++                for (int k1 = 0; k1 < 32; ++k1) {
++                    double d0 = 0.25D;
++                    double d1 = this.p[((i1 + 0) * l + j1 + 0) * b1 + k1 + 0];
++                    double d2 = this.p[((i1 + 0) * l + j1 + 1) * b1 + k1 + 0];
++                    double d3 = this.p[((i1 + 1) * l + j1 + 0) * b1 + k1 + 0];
++                    double d4 = this.p[((i1 + 1) * l + j1 + 1) * b1 + k1 + 0];
++                    double d5 = (this.p[((i1 + 0) * l + j1 + 0) * b1 + k1 + 1] - d1) * d0;
++                    double d6 = (this.p[((i1 + 0) * l + j1 + 1) * b1 + k1 + 1] - d2) * d0;
++                    double d7 = (this.p[((i1 + 1) * l + j1 + 0) * b1 + k1 + 1] - d3) * d0;
++                    double d8 = (this.p[((i1 + 1) * l + j1 + 1) * b1 + k1 + 1] - d4) * d0;
++
++                    for (int l1 = 0; l1 < 4; ++l1) {
++                        double d9 = 0.125D;
++                        double d10 = d1;
++                        double d11 = d2;
++                        double d12 = (d3 - d1) * d9;
++                        double d13 = (d4 - d2) * d9;
++
++                        for (int i2 = 0; i2 < 8; ++i2) {
++                            double d14 = 0.125D;
++                            double d15 = d10;
++                            double d16 = (d11 - d10) * d14;
++
++                            for (int j2 = 0; j2 < 8; ++j2) {
++                                IBlockData iblockdata = ChunkProviderTheEnd.b;
++
++                                if (d15 > 0.0D) {
++                                    iblockdata = ChunkProviderTheEnd.a;
++                                }
++
++                                int k2 = i2 + i1 * 8;
++                                int l2 = l1 + k1 * 4;
++                                int i3 = j2 + j1 * 8;
++
++                                chunksnapshot.a(k2, l2, i3, iblockdata);
++                                d15 += d16;
++                            }
++
++                            d10 += d12;
++                            d11 += d13;
++                        }
++
++                        d1 += d5;
++                        d2 += d6;
++                        d3 += d7;
++                        d4 += d8;
++                    }
++                }
++            }
++        }
++
++    }
++
++    public void a(ChunkSnapshot chunksnapshot) {
++        for (int i = 0; i < 16; ++i) {
++            for (int j = 0; j < 16; ++j) {
++                byte b0 = 1;
++                int k = -1;
++                IBlockData iblockdata = ChunkProviderTheEnd.a;
++                IBlockData iblockdata1 = ChunkProviderTheEnd.a;
++
++                for (int l = 127; l >= 0; --l) {
++                    IBlockData iblockdata2 = chunksnapshot.a(i, l, j);
++
++                    if (iblockdata2.getMaterial() == Material.AIR) {
++                        k = -1;
++                    } else if (iblockdata2.getBlock() == Blocks.STONE) {
++                        if (k == -1) {
++                            if (b0 <= 0) {
++                                iblockdata = ChunkProviderTheEnd.b;
++                                iblockdata1 = ChunkProviderTheEnd.a;
++                            }
++
++                            k = b0;
++                            if (l >= 0) {
++                                chunksnapshot.a(i, l, j, iblockdata);
++                            } else {
++                                chunksnapshot.a(i, l, j, iblockdata1);
++                            }
++                        } else if (k > 0) {
++                            --k;
++                            chunksnapshot.a(i, l, j, iblockdata1);
++                        }
++                    }
++                }
++            }
++        }
++
++    }
++
++    public Chunk getOrCreateChunk(int i, int j) {
++        this.h.setSeed((long) i * 341873128712L + (long) j * 132897987541L);
++        ChunkSnapshot chunksnapshot = new ChunkSnapshot();
++
++        this.q = this.l.getWorldChunkManager().getBiomeBlock(this.q, i * 16, j * 16, 16, 16);
++        this.a(i, j, chunksnapshot);
++        this.a(chunksnapshot);
++        if (this.m) {
++            this.n.a(this.l, i, j, chunksnapshot);
++        }
++
++        Chunk chunk = new Chunk(this.l, chunksnapshot, i, j);
++        byte[] abyte = chunk.getBiomeIndex();
++
++        for (int k = 0; k < abyte.length; ++k) {
++            abyte[k] = (byte) BiomeBase.a(this.q[k]);
++        }
++
++        chunk.initLighting();
++        return chunk;
++    }
++
++    private float a(int i, int j, int k, int l) {
++        float f = (float) (i * 2 + k);
++        float f1 = (float) (j * 2 + l);
++        float f2 = 100.0F - MathHelper.c(f * f + f1 * f1) * 8.0F;
++
++        if (f2 > 80.0F) {
++            f2 = 80.0F;
++        }
++
++        if (f2 < -100.0F) {
++            f2 = -100.0F;
++        }
++
++        for (int i1 = -12; i1 <= 12; ++i1) {
++            for (int j1 = -12; j1 <= 12; ++j1) {
++                long k1 = (long) (i + i1);
++                long l1 = (long) (j + j1);
++
++                if (k1 * k1 + l1 * l1 > 4096L && this.o.a((double) k1, (double) l1) < -0.8999999761581421D) {
++                    float f3 = (MathHelper.e((float) k1) * 3439.0F + MathHelper.e((float) l1) * 147.0F) % 13.0F + 9.0F;
++
++                    f = (float) (k - i1 * 2);
++                    f1 = (float) (l - j1 * 2);
++                    float f4 = 100.0F - MathHelper.c(f * f + f1 * f1) * f3;
++
++                    if (f4 > 80.0F) {
++                        f4 = 80.0F;
++                    }
++
++                    if (f4 < -100.0F) {
++                        f4 = -100.0F;
++                    }
++
++                    if (f4 > f2) {
++                        f2 = f4;
++                    }
++                }
++            }
++        }
++
++        return f2;
++    }
++
++    public boolean c(int i, int j) {
++        return (long) i * (long) i + (long) j * (long) j > 4096L && this.a(i, j, 1, 1) >= 0.0F;
++    }
++
++    private double[] a(double[] adouble, int i, int j, int k, int l, int i1, int j1) {
++        if (adouble == null) {
++            adouble = new double[l * i1 * j1];
++        }
++
++        double d0 = 684.412D;
++        double d1 = 684.412D;
++
++        d0 *= 2.0D;
++        this.e = this.k.a(this.e, i, j, k, l, i1, j1, d0 / 80.0D, d1 / 160.0D, d0 / 80.0D);
++        this.f = this.i.a(this.f, i, j, k, l, i1, j1, d0, d1, d0);
++        this.g = this.j.a(this.g, i, j, k, l, i1, j1, d0, d1, d0);
++        int k1 = i / 2;
++        int l1 = k / 2;
++        int i2 = 0;
++
++        for (int j2 = 0; j2 < l; ++j2) {
++            for (int k2 = 0; k2 < j1; ++k2) {
++                float f = this.a(k1, l1, j2, k2);
++
++                for (int l2 = 0; l2 < i1; ++l2) {
++                    double d2 = 0.0D;
++                    double d3 = this.f[i2] / 512.0D;
++                    double d4 = this.g[i2] / 512.0D;
++                    double d5 = (this.e[i2] / 10.0D + 1.0D) / 2.0D;
++
++                    if (d5 < 0.0D) {
++                        d2 = d3;
++                    } else if (d5 > 1.0D) {
++                        d2 = d4;
++                    } else {
++                        d2 = d3 + (d4 - d3) * d5;
++                    }
++
++                    d2 -= 8.0D;
++                    d2 += (double) f;
++                    byte b0 = 2;
++                    double d6;
++
++                    if (l2 > i1 / 2 - b0) {
++                        d6 = (double) ((float) (l2 - (i1 / 2 - b0)) / 64.0F);
++                        d6 = MathHelper.a(d6, 0.0D, 1.0D);
++                        d2 = d2 * (1.0D - d6) + -3000.0D * d6;
++                    }
++
++                    b0 = 8;
++                    if (l2 < b0) {
++                        d6 = (double) ((float) (b0 - l2) / ((float) b0 - 1.0F));
++                        d2 = d2 * (1.0D - d6) + -30.0D * d6;
++                    }
++
++                    adouble[i2] = d2;
++                    ++i2;
++                }
++            }
++        }
++
++        return adouble;
++    }
++
++    public void recreateStructures(int i, int j) {
++        BlockFalling.instaFall = true;
++        BlockPosition blockposition = new BlockPosition(i * 16, 0, j * 16);
++
++        if (this.m) {
++            this.n.a(this.l, this.h, new ChunkCoordIntPair(i, j));
++        }
++
++        this.l.getBiome(blockposition.a(16, 0, 16)).a(this.l, this.l.random, blockposition);
++        long k = (long) i * (long) i + (long) j * (long) j;
++
++        if (k > 4096L) {
++            float f = this.a(i, j, 1, 1);
++
++            if (f < -20.0F && this.h.nextInt(14) == 0) {
++                this.r.generate(this.l, this.h, blockposition.a(this.h.nextInt(16) + 8, 55 + this.h.nextInt(16), this.h.nextInt(16) + 8));
++                if (this.h.nextInt(4) == 0) {
++                    this.r.generate(this.l, this.h, blockposition.a(this.h.nextInt(16) + 8, 55 + this.h.nextInt(16), this.h.nextInt(16) + 8));
++                }
++            }
++
++            if (this.a(i, j, 1, 1) > 40.0F) {
++                int l = this.h.nextInt(5);
++
++                for (int i1 = 0; i1 < l; ++i1) {
++                    int j1 = this.h.nextInt(16) + 8;
++                    int k1 = this.h.nextInt(16) + 8;
++                    int l1 = this.l.getHighestBlockYAt(blockposition.a(j1, 0, k1)).getY();
++
++                    if (l1 > 0) {
++                        int i2 = l1 - 1;
++
++                        if (this.l.isEmpty(blockposition.a(j1, i2 + 1, k1)) && this.l.getType(blockposition.a(j1, i2, k1)).getBlock() == Blocks.END_STONE) {
++                            BlockChorusFlower.a(this.l, blockposition.a(j1, i2 + 1, k1), this.h, 8);
++                        }
++                    }
++                }
++            }
++        }
++
++        BlockFalling.instaFall = false;
++    }
++
++    public boolean a(Chunk chunk, int i, int j) {
++        return false;
++    }
++
++    public List<BiomeBase.BiomeMeta> getMobsFor(EnumCreatureType enumcreaturetype, BlockPosition blockposition) {
++        return this.l.getBiome(blockposition).getMobs(enumcreaturetype);
++    }
++
++    @Nullable
++    public BlockPosition findNearestMapFeature(World world, String s, BlockPosition blockposition) {
++        return null;
++    }
++
++    public void recreateStructures(Chunk chunk, int i, int j) {}
++}
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
+--- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-05-29 15:00:14.431641578 +0800
++++ src/main/java/net/minecraft/server/EntityLiving.java	2016-05-29 15:02:13.281630685 +0800
+@@ -14,6 +14,7 @@
+ import java.util.ArrayList;
+ import com.google.common.base.Function;
  import com.google.common.collect.Lists;
--import com.google.common.collect.Queues;
- import com.google.common.util.concurrent.Futures;
- import com.google.common.util.concurrent.ListenableFuture;
- import com.google.common.util.concurrent.ListenableFutureTask;
-@@ -33,6 +32,7 @@
++import java.util.concurrent.RecursiveAction;
+ import org.bukkit.Location;
+ import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+@@ -1539,7 +1540,9 @@
+                 }
+ 
+                 this.a(f, f1, f3);
+-                this.move(this.motX, this.motY, this.motZ);
++                //this.move(this.motX, this.motY, this.motZ);
++                move move_task = new move(this, this.motX, this.motY, this.motZ);
++                move_task.fork();
+                 this.motX *= (double) f4;
+                 this.motY *= 0.800000011920929D;
+                 this.motZ *= (double) f4;
+@@ -1550,7 +1553,9 @@
+             } else if (this.an() && (!(this instanceof EntityHuman) || !((EntityHuman) this).abilities.isFlying)) {
+                 d1 = this.locY;
+                 this.a(f, f1, 0.02F);
+-                this.move(this.motX, this.motY, this.motZ);
++                //this.move(this.motX, this.motY, this.motZ);
++                move move_task = new move(this, this.motX, this.motY, this.motZ);
++                move_task.fork();
+                 this.motX *= 0.5D;
+                 this.motY *= 0.5D;
+                 this.motZ *= 0.5D;
+@@ -1597,7 +1602,9 @@
+                 this.motX *= 0.9900000095367432D;
+                 this.motY *= 0.9800000190734863D;
+                 this.motZ *= 0.9900000095367432D;
+-                this.move(this.motX, this.motY, this.motZ);
++                //this.move(this.motX, this.motY, this.motZ);
++                move move_task = new move(this, this.motX, this.motY, this.motZ);
++                move_task.fork();
+                 if (this.positionChanged && !this.world.isClientSide) {
+                     d4 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                     double d5 = d2 - d4;
+@@ -1650,7 +1657,10 @@
+                     }
+                 }
+ 
+-                this.move(this.motX, this.motY, this.motZ);
++                //this.move(this.motX, this.motY, this.motZ);
++                move move_task = new move(this, this.motX, this.motY, this.motZ);
++                move_task.fork();
++                
+                 if (this.positionChanged && this.n_()) {
+                     this.motY = 0.2D;
+                 }
+@@ -2386,4 +2396,22 @@
+ 
+         }
+     }
++    
++    class move extends RecursiveAction {
++        double d0, d1, d2;
++        EntityLiving el;
++                
++        move(EntityLiving el, double d0, double d1, double d2) {
++            this.d0 = d0;
++            this.d1 = d1;
++            this.d2 = d2;
++            this.el = el;
++        }
++        
++        @Override
++        protected void compute() {
++            el.move(d0, d1, d2);
++        }
++                 
++    }
+ }
+diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
+--- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-05-29 15:00:14.828641542 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-05-29 15:02:13.662630650 +0800
+@@ -33,6 +33,7 @@
  import java.util.Arrays;
  import java.util.Collections;
  import java.util.Date;
@@ -260,8 +1303,8 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  import java.util.List;
  import java.util.Queue;
  import java.util.Random;
-@@ -46,6 +46,8 @@
- // CraftBukkit start
+@@ -51,6 +52,8 @@
+ import org.bukkit.craftbukkit.CraftServer;
  // CraftBukkit end
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 +import org.hose.ChunkGen_Pool;
@@ -269,17 +1312,19 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  
  public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
  
-@@ -353,7 +355,8 @@
+@@ -358,7 +361,10 @@
              BlockPosition blockposition = worldserver.getSpawn();
              long j = av();
              i = 0;
 -
++            //hose
 +            List<int[]> chunkgen_list = new LinkedList();
 +            int[] pos = new int[2];
++            
              for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
                  for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
                      long i1 = av();
-@@ -364,9 +367,13 @@
+@@ -369,9 +375,13 @@
                      }
  
                      ++i;
@@ -294,7 +1339,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
          }
  
          for (WorldServer world : this.worlds) {
-@@ -1022,7 +1029,8 @@
+@@ -1027,7 +1037,8 @@
      }
  
      public String getServerModName() {
@@ -304,7 +1349,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public CrashReport b(CrashReport crashreport) {
-@@ -1104,7 +1112,8 @@
+@@ -1109,7 +1120,8 @@
      }
  
      public String getName() {
@@ -314,1743 +1359,149 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
-diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src/main/java/net/minecraft/server/NavigationAbstract.java
---- src_origin/main/java/net/minecraft/server/NavigationAbstract.java	2016-04-03 23:27:22.656613931 +0800
-+++ src/main/java/net/minecraft/server/NavigationAbstract.java	2016-04-17 03:42:15.432951580 +0800
-@@ -73,17 +73,21 @@
-         } else if (this.c != null && !this.c.b() && blockposition.equals(this.r)) {
-             return this.c;
-         } else {
--            this.r = blockposition;
--            float f = this.h();
-+            try {
-+                this.r = blockposition;
-+                float f = this.h();
- 
--            this.b.methodProfiler.a("pathfind");
--            BlockPosition blockposition1 = new BlockPosition(this.a);
--            int i = (int) (f + 8.0F);
--            ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
--            PathEntity pathentity = this.s.a(chunkcache, this.a, this.r, f);
-+                this.b.methodProfiler.a("pathfind");
-+                BlockPosition blockposition1 = new BlockPosition(this.a);
-+                int i = (int) (f + 8.0F);
-+                ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
-+                PathEntity pathentity = this.s.a(chunkcache, this.a, this.r, f);
- 
--            this.b.methodProfiler.b();
--            return pathentity;
-+                this.b.methodProfiler.b();
-+                return pathentity;
-+            } catch (Exception ex) {
-+                return null;
-+            }
-         }
-     }
- 
-@@ -184,35 +188,39 @@
-     }
- 
-     protected void m() {
--        Vec3D vec3d = this.c();
--        int i = this.c.d();
--
--        for (int j = this.c.e(); j < this.c.d(); ++j) {
--            if ((double) this.c.a(j).b != Math.floor(vec3d.y)) {
--                i = j;
--                break;
-+        try {
-+            Vec3D vec3d = this.c();
-+            int i = this.c.d();
-+
-+            for (int j = this.c.e(); j < this.c.d(); ++j) {
-+                if ((double) this.c.a(j).b != Math.floor(vec3d.y)) {
-+                    i = j;
-+                    break;
-+                }
-             }
--        }
- 
--        this.o = this.a.width > 0.75F ? this.a.width / 2.0F : 0.75F - this.a.width / 2.0F;
--        Vec3D vec3d1 = this.c.f();
-+            this.o = this.a.width > 0.75F ? this.a.width / 2.0F : 0.75F - this.a.width / 2.0F;
-+            Vec3D vec3d1 = this.c.f();
- 
--        if (MathHelper.e((float) (this.a.locX - (vec3d1.x + 0.5D))) < this.o && MathHelper.e((float) (this.a.locZ - (vec3d1.z + 0.5D))) < this.o) {
--            this.c.c(this.c.e() + 1);
--        }
-+            if (MathHelper.e((float) (this.a.locX - (vec3d1.x + 0.5D))) < this.o && MathHelper.e((float) (this.a.locZ - (vec3d1.z + 0.5D))) < this.o) {
-+                this.c.c(this.c.e() + 1);
-+            }
- 
--        int k = MathHelper.f(this.a.width);
--        int l = (int) this.a.length + 1;
--        int i1 = k;
-+            int k = MathHelper.f(this.a.width);
-+            int l = (int) this.a.length + 1;
-+            int i1 = k;
- 
--        for (int j1 = i - 1; j1 >= this.c.e(); --j1) {
--            if (this.a(vec3d, this.c.a(this.a, j1), k, l, i1)) {
--                this.c.c(j1);
--                break;
-+            for (int j1 = i - 1; j1 >= this.c.e(); --j1) {
-+                if (this.a(vec3d, this.c.a(this.a, j1), k, l, i1)) {
-+                    this.c.c(j1);
-+                    break;
-+                }
-             }
--        }
- 
--        this.a(vec3d);
-+            this.a(vec3d);
-+        } catch (Exception ex) {
-+            //do nothing
-+        }
-     }
- 
-     protected void a(Vec3D vec3d) {
-diff -Naur src_origin/main/java/net/minecraft/server/PathfinderNormal.java src/main/java/net/minecraft/server/PathfinderNormal.java
---- src_origin/main/java/net/minecraft/server/PathfinderNormal.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/PathfinderNormal.java	2016-04-17 03:42:15.586951566 +0800
-@@ -0,0 +1,360 @@
-+package net.minecraft.server;
-+
-+import java.util.EnumSet;
-+import java.util.HashSet;
-+import java.util.Iterator;
-+
-+public class PathfinderNormal extends PathfinderAbstract {
-+
-+    private float j;
-+
-+    public PathfinderNormal() {}
-+
-+    public void a(IBlockAccess iblockaccess, EntityInsentient entityinsentient) {
-+        super.a(iblockaccess, entityinsentient);
-+        this.j = entityinsentient.a(PathType.WATER);
-+    }
-+
-+    public void a() {
-+        super.a();
-+        this.b.a(PathType.WATER, this.j);
-+    }
-+
-+    public PathPoint b() {
-+        int i;
-+        BlockPosition blockposition;
-+
-+        if (this.e() && this.b.isInWater()) {
-+            i = (int) this.b.getBoundingBox().b;
-+            BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition(MathHelper.floor(this.b.locX), i, MathHelper.floor(this.b.locZ));
-+
-+            for (Block block = this.a.getType(blockposition_mutableblockposition).getBlock(); block == Blocks.FLOWING_WATER || block == Blocks.WATER; block = this.a.getType(blockposition_mutableblockposition).getBlock()) {
-+                ++i;
-+                blockposition_mutableblockposition.c(MathHelper.floor(this.b.locX), i, MathHelper.floor(this.b.locZ));
-+            }
-+        } else if (!this.b.onGround) {
-+            for (blockposition = new BlockPosition(this.b); (this.a.getType(blockposition).getMaterial() == Material.AIR || this.a.getType(blockposition).getBlock().b(this.a, blockposition)) && blockposition.getY() > 0; blockposition = blockposition.down()) {
-+                ;
-+            }
-+
-+            i = blockposition.up().getY();
-+        } else {
-+            i = MathHelper.floor(this.b.getBoundingBox().b + 0.5D);
-+        }
-+
-+        blockposition = new BlockPosition(this.b);
-+        PathType pathtype = this.a(this.b, blockposition.getX(), i, blockposition.getZ());
-+
-+        if (this.b.a(pathtype) < 0.0F) {
-+            HashSet hashset = new HashSet();
-+
-+            hashset.add(new BlockPosition(this.b.getBoundingBox().a, (double) i, this.b.getBoundingBox().c));
-+            hashset.add(new BlockPosition(this.b.getBoundingBox().a, (double) i, this.b.getBoundingBox().f));
-+            hashset.add(new BlockPosition(this.b.getBoundingBox().d, (double) i, this.b.getBoundingBox().c));
-+            hashset.add(new BlockPosition(this.b.getBoundingBox().d, (double) i, this.b.getBoundingBox().f));
-+            Iterator iterator = hashset.iterator();
-+
-+            while (iterator.hasNext()) {
-+                BlockPosition blockposition1 = (BlockPosition) iterator.next();
-+                PathType pathtype1 = this.a(this.b, blockposition1);
-+
-+                if (this.b.a(pathtype1) >= 0.0F) {
-+                    return this.a(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ());
-+                }
-+            }
-+        }
-+
-+        return this.a(blockposition.getX(), i, blockposition.getZ());
-+    }
-+
-+    public PathPoint a(double d0, double d1, double d2) {
-+        return this.a(MathHelper.floor(d0 - (double) (this.b.width / 2.0F)), MathHelper.floor(d1), MathHelper.floor(d2 - (double) (this.b.width / 2.0F)));
-+    }
-+
-+    public int a(PathPoint[] apathpoint, PathPoint pathpoint, PathPoint pathpoint1, float f) {
-+        int i = 0;
-+        byte b0 = 0;
-+        PathType pathtype = this.a(this.b, pathpoint.a, pathpoint.b + 1, pathpoint.c);
-+
-+        if (this.b.a(pathtype) >= 0.0F) {
-+            b0 = 1;
-+        }
-+
-+        BlockPosition blockposition = (new BlockPosition(pathpoint.a, pathpoint.b, pathpoint.c)).down();
-+        double d0 = (double) pathpoint.b - (1.0D - this.a.getType(blockposition).c(this.a, blockposition).e);
-+        PathPoint pathpoint2 = this.a(pathpoint.a, pathpoint.b, pathpoint.c + 1, b0, d0, EnumDirection.SOUTH);
-+        PathPoint pathpoint3 = this.a(pathpoint.a - 1, pathpoint.b, pathpoint.c, b0, d0, EnumDirection.WEST);
-+        PathPoint pathpoint4 = this.a(pathpoint.a + 1, pathpoint.b, pathpoint.c, b0, d0, EnumDirection.EAST);
-+        PathPoint pathpoint5 = this.a(pathpoint.a, pathpoint.b, pathpoint.c - 1, b0, d0, EnumDirection.NORTH);
-+
-+        if (pathpoint2 != null && !pathpoint2.i && pathpoint2.a(pathpoint1) < f) {
-+            apathpoint[i++] = pathpoint2;
-+        }
-+
-+        if (pathpoint3 != null && !pathpoint3.i && pathpoint3.a(pathpoint1) < f) {
-+            apathpoint[i++] = pathpoint3;
-+        }
-+
-+        if (pathpoint4 != null && !pathpoint4.i && pathpoint4.a(pathpoint1) < f) {
-+            apathpoint[i++] = pathpoint4;
-+        }
-+
-+        if (pathpoint5 != null && !pathpoint5.i && pathpoint5.a(pathpoint1) < f) {
-+            apathpoint[i++] = pathpoint5;
-+        }
-+
-+        boolean flag = pathpoint5 == null || pathpoint5.m == PathType.OPEN || pathpoint5.l != 0.0F;
-+        boolean flag1 = pathpoint2 == null || pathpoint2.m == PathType.OPEN || pathpoint2.l != 0.0F;
-+        boolean flag2 = pathpoint4 == null || pathpoint4.m == PathType.OPEN || pathpoint4.l != 0.0F;
-+        boolean flag3 = pathpoint3 == null || pathpoint3.m == PathType.OPEN || pathpoint3.l != 0.0F;
-+        PathPoint pathpoint6;
-+
-+        if (flag && flag3) {
-+            pathpoint6 = this.a(pathpoint.a - 1, pathpoint.b, pathpoint.c - 1, b0, d0, EnumDirection.NORTH);
-+            if (pathpoint6 != null && !pathpoint6.i && pathpoint6.a(pathpoint1) < f) {
-+                apathpoint[i++] = pathpoint6;
-+            }
-+        }
-+
-+        if (flag && flag2) {
-+            pathpoint6 = this.a(pathpoint.a + 1, pathpoint.b, pathpoint.c - 1, b0, d0, EnumDirection.NORTH);
-+            if (pathpoint6 != null && !pathpoint6.i && pathpoint6.a(pathpoint1) < f) {
-+                apathpoint[i++] = pathpoint6;
-+            }
-+        }
-+
-+        if (flag1 && flag3) {
-+            pathpoint6 = this.a(pathpoint.a - 1, pathpoint.b, pathpoint.c + 1, b0, d0, EnumDirection.SOUTH);
-+            if (pathpoint6 != null && !pathpoint6.i && pathpoint6.a(pathpoint1) < f) {
-+                apathpoint[i++] = pathpoint6;
-+            }
-+        }
-+
-+        if (flag1 && flag2) {
-+            pathpoint6 = this.a(pathpoint.a + 1, pathpoint.b, pathpoint.c + 1, b0, d0, EnumDirection.SOUTH);
-+            if (pathpoint6 != null && !pathpoint6.i && pathpoint6.a(pathpoint1) < f) {
-+                apathpoint[i++] = pathpoint6;
-+            }
-+        }
-+
-+        return i;
-+    }
-+
-+    private PathPoint a(int i, int j, int k, int l, double d0, EnumDirection enumdirection) {
-+        PathPoint pathpoint = null;
-+        BlockPosition blockposition = new BlockPosition(i, j, k);
-+        BlockPosition blockposition1 = blockposition.down();
-+        double d1 = (double) j - (1.0D - this.a.getType(blockposition1).c(this.a, blockposition1).e);
-+
-+        if (d1 - d0 > 1.0D) {
-+            return null;
-+        } else {
-+            try {
-+                PathType pathtype = this.a(this.b, i, j, k);
-+                float f = this.b.a(pathtype);
-+                double d2 = (double) this.b.width / 2.0D;
-+
-+                if (f >= 0.0F) {
-+                    pathpoint = this.a(i, j, k);
-+                    pathpoint.m = pathtype;
-+                    pathpoint.l = Math.max(pathpoint.l, f);
-+                }
-+
-+                if (pathtype == PathType.WALKABLE) {
-+                    return pathpoint;
-+                } else {
-+                    if (pathpoint == null && l > 0 && pathtype != PathType.FENCE && pathtype != PathType.TRAPDOOR) {
-+                        pathpoint = this.a(i, j + 1, k, l - 1, d0, enumdirection);
-+                        if (pathpoint != null && (pathpoint.m == PathType.OPEN || pathpoint.m == PathType.WALKABLE)) {
-+                            double d3 = (double) (i - enumdirection.getAdjacentX()) + 0.5D;
-+                            double d4 = (double) (k - enumdirection.getAdjacentZ()) + 0.5D;
-+                            AxisAlignedBB axisalignedbb = new AxisAlignedBB(d3 - d2, (double) j + 0.001D, d4 - d2, d3 + d2, (double) ((float) j + this.b.length), d4 + d2);
-+                            AxisAlignedBB axisalignedbb1 = this.a.getType(blockposition).c(this.a, blockposition);
-+                            AxisAlignedBB axisalignedbb2 = axisalignedbb.a(0.0D, axisalignedbb1.e - 0.002D, 0.0D);
-+
-+                            if (this.b.world.b(axisalignedbb2)) {
-+                                pathpoint = null;
-+                            }
-+                        }
-+                    }
-+
-+                    if (pathtype == PathType.OPEN) {
-+                        AxisAlignedBB axisalignedbb3 = new AxisAlignedBB((double) i - d2 + 0.5D, (double) j + 0.001D, (double) k - d2 + 0.5D, (double) i + d2 + 0.5D, (double) ((float) j + this.b.length), (double) k + d2 + 0.5D);
-+
-+                        if (this.b.world.b(axisalignedbb3)) {
-+                            return null;
-+                        }
-+
-+                        int i1 = 0;
-+
-+                        while (j > 0 && pathtype == PathType.OPEN) {
-+                            --j;
-+                            if (i1++ >= this.b.aW()) {
-+                                return null;
-+                            }
-+
-+                            pathtype = this.a(this.b, i, j, k);
-+                            f = this.b.a(pathtype);
-+                            if (pathtype != PathType.OPEN && f >= 0.0F) {
-+                                pathpoint = this.a(i, j, k);
-+                                pathpoint.m = pathtype;
-+                                pathpoint.l = Math.max(pathpoint.l, f);
-+                                break;
-+                            }
-+
-+                            if (f < 0.0F) {
-+                                return null;
-+                            }
-+                        }
-+                    }
-+
-+                    return pathpoint;
-+                }
-+            } catch (Exception ex) {
-+                return null;
-+            }
-+        }
-+    }
-+
-+    public PathType a(IBlockAccess iblockaccess, int i, int j, int k, EntityInsentient entityinsentient, int l, int i1, int j1, boolean flag, boolean flag1) {
-+        EnumSet enumset = EnumSet.noneOf(PathType.class);
-+        PathType pathtype = PathType.BLOCKED;
-+        double d0 = (double) entityinsentient.width / 2.0D;
-+        BlockPosition blockposition = new BlockPosition(entityinsentient);
-+
-+        for (int k1 = i; k1 < i + l; ++k1) {
-+            for (int l1 = j; l1 < j + i1; ++l1) {
-+                for (int i2 = k; i2 < k + j1; ++i2) {
-+                    PathType pathtype1 = a(iblockaccess, k1, l1, i2);
-+
-+                    if (pathtype1 == PathType.DOOR_WOOD_CLOSED && flag && flag1) {
-+                        pathtype1 = PathType.WALKABLE;
-+                    }
-+
-+                    if (pathtype1 == PathType.DOOR_OPEN && !flag1) {
-+                        pathtype1 = PathType.BLOCKED;
-+                    }
-+
-+                    if (pathtype1 == PathType.RAIL && !(iblockaccess.getType(blockposition).getBlock() instanceof BlockMinecartTrackAbstract) && !(iblockaccess.getType(blockposition.down()).getBlock() instanceof BlockMinecartTrackAbstract)) {
-+                        pathtype1 = PathType.FENCE;
-+                    }
-+
-+                    if (k1 == i && l1 == j && i2 == k) {
-+                        pathtype = pathtype1;
-+                    }
-+
-+                    if (l1 > j && pathtype1 != PathType.OPEN) {
-+                        AxisAlignedBB axisalignedbb = new AxisAlignedBB((double) k1 - d0 + 0.5D, (double) j + 0.001D, (double) i2 - d0 + 0.5D, (double) k1 + d0 + 0.5D, (double) ((float) j + entityinsentient.length), (double) i2 + d0 + 0.5D);
-+
-+                        if (!entityinsentient.world.b(axisalignedbb)) {
-+                            pathtype1 = PathType.OPEN;
-+                        }
-+                    }
-+
-+                    enumset.add(pathtype1);
-+                }
-+            }
-+        }
-+
-+        if (enumset.contains(PathType.FENCE)) {
-+            return PathType.FENCE;
-+        } else {
-+            PathType pathtype2 = PathType.BLOCKED;
-+            Iterator iterator = enumset.iterator();
-+
-+            while (iterator.hasNext()) {
-+                PathType pathtype3 = (PathType) iterator.next();
-+
-+                if (entityinsentient.a(pathtype3) < 0.0F) {
-+                    return pathtype3;
-+                }
-+
-+                if (entityinsentient.a(pathtype3) >= entityinsentient.a(pathtype2)) {
-+                    pathtype2 = pathtype3;
-+                }
-+            }
-+
-+            if (pathtype == PathType.OPEN && entityinsentient.a(pathtype2) == 0.0F) {
-+                return PathType.OPEN;
-+            } else {
-+                return pathtype2;
-+            }
-+        }
-+    }
-+
-+    private PathType a(EntityInsentient entityinsentient, BlockPosition blockposition) {
-+        return this.a(this.a, blockposition.getX(), blockposition.getY(), blockposition.getZ(), entityinsentient, this.d, this.e, this.f, this.d(), this.c());
-+    }
-+
-+    private PathType a(EntityInsentient entityinsentient, int i, int j, int k) {
-+        return this.a(this.a, i, j, k, entityinsentient, this.d, this.e, this.f, this.d(), this.c());
-+    }
-+
-+    public static PathType a(IBlockAccess iblockaccess, int i, int j, int k) {
-+        BlockPosition blockposition = new BlockPosition(i, j, k);
-+        IBlockData iblockdata = iblockaccess.getType(blockposition);
-+        Block block = iblockdata.getBlock();
-+        Material material = iblockdata.getMaterial();
-+        PathType pathtype = PathType.BLOCKED;
-+
-+        if (block != Blocks.TRAPDOOR && block != Blocks.IRON_TRAPDOOR && block != Blocks.WATERLILY) {
-+            if (block == Blocks.FIRE) {
-+                return PathType.DAMAGE_FIRE;
-+            } else if (block == Blocks.CACTUS) {
-+                return PathType.DAMAGE_CACTUS;
-+            } else if (block instanceof BlockDoor && material == Material.WOOD && !((Boolean) iblockdata.get(BlockDoor.OPEN)).booleanValue()) {
-+                return PathType.DOOR_WOOD_CLOSED;
-+            } else if (block instanceof BlockDoor && material == Material.ORE && !((Boolean) iblockdata.get(BlockDoor.OPEN)).booleanValue()) {
-+                return PathType.DOOR_IRON_CLOSED;
-+            } else if (block instanceof BlockDoor && ((Boolean) iblockdata.get(BlockDoor.OPEN)).booleanValue()) {
-+                return PathType.DOOR_OPEN;
-+            } else if (block instanceof BlockMinecartTrackAbstract) {
-+                return PathType.RAIL;
-+            } else if (!(block instanceof BlockFence) && !(block instanceof BlockCobbleWall) && (!(block instanceof BlockFenceGate) || ((Boolean) iblockdata.get(BlockFenceGate.OPEN)).booleanValue())) {
-+                if (material == Material.AIR) {
-+                    pathtype = PathType.OPEN;
-+                } else {
-+                    if (material == Material.WATER) {
-+                        return PathType.WATER;
-+                    }
-+
-+                    if (material == Material.LAVA) {
-+                        return PathType.LAVA;
-+                    }
-+                }
-+
-+                if (block.b(iblockaccess, blockposition) && pathtype == PathType.BLOCKED) {
-+                    pathtype = PathType.OPEN;
-+                }
-+
-+                if (pathtype == PathType.OPEN && j >= 1) {
-+                    PathType pathtype1 = a(iblockaccess, i, j - 1, k);
-+
-+                    pathtype = pathtype1 != PathType.WALKABLE && pathtype1 != PathType.OPEN && pathtype1 != PathType.WATER && pathtype1 != PathType.LAVA ? PathType.WALKABLE : PathType.OPEN;
-+                }
-+
-+                if (pathtype == PathType.WALKABLE) {
-+                    for (int l = i - 1; l <= i + 1; ++l) {
-+                        for (int i1 = k - 1; i1 <= k + 1; ++i1) {
-+                            if (l != i || i1 != k) {
-+                                Block block1 = iblockaccess.getType(new BlockPosition(l, j, i1)).getBlock();
-+
-+                                if (block1 == Blocks.CACTUS) {
-+                                    pathtype = PathType.DANGER_CACTUS;
-+                                } else if (block1 == Blocks.FIRE) {
-+                                    pathtype = PathType.DANGER_FIRE;
-+                                }
-+                            }
-+                        }
-+                    }
-+                }
-+
-+                return pathtype;
-+            } else {
-+                return PathType.FENCE;
-+            }
-+        } else {
-+            return PathType.TRAPDOOR;
-+        }
-+    }
-+}
-diff -Naur src_origin/main/java/net/minecraft/server/PersistentVillage.java src/main/java/net/minecraft/server/PersistentVillage.java
---- src_origin/main/java/net/minecraft/server/PersistentVillage.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/PersistentVillage.java	2016-04-17 03:42:15.596951565 +0800
-@@ -0,0 +1,294 @@
-+package net.minecraft.server;
-+
-+import com.google.common.collect.Lists;
-+import com.google.common.collect.Queues;
-+import java.util.ArrayList;
-+import java.util.Collections;
-+import java.util.Iterator;
-+import java.util.List;
-+import java.util.Queue;
-+
-+public class PersistentVillage extends PersistentBase {
-+
-+    private World world;
-+    /*private final List<BlockPosition> c = Lists.newArrayList();
-+    private final List<VillageDoor> d = Lists.newArrayList();
-+    private final List<Village> villages = Lists.newArrayList();*/
-+    private final Queue<BlockPosition> c = Queues.newConcurrentLinkedQueue();
-+    private final Queue<VillageDoor> d = Queues.newConcurrentLinkedQueue();
-+    private final Queue<Village> villages = Queues.newConcurrentLinkedQueue();
-+    private int time;
-+
-+    public PersistentVillage(String s) {
-+        super(s);
-+    }
-+
-+    public PersistentVillage(World world) {
-+        super(a(world.worldProvider));
-+        this.world = world;
-+        this.c();
-+    }
-+
-+    public void a(World world) {
-+        this.world = world;
-+        Iterator iterator = this.villages.iterator();
-+
-+        while (iterator.hasNext()) {
-+            Village village = (Village) iterator.next();
-+
-+            village.a(world);
-+        }
-+
-+    }
-+
-+    public void a(BlockPosition blockposition) {
-+        if (this.c.size() <= 64) {
-+            if (!this.e(blockposition)) {
-+                this.c.add(blockposition);
-+            }
-+
-+        }
-+    }
-+
-+    public void tick() {
-+        ++this.time;
-+        Iterator iterator = this.villages.iterator();
-+
-+        while (iterator.hasNext()) {
-+            Village village = (Village) iterator.next();
-+
-+            village.a(this.time);
-+        }
-+
-+        this.e();
-+        this.f();
-+        this.g();
-+        if (this.time % 400 == 0) {
-+            this.c();
-+        }
-+
-+    }
-+
-+    private void e() {
-+        Iterator iterator = this.villages.iterator();
-+
-+        while (iterator.hasNext()) {
-+            Village village = (Village) iterator.next();
-+
-+            if (village.g()) {
-+                iterator.remove();
-+                this.c();
-+            }
-+        }
-+
-+    }
-+
-+    public List<Village> getVillages() {
-+        //return this.villages;
-+        List re = new ArrayList(this.villages);
-+        return re;
-+    }
-+
-+    public Village getClosestVillage(BlockPosition blockposition, int i) {
-+        Village village = null;
-+        double d0 = 3.4028234663852886E38D;
-+        Iterator iterator = this.villages.iterator();
-+
-+        while (iterator.hasNext()) {
-+            Village village1 = (Village) iterator.next();
-+            double d1 = village1.a().k(blockposition);
-+
-+            if (d1 < d0) {
-+                float f = (float) (i + village1.b());
-+
-+                if (d1 <= (double) (f * f)) {
-+                    village = village1;
-+                    d0 = d1;
-+                }
-+            }
-+        }
-+
-+        return village;
-+    }
-+
-+    private void f() {
-+        if (!this.c.isEmpty()) {
-+            //this.b((BlockPosition) this.c.remove(0));
-+            //get and remove from queue
-+            Iterator it = this.c.iterator();
-+            BlockPosition bp = (BlockPosition) it.next();
-+            this.b(bp);
-+            this.c.remove(bp);
-+        }
-+    }
-+
-+    private void g() {
-+        Iterator it = this.d.iterator();
-+        while (it.hasNext()) {
-+            VillageDoor villagedoor = (VillageDoor) it.next();
-+            Village village = this.getClosestVillage(villagedoor.d(), 32);
-+
-+            if (village == null) {
-+                village = new Village(this.world);
-+                this.villages.add(village);
-+                this.c();
-+            }
-+
-+            village.a(villagedoor);
-+        }
-+        /*
-+        for (int i = 0; i < this.d.size(); ++i) {
-+            VillageDoor villagedoor = (VillageDoor) this.d.get(i);
-+            Village village = this.getClosestVillage(villagedoor.d(), 32);
-+
-+            if (village == null) {
-+                village = new Village(this.world);
-+                this.villages.add(village);
-+                this.c();
-+            }
-+
-+            village.a(villagedoor);
-+        }*/
-+
-+        this.d.clear();
-+    }
-+
-+    private void b(BlockPosition blockposition) {
-+        byte b0 = 16;
-+        byte b1 = 4;
-+        byte b2 = 16;
-+
-+        for (int i = -b0; i < b0; ++i) {
-+            for (int j = -b1; j < b1; ++j) {
-+                for (int k = -b2; k < b2; ++k) {
-+                    BlockPosition blockposition1 = blockposition.a(i, j, k);
-+
-+                    if (this.f(blockposition1)) {
-+                        VillageDoor villagedoor = this.c(blockposition1);
-+
-+                        if (villagedoor == null) {
-+                            this.d(blockposition1);
-+                        } else {
-+                            villagedoor.a(this.time);
-+                        }
-+                    }
-+                }
-+            }
-+        }
-+
-+    }
-+
-+    private VillageDoor c(BlockPosition blockposition) {
-+        Iterator iterator = this.d.iterator();
-+
-+        VillageDoor villagedoor;
-+
-+        do {
-+            if (!iterator.hasNext()) {
-+                iterator = this.villages.iterator();
-+
-+                VillageDoor villagedoor1;
-+
-+                do {
-+                    if (!iterator.hasNext()) {
-+                        return null;
-+                    }
-+
-+                    Village village = (Village) iterator.next();
-+
-+                    villagedoor1 = village.e(blockposition);
-+                } while (villagedoor1 == null);
-+
-+                return villagedoor1;
-+            }
-+
-+            villagedoor = (VillageDoor) iterator.next();
-+        } while (villagedoor.d().getX() != blockposition.getX() || villagedoor.d().getZ() != blockposition.getZ() || Math.abs(villagedoor.d().getY() - blockposition.getY()) > 1);
-+
-+        return villagedoor;
-+    }
-+
-+    private void d(BlockPosition blockposition) {
-+        EnumDirection enumdirection = BlockDoor.f(this.world, blockposition);
-+        EnumDirection enumdirection1 = enumdirection.opposite();
-+        int i = this.a(blockposition, enumdirection, 5);
-+        int j = this.a(blockposition, enumdirection1, i + 1);
-+
-+        if (i != j) {
-+            this.d.add(new VillageDoor(blockposition, i < j ? enumdirection : enumdirection1, this.time));
-+        }
-+
-+    }
-+
-+    private int a(BlockPosition blockposition, EnumDirection enumdirection, int i) {
-+        int j = 0;
-+
-+        for (int k = 1; k <= 5; ++k) {
-+            if (this.world.h(blockposition.shift(enumdirection, k))) {
-+                ++j;
-+                if (j >= i) {
-+                    return j;
-+                }
-+            }
-+        }
-+
-+        return j;
-+    }
-+
-+    private boolean e(BlockPosition blockposition) {
-+        Iterator iterator = this.c.iterator();
-+
-+        BlockPosition blockposition1;
-+
-+        do {
-+            if (!iterator.hasNext()) {
-+                return false;
-+            }
-+
-+            blockposition1 = (BlockPosition) iterator.next();
-+        } while (!blockposition1.equals(blockposition));
-+
-+        return true;
-+    }
-+
-+    private boolean f(BlockPosition blockposition) {
-+        IBlockData iblockdata = this.world.getType(blockposition);
-+        Block block = iblockdata.getBlock();
-+
-+        return block instanceof BlockDoor ? iblockdata.getMaterial() == Material.WOOD : false;
-+    }
-+
-+    public void a(NBTTagCompound nbttagcompound) {
-+        this.time = nbttagcompound.getInt("Tick");
-+        NBTTagList nbttaglist = nbttagcompound.getList("Villages", 10);
-+
-+        for (int i = 0; i < nbttaglist.size(); ++i) {
-+            NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
-+            Village village = new Village();
-+
-+            village.a(nbttagcompound1);
-+            this.villages.add(village);
-+        }
-+
-+    }
-+
-+    public void b(NBTTagCompound nbttagcompound) {
-+        nbttagcompound.setInt("Tick", this.time);
-+        NBTTagList nbttaglist = new NBTTagList();
-+        Iterator iterator = this.villages.iterator();
-+
-+        while (iterator.hasNext()) {
-+            Village village = (Village) iterator.next();
-+            NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-+
-+            village.b(nbttagcompound1);
-+            nbttaglist.add(nbttagcompound1);
-+        }
-+
-+        nbttagcompound.set("Villages", nbttaglist);
-+    }
-+
-+    public static String a(WorldProvider worldprovider) {
-+        return "villages" + worldprovider.getDimensionManager().c();
-+    }
-+}
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
---- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-03 23:27:22.917613931 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-04-17 03:42:15.610951564 +0800
-@@ -4,6 +4,7 @@
- import com.google.common.collect.AbstractIterator;
- import com.google.common.collect.ComparisonChain;
- import com.google.common.collect.Lists;
-+import com.google.common.collect.Queues;
- import com.google.common.collect.Sets;
- import java.util.ArrayList;
- import java.util.Collections;
-@@ -14,6 +15,10 @@
+--- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-05-29 15:00:14.995641526 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-05-29 15:02:13.826630635 +0800
+@@ -17,6 +17,8 @@
  
  // CraftBukkit start
  import java.util.LinkedList;
-+import java.util.Queue;
 +import org.hose.ChunkFlush_Pool;
-+import org.hose.PlayerChunkMap_Pool;
 +import org.spigotmc.SpigotWorldConfig;
  // CraftBukkit end
  
  public class PlayerChunkMap {
-@@ -39,10 +44,14 @@
-     private final WorldServer world;
-     private final List<EntityPlayer> managedPlayers = Lists.newArrayList();
-     private final LongHashMap<PlayerChunk> e = new LongHashMap();
--    private final Set<PlayerChunk> f = Sets.newHashSet();
--    private final List<PlayerChunk> g = Lists.newLinkedList();
--    private final List<PlayerChunk> h = Lists.newLinkedList();
--    private final List<PlayerChunk> i = Lists.newArrayList();
-+    //private final Set<PlayerChunk> f = Sets.newHashSet();
-+    private final Set<PlayerChunk> f = Sets.newConcurrentHashSet();
-+    //private final List<PlayerChunk> g = Lists.newLinkedList();
-+    private final List<PlayerChunk> g = Collections.synchronizedList(Lists.newLinkedList());
-+    //private final List<PlayerChunk> h = Lists.newLinkedList();
-+    private final List<PlayerChunk> h = Collections.synchronizedList(Lists.newLinkedList());
-+    //private final List<PlayerChunk> i = Lists.newArrayList();
-+    private final Queue<PlayerChunk> i = Queues.newConcurrentLinkedQueue();
-     private int j;
-     private long k;
-     private boolean l = true;
-@@ -97,6 +106,7 @@
+@@ -100,11 +102,14 @@
          };
      }
  
 +    List<PlayerChunk> chunkflush_list = new LinkedList();
++    
      public void flush() {
          long i = this.world.getTime();
          int j;
-@@ -105,20 +115,36 @@
+         PlayerChunk playerchunk;
+-
++        
++        //long st1 = System.nanoTime();
          if (i - this.k > 8000L) {
              this.k = i;
  
-+            Iterator it = this.i.iterator();
-+            //chunkflush_list.clear();
-+            while (it.hasNext()) {
-+                playerchunk = (PlayerChunk) it.next();
-+                playerchunk.d();
-+                playerchunk.c();
-+                //chunkflush_list.add((PlayerChunk) it.next());
-+            }
-+            //SpigotWorldConfig.ChunkFlushPool.invoke(new ChunkFlush_Pool(chunkflush_list));
-+            /*
-             for (j = 0; j < this.i.size(); ++j) {
-                 playerchunk = (PlayerChunk) this.i.get(j);
-                 playerchunk.d();
+@@ -114,7 +119,21 @@
                  playerchunk.c();
--            }
-+            }*/
+             }
          }
++        /*long et1 = System.nanoTime();
++        System.out.println("t1: "+(et1-st1));
  
-         if (!this.f.isEmpty()) {
-             Iterator iterator = this.f.iterator();
- 
++        long st2 = System.nanoTime();*/
++        if (!this.f.isEmpty()) {
++            Iterator iterator = this.f.iterator();
++
 +            chunkflush_list.clear();
 +            while (iterator.hasNext()) {
 +                chunkflush_list.add((PlayerChunk) iterator.next());
 +            }
-+            SpigotWorldConfig.ChunkFlushPool.invoke(new ChunkFlush_Pool(chunkflush_list));
-+            /*
-             while (iterator.hasNext()) {
-                 playerchunk = (PlayerChunk) iterator.next();
-                 playerchunk.d();
--            }
-+            }*/
++            this.f.clear();
++        }
++        SpigotWorldConfig.ChunkFlushPool.invoke(new ChunkFlush_Pool(chunkflush_list));
++        /*
+         if (!this.f.isEmpty()) {
+             Iterator iterator = this.f.iterator();
+ 
+@@ -124,7 +143,9 @@
+             }
  
              this.f.clear();
-         }
-@@ -212,7 +238,8 @@
-         return (PlayerChunk) this.e.getEntry(d(i, j));
-     }
- 
--    private PlayerChunk c(int i, int j) {
-+    public PlayerChunk c(int i, int j) {
-+    //private PlayerChunk c(int i, int j) {
-         long k = d(i, j);
-         PlayerChunk playerchunk = (PlayerChunk) this.e.getEntry(k);
- 
-@@ -271,9 +298,11 @@
-         }
- 
-         Collections.sort(chunkList, new ChunkCoordComparator(entityplayer));
-+        /*
-         for (ChunkCoordIntPair pair : chunkList) {
-             this.c(pair.x, pair.z).a(entityplayer);
 -        }
 +        }*/
-+        SpigotWorldConfig.PlayerChunkPool.invoke(new PlayerChunkMap_Pool(this, chunkList, entityplayer));
-         // CraftBukkit end
++        /*long et2 = System.nanoTime();
++        System.out.println("t2: "+(et2-st2));*/
  
-         this.managedPlayers.add(entityplayer);
-@@ -345,9 +374,11 @@
+         if (this.l && i % 4L == 0L) {
+             this.l = false;
+@@ -152,11 +173,13 @@
+             });
+         }
  
-                 // CraftBukkit start - send nearest chunks first
-                 Collections.sort(chunksToLoad, new ChunkCoordComparator(entityplayer));
-+                /*
-                 for (ChunkCoordIntPair pair : chunksToLoad) {
-                     this.c(pair.x, pair.z).a(entityplayer);
--                }
-+                }*/
-+                SpigotWorldConfig.PlayerChunkPool.invoke(new PlayerChunkMap_Pool(this, chunksToLoad, entityplayer));
-                 // CraftBukkit end
++        //long st3 = System.nanoTime();
+         if (!this.h.isEmpty()) {
+             long k = System.nanoTime() + 50000000L;
+-            int l = 49;
++            int l = 490;//49
+             Iterator iterator1 = this.h.iterator();
+ 
++            //fork join
+             while (iterator1.hasNext()) {
+                 PlayerChunk playerchunk1 = (PlayerChunk) iterator1.next();
+ 
+@@ -177,7 +200,10 @@
+                 }
              }
          }
-diff -Naur src_origin/main/java/net/minecraft/server/PlayerConnection.java src/main/java/net/minecraft/server/PlayerConnection.java
---- src_origin/main/java/net/minecraft/server/PlayerConnection.java	2016-04-03 23:27:22.930613931 +0800
-+++ src/main/java/net/minecraft/server/PlayerConnection.java	2016-04-17 03:42:15.638951561 +0800
-@@ -313,7 +313,7 @@
++        /*long et3 = System.nanoTime();
++        System.out.println("t3: "+(et3-st3));
+ 
++        long st4 = System.nanoTime();*/
+         if (!this.g.isEmpty()) {
+             j = 81;
+             Iterator iterator2 = this.g.iterator();
+@@ -194,6 +220,8 @@
                  }
-                 speed *= 2f; // TODO: Get the speed of the vehicle instead of the player
- 
--                if (d10 - d9 > Math.max(100, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && (!this.minecraftServer.R() || !this.minecraftServer.Q().equals(entity.getName()))) { // Spigot
-+                if (d10 - d9 > Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2) && (!this.minecraftServer.R() || !this.minecraftServer.Q().equals(entity.getName()))) { // Spigot
-                 // CraftBukkit end
-                     PlayerConnection.LOGGER.warn(entity.getName() + " (vehicle of " + this.player.getName() + ") moved too quickly! " + d6 + "," + d7 + "," + d8);
-                     this.networkManager.sendPacket(new PacketPlayOutVehicleMove(entity));
-@@ -522,7 +522,7 @@
-                         if (!this.player.K() && (!this.player.x().getGameRules().getBoolean("disableElytraMovementCheck") || !this.player.cB())) {
-                             float f2 = this.player.cB() ? 300.0F : 100.0F;
- 
--                            if (d11 - d10 > Math.max(100, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && (!this.minecraftServer.R() || !this.minecraftServer.Q().equals(this.player.getName()))) { // Spigot
-+                            if (d11 - d10 > Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2) && (!this.minecraftServer.R() || !this.minecraftServer.Q().equals(this.player.getName()))) { // Spigot
-                         // CraftBukkit end
-                                 PlayerConnection.LOGGER.warn(this.player.getName() + " moved too quickly! " + d7 + "," + d8 + "," + d9);
-                                 this.a(this.player.locX, this.player.locY, this.player.locZ, this.player.yaw, this.player.pitch);
-diff -Naur src_origin/main/java/net/minecraft/server/PlayerInventory.java src/main/java/net/minecraft/server/PlayerInventory.java
---- src_origin/main/java/net/minecraft/server/PlayerInventory.java	2016-04-03 23:27:22.952613931 +0800
-+++ src/main/java/net/minecraft/server/PlayerInventory.java	2016-04-17 03:42:15.642951561 +0800
-@@ -1,6 +1,7 @@
- package net.minecraft.server;
- 
- import java.util.Arrays;
-+import java.util.Collections;
- import java.util.concurrent.Callable;
- 
- // CraftBukkit start
-@@ -23,7 +24,7 @@
-     public boolean f;
- 
-     // CraftBukkit start - add fields and methods
--    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
-+    public List<HumanEntity> transaction = Collections.synchronizedList(new java.util.ArrayList<HumanEntity>());
-     private int maxStack = MAX_STACK;
- 
-     public ItemStack[] getContents() {
-diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
---- src_origin/main/java/net/minecraft/server/PlayerList.java	2016-04-03 23:27:22.954613931 +0800
-+++ src/main/java/net/minecraft/server/PlayerList.java	2016-04-17 03:42:15.660951559 +0800
-@@ -947,7 +947,7 @@
-                         entity.getBukkitEntity().setVelocity(velocity);
-                     }
-                 }
--                // worldserver1.addEntity(entity);
-+                worldserver1.addEntity(entity);
-                 worldserver1.entityJoinedWorld(entity, false);
              }
+         }
++        /*long et4 = System.nanoTime();
++        System.out.println("t4: "+(et4-st4));*/
  
-diff -Naur src_origin/main/java/net/minecraft/server/PortalTravelAgent.java src/main/java/net/minecraft/server/PortalTravelAgent.java
---- src_origin/main/java/net/minecraft/server/PortalTravelAgent.java	2016-04-03 23:27:22.962613931 +0800
-+++ src/main/java/net/minecraft/server/PortalTravelAgent.java	2016-04-17 03:42:15.664951559 +0800
-@@ -7,13 +7,16 @@
- 
+         if (this.managedPlayers.isEmpty()) {
+             WorldProvider worldprovider = this.world.worldProvider;
+diff -Naur src_origin/main/java/net/minecraft/server/StructureGenerator.java src/main/java/net/minecraft/server/StructureGenerator.java
+--- src_origin/main/java/net/minecraft/server/StructureGenerator.java	2016-05-29 15:00:15.180641509 +0800
++++ src/main/java/net/minecraft/server/StructureGenerator.java	2016-05-29 15:02:14.000630619 +0800
+@@ -5,6 +5,7 @@
  import java.util.Iterator;
  import java.util.List;
-+import java.util.Map;
  import java.util.Random;
-+import java.util.concurrent.ConcurrentHashMap;
- 
- public class PortalTravelAgent {
- 
-     private final WorldServer world;
-     private final Random b;
--    private final LongHashMap<PortalTravelAgent.ChunkCoordinatesPortal> c = new LongHashMap();
-+    //private final LongHashMap<PortalTravelAgent.ChunkCoordinatesPortal> c = new LongHashMap();
-+    private final Map<Long, PortalTravelAgent.ChunkCoordinatesPortal> c = new ConcurrentHashMap();
-     private final List<Long> d = Lists.newArrayList();
- 
-     public PortalTravelAgent(WorldServer worldserver) {
-@@ -121,8 +124,10 @@
-         Object object = BlockPosition.ZERO;
-         long k = ChunkCoordIntPair.a(i, j);
- 
--        if (this.c.contains(k)) {
--            PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.getEntry(k);
-+        //if (this.c.contains(k)) {
-+        if (this.c.containsKey(k)) {
-+            //PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.getEntry(k);
-+            PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(k);
- 
-             d0 = 0.0D;
-             object = portaltravelagent_chunkcoordinatesportal;
-@@ -459,7 +464,8 @@
- 
-             while (iterator.hasNext()) {
-                 Long olong = (Long) iterator.next();
--                PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.getEntry(olong.longValue());
-+                //PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.getEntry(olong.longValue());
-+                PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(olong.longValue());
- 
-                 if (portaltravelagent_chunkcoordinatesportal == null || portaltravelagent_chunkcoordinatesportal.c < j) {
-                     iterator.remove();
-diff -Naur src_origin/main/java/net/minecraft/server/TileEntity.java src/main/java/net/minecraft/server/TileEntity.java
---- src_origin/main/java/net/minecraft/server/TileEntity.java	2016-04-03 23:27:23.114613931 +0800
-+++ src/main/java/net/minecraft/server/TileEntity.java	2016-04-17 03:42:15.812951545 +0800
-@@ -20,11 +20,19 @@
-     protected boolean d;
-     private int h;
-     protected Block e;
-+    private static int entityCount;
-+    private int id;
- 
-     public TileEntity() {
-+        //add id
-+        this.id = TileEntity.entityCount++;
-         this.position = BlockPosition.ZERO;
-         this.h = -1;
-     }
-+    
-+    public int getId() {
-+        return this.id;
-+    }
- 
-     private static void a(Class<? extends TileEntity> oclass, String s) {
-         if (TileEntity.f.containsKey(s)) {
-diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
---- src_origin/main/java/net/minecraft/server/World.java	2016-04-03 23:27:23.228613931 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-04-17 03:42:15.923951535 +0800
-@@ -15,7 +15,14 @@
- 
- // CraftBukkit start
- import com.google.common.collect.Maps;
-+import com.google.common.collect.Queues;
-+import java.util.Arrays;
-+import java.util.Collections;
-+import java.util.LinkedList;
- import java.util.Map;
-+import java.util.Queue;
-+import java.util.concurrent.ConcurrentHashMap;
 +import java.util.concurrent.RecursiveAction;
- import org.bukkit.Bukkit;
- import org.bukkit.block.BlockState;
- import org.bukkit.craftbukkit.SpigotTimings; // Spigot
-@@ -27,14 +34,21 @@
- import org.bukkit.event.block.BlockPhysicsEvent;
- import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
- import org.bukkit.generator.ChunkGenerator;
-+import org.hose.EntityTick_Pool;
-+import org.hose.TileTick_Pool;
-+import org.spigotmc.SpigotWorldConfig;
- // CraftBukkit end
  
- public abstract class World implements IBlockAccess {
+ public abstract class StructureGenerator extends WorldGenBase {
  
-+    List<Integer> ens_list = new LinkedList();
-+    List<Integer> ents_list = new LinkedList();
-     private int a = 63;
-     protected boolean d;
-     // Spigot start - guard entity list from removals
--    public final List<Entity> entityList = new java.util.ArrayList<Entity>()
-+    public final ConcurrentHashMap<Integer, Entity> entityList_map = new ConcurrentHashMap();
-+    public List<Entity> entityList = Collections.synchronizedList(new ArrayList<Entity>());
-+    /*public final List<Entity> entityList = new java.util.ArrayList<Entity>()
-     {
-         @Override
-         public Entity remove(int index)
-@@ -57,11 +71,13 @@
-                 throw new java.util.ConcurrentModificationException();
+@@ -81,7 +82,9 @@
+                 structurestart.a(world, random, new StructureBoundingBox(i, j, i + 15, j + 15));
+                 structurestart.b(chunkcoordintpair);
+                 flag = true;
+-                this.a(structurestart.e(), structurestart.f(), structurestart);
++                //this.a(structurestart.e(), structurestart.f(), structurestart);
++                structure str_task = new structure(structurestart.e(), structurestart.f(), structurestart);
++                str_task.fork();
              }
          }
--    };
-+    };*/
-     // Spigot end
-     protected final List<Entity> f = Lists.newArrayList();
--    public final List<TileEntity> tileEntityList = Lists.newArrayList();
--    public final List<TileEntity> tileEntityListTick = Lists.newArrayList();
-+    //public final List<TileEntity> tileEntityList = Lists.newArrayList();
-+    public final Queue<TileEntity> tileEntityList = Queues.newConcurrentLinkedQueue();
-+    //public final List<TileEntity> tileEntityListTick = Lists.newArrayList();
-+    public final Map<Integer, TileEntity> tileEntityListTick = new ConcurrentHashMap();
-     private final List<TileEntity> b = Lists.newArrayList();
-     private final List<TileEntity> tileEntityListUnload = Lists.newArrayList();
-     public final List<EntityHuman> players = Lists.newArrayList();
-@@ -122,16 +138,16 @@
-     public long ticksPerAnimalSpawns;
-     public long ticksPerMonsterSpawns;
-     public boolean populating;
--    private int tickPosition;
-+    //private int tickPosition;
-     public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
  
-     public final SpigotTimings.WorldTimingsHandler timings; // Spigot
--    private boolean guardEntityList; // Spigot
-+    //private boolean guardEntityList; // Spigot
-     public static boolean haveWeSilencedAPhysicsCrash;
-     public static String blockLocation;
-     private org.spigotmc.TickLimiter entityLimiter;
-     private org.spigotmc.TickLimiter tileLimiter;
--    private int tileTickPosition;
-+    //private int tileTickPosition;
+@@ -241,4 +244,21 @@
+     protected abstract boolean a(int i, int j);
  
-     public CraftWorld getWorld() {
-         return this.world;
-@@ -152,7 +168,8 @@
-         this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
-         this.ticksPerMonsterSpawns = this.getServer().getTicksPerMonsterSpawns(); // CraftBukkit
-         // CraftBukkit end
--        this.u = Lists.newArrayList(new IWorldAccess[] { this.t});
-+        //this.u = Lists.newArrayList(new IWorldAccess[] { this.t});
-+        this.u = Collections.synchronizedList(Lists.newArrayList(new IWorldAccess[] { this.t}));
-         this.L = Calendar.getInstance();
-         this.scoreboard = new Scoreboard();
-         this.allowMonsters = true;
-@@ -1004,7 +1021,9 @@
-             }
- 
-             this.getChunkAt(i, j).a(entity);
--            this.entityList.add(entity);
-+            //this.entityList.add(entity);
-+            this.entityList_map.put(entity.getId(), entity);
-+            this.entityList = new ArrayList<Entity>(entityList_map.values());
-             this.b(entity);
-             return true;
-         }
-@@ -1070,22 +1089,24 @@
-             this.everyoneSleeping();
-         }
- 
--        if (!guardEntityList) { // Spigot - It will get removed after the tick if we are ticking
-+        //if (!guardEntityList) { // Spigot - It will get removed after the tick if we are ticking
-         int i = entity.ab;
-         int j = entity.ad;
- 
-         if (entity.aa && this.isChunkLoaded(i, j, true)) {
-             this.getChunkAt(i, j).b(entity);
--        }
-+        //}
- 
-+        this.entityList_map.remove(entity.getId());
-+        this.entityList = new ArrayList<Entity>(entityList_map.values());
-         // CraftBukkit start - Decrement loop variable field if we've already ticked this entity
--        int index = this.entityList.indexOf(entity);
-+        /*int index = this.entityList.indexOf(entity);
-         if (index != -1) {
-             if (index <= this.tickPosition) {
-                 this.tickPosition--;
-             }
-             this.entityList.remove(index);
--        }
-+        }*/
-         // CraftBukkit end
-         } // Spigot
-         this.c(entity);
-@@ -1367,8 +1388,12 @@
-         }
- 
-         this.methodProfiler.c("remove");
--        this.entityList.removeAll(this.f);
--
-+        //this.entityList.removeAll(this.f);
-+        for (Entity ent : this.f) {
-+            this.entityList_map.remove(ent.getId());
-+        }
-+        this.entityList = new ArrayList<Entity>(entityList_map.values());
-+        
-         int j;
- 
-         for (i = 0; i < this.f.size(); ++i) {
-@@ -1389,18 +1414,28 @@
-         this.l();
-         this.methodProfiler.c("regular");
- 
--        CrashReportSystemDetails crashreportsystemdetails1;
--        CrashReport crashreport1;
-+        //CrashReportSystemDetails crashreportsystemdetails1;
-+        //CrashReport crashreport1;
- 
-         org.spigotmc.ActivationRange.activateEntities(this); // Spigot
-         timings.entityTick.startTiming(); // Spigot
--        guardEntityList = true; // Spigot
-+        //guardEntityList = true; // Spigot
-         // CraftBukkit start - Use field for loop variable
--        int entitiesThisCycle = 0;
--        if (tickPosition < 0) tickPosition = 0;
-+        //int entitiesThisCycle = 0;
-+        //if (tickPosition < 0) tickPosition = 0;
-+        ens_list.clear();
-+        Iterator ite = entityList_map.keySet().iterator();
-+        //List<RecursiveAction> forks = new LinkedList();
-         for (entityLimiter.initTick();
--                entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
--                tickPosition++, entitiesThisCycle++) {
-+                //entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
-+                ite.hasNext() && entityLimiter.shouldContinue();
-+                //tickPosition++, entitiesThisCycle++) {
-+                ) {
-+            ens_list.add((int) ite.next());
-+            /*EntityTick_Pool tasks = new EntityTick_Pool(this, (int) ite.next());
-+            forks.add(tasks);
-+            tasks.fork();*/
-+            /*
-             tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
-             entity = (Entity) this.entityList.get(this.tickPosition);
-             // CraftBukkit end
-@@ -1444,16 +1479,23 @@
-                 this.c(entity);
-             }
- 
--            this.methodProfiler.b();
-+            this.methodProfiler.b();*/
-         }
--        guardEntityList = false; // Spigot
-+        SpigotWorldConfig.EntityTickPool.invoke(new EntityTick_Pool(this, ens_list));
-+        
-+        
-+        
-+        //guardEntityList = false; // Spigot
- 
-         timings.entityTick.stopTiming(); // Spigot
-         this.methodProfiler.c("blockEntities");
-         this.M = true;
-         // CraftBukkit start - From below, clean up tile entities before ticking them
-         if (!this.tileEntityListUnload.isEmpty()) {
--            this.tileEntityListTick.removeAll(this.tileEntityListUnload);
-+            //this.tileEntityListTick.removeAll(this.tileEntityListUnload);
-+            for (TileEntity tent : this.tileEntityListUnload) {
-+                this.tileEntityListTick.remove(tent.getId());
-+            }
-             this.tileEntityList.removeAll(this.tileEntityListUnload);
-             this.tileEntityListUnload.clear();
-         }
-@@ -1461,10 +1503,20 @@
- 
-         // Spigot start
-         // Iterator iterator = this.tileEntityListTick.iterator();
--        int tilesThisCycle = 0;
-+        //int tilesThisCycle = 0;
-+        Iterator itt = tileEntityListTick.keySet().iterator();
-+        ents_list.clear();
-+        //List<RecursiveAction> forkts = new LinkedList();
-         for (tileLimiter.initTick();
--                tilesThisCycle < tileEntityListTick.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
--                tileTickPosition++, tilesThisCycle++) {
-+                //tilesThisCycle < tileEntityListTick.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
-+                itt.hasNext() && tileLimiter.shouldContinue();
-+                //tileTickPosition++, tilesThisCycle++) {
-+                ) {
-+            ents_list.add((int) itt.next());
-+            /*TileTick_Pool tasks = new TileTick_Pool(this, (int) itt.next());
-+            tasks.fork();
-+            tasks.join();*/
-+            /*
-             tileTickPosition = (tileTickPosition < tileEntityListTick.size()) ? tileTickPosition : 0;
-             TileEntity tileentity = (TileEntity) this.tileEntityListTick.get(tileTickPosition);
-             // Spigot start
-@@ -1481,7 +1533,7 @@
- 
-                 if (this.isLoaded(blockposition) && this.N.a(blockposition)) {
-                     try {
--                        this.methodProfiler.a(""/*tileentity.getClass().getSimpleName()*/); // CraftBukkit: SPIGOT-1900
-+                        //this.methodProfiler.a(""/tileentity.getClass().getSimpleName()/); // CraftBukkit: SPIGOT-1900
-                         tileentity.tickTimer.startTiming(); // Spigot
-                         ((ITickable) tileentity).c();
-                         this.methodProfiler.b();
-@@ -1506,8 +1558,10 @@
-                 if (this.isLoaded(tileentity.getPosition())) {
-                     this.getChunkAtWorldCoords(tileentity.getPosition()).d(tileentity.getPosition());
-                 }
--            }
-+            }*/
-         }
-+        SpigotWorldConfig.TileTickPool.invoke(new TileTick_Pool(this, ents_list));
-+        
- 
-         timings.tileEntityTick.stopTiming(); // Spigot
-         timings.tileEntityPending.startTiming(); // Spigot
-@@ -1556,13 +1610,116 @@
-         this.methodProfiler.b();
-     }
- 
-+    CrashReportSystemDetails crashreportsystemdetails1;
-+    CrashReport crashreport1;
-+    public void entity_tick_hose(int id){
-+        //tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
-+        //entity = (Entity) this.entityList.get(this.tickPosition);
-+        Entity entity = (Entity) this.entityList_map.get(id);
-+        // CraftBukkit end
-+        Entity entity1 = entity.by();
-+
-+        if (entity1 != null) {
-+            if (!entity1.dead && entity1.w(entity)) {
-+                //continue;
-+                return;
-+            }
-+
-+            entity.stopRiding();
-+        }
-+
-+        this.methodProfiler.a("tick");
-+        if (!entity.dead && !(entity instanceof EntityPlayer)) {
-+            try {
-+                SpigotTimings.tickEntityTimer.startTiming(); // Spigot
-+                this.g(entity);
-+                SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
-+            } catch (Throwable throwable1) {
-+                crashreport1 = CrashReport.a(throwable1, "Ticking entity");
-+                crashreportsystemdetails1 = crashreport1.a("Entity being ticked");
-+                entity.appendEntityCrashDetails(crashreportsystemdetails1);
-+                throw new ReportedException(crashreport1);
-+            }
-+        }
-+
-+        this.methodProfiler.b();
-+        this.methodProfiler.a("remove");
-+        if (entity.dead) {
-+            int j = entity.ab;
-+            int l = entity.ad;
-+
-+            if (entity.aa && this.isChunkLoaded(j, l, true)) {
-+                this.getChunkAt(j, l).b(entity);
-+            }
-+
-+            //guardEntityList = false; // Spigot
-+            //this.entityList.remove(this.tickPosition--); // CraftBukkit - Use field for loop variable
-+            this.entityList_map.remove(id); // CraftBukkit - Use field for loop variable
-+            this.entityList = new ArrayList<Entity>(entityList_map.values());
-+            //guardEntityList = true; // Spigot
-+            this.c(entity);
-+        }
-+
-+        this.methodProfiler.b();
-+    }
+     protected abstract StructureStart b(int i, int j);
 +    
-+    public void tile_tick_hose(int id) {
-+        //tileTickPosition = (tileTickPosition < tileEntityListTick.size()) ? tileTickPosition : 0;
-+        //TileEntity tileentity = (TileEntity) this.tileEntityListTick.get(tileTickPosition);
-+        TileEntity tileentity = (TileEntity) this.tileEntityListTick.get(id);
-+        // Spigot start
-+        if (tileentity == null) {
-+            getServer().getLogger().severe("Spigot has detected a null entity and has removed it, preventing a crash");
-+            //tilesThisCycle--;
-+            //this.tileEntityListTick.remove(tileTickPosition--);
-+            this.tileEntityListTick.remove(id);
-+            //continue;
-+            return;
-+        }
-+        // Spigot end
-+
-+        if (!tileentity.x() && tileentity.t()) {
-+            BlockPosition blockposition = tileentity.getPosition();
-+
-+            if (this.isLoaded(blockposition) && this.N.a(blockposition)) {
-+                try {
-+                    this.methodProfiler.a(""/*tileentity.getClass().getSimpleName()*/); // CraftBukkit: SPIGOT-1900
-+                    tileentity.tickTimer.startTiming(); // Spigot
-+                    ((ITickable) tileentity).c();
-+                    this.methodProfiler.b();
-+                } catch (Throwable throwable2) {
-+                    crashreport1 = CrashReport.a(throwable2, "Ticking block entity");
-+                    crashreportsystemdetails1 = crashreport1.a("Block entity being ticked");
-+                    tileentity.a(crashreportsystemdetails1);
-+                    throw new ReportedException(crashreport1);
-+                }
-+                // Spigot start
-+                finally {
-+                    tileentity.tickTimer.stopTiming();
-+                }
-+                // Spigot end
-+            }
-+        }
-+
-+        if (tileentity.x()) {
-+            //tilesThisCycle--;
-+            //this.tileEntityListTick.remove(tileTickPosition--);
-+            this.tileEntityListTick.remove(id);
-+            this.tileEntityList.remove(tileentity);
-+            if (this.isLoaded(tileentity.getPosition())) {
-+                this.getChunkAtWorldCoords(tileentity.getPosition()).d(tileentity.getPosition());
-+            }
-+        }
-+    }
-+    
-     protected void l() {}
- 
-     public boolean a(TileEntity tileentity) {
-         boolean flag = this.tileEntityList.add(tileentity);
- 
-         if (flag && tileentity instanceof ITickable) {
--            this.tileEntityListTick.add(tileentity);
-+            //this.tileEntityListTick.add(tileentity);
-+            this.tileEntityListTick.put(tileentity.getId(), tileentity);
-         }
- 
-         return flag;
-@@ -1593,7 +1750,7 @@
-         byte b0 = 32;
- 
-         // Spigot start
--        if (flag && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
-+        if (!org.spigotmc.ActivationRange.checkIfActive(entity)) {
-             entity.ticksLived++;
-             entity.inactiveTick();
-         } else {
-@@ -2025,7 +2182,8 @@
-             if (tileentity != null) {
-                 this.b.remove(tileentity);
-                 this.tileEntityList.remove(tileentity);
--                this.tileEntityListTick.remove(tileentity);
-+                //this.tileEntityListTick.remove(tileentity);
-+                this.tileEntityListTick.remove(tileentity.getId());
-             }
- 
-             this.getChunkAtWorldCoords(blockposition).d(blockposition);
-@@ -2449,6 +2607,14 @@
- 
-     public <T extends Entity> List<T> a(Class<? extends T> oclass, Predicate<? super T> predicate) {
-         ArrayList arraylist = Lists.newArrayList();
++    class structure extends RecursiveAction {
++        int i, j;
++        StructureStart structurestart;
 +        
-+        for (Map.Entry me : this.entityList_map.entrySet()) {
-+            Entity entity = (Entity) me.getValue();
-+            if (oclass.isAssignableFrom(entity.getClass()) && predicate.apply((T) entity)) {
-+                arraylist.add(entity);
-+            }
++        structure(int i, int j, StructureStart structurestart) {
++            this.i = i;
++            this.j = j;
++            this.structurestart = structurestart;
 +        }
-+        /*
-         Iterator iterator = this.entityList.iterator();
- 
-         while (iterator.hasNext()) {
-@@ -2457,7 +2623,7 @@
-             if (oclass.isAssignableFrom(entity.getClass()) && predicate.apply((T) entity)) {
-                 arraylist.add(entity);
-             }
--        }
-+        }*/
- 
-         return arraylist;
-     }
-@@ -2533,6 +2699,24 @@
- 
-     public int a(Class<?> oclass) {
-         int i = 0;
 +        
-+        for (Map.Entry me : this.entityList_map.entrySet()) {
-+            Entity entity = (Entity) me.getValue();
-+            // CraftBukkit start - Split out persistent check, don't apply it to special persistent mobs
-+            if (entity instanceof EntityInsentient) {
-+                EntityInsentient entityinsentient = (EntityInsentient) entity;
-+                if (entityinsentient.isTypeNotPersistent() && entityinsentient.isPersistent()) {
-+                    continue;
-+                }
-+            }
++        @Override
++        protected void compute() {
 +            
-+            if (oclass.isAssignableFrom(entity.getClass())) {
-+            // if ((!(entity instanceof EntityInsentient) || !((EntityInsentient) entity).isPersistent()) && oclass.isAssignableFrom(entity.getClass())) {
-+                // CraftBukkit end
-+                ++i;
-+            }
 +        }
-+        /*
-         Iterator iterator = this.entityList.iterator();
- 
-         while (iterator.hasNext()) {
-@@ -2550,7 +2734,7 @@
-                 // CraftBukkit end
-                 ++i;
-             }
--        }
-+        }*/
- 
-         return i;
-     }
-@@ -2567,10 +2751,12 @@
-             if (entity == null) {
-                 continue;
-             }
--            this.entityList.add(entity);
-+            //this.entityList.add(entity);
-+            this.entityList_map.put(entity.getId(), entity);
-             // CraftBukkit end
-             this.b(entity);
-         }
-+        this.entityList = new ArrayList<Entity>(entityList_map.values());
- 
-     }
- 
-diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
---- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-04-03 23:27:23.309613931 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-04-17 03:42:16.010951527 +0800
-@@ -669,12 +669,14 @@
-                     this.getChunkAt(j, k).b(entity);
-                 }
- 
--                this.entityList.remove(entity);
-+                //this.entityList.remove(entity);
-+                this.entityList_map.remove(entity.getId());
-                 this.c(entity);
-             }
- 
-             this.methodProfiler.b();
-         }
-+        this.entityList = new ArrayList<Entity>(entityList_map.values());
- 
-     }
- 
-@@ -704,7 +706,20 @@
-                 this.methodProfiler.a("cleaning");
- 
-                 NextTickListEntry nextticklistentry;
-+                
-+                Iterator it = this.nextTickList.iterator();
-+                while (it.hasNext()) {
-+                    nextticklistentry = (NextTickListEntry) it.next();
-+                    if (!flag && nextticklistentry.b > this.worldData.getTime()) {
-+                        break;
-+                    }
- 
-+                    // CraftBukkit - use nextTickList
-+                    this.nextTickList.remove(nextticklistentry);
-+                    // this.nextTickListHash.remove(nextticklistentry);
-+                    this.U.add(nextticklistentry);
-+                }
-+                /*
-                 for (int j = 0; j < i; ++j) {
-                     nextticklistentry = (NextTickListEntry) this.nextTickList.first();
-                     if (!flag && nextticklistentry.b > this.worldData.getTime()) {
-@@ -715,7 +730,7 @@
-                     this.nextTickList.remove(nextticklistentry);
-                     // this.nextTickListHash.remove(nextticklistentry);
-                     this.U.add(nextticklistentry);
--                }
-+                }*/
- 
-                 this.methodProfiler.b();
-                 this.methodProfiler.a("ticking");
-@@ -1082,10 +1097,12 @@
-             Entity entity = (Entity) iterator.next();
- 
-             if (this.i(entity)) {
--                this.entityList.add(entity);
-+                //this.entityList.add(entity);
-+                this.entityList_map.put(entity.getId(), entity);
-                 this.b(entity);
-             }
-         }
-+        this.entityList = new ArrayList<Entity>(entityList_map.values());
- 
-     }
- 
-diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
---- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-03 23:27:23.448613931 +0800
-+++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-04-17 03:42:16.293951501 +0800
-@@ -8,6 +8,7 @@
- import java.util.HashSet;
- import java.util.List;
- import java.util.Iterator;
-+import java.util.Map;
- import java.util.Random;
- import java.util.Set;
- import java.util.UUID;
-@@ -656,7 +657,8 @@
-     public List<Entity> getEntities() {
-         List<Entity> list = new ArrayList<Entity>();
- 
--        for (Object o : world.entityList) {
-+        for (Map.Entry me : world.entityList_map.entrySet()) {
-+            Object o = me.getValue();
-             if (o instanceof net.minecraft.server.Entity) {
-                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-                 Entity bukkitEntity = mcEnt.getBukkitEntity();
-@@ -667,6 +669,18 @@
-                 }
-             }
-         }
-+        /*
-+        for (Object o : world.entityList) {
-+            if (o instanceof net.minecraft.server.Entity) {
-+                net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-+                Entity bukkitEntity = mcEnt.getBukkitEntity();
-+
-+                // Assuming that bukkitEntity isn't null
-+                if (bukkitEntity != null) {
-+                    list.add(bukkitEntity);
-+                }
-+            }
-+        }*/
- 
-         return list;
-     }
-@@ -674,7 +688,8 @@
-     public List<LivingEntity> getLivingEntities() {
-         List<LivingEntity> list = new ArrayList<LivingEntity>();
- 
--        for (Object o : world.entityList) {
-+        for (Map.Entry me : world.entityList_map.entrySet()) {
-+            Object o = me.getValue();
-             if (o instanceof net.minecraft.server.Entity) {
-                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-                 Entity bukkitEntity = mcEnt.getBukkitEntity();
-@@ -685,6 +700,18 @@
-                 }
-             }
-         }
-+        /*
-+        for (Object o : world.entityList) {
-+            if (o instanceof net.minecraft.server.Entity) {
-+                net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
-+                Entity bukkitEntity = mcEnt.getBukkitEntity();
-+
-+                // Assuming that bukkitEntity isn't null
-+                if (bukkitEntity != null && bukkitEntity instanceof LivingEntity) {
-+                    list.add((LivingEntity) bukkitEntity);
-+                }
-+            }
-+        }*/
- 
-         return list;
-     }
-@@ -699,7 +726,8 @@
-     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T> clazz) {
-         Collection<T> list = new ArrayList<T>();
- 
--        for (Object entity: world.entityList) {
-+        for (Map.Entry me : world.entityList_map.entrySet()) {
-+            Entity entity = (Entity) me.getValue();
-             if (entity instanceof net.minecraft.server.Entity) {
-                 Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
- 
-@@ -714,6 +742,23 @@
-                 }
-             }
-         }
-+        
-+        /*
-+        for (Object entity: world.entityList) {
-+            if (entity instanceof net.minecraft.server.Entity) {
-+                Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
-+
-+                if (bukkitEntity == null) {
-+                    continue;
-+                }
-+
-+                Class<?> bukkitClass = bukkitEntity.getClass();
-+
-+                if (clazz.isAssignableFrom(bukkitClass)) {
-+                    list.add((T) bukkitEntity);
-+                }
-+            }
-+        }*/
- 
-         return list;
-     }
-@@ -721,6 +766,26 @@
-     public Collection<Entity> getEntitiesByClasses(Class<?>... classes) {
-         Collection<Entity> list = new ArrayList<Entity>();
- 
-+        for (Map.Entry me : world.entityList_map.entrySet()) {
-+             Entity entity = (Entity) me.getValue();
-+             if (entity instanceof net.minecraft.server.Entity) {
-+                Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
-+
-+                if (bukkitEntity == null) {
-+                    continue;
-+                }
-+
-+                Class<?> bukkitClass = bukkitEntity.getClass();
-+
-+                for (Class<?> clazz : classes) {
-+                    if (clazz.isAssignableFrom(bukkitClass)) {
-+                        list.add(bukkitEntity);
-+                        break;
-+                    }
-+                }
-+            }
-+        }
-+        /*
-         for (Object entity: world.entityList) {
-             if (entity instanceof net.minecraft.server.Entity) {
-                 Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
-@@ -738,7 +803,7 @@
-                     }
-                 }
-             }
--        }
-+        }*/
- 
-         return list;
-     }
-diff -Naur src_origin/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
---- src_origin/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java	2016-04-03 23:27:24.112613932 +0800
-+++ src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java	2016-04-17 03:42:17.160951422 +0800
-@@ -242,7 +242,6 @@
-         // entity.world = ((CraftWorld) location.getWorld()).getHandle();
-         // Spigot end
-         entity.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
--        entity.world.entityJoinedWorld(entity, false); // Spigot - register to new chunk
-         // entity.setLocation() throws no event, and so cannot be cancelled
-         return true;
-     }
-diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
---- src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-04-03 23:27:24.571613932 +0800
-+++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-04-17 03:42:17.605951381 +0800
-@@ -496,7 +496,8 @@
-             if (source == DamageSource.CACTUS) {
-                 cause = DamageCause.CONTACT;
-             } else {
--                throw new RuntimeException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex)); // Spigot
-+                cause = DamageCause.FALL;
-+                //throw new RuntimeException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex)); // Spigot
-             }
-             EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
-             if (!event.isCancelled()) {
-@@ -516,7 +517,8 @@
-             } else if (source == DamageSource.DRAGON_BREATH) {
-                 cause = DamageCause.DRAGON_BREATH;
-             } else {
--                throw new RuntimeException(String.format("Unhandled damage of %s by %s from %s", entity, damager.getHandle(), source.translationIndex)); // Spigot
-+                cause = DamageCause.FALL;
-+                //throw new RuntimeException(String.format("Unhandled damage of %s by %s from %s", entity, damager.getHandle(), source.translationIndex)); // Spigot
-             }
-             EntityDamageEvent event = callEvent(new EntityDamageByEntityEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
-             if (!event.isCancelled()) {
-@@ -555,8 +557,8 @@
-         if (cause != null) {
-             return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
-         }
--
--        throw new RuntimeException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex)); // Spigot
-+        return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
-+        //throw new RuntimeException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex)); // Spigot
-     }
- 
-     private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, Map<DamageModifier, Double> modifiers, Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
-diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
---- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-04-03 23:27:25.299613933 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-04-17 03:42:18.478951301 +0800
-@@ -1,15 +1,19 @@
- package org.bukkit.craftbukkit.util;
- 
-+import com.google.common.collect.Sets;
- import java.util.Collection;
- import java.util.HashSet;
- import java.util.Iterator;
- import java.util.Set;
- import java.util.TreeSet;
-+import java.util.concurrent.ConcurrentSkipListSet;
- 
- public class HashTreeSet<V> implements Set<V> {
- 
--    private HashSet<V> hash = new HashSet<V>();
--    private TreeSet<V> tree = new TreeSet<V>();
-+    /*private HashSet<V> hash = new HashSet<V>();
-+    private TreeSet<V> tree = new TreeSet<V>();*/
-+    private Set<V> hash = Sets.newConcurrentHashSet();
-+    private ConcurrentSkipListSet<V> tree = new ConcurrentSkipListSet<V>();
- 
-     public HashTreeSet() {
- 
++                 
++    }
+ }
 diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/hose/ChunkFlush_Pool.java
 --- src_origin/main/java/org/hose/ChunkFlush_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-04-17 03:42:13.578951750 +0800
++++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-05-29 15:02:12.083630795 +0800
 @@ -0,0 +1,53 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2084,10 +1535,10 @@ diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/
 +            task.fork();
 +            //task.join();
 +        }
-+        
++        /*
 +        for (RecursiveAction task : forks) {
 +            task.join();
-+        }
++        }*/
 +    }
 +    
 +    
@@ -2107,7 +1558,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/hose/ChunkGen_Pool.java
 --- src_origin/main/java/org/hose/ChunkGen_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkGen_Pool.java	2016-04-17 03:42:13.578951750 +0800
++++ src/main/java/org/hose/ChunkGen_Pool.java	2016-05-29 15:02:12.083630795 +0800
 @@ -0,0 +1,76 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2144,10 +1595,10 @@ diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/ho
 +            task.fork();
 +            //task.join();
 +        }
-+        
++        /*
 +        for (RecursiveAction task : forks) {
 +            task.join();
-+        }
++        }*/
 +        /*
 +        List<int[]> fork1 = this.position.subList(0, (this.position.size()/2));
 +        List<int[]> fork2 = this.position.subList((this.position.size()/2), this.position.size());
@@ -2185,10 +1636,10 @@ diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/ho
 +                 
 +    }
 +}
-diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/hose/EntityTick_Pool.java
---- src_origin/main/java/org/hose/EntityTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/EntityTick_Pool.java	2016-04-17 03:42:13.580951750 +0800
-@@ -0,0 +1,139 @@
+diff -Naur src_origin/main/java/org/hose/ChunkPopulate_Pool.java src/main/java/org/hose/ChunkPopulate_Pool.java
+--- src_origin/main/java/org/hose/ChunkPopulate_Pool.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/org/hose/ChunkPopulate_Pool.java	2016-05-29 15:02:12.083630795 +0800
+@@ -0,0 +1,35 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
 + * To change this template file, choose Tools | Templates
@@ -2196,352 +1647,38 @@ diff -Naur src_origin/main/java/org/hose/EntityTick_Pool.java src/main/java/org/
 + */
 +package org.hose;
 +
-+import java.util.LinkedList;
-+import java.util.List;
++import java.util.Random;
 +import java.util.concurrent.RecursiveAction;
-+import net.minecraft.server.World;
-+import org.spigotmc.SpigotWorldConfig;
++import org.bukkit.Chunk;
++import org.bukkit.World;
 +
 +/**
 + *
 + * @author softpak
 + */
-+public class EntityTick_Pool extends RecursiveAction {
++public class ChunkPopulate_Pool extends RecursiveAction {//need to use callable
 +    World world;
-+    //int tp;
-+    List<Integer> entitys_list;
++    Random random;
++    Chunk chunk;
++    org.bukkit.generator.BlockPopulator populator;
 +    
-+    public EntityTick_Pool(World world, List<Integer> entitys_list){
++    public ChunkPopulate_Pool(World world, Random random, Chunk chunk, org.bukkit.generator.BlockPopulator populator){
 +        this.world = world;
-+        //this.tp = tp;
-+        this.entitys_list = entitys_list;
-+        
++        this.random = random;
++        this.chunk = chunk;
++        this.populator = populator;
 +    }
 +    
 +    @Override
 +    protected void compute() {
-+        //world.entity_tick_hose(tp);
-+        if (this.entitys_list.size() < 200) {
-+            dotick task = new dotick(world, entitys_list);
-+            task.fork();
-+            task.join();
-+            /*
-+            List<Integer> fork1 = this.entitys_list.subList(0, (this.entitys_list.size()/2));
-+            List<Integer> fork2 = this.entitys_list.subList((this.entitys_list.size()/2), this.entitys_list.size());
-+            dotick task1 = new dotick(world, fork1);
-+            dotick task2 = new dotick(world, fork2);
-+            task1.fork();
-+            task2.fork();
-+            task1.join();*/
-+            /*int group_num = this.entitys_list.size()/SpigotWorldConfig.getthreadnumber();
-+            List<RecursiveAction> fork = new LinkedList();*/
-+            /*
-+            for (int c = 0; c < SpigotWorldConfig.getthreadnumber() ; c++) {
-+                if (c == SpigotWorldConfig.getthreadnumber() - 1) {
-+                    List<Integer> forks = this.entitys_list.subList(c*group_num , this.entitys_list.size());
-+                    dotick tasks = new dotick(world, forks);
-+                    fork.add(tasks);
-+                } else {
-+                    List<Integer> forks = this.entitys_list.subList(c*group_num , (c+1)*group_num);
-+                    dotick tasks = new dotick(world, forks);
-+                    fork.add(tasks);
-+                }
-+            }*/
-+            /*
-+            for (RecursiveAction task : fork) {
-+                task.fork();
-+                task.join();
-+            }*/
-+        } else {
-+            List<Integer> fork1 = this.entitys_list.subList(0, (this.entitys_list.size()/2));
-+            List<Integer> fork2 = this.entitys_list.subList((this.entitys_list.size()/2), this.entitys_list.size());
-+            EntityTick_Pool t1 = new EntityTick_Pool(this.world, fork1);
-+            EntityTick_Pool t2 = new EntityTick_Pool(this.world, fork2);
-+            t1.fork();
-+            t2.compute();
-+            t1.join();
-+        }
-+        /*
-+        for (RecursiveAction task : fork) {
-+            task.join();
-+        }*/
-+        /*
-+        int group_num = this.entitys_list.size()/4;
-+        
-+        List<Integer> fork1 = new LinkedList(this.entitys_list.subList(0, group_num * 1));
-+        List<Integer> fork2 = new LinkedList(this.entitys_list.subList(group_num * 1, group_num * 2));
-+        List<Integer> fork3 = new LinkedList(this.entitys_list.subList(group_num * 2, group_num * 3));
-+        List<Integer> fork4 = new LinkedList(this.entitys_list.subList(group_num * 3, this.entitys_list.size()));
-+        //List<Integer> fork2 = this.entitys_list.subList((this.entitys_list.size()/2), this.entitys_list.size());
-+        
-+        dotick task1 = new dotick(world, fork1);
-+        dotick task2 = new dotick(world, fork2);
-+        dotick task3 = new dotick(world, fork3);
-+        dotick task4 = new dotick(world, fork4);
-+        task1.fork();
-+        task2.fork();
-+        task3.fork();
-+        task4.fork();
-+        task1.join();
-+        task2.join();
-+        task3.join();
-+        task4.join();*/
-+        //List<RecursiveAction> fork = new LinkedList();
-+        /*dotick task1 = new dotick(world, this.entitys_list);
-+        
-+        task1.fork();
-+        task1.join();*/
-+        /*
-+        //split entitys_list into 4 part
-+        for (int tp : entitys_list) {
-+            dotick task = new dotick(world, tp);
-+            fork.add(task);
-+            task.fork();
-+            //task.join();
-+        }
-+        
-+        for (RecursiveAction task : fork) {
-+            //task.fork();
-+            task.join();
-+        }*/
++        populator.populate(world, random, chunk);
 +    }
-+    
-+    
-+    class dotick extends RecursiveAction {
-+        World world;
-+        //int tp;
-+        List<Integer> entitys_list;
-+        
-+        dotick(World world, List<Integer> entitys_list) {
-+            this.world = world;
-+            //this.tp = tp;
-+            this.entitys_list = entitys_list;
-+        }
-+        
-+        @Override
-+        protected void compute() {
-+            //world.entity_tick_hose(tp);
-+            for (int tp : entitys_list) {
-+                world.entity_tick_hose(tp);
-+            }
-+        }
-+                 
-+    }
++
 +}
-diff -Naur src_origin/main/java/org/hose/PlayerChunkMap_Pool.java src/main/java/org/hose/PlayerChunkMap_Pool.java
---- src_origin/main/java/org/hose/PlayerChunkMap_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/PlayerChunkMap_Pool.java	2016-04-17 03:42:13.575951750 +0800
-@@ -0,0 +1,64 @@
-+/*
-+ * To change this license header, choose License Headers in Project Properties.
-+ * To change this template file, choose Tools | Templates
-+ * and open the template in the editor.
-+ */
-+package org.hose;
-+
-+import java.util.LinkedList;
-+import java.util.List;
-+import java.util.concurrent.RecursiveAction;
-+import net.minecraft.server.ChunkCoordIntPair;
-+import net.minecraft.server.EntityPlayer;
-+import net.minecraft.server.PlayerChunkMap;
-+
-+/**
-+ *
-+ * @author softpak
-+ */
-+public class PlayerChunkMap_Pool extends RecursiveAction {//need to use callable
-+    PlayerChunkMap pcm;
-+    List<ChunkCoordIntPair> chunkList;
-+    EntityPlayer entityplayer;
-+    
-+    public PlayerChunkMap_Pool(PlayerChunkMap pcm, List<ChunkCoordIntPair> chunkList, EntityPlayer entityplayer){
-+        this.pcm = pcm;
-+        this.chunkList = chunkList;
-+        this.entityplayer = entityplayer;
-+    }
-+    
-+    @Override
-+    protected void compute() {
-+        List<RecursiveAction> forks = new LinkedList();
-+        for (ChunkCoordIntPair cp : chunkList) {
-+            getchunk task = new getchunk(pcm, cp.x, cp.z ,entityplayer);
-+            forks.add(task);
-+            task.fork();
-+            //task.join();
-+        }
-+        
-+        for (RecursiveAction task : forks) {
-+            task.join();
-+        }
-+    }
-+    
-+    
-+    class getchunk extends RecursiveAction {
-+        PlayerChunkMap pcm;
-+        int x, z;
-+        EntityPlayer entityplayer;
-+        
-+        getchunk(PlayerChunkMap pcm, int x, int z, EntityPlayer entityplayer) {
-+            this.pcm = pcm;
-+            this.x = x;
-+            this.z = z;
-+            this.entityplayer = entityplayer;
-+        }
-+        
-+        @Override
-+        protected void compute() {
-+            pcm.c(x, z).a(entityplayer);
-+        }
-+                 
-+    }
-+}
-diff -Naur src_origin/main/java/org/hose/TileTick_Pool.java src/main/java/org/hose/TileTick_Pool.java
---- src_origin/main/java/org/hose/TileTick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/TileTick_Pool.java	2016-04-17 03:42:13.581951750 +0800
-@@ -0,0 +1,104 @@
-+/*
-+ * To change this license header, choose License Headers in Project Properties.
-+ * To change this template file, choose Tools | Templates
-+ * and open the template in the editor.
-+ */
-+package org.hose;
-+
-+import java.util.LinkedList;
-+import java.util.List;
-+import java.util.concurrent.RecursiveAction;
-+import net.minecraft.server.World;
-+import org.spigotmc.SpigotWorldConfig;
-+
-+/**
-+ *
-+ * @author softpak
-+ */
-+public class TileTick_Pool extends RecursiveAction {
-+    World world;
-+    //int tp;
-+    List<Integer> tiles_list;
-+    
-+    public TileTick_Pool(World world, List<Integer> tiles_list){
-+        this.world = world;
-+        //this.tp = tp;
-+        this.tiles_list = tiles_list;
-+        
-+    }
-+    
-+    @Override
-+    protected void compute() {
-+        //world.tile_tick_hose(tp);
-+        /*
-+        if (this.tiles_list.size() < 200) {
-+            dotick task = new dotick(world, tiles_list);
-+            task.fork();
-+            task.join();
-+        } else {
-+            List<Integer> fork1 = this.tiles_list.subList(0, (this.tiles_list.size()/2));
-+            List<Integer> fork2 = this.tiles_list.subList((this.tiles_list.size()/2), this.tiles_list.size());
-+            TileTick_Pool t1 = new TileTick_Pool(this.world, fork1);
-+            TileTick_Pool t2 = new TileTick_Pool(this.world, fork2);
-+            t1.fork();
-+            t2.compute();
-+            t1.join();
-+        }*/
-+        
-+        int group_num = this.tiles_list.size()/SpigotWorldConfig.getthreadnumber();
-+        List<RecursiveAction> fork = new LinkedList();
-+        for (int c = 0; c < SpigotWorldConfig.getthreadnumber() ; c++) {
-+            if (c == SpigotWorldConfig.getthreadnumber() - 1) {
-+                List<Integer> forks = this.tiles_list.subList(c*group_num , this.tiles_list.size());
-+                dotick tasks = new dotick(world, forks);
-+                fork.add(tasks);
-+            } else {
-+                List<Integer> forks = this.tiles_list.subList(c*group_num , (c+1)*group_num);
-+                dotick tasks = new dotick(world, forks);
-+                fork.add(tasks);
-+            }
-+        }
-+        for (RecursiveAction task : fork) {
-+            task.fork();
-+            task.join();
-+        }
-+        /*
-+        for (RecursiveAction task : fork) {
-+            task.join();
-+        }*/
-+        /*
-+        List<RecursiveAction> forks = new LinkedList();
-+        
-+        for (int tp : tiles_list) {
-+            dotick task = new dotick(world, tp);
-+            task.fork();
-+            forks.add(task);
-+            //task.join();
-+        }
-+        
-+        for (RecursiveAction task : forks) {
-+            task.join();
-+        }*/
-+    }
-+    
-+    
-+    class dotick extends RecursiveAction {
-+        World world;
-+        //int tp;
-+        List<Integer> entitys_list;
-+        
-+        dotick(World world, List<Integer> entitys_list) {
-+            this.world = world;
-+            //this.tp = tp;
-+            this.entitys_list = entitys_list;
-+        }
-+        
-+        @Override
-+        protected void compute() {
-+            //world.tile_tick_hose(tp);
-+            for (int tp : entitys_list) {
-+                world.tile_tick_hose(tp);
-+            }
-+        }
-+    }
-+}
-diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
---- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-04-03 23:27:20.709613929 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2016-04-17 03:42:13.614951747 +0800
-@@ -1,6 +1,7 @@
- package org.spigotmc;
- 
- import java.util.List;
-+import java.util.Queue;
- import java.util.Set;
- import net.minecraft.server.AxisAlignedBB;
- import net.minecraft.server.Chunk;
-@@ -141,7 +142,8 @@
-      */
-     private static void activateChunkEntities(Chunk chunk)
-     {
--        for ( List<Entity> slice : chunk.entitySlices )
-+        //for ( List<Entity> slice : chunk.entitySlices )
-+        for ( Queue<Entity> slice : chunk.entitySlices )
-         {
-             for ( Entity entity : slice )
-             {
-diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
---- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-04-03 23:27:20.714613929 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-04-17 03:42:13.610951747 +0800
-@@ -5,7 +5,8 @@
- public class AsyncCatcher
- {
- 
--    public static boolean enabled = true;
-+    //public static boolean enabled = true;
-+    public static boolean enabled = false;
- 
-     public static void catchOp(String reason)
-     {
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
---- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-03 23:27:20.782613929 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-04-17 03:42:13.677951741 +0800
-@@ -1,12 +1,93 @@
+--- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-05-29 15:00:13.200641691 +0800
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-05-29 15:02:12.163630788 +0800
+@@ -1,12 +1,115 @@
  package org.spigotmc;
  
 +import io.netty.util.internal.ConcurrentSet;
@@ -2556,7 +1693,6 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
  {
 -
 +    //hose start
-+    static public Set<Integer> Block_dophy_list = new ConcurrentSet();
 +    static public final int cpu_core = Runtime.getRuntime().availableProcessors();
 +    static final ForkJoinPool.ForkJoinWorkerThreadFactory fetp = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 +        @Override
@@ -2600,11 +1736,32 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +            return thread;
 +        }
 +    };
++    
++    static final ForkJoinPool.ForkJoinWorkerThreadFactory fcfpt3 = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
++        @Override
++        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
++            final ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
++            thread.setName("ChunkFlushPool_T3-" + thread.getPoolIndex());
++            return thread;
++        }
++    };
++    
++    static final ForkJoinPool.ForkJoinWorkerThreadFactory fcpp = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
++        @Override
++        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
++            final ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
++            thread.setName("ChunkPopulate_Pool-" + thread.getPoolIndex());
++            return thread;
++        }
++    };
++    
 +    public static ForkJoinPool EntityTickPool;
 +    public static ForkJoinPool TileTickPool;
 +    public static ForkJoinPool ChunkPool;
 +    public static ForkJoinPool PlayerChunkPool;
 +    public static ForkJoinPool ChunkFlushPool;
++    public static ForkJoinPool ChunkFlushPool_T3;
++    public static ForkJoinPool ChunkPopulate_Pool;
 +    
 +    /*
 +    static public FutureTask CollideTask;
@@ -2626,6 +1783,8 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +        ChunkPool = new ForkJoinPool(getthreadnumber(), fcp, null, false);
 +        PlayerChunkPool = new ForkJoinPool(getthreadnumber(), fpcp, null, false);
 +        ChunkFlushPool = new ForkJoinPool(getthreadnumber(), fcfp, null, false);
++        ChunkFlushPool_T3 = new ForkJoinPool(getthreadnumber(), fcfpt3, null, false);
++        ChunkPopulate_Pool = new ForkJoinPool(getthreadnumber(), fcpp, null, false);
 +        //executor = new ThreadPoolExecutor(getthreadnumber(), getthreadnumber(), 1, TimeUnit.DAYS, queue);
 +        log("WETP Core Multiple: " + worldtickentitypool_core_multiple);
 +    }
