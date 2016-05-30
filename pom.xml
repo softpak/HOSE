@@ -4,19 +4,19 @@
     <groupId>org.spigotmc</groupId>
     <artifactId>spigot</artifactId>
     <packaging>jar</packaging>
-    <version>1.9.2-R0.1-SNAPSHOT</version>
-    <name>Spigot</name>
+    <version>1.9.4-R0.1-SNAPSHOT</version>
+    <name>Spigot194</name>
     <url>http://www.spigotmc.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.9.2</minecraft.version>
-        <minecraft_version>1_9_R1</minecraft_version>
+        <minecraft.version>1.9.4</minecraft.version>
+        <minecraft_version>1_9_R2</minecraft_version>
         <buildtag.prefix>git-Bukkit-</buildtag.prefix>
         <buildtag.suffix></buildtag.suffix>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <parent>
@@ -178,7 +178,7 @@
                 <configuration>
                     <signature>
                         <groupId>org.codehaus.mojo.signature</groupId>
-                        <artifactId>java17</artifactId>
+                        <artifactId>java18</artifactId>
                         <version>1.0</version>
                     </signature>
                 </configuration>
