@@ -1,6 +1,25 @@
+diff -Naur src_origin/main/java/net/minecraft/server/BlockButtonAbstract.java src/main/java/net/minecraft/server/BlockButtonAbstract.java
+--- src_origin/main/java/net/minecraft/server/BlockButtonAbstract.java	2016-05-29 15:00:13.700641645 +0800
++++ src/main/java/net/minecraft/server/BlockButtonAbstract.java	2016-06-08 13:02:33.518102585 +0800
+@@ -1,6 +1,7 @@
+ package net.minecraft.server;
+ 
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ 
+@@ -214,6 +215,7 @@
+ 
+     private void e(IBlockData iblockdata, World world, BlockPosition blockposition) {
+         List list = world.a(EntityArrow.class, iblockdata.c(world, blockposition).a(blockposition));
++        //Queue list = world.a(EntityArrow.class, iblockdata.c(world, blockposition).a(blockposition));
+         boolean flag = !list.isEmpty();
+         boolean flag1 = ((Boolean) iblockdata.get(BlockButtonAbstract.POWERED)).booleanValue();
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/BlockCactus.java src/main/java/net/minecraft/server/BlockCactus.java
 --- src_origin/main/java/net/minecraft/server/BlockCactus.java	2016-05-29 15:00:13.729641642 +0800
-+++ src/main/java/net/minecraft/server/BlockCactus.java	2016-06-03 11:22:45.121244490 +0800
++++ src/main/java/net/minecraft/server/BlockCactus.java	2016-06-08 13:02:33.542102583 +0800
 @@ -89,7 +89,8 @@
          return false;
      }
@@ -11,9 +30,472 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockCactus.java src/main/j
          CraftEventFactory.blockDamage = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()); // CraftBukkit
          entity.damageEntity(DamageSource.CACTUS, 1.0F);
          CraftEventFactory.blockDamage = null; // CraftBukkit
+diff -Naur src_origin/main/java/net/minecraft/server/BlockChest.java src/main/java/net/minecraft/server/BlockChest.java
+--- src_origin/main/java/net/minecraft/server/BlockChest.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/BlockChest.java	2016-06-08 13:02:33.583102579 +0800
+@@ -0,0 +1,459 @@
++package net.minecraft.server;
++
++import java.util.Iterator;
++import javax.annotation.Nullable;
++
++public class BlockChest extends BlockTileEntity {
++
++    public static final BlockStateDirection FACING = BlockFacingHorizontal.FACING;
++    protected static final AxisAlignedBB b = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D, 0.9375D);
++    protected static final AxisAlignedBB c = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 1.0D);
++    protected static final AxisAlignedBB d = new AxisAlignedBB(0.0D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
++    protected static final AxisAlignedBB e = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 1.0D, 0.875D, 0.9375D);
++    protected static final AxisAlignedBB f = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
++    public final BlockChest.Type g;
++
++    protected BlockChest(BlockChest.Type blockchest_type) {
++        super(Material.WOOD);
++        this.w(this.blockStateList.getBlockData().set(BlockChest.FACING, EnumDirection.NORTH));
++        this.g = blockchest_type;
++        this.a(blockchest_type == BlockChest.Type.TRAP ? CreativeModeTab.d : CreativeModeTab.c);
++    }
++
++    public boolean b(IBlockData iblockdata) {
++        return false;
++    }
++
++    public boolean c(IBlockData iblockdata) {
++        return false;
++    }
++
++    public EnumRenderType a(IBlockData iblockdata) {
++        return EnumRenderType.ENTITYBLOCK_ANIMATED;
++    }
++
++    public AxisAlignedBB a(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
++        return iblockaccess.getType(blockposition.north()).getBlock() == this ? BlockChest.b : (iblockaccess.getType(blockposition.south()).getBlock() == this ? BlockChest.c : (iblockaccess.getType(blockposition.west()).getBlock() == this ? BlockChest.d : (iblockaccess.getType(blockposition.east()).getBlock() == this ? BlockChest.e : BlockChest.f)));
++    }
++
++    public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
++        this.e(world, blockposition, iblockdata);
++        Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
++
++        while (iterator.hasNext()) {
++            EnumDirection enumdirection = (EnumDirection) iterator.next();
++            BlockPosition blockposition1 = blockposition.shift(enumdirection);
++            IBlockData iblockdata1 = world.getType(blockposition1);
++
++            if (iblockdata1.getBlock() == this) {
++                this.e(world, blockposition1, iblockdata1);
++            }
++        }
++
++    }
++
++    public IBlockData getPlacedState(World world, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2, int i, EntityLiving entityliving) {
++        return this.getBlockData().set(BlockChest.FACING, entityliving.getDirection());
++    }
++
++    public void postPlace(World world, BlockPosition blockposition, IBlockData iblockdata, EntityLiving entityliving, ItemStack itemstack) {
++        EnumDirection enumdirection = EnumDirection.fromType2(MathHelper.floor((double) (entityliving.yaw * 4.0F / 360.0F) + 0.5D) & 3).opposite();
++
++        iblockdata = iblockdata.set(BlockChest.FACING, enumdirection);
++        BlockPosition blockposition1 = blockposition.north();
++        BlockPosition blockposition2 = blockposition.south();
++        BlockPosition blockposition3 = blockposition.west();
++        BlockPosition blockposition4 = blockposition.east();
++        boolean flag = this == world.getType(blockposition1).getBlock();
++        boolean flag1 = this == world.getType(blockposition2).getBlock();
++        boolean flag2 = this == world.getType(blockposition3).getBlock();
++        boolean flag3 = this == world.getType(blockposition4).getBlock();
++
++        if (!flag && !flag1 && !flag2 && !flag3) {
++            world.setTypeAndData(blockposition, iblockdata, 3);
++        } else if (enumdirection.k() == EnumDirection.EnumAxis.X && (flag || flag1)) {
++            if (flag) {
++                world.setTypeAndData(blockposition1, iblockdata, 3);
++            } else {
++                world.setTypeAndData(blockposition2, iblockdata, 3);
++            }
++
++            world.setTypeAndData(blockposition, iblockdata, 3);
++        } else if (enumdirection.k() == EnumDirection.EnumAxis.Z && (flag2 || flag3)) {
++            if (flag2) {
++                world.setTypeAndData(blockposition3, iblockdata, 3);
++            } else {
++                world.setTypeAndData(blockposition4, iblockdata, 3);
++            }
++
++            world.setTypeAndData(blockposition, iblockdata, 3);
++        }
++
++        if (itemstack.hasName()) {
++            TileEntity tileentity = world.getTileEntity(blockposition);
++
++            if (tileentity instanceof TileEntityChest) {
++                ((TileEntityChest) tileentity).a(itemstack.getName());
++            }
++        }
++
++    }
++
++    public IBlockData e(World world, BlockPosition blockposition, IBlockData iblockdata) {
++        if (world.isClientSide) {
++            return iblockdata;
++        } else {
++            IBlockData iblockdata1 = world.getType(blockposition.north());
++            IBlockData iblockdata2 = world.getType(blockposition.south());
++            IBlockData iblockdata3 = world.getType(blockposition.west());
++            IBlockData iblockdata4 = world.getType(blockposition.east());
++            EnumDirection enumdirection = (EnumDirection) iblockdata.get(BlockChest.FACING);
++
++            if (iblockdata1.getBlock() != this && iblockdata2.getBlock() != this) {
++                boolean flag = iblockdata1.b();
++                boolean flag1 = iblockdata2.b();
++
++                if (iblockdata3.getBlock() == this || iblockdata4.getBlock() == this) {
++                    BlockPosition blockposition1 = iblockdata3.getBlock() == this ? blockposition.west() : blockposition.east();
++                    IBlockData iblockdata5 = world.getType(blockposition1.north());
++                    IBlockData iblockdata6 = world.getType(blockposition1.south());
++
++                    enumdirection = EnumDirection.SOUTH;
++                    EnumDirection enumdirection1;
++
++                    if (iblockdata3.getBlock() == this) {
++                        enumdirection1 = (EnumDirection) iblockdata3.get(BlockChest.FACING);
++                    } else {
++                        enumdirection1 = (EnumDirection) iblockdata4.get(BlockChest.FACING);
++                    }
++
++                    if (enumdirection1 == EnumDirection.NORTH) {
++                        enumdirection = EnumDirection.NORTH;
++                    }
++
++                    if ((flag || iblockdata5.b()) && !flag1 && !iblockdata6.b()) {
++                        enumdirection = EnumDirection.SOUTH;
++                    }
++
++                    if ((flag1 || iblockdata6.b()) && !flag && !iblockdata5.b()) {
++                        enumdirection = EnumDirection.NORTH;
++                    }
++                }
++            } else {
++                BlockPosition blockposition2 = iblockdata1.getBlock() == this ? blockposition.north() : blockposition.south();
++                IBlockData iblockdata7 = world.getType(blockposition2.west());
++                IBlockData iblockdata8 = world.getType(blockposition2.east());
++
++                enumdirection = EnumDirection.EAST;
++                EnumDirection enumdirection2;
++
++                if (iblockdata1.getBlock() == this) {
++                    enumdirection2 = (EnumDirection) iblockdata1.get(BlockChest.FACING);
++                } else {
++                    enumdirection2 = (EnumDirection) iblockdata2.get(BlockChest.FACING);
++                }
++
++                if (enumdirection2 == EnumDirection.WEST) {
++                    enumdirection = EnumDirection.WEST;
++                }
++
++                if ((iblockdata3.b() || iblockdata7.b()) && !iblockdata4.b() && !iblockdata8.b()) {
++                    enumdirection = EnumDirection.EAST;
++                }
++
++                if ((iblockdata4.b() || iblockdata8.b()) && !iblockdata3.b() && !iblockdata7.b()) {
++                    enumdirection = EnumDirection.WEST;
++                }
++            }
++
++            iblockdata = iblockdata.set(BlockChest.FACING, enumdirection);
++            world.setTypeAndData(blockposition, iblockdata, 3);
++            return iblockdata;
++        }
++    }
++
++    public IBlockData f(World world, BlockPosition blockposition, IBlockData iblockdata) {
++        EnumDirection enumdirection = null;
++        Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
++
++        while (iterator.hasNext()) {
++            EnumDirection enumdirection1 = (EnumDirection) iterator.next();
++            IBlockData iblockdata1 = world.getType(blockposition.shift(enumdirection1));
++
++            if (iblockdata1.getBlock() == this) {
++                return iblockdata;
++            }
++
++            if (iblockdata1.b()) {
++                if (enumdirection != null) {
++                    enumdirection = null;
++                    break;
++                }
++
++                enumdirection = enumdirection1;
++            }
++        }
++
++        if (enumdirection != null) {
++            return iblockdata.set(BlockChest.FACING, enumdirection.opposite());
++        } else {
++            EnumDirection enumdirection2 = (EnumDirection) iblockdata.get(BlockChest.FACING);
++
++            if (world.getType(blockposition.shift(enumdirection2)).b()) {
++                enumdirection2 = enumdirection2.opposite();
++            }
++
++            if (world.getType(blockposition.shift(enumdirection2)).b()) {
++                enumdirection2 = enumdirection2.e();
++            }
++
++            if (world.getType(blockposition.shift(enumdirection2)).b()) {
++                enumdirection2 = enumdirection2.opposite();
++            }
++
++            return iblockdata.set(BlockChest.FACING, enumdirection2);
++        }
++    }
++
++    public boolean canPlace(World world, BlockPosition blockposition) {
++        int i = 0;
++        BlockPosition blockposition1 = blockposition.west();
++        BlockPosition blockposition2 = blockposition.east();
++        BlockPosition blockposition3 = blockposition.north();
++        BlockPosition blockposition4 = blockposition.south();
++
++        if (world.getType(blockposition1).getBlock() == this) {
++            if (this.d(world, blockposition1)) {
++                return false;
++            }
++
++            ++i;
++        }
++
++        if (world.getType(blockposition2).getBlock() == this) {
++            if (this.d(world, blockposition2)) {
++                return false;
++            }
++
++            ++i;
++        }
++
++        if (world.getType(blockposition3).getBlock() == this) {
++            if (this.d(world, blockposition3)) {
++                return false;
++            }
++
++            ++i;
++        }
++
++        if (world.getType(blockposition4).getBlock() == this) {
++            if (this.d(world, blockposition4)) {
++                return false;
++            }
++
++            ++i;
++        }
++
++        return i <= 1;
++    }
++
++    private boolean d(World world, BlockPosition blockposition) {
++        if (world.getType(blockposition).getBlock() != this) {
++            return false;
++        } else {
++            Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
++
++            EnumDirection enumdirection;
++
++            do {
++                if (!iterator.hasNext()) {
++                    return false;
++                }
++
++                enumdirection = (EnumDirection) iterator.next();
++            } while (world.getType(blockposition.shift(enumdirection)).getBlock() != this);
++
++            return true;
++        }
++    }
++
++    public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block) {
++        super.a(iblockdata, world, blockposition, block);
++        TileEntity tileentity = world.getTileEntity(blockposition);
++
++        if (tileentity instanceof TileEntityChest) {
++            tileentity.invalidateBlockCache();
++        }
++
++    }
++
++    public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
++        TileEntity tileentity = world.getTileEntity(blockposition);
++
++        if (tileentity instanceof IInventory) {
++            InventoryUtils.dropInventory(world, blockposition, (IInventory) tileentity);
++            world.updateAdjacentComparators(blockposition, this);
++        }
++
++        super.remove(world, blockposition, iblockdata);
++    }
++
++    public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
++        if (world.isClientSide) {
++            return true;
++        } else {
++            ITileInventory itileinventory = this.c(world, blockposition);
++
++            if (itileinventory != null) {
++                entityhuman.openContainer(itileinventory);
++                if (this.g == BlockChest.Type.BASIC) {
++                    entityhuman.b(StatisticList.ac);
++                } else if (this.g == BlockChest.Type.TRAP) {
++                    entityhuman.b(StatisticList.W);
++                }
++            }
++
++            return true;
++        }
++    }
++
++    @Nullable
++    public ITileInventory c(World world, BlockPosition blockposition) {
++        return this.a(world, blockposition, false);
++    }
++
++    @Nullable
++    public ITileInventory a(World world, BlockPosition blockposition, boolean flag) {
++        TileEntity tileentity = world.getTileEntity(blockposition);
++
++        if (!(tileentity instanceof TileEntityChest)) {
++            return null;
++        } else {
++            Object object = (TileEntityChest) tileentity;
++
++            if (!flag && this.e(world, blockposition)) {
++                return null;
++            } else {
++                Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
++
++                while (iterator.hasNext()) {
++                    EnumDirection enumdirection = (EnumDirection) iterator.next();
++                    BlockPosition blockposition1 = blockposition.shift(enumdirection);
++                    Block block = world.getType(blockposition1).getBlock();
++
++                    if (block == this) {
++                        if (this.e(world, blockposition1)) {
++                            return null;
++                        }
++
++                        TileEntity tileentity1 = world.getTileEntity(blockposition1);
++
++                        if (tileentity1 instanceof TileEntityChest) {
++                            if (enumdirection != EnumDirection.WEST && enumdirection != EnumDirection.NORTH) {
++                                object = new InventoryLargeChest("container.chestDouble", (ITileInventory) object, (TileEntityChest) tileentity1);
++                            } else {
++                                object = new InventoryLargeChest("container.chestDouble", (TileEntityChest) tileentity1, (ITileInventory) object);
++                            }
++                        }
++                    }
++                }
++
++                return (ITileInventory) object;
++            }
++        }
++    }
++
++    public TileEntity a(World world, int i) {
++        return new TileEntityChest();
++    }
++
++    public boolean isPowerSource(IBlockData iblockdata) {
++        return this.g == BlockChest.Type.TRAP;
++    }
++
++    public int b(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition, EnumDirection enumdirection) {
++        if (!iblockdata.m()) {
++            return 0;
++        } else {
++            int i = 0;
++            TileEntity tileentity = iblockaccess.getTileEntity(blockposition);
++
++            if (tileentity instanceof TileEntityChest) {
++                i = ((TileEntityChest) tileentity).l;
++            }
++
++            return MathHelper.clamp(i, 0, 15);
++        }
++    }
++
++    public int c(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition, EnumDirection enumdirection) {
++        return enumdirection == EnumDirection.UP ? iblockdata.a(iblockaccess, blockposition, enumdirection) : 0;
++    }
++
++    private boolean e(World world, BlockPosition blockposition) {
++        return this.i(world, blockposition) || this.j(world, blockposition);
++    }
++
++    private boolean i(World world, BlockPosition blockposition) {
++        return world.getType(blockposition.up()).l();
++    }
++
++    private boolean j(World world, BlockPosition blockposition) {
++        Iterator iterator = world.a(EntityOcelot.class, new AxisAlignedBB((double) blockposition.getX(), (double) (blockposition.getY() + 1), (double) blockposition.getZ(), (double) (blockposition.getX() + 1), (double) (blockposition.getY() + 2), (double) (blockposition.getZ() + 1))).iterator();
++
++        EntityOcelot entityocelot;
++
++        do {
++            if (!iterator.hasNext()) {
++                return false;
++            }
++
++            Entity entity = (Entity) iterator.next();
++
++            entityocelot = (EntityOcelot) entity;
++        } while (!entityocelot.isSitting());
++
++        return true;
++    }
++
++    public boolean isComplexRedstone(IBlockData iblockdata) {
++        return true;
++    }
++
++    public int d(IBlockData iblockdata, World world, BlockPosition blockposition) {
++        return Container.b((IInventory) this.c(world, blockposition));
++    }
++
++    public IBlockData fromLegacyData(int i) {
++        EnumDirection enumdirection = EnumDirection.fromType1(i);
++
++        if (enumdirection.k() == EnumDirection.EnumAxis.Y) {
++            enumdirection = EnumDirection.NORTH;
++        }
++
++        return this.getBlockData().set(BlockChest.FACING, enumdirection);
++    }
++
++    public int toLegacyData(IBlockData iblockdata) {
++        return ((EnumDirection) iblockdata.get(BlockChest.FACING)).a();
++    }
++
++    public IBlockData a(IBlockData iblockdata, EnumBlockRotation enumblockrotation) {
++        return iblockdata.set(BlockChest.FACING, enumblockrotation.a((EnumDirection) iblockdata.get(BlockChest.FACING)));
++    }
++
++    public IBlockData a(IBlockData iblockdata, EnumBlockMirror enumblockmirror) {
++        return iblockdata.a(enumblockmirror.a((EnumDirection) iblockdata.get(BlockChest.FACING)));
++    }
++
++    protected BlockStateList getStateList() {
++        return new BlockStateList(this, new IBlockState[] { BlockChest.FACING});
++    }
++
++    public static enum Type {
++
++        BASIC, TRAP;
++
++        private Type() {}
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/Block.java src/main/java/net/minecraft/server/Block.java
 --- src_origin/main/java/net/minecraft/server/Block.java	2016-05-29 15:00:13.631641651 +0800
-+++ src/main/java/net/minecraft/server/Block.java	2016-06-03 11:22:45.109244491 +0800
++++ src/main/java/net/minecraft/server/Block.java	2016-06-08 13:02:33.469102589 +0800
 @@ -299,11 +299,18 @@
      }
  
@@ -35,9 +517,90 @@ diff -Naur src_origin/main/java/net/minecraft/server/Block.java src/main/java/ne
      }
  
      public int a(Random random) {
+diff -Naur src_origin/main/java/net/minecraft/server/BlockMinecartDetector.java src/main/java/net/minecraft/server/BlockMinecartDetector.java
+--- src_origin/main/java/net/minecraft/server/BlockMinecartDetector.java	2016-05-29 15:00:13.838641632 +0800
++++ src/main/java/net/minecraft/server/BlockMinecartDetector.java	2016-06-08 13:02:33.646102573 +0800
+@@ -3,6 +3,7 @@
+ import com.google.common.base.Predicate;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ 
+@@ -63,6 +64,7 @@
+         boolean flag = ((Boolean) iblockdata.get(BlockMinecartDetector.POWERED)).booleanValue();
+         boolean flag1 = false;
+         List list = this.a(world, blockposition, EntityMinecartAbstract.class, new Predicate[0]);
++        //Queue list = this.a(world, blockposition, EntityMinecartAbstract.class, new Predicate[0]);
+ 
+         if (!list.isEmpty()) {
+             flag1 = true;
+@@ -134,15 +136,21 @@
+     public int d(IBlockData iblockdata, World world, BlockPosition blockposition) {
+         if (((Boolean) iblockdata.get(BlockMinecartDetector.POWERED)).booleanValue()) {
+             List list = this.a(world, blockposition, EntityMinecartCommandBlock.class, new Predicate[0]);
++            //Queue list = this.a(world, blockposition, EntityMinecartCommandBlock.class, new Predicate[0]);
+ 
+             if (!list.isEmpty()) {
+-                return ((EntityMinecartCommandBlock) list.get(0)).getCommandBlock().k();
++                //return ((EntityMinecartCommandBlock) list.get(0)).getCommandBlock().k();
++                Iterator it = list.iterator();
++                return ((EntityMinecartCommandBlock) it.next()).getCommandBlock().k();
+             }
+ 
+             List list1 = this.a(world, blockposition, EntityMinecartAbstract.class, new Predicate[] { IEntitySelector.c});
++            //Queue list1 = this.a(world, blockposition, EntityMinecartAbstract.class, new Predicate[] { IEntitySelector.c});
+ 
+             if (!list1.isEmpty()) {
+-                return Container.b((IInventory) list1.get(0));
++                //return Container.b((IInventory) list1.get(0));
++                Iterator it1 = list1.iterator();
++                return Container.b((IInventory) it1.next());
+             }
+         }
+ 
+@@ -150,6 +158,7 @@
+     }
+ 
+     protected <T extends EntityMinecartAbstract> List<T> a(World world, BlockPosition blockposition, Class<T> oclass, Predicate<Entity>... apredicate) {
++    //protected <T extends EntityMinecartAbstract> Queue<T> a(World world, BlockPosition blockposition, Class<T> oclass, Predicate<Entity>... apredicate) {
+         AxisAlignedBB axisalignedbb = this.a(blockposition);
+ 
+         return apredicate.length != 1 ? world.a(oclass, axisalignedbb) : world.a(oclass, axisalignedbb, apredicate[0]);
+diff -Naur src_origin/main/java/net/minecraft/server/BlockPressurePlateBinary.java src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
+--- src_origin/main/java/net/minecraft/server/BlockPressurePlateBinary.java	2016-05-29 15:00:13.898641627 +0800
++++ src/main/java/net/minecraft/server/BlockPressurePlateBinary.java	2016-06-08 13:02:33.707102568 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
+ 
+@@ -45,6 +46,7 @@
+     protected int e(World world, BlockPosition blockposition) {
+         AxisAlignedBB axisalignedbb = BlockPressurePlateBinary.c.a(blockposition);
+         List list;
++        //Queue list;
+ 
+         switch (BlockPressurePlateBinary.SyntheticClass_1.a[this.e.ordinal()]) {
+         case 1:
+diff -Naur src_origin/main/java/net/minecraft/server/BlockTripwire.java src/main/java/net/minecraft/server/BlockTripwire.java
+--- src_origin/main/java/net/minecraft/server/BlockTripwire.java	2016-05-29 15:00:13.974641620 +0800
++++ src/main/java/net/minecraft/server/BlockTripwire.java	2016-06-08 13:02:33.785102561 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-05-29 15:00:14.024641615 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2016-06-03 11:22:45.403244464 +0800
++++ src/main/java/net/minecraft/server/Chunk.java	2016-06-08 13:02:33.827102557 +0800
 @@ -15,7 +15,10 @@
  import org.apache.logging.log4j.Logger;
  
@@ -115,7 +678,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
  
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java src/main/java/net/minecraft/server/ChunkProviderGenerate.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-06-03 11:22:45.406244464 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-06-08 13:02:33.831102556 +0800
 @@ -0,0 +1,451 @@
 +package net.minecraft.server;
 +
@@ -570,7 +1133,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java 
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderHell.java src/main/java/net/minecraft/server/ChunkProviderHell.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderHell.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderHell.java	2016-06-03 11:22:45.410244464 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderHell.java	2016-06-08 13:02:33.853102554 +0800
 @@ -0,0 +1,371 @@
 +package net.minecraft.server;
 +
@@ -945,7 +1508,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderHell.java src/
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-05-29 15:00:14.015641616 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-06-03 11:22:45.416244463 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-06-08 13:02:33.833102556 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -966,8 +1529,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
-@@ -26,7 +31,10 @@
-     public final Set<Long> unloadQueue = Sets.newHashSet(); // PAIL: private -> public
+@@ -23,10 +28,14 @@
+ public class ChunkProviderServer implements IChunkProvider {
+ 
+     private static final Logger a = LogManager.getLogger();
+-    public final Set<Long> unloadQueue = Sets.newHashSet(); // PAIL: private -> public
++    //public final Set<Long> unloadQueue = Sets.newHashSet(); // PAIL: private -> public
++    public final Set<Long> unloadQueue = Sets.newConcurrentHashSet(); // PAIL: private -> public
      public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
 -    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
@@ -978,28 +1546,10 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
      public final WorldServer world;
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
-@@ -98,8 +106,12 @@
-     }
- 
-     // CraftBukkit start
-+    //public Chunk getChunkIfLoaded(int x, int z) {
-     public Chunk getChunkIfLoaded(int x, int z) {
-         return chunks.get(ChunkCoordIntPair.a(x, z));
-+        /*getChunkIL gc_task = new getChunkIL(x, z);
-+        gc_task.fork();
-+        return gc_task.join();*/
-     }
-     // CraftBukkit end
- 
-@@ -336,5 +348,42 @@
- 
+@@ -337,4 +346,38 @@
      public boolean isLoaded(int i, int j) {
          return this.chunks.containsKey(ChunkCoordIntPair.a(i, j));
--    }
-+        /*isL iL_task = new isL(i, j);
-+        iL_task.fork();
-+        return iL_task.join();*/
-+    }
+     }
 +    /*
 +    class getChunkIL extends RecursiveTask<Chunk> {
 +        //Map<Long, Chunk> chunks;
@@ -1037,7 +1587,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  }
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderTheEnd.java src/main/java/net/minecraft/server/ChunkProviderTheEnd.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderTheEnd.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderTheEnd.java	2016-06-03 11:22:45.420244463 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderTheEnd.java	2016-06-08 13:02:33.858102554 +0800
 @@ -0,0 +1,326 @@
 +package net.minecraft.server;
 +
@@ -1365,9 +1915,345 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderTheEnd.java sr
 +
 +    public void recreateStructures(Chunk chunk, int i, int j) {}
 +}
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java src/main/java/net/minecraft/server/ChunkRegionLoader.java
+--- src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-05-29 15:00:14.031641615 +0800
++++ src/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-06-08 13:02:33.846102555 +0800
+@@ -348,7 +348,8 @@
+         return chunk;
+     }
+ 
+-    public void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
++    //public void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
++    public synchronized void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
+         // CraftBukkit end
+         world.timings.syncChunkLoadEntitiesTimer.startTiming(); // Spigot
+         NBTTagList nbttaglist1 = nbttagcompound.getList("Entities", 10);
+diff -Naur src_origin/main/java/net/minecraft/server/DataWatcher.java src/main/java/net/minecraft/server/DataWatcher.java
+--- src_origin/main/java/net/minecraft/server/DataWatcher.java	2016-05-29 15:00:14.146641604 +0800
++++ src/main/java/net/minecraft/server/DataWatcher.java	2016-06-08 13:02:33.972102543 +0800
+@@ -1,5 +1,6 @@
+ package net.minecraft.server;
+ 
++import com.google.common.base.Optional;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Maps;
+ import io.netty.handler.codec.DecoderException;
+@@ -16,9 +17,11 @@
+ 
+ public class DataWatcher {
+ 
+-    private static final Map<Class<? extends Entity>, Integer> a = Maps.newHashMap();
++    //private static final Map<Class<? extends Entity>, Integer> a = Maps.newHashMap();
++    private static final Map<Class<? extends Entity>, Integer> a = Maps.newConcurrentMap();
+     private final Entity b;
+-    private final Map<Integer, DataWatcher.Item<?>> c = Maps.newHashMap();
++    //private final Map<Integer, DataWatcher.Item<?>> c = Maps.newHashMap();
++    private final Map<Integer, DataWatcher.Item<?>> c = Maps.newConcurrentMap();
+     private final ReadWriteLock d = new ReentrantReadWriteLock();
+     private boolean e = true;
+     private boolean f;
+@@ -112,7 +115,7 @@
+         }
+ 
+     }
+-
++    
+     public <T> void markDirty(DataWatcherObject<T> datawatcherobject) {
+         this.c(datawatcherobject).c = true;
+         this.f = true;
+diff -Naur src_origin/main/java/net/minecraft/server/EnderDragonBattle.java src/main/java/net/minecraft/server/EnderDragonBattle.java
+--- src_origin/main/java/net/minecraft/server/EnderDragonBattle.java	2016-05-29 15:00:14.207641599 +0800
++++ src/main/java/net/minecraft/server/EnderDragonBattle.java	2016-06-08 13:02:34.014102540 +0800
+@@ -12,6 +12,7 @@
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+diff -Naur src_origin/main/java/net/minecraft/server/EntityAreaEffectCloud.java src/main/java/net/minecraft/server/EntityAreaEffectCloud.java
+--- src_origin/main/java/net/minecraft/server/EntityAreaEffectCloud.java	2016-05-29 15:00:14.235641596 +0800
++++ src/main/java/net/minecraft/server/EntityAreaEffectCloud.java	2016-06-08 13:02:34.047102536 +0800
+@@ -13,6 +13,7 @@
+ import org.bukkit.entity.LivingEntity; // CraftBukkit
+ 
+ import java.util.Map.Entry;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ public class EntityAreaEffectCloud extends Entity {
+diff -Naur src_origin/main/java/net/minecraft/server/EntityArmorStand.java src/main/java/net/minecraft/server/EntityArmorStand.java
+--- src_origin/main/java/net/minecraft/server/EntityArmorStand.java	2016-05-29 15:00:14.251641595 +0800
++++ src/main/java/net/minecraft/server/EntityArmorStand.java	2016-06-08 13:02:34.064102535 +0800
+@@ -2,7 +2,9 @@
+ 
+ import com.google.common.base.Predicate;
+ import java.util.Arrays;
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ // CraftBukkit start
+@@ -291,14 +293,22 @@
+ 
+     protected void co() {
+         List list = this.world.getEntities(this, this.getBoundingBox(), EntityArmorStand.bw);
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity = (Entity) it.next();
+ 
++            if (this.h(entity) <= 0.2D) {
++                entity.collide(this);
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity = (Entity) list.get(i);
+ 
+             if (this.h(entity) <= 0.2D) {
+                 entity.collide(this);
+             }
+-        }
++        }*/
+ 
+     }
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/EntityArrow.java src/main/java/net/minecraft/server/EntityArrow.java
+--- src_origin/main/java/net/minecraft/server/EntityArrow.java	2016-05-29 15:00:14.255641594 +0800
++++ src/main/java/net/minecraft/server/EntityArrow.java	2016-06-08 13:02:34.062102535 +0800
+@@ -2,7 +2,9 @@
+ 
+ import com.google.common.base.Predicate;
+ import com.google.common.base.Predicates;
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ // CraftBukkit start
+@@ -358,7 +360,26 @@
+         Entity entity = null;
+         List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).g(1.0D), EntityArrow.f);
+         double d0 = 0.0D;
++        
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity1 = (Entity) it.next();
+ 
++            if (entity1 != this.shooter || this.ay >= 5) {
++                AxisAlignedBB axisalignedbb = entity1.getBoundingBox().g(0.30000001192092896D);
++                MovingObjectPosition movingobjectposition = axisalignedbb.a(vec3d, vec3d1);
++
++                if (movingobjectposition != null) {
++                    double d1 = vec3d.distanceSquared(movingobjectposition.pos);
++
++                    if (d1 < d0 || d0 == 0.0D) {
++                        entity = entity1;
++                        d0 = d1;
++                    }
++                }
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity1 = (Entity) list.get(i);
+ 
+@@ -375,7 +396,7 @@
+                     }
+                 }
+             }
+-        }
++        }*/
+ 
+         return entity;
+     }
+diff -Naur src_origin/main/java/net/minecraft/server/EntityBoat.java src/main/java/net/minecraft/server/EntityBoat.java
+--- src_origin/main/java/net/minecraft/server/EntityBoat.java	2016-05-29 15:00:14.266641593 +0800
++++ src/main/java/net/minecraft/server/EntityBoat.java	2016-06-08 13:02:34.071102534 +0800
+@@ -2,7 +2,9 @@
+ 
+ import com.google.common.collect.Lists;
+ import java.util.ArrayList;
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ // CraftBukkit start
+@@ -284,7 +286,19 @@
+ 
+         if (!list.isEmpty()) {
+             boolean flag = !this.world.isClientSide && !(this.bu() instanceof EntityHuman);
++            Iterator it = list.iterator();
++            while (it.hasNext()) {
++                Entity entity = (Entity) it.next();
+ 
++                if (!entity.w(this)) {
++                    if (flag && this.bv().size() < 2 && !entity.isPassenger() && entity.width < this.width && entity instanceof EntityLiving && !(entity instanceof EntityWaterAnimal) && !(entity instanceof EntityHuman)) {
++                        entity.startRiding(this);
++                    } else {
++                        this.collide(entity);
++                    }
++                }
++            }
++            /*
+             for (int j = 0; j < list.size(); ++j) {
+                 Entity entity = (Entity) list.get(j);
+ 
+@@ -295,7 +309,7 @@
+                         this.collide(entity);
+                     }
+                 }
+-            }
++            }*/
+         }
+ 
+     }
+diff -Naur src_origin/main/java/net/minecraft/server/EntityEnderDragon.java src/main/java/net/minecraft/server/EntityEnderDragon.java
+--- src_origin/main/java/net/minecraft/server/EntityEnderDragon.java	2016-05-29 15:00:14.308641589 +0800
++++ src/main/java/net/minecraft/server/EntityEnderDragon.java	2016-06-08 13:02:34.117102530 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+@@ -371,6 +372,16 @@
+     }
+ 
+     private void b(List<Entity> list) {
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity = (Entity) it.next();
++
++            if (entity instanceof EntityLiving) {
++                entity.damageEntity(DamageSource.mobAttack(this), 10.0F);
++                this.a((EntityLiving) this, entity);
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity = (Entity) list.get(i);
+ 
+@@ -378,7 +389,7 @@
+                 entity.damageEntity(DamageSource.mobAttack(this), 10.0F);
+                 this.a((EntityLiving) this, entity);
+             }
+-        }
++        }*/
+ 
+     }
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/EntityFishingHook.java src/main/java/net/minecraft/server/EntityFishingHook.java
+--- src_origin/main/java/net/minecraft/server/EntityFishingHook.java	2016-05-29 15:00:14.341641586 +0800
++++ src/main/java/net/minecraft/server/EntityFishingHook.java	2016-06-08 13:02:34.147102527 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ // CraftBukkit start
+ import org.bukkit.entity.Player;
+@@ -177,6 +178,24 @@
+ 
+                 d5 = 0.0D;
+ 
++                Iterator it = list.iterator();
++                while (it.hasNext()) {
++                    Entity entity1 = (Entity) it.next();
++
++                    if (entity1.isInteractable() && (entity1 != this.owner || this.au >= 5)) {
++                        AxisAlignedBB axisalignedbb = entity1.getBoundingBox().g(0.30000001192092896D);
++                        MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
++
++                        if (movingobjectposition1 != null) {
++                            d6 = vec3d.distanceSquared(movingobjectposition1.pos);
++                            if (d6 < d5 || d5 == 0.0D) {
++                                entity = entity1;
++                                d5 = d6;
++                            }
++                        }
++                    }
++                }
++                /*
+                 for (int j = 0; j < list.size(); ++j) {
+                     Entity entity1 = (Entity) list.get(j);
+ 
+@@ -192,7 +211,7 @@
+                             }
+                         }
+                     }
+-                }
++                }*/
+ 
+                 if (entity != null) {
+                     movingobjectposition = new MovingObjectPosition(entity);
+diff -Naur src_origin/main/java/net/minecraft/server/EntityHorse.java src/main/java/net/minecraft/server/EntityHorse.java
+--- src_origin/main/java/net/minecraft/server/EntityHorse.java	2016-05-29 15:00:14.366641584 +0800
++++ src/main/java/net/minecraft/server/EntityHorse.java	2016-06-08 13:02:34.186102524 +0800
+@@ -4,6 +4,7 @@
+ import com.google.common.base.Predicate;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/EntityHuman.java src/main/java/net/minecraft/server/EntityHuman.java
+--- src_origin/main/java/net/minecraft/server/EntityHuman.java	2016-05-29 15:00:14.389641582 +0800
++++ src/main/java/net/minecraft/server/EntityHuman.java	2016-06-08 13:02:34.197102523 +0800
+@@ -7,6 +7,7 @@
+ import java.util.Collection;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
+@@ -377,14 +378,23 @@
+             }
+ 
+             List list = this.world.getEntities(this, axisalignedbb);
++            Iterator it = list.iterator();
++            
++            while (it.hasNext()) {
++                Entity entity = (Entity) it.next();
+ 
++                if (!entity.dead) {
++                    this.c(entity);
++                }
++            }
++            /*
+             for (int i = 0; i < list.size(); ++i) {
+                 Entity entity = (Entity) list.get(i);
+ 
+                 if (!entity.dead) {
+                     this.c(entity);
+                 }
+-            }
++            }*/
+         }
+ 
+     }
+diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/main/java/net/minecraft/server/EntityInsentient.java
+--- src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-05-29 15:00:14.388641582 +0800
++++ src/main/java/net/minecraft/server/EntityInsentient.java	2016-06-08 13:02:34.184102524 +0800
+@@ -5,6 +5,7 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Queue;
+ import java.util.Random;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
 diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/net/minecraft/server/Entity.java
 --- src_origin/main/java/net/minecraft/server/Entity.java	2016-05-29 15:00:14.224641597 +0800
-+++ src/main/java/net/minecraft/server/Entity.java	2016-06-03 11:22:45.643244442 +0800
++++ src/main/java/net/minecraft/server/Entity.java	2016-06-08 13:02:34.044102537 +0800
 @@ -11,6 +11,7 @@
  import java.util.Random;
  import java.util.Set;
@@ -1385,7 +2271,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
          this.world.methodProfiler.a("entityBaseTick");
          if (this.isPassenger() && this.bz().dead) {
              this.stopRiding();
-@@ -392,6 +393,101 @@
+@@ -392,6 +393,102 @@
          this.justCreated = false;
          this.world.methodProfiler.b();
      }
@@ -1393,6 +2279,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
 +    public void U() {
 +        U u_task = new U();
 +        u_task.fork();
++        //u_task.join();
 +        /*
 +        this.world.methodProfiler.a("entityBaseTick");
 +        if (this.isPassenger() && this.bz().dead) {
@@ -1487,7 +2374,36 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
  
      protected void H() {
          if (this.portalCooldown > 0) {
-@@ -2625,4 +2721,17 @@
+@@ -1572,7 +1669,7 @@
+             return false;
+         } else {
+             BlockPosition.PooledBlockPosition blockposition_pooledblockposition = BlockPosition.PooledBlockPosition.s();
+-
++            bp bp_task = new bp(blockposition_pooledblockposition);
+             for (int i = 0; i < 8; ++i) {
+                 int j = MathHelper.floor(this.locY + (double) (((float) ((i >> 0) % 2) - 0.5F) * 0.1F) + (double) this.getHeadHeight());
+                 int k = MathHelper.floor(this.locX + (double) (((float) ((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
+@@ -1581,13 +1678,17 @@
+                 if (blockposition_pooledblockposition.getX() != k || blockposition_pooledblockposition.getY() != j || blockposition_pooledblockposition.getZ() != l) {
+                     blockposition_pooledblockposition.f(k, j, l);
+                     if (this.world.getType(blockposition_pooledblockposition).getBlock().j()) {
+-                        blockposition_pooledblockposition.t();
++                        //blockposition_pooledblockposition.t();
++                        //fork
++                        bp_task.fork();
+                         return true;
+                     }
+                 }
+             }
+ 
+-            blockposition_pooledblockposition.t();
++            //blockposition_pooledblockposition.t();
++            //fork
++            bp_task.fork();
+             return false;
+         }
+     }
+@@ -2625,4 +2726,31 @@
  
          }
      }
@@ -1504,19 +2420,77 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
 +        }
 +                 
 +    }
++    
++    class bp extends RecursiveAction {
++        BlockPosition.PooledBlockPosition blockposition_pooledblockposition;
++        bp(BlockPosition.PooledBlockPosition blockposition_pooledblockposition) {
++            this.blockposition_pooledblockposition = blockposition_pooledblockposition;
++        }
++        
++        @Override
++        protected void compute() {
++            blockposition_pooledblockposition.t();
++        }
++                 
++    }
++    
  }
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLeash.java src/main/java/net/minecraft/server/EntityLeash.java
+--- src_origin/main/java/net/minecraft/server/EntityLeash.java	2016-05-29 15:00:14.405641580 +0800
++++ src/main/java/net/minecraft/server/EntityLeash.java	2016-06-08 13:02:34.223102520 +0800
+@@ -4,6 +4,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ public class EntityLeash extends EntityHanging {
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLightning.java src/main/java/net/minecraft/server/EntityLightning.java
+--- src_origin/main/java/net/minecraft/server/EntityLightning.java	2016-05-29 15:00:14.413641580 +0800
++++ src/main/java/net/minecraft/server/EntityLightning.java	2016-06-08 13:02:34.227102520 +0800
+@@ -1,6 +1,8 @@
+ package net.minecraft.server;
+ 
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
+ 
+@@ -112,11 +114,18 @@
+                 double d0 = 3.0D;
+                 List list = this.world.getEntities(this, new AxisAlignedBB(this.locX - d0, this.locY - d0, this.locZ - d0, this.locX + d0, this.locY + 6.0D + d0, this.locZ + d0));
+ 
++                Iterator it = list.iterator();
++                while (it.hasNext()) {
++                    Entity entity = (Entity) it.next();
++
++                    entity.onLightningStrike(this);
++                }
++                /*
+                 for (int i = 0; i < list.size(); ++i) {
+                     Entity entity = (Entity) list.get(i);
+ 
+                     entity.onLightningStrike(this);
+-                }
++                }*/
+             }
+         }
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
 --- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-05-29 15:00:14.431641578 +0800
-+++ src/main/java/net/minecraft/server/EntityLiving.java	2016-06-03 11:22:45.858244423 +0800
-@@ -14,6 +14,7 @@
++++ src/main/java/net/minecraft/server/EntityLiving.java	2016-06-08 13:02:34.265102517 +0800
+@@ -14,6 +14,8 @@
  import java.util.ArrayList;
  import com.google.common.base.Function;
  import com.google.common.collect.Lists;
++import java.util.Queue;
 +import java.util.concurrent.RecursiveAction;
  import org.bukkit.Location;
  import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
-@@ -638,7 +639,11 @@
+@@ -638,7 +640,11 @@
      }
  
      public void addEffect(MobEffect mobeffect) {
@@ -1529,7 +2503,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
          // CraftBukkit start
          if (isTickingEffects) {
              effectsToProcess.add(mobeffect);
-@@ -1540,6 +1545,8 @@
+@@ -1540,6 +1546,8 @@
  
                  this.a(f, f1, f3);
                  this.move(this.motX, this.motY, this.motZ);
@@ -1538,7 +2512,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
                  this.motX *= (double) f4;
                  this.motY *= 0.800000011920929D;
                  this.motZ *= (double) f4;
-@@ -1551,6 +1558,8 @@
+@@ -1551,6 +1559,8 @@
                  d1 = this.locY;
                  this.a(f, f1, 0.02F);
                  this.move(this.motX, this.motY, this.motZ);
@@ -1547,7 +2521,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
                  this.motX *= 0.5D;
                  this.motY *= 0.5D;
                  this.motZ *= 0.5D;
-@@ -1598,6 +1607,9 @@
+@@ -1598,6 +1608,9 @@
                  this.motY *= 0.9800000190734863D;
                  this.motZ *= 0.9900000095367432D;
                  this.move(this.motX, this.motY, this.motZ);
@@ -1557,7 +2531,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
                  if (this.positionChanged && !this.world.isClientSide) {
                      d4 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ);
                      double d5 = d2 - d4;
-@@ -1651,6 +1663,10 @@
+@@ -1651,6 +1664,10 @@
                  }
  
                  this.move(this.motX, this.motY, this.motZ);
@@ -1568,7 +2542,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
                  if (this.positionChanged && this.n_()) {
                      this.motY = 0.2D;
                  }
-@@ -1782,6 +1798,9 @@
+@@ -1782,6 +1799,9 @@
  
          SpigotTimings.timerEntityBaseTick.stopTiming(); // Spigot
          this.n();
@@ -1578,15 +2552,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
          SpigotTimings.timerEntityTickRest.startTiming(); // Spigot
          double d0 = this.locX - this.lastX;
          double d1 = this.locZ - this.lastZ;
-@@ -1952,12 +1971,17 @@
-         this.bg *= 0.9F;
+@@ -1953,11 +1973,16 @@
          this.r();
          SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
--        this.g(this.be, this.bf);
-+        //this.g(this.be, this.bf);
+         this.g(this.be, this.bf);
 +        //fork join
-+        g g_task = new g(this, this.be, this.bf);
-+        g_task.fork();
++        /*g g_task = new g(this, this.be, this.bf);
++        g_task.fork();*/
          SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot
          this.world.methodProfiler.b();
          this.world.methodProfiler.a("push");
@@ -1598,7 +2570,42 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
          SpigotTimings.timerEntityAICollision.stopTiming(); // Spigot
          this.world.methodProfiler.b();
      }
-@@ -2386,4 +2410,67 @@
+@@ -1993,9 +2018,10 @@
+         List list = this.world.getEntities(this, this.getBoundingBox(), IEntitySelector.a(this));
+ 
+         if (!list.isEmpty()) {
+-                numCollisions = Math.max(0, numCollisions - world.spigotConfig.maxCollisionsPerEntity); // Spigot
+-                for (int i = 0; i < list.size() && numCollisions < world.spigotConfig.maxCollisionsPerEntity; ++i) {
+-                Entity entity = (Entity) list.get(i);
++            numCollisions = Math.max(0, numCollisions - world.spigotConfig.maxCollisionsPerEntity); // Spigot
++            Iterator it = list.iterator();
++            while (it.hasNext()) {
++                Entity entity = (Entity) it.next();
+                 // TODO better check now?
+                 // CraftBukkit start - Only handle mob (non-player) collisions every other tick
+                 if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
+@@ -2007,6 +2033,20 @@
+                 numCollisions++; // Spigot
+                 this.C(entity);
+             }
++            /*
++            for (int i = 0; i < list.size() && numCollisions < world.spigotConfig.maxCollisionsPerEntity; ++i) {
++                Entity entity = (Entity) list.get(i);
++                // TODO better check now?
++                // CraftBukkit start - Only handle mob (non-player) collisions every other tick
++                if (entity instanceof EntityLiving && !(this instanceof EntityPlayer) && this.ticksLived % 2 == 0) {
++                    continue;
++                }
++                // CraftBukkit end
++
++                entity.numCollisions++; // Spigot
++                numCollisions++; // Spigot
++                this.C(entity);
++            }*/
+         }
+ 
+     }
+@@ -2386,4 +2426,67 @@
  
          }
      }
@@ -1666,9 +2673,87 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
 +                 
 +    }
  }
+diff -Naur src_origin/main/java/net/minecraft/server/EntityPotion.java src/main/java/net/minecraft/server/EntityPotion.java
+--- src_origin/main/java/net/minecraft/server/EntityPotion.java	2016-05-29 15:00:14.498641572 +0800
++++ src/main/java/net/minecraft/server/EntityPotion.java	2016-06-08 13:02:34.312102512 +0800
+@@ -9,6 +9,7 @@
+ 
+ // CraftBukkit start
+ import java.util.HashMap;
++import java.util.Queue;
+ 
+ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+ import org.bukkit.entity.LivingEntity;
+diff -Naur src_origin/main/java/net/minecraft/server/EntityProjectile.java src/main/java/net/minecraft/server/EntityProjectile.java
+--- src_origin/main/java/net/minecraft/server/EntityProjectile.java	2016-05-29 15:00:14.500641572 +0800
++++ src/main/java/net/minecraft/server/EntityProjectile.java	2016-06-08 13:02:34.314102512 +0800
+@@ -1,6 +1,8 @@
+ package net.minecraft.server;
+ 
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
+@@ -119,7 +121,34 @@
+         List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).g(1.0D));
+         double d0 = 0.0D;
+         boolean flag = false;
++        
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity1 = (Entity) it.next();
+ 
++            if (entity1.isInteractable()) {
++                if (entity1 == this.c) {
++                    flag = true;
++                } else if (this.ticksLived < 2 && this.c == null) {
++                    this.c = entity1;
++                    flag = true;
++                } else {
++                    flag = false;
++                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().g(0.30000001192092896D);
++                    MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
++
++                    if (movingobjectposition1 != null) {
++                        double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
++
++                        if (d1 < d0 || d0 == 0.0D) {
++                            entity = entity1;
++                            d0 = d1;
++                        }
++                    }
++                }
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity1 = (Entity) list.get(i);
+ 
+@@ -144,7 +173,7 @@
+                     }
+                 }
+             }
+-        }
++        }*/
+ 
+         if (this.c != null) {
+             if (flag) {
+diff -Naur src_origin/main/java/net/minecraft/server/EntityShulkerBullet.java src/main/java/net/minecraft/server/EntityShulkerBullet.java
+--- src_origin/main/java/net/minecraft/server/EntityShulkerBullet.java	2016-05-29 15:00:14.519641570 +0800
++++ src/main/java/net/minecraft/server/EntityShulkerBullet.java	2016-06-08 13:02:34.327102511 +0800
+@@ -4,6 +4,7 @@
+ import java.util.ArrayList;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-05-29 15:00:14.567641566 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2016-06-03 11:22:46.006244409 +0800
++++ src/main/java/net/minecraft/server/EntityTracker.java	2016-06-08 13:02:34.376102506 +0800
 @@ -101,7 +101,11 @@
      }
  
@@ -1682,9 +2767,215 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
          i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
          try {
              if (this.trackedEntities.b(entity.getId())) {
+diff -Naur src_origin/main/java/net/minecraft/server/EntityWither.java src/main/java/net/minecraft/server/EntityWither.java
+--- src_origin/main/java/net/minecraft/server/EntityWither.java	2016-05-29 15:00:14.594641563 +0800
++++ src/main/java/net/minecraft/server/EntityWither.java	2016-06-08 13:02:34.395102505 +0800
+@@ -2,8 +2,10 @@
+ 
+ import com.google.common.base.Predicate;
+ import com.google.common.base.Predicates;
++import java.util.ArrayList;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ // CraftBukkit start
+@@ -263,7 +265,7 @@
+                         }
+                     } else {
+                         List list = this.world.a(EntityLiving.class, this.getBoundingBox().grow(20.0D, 8.0D, 20.0D), Predicates.and(EntityWither.bG, IEntitySelector.e));
+-
++                        
+                         for (int i1 = 0; i1 < 10 && !list.isEmpty(); ++i1) {
+                             EntityLiving entityliving = (EntityLiving) list.get(this.random.nextInt(list.size()));
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/EntityZombie.java src/main/java/net/minecraft/server/EntityZombie.java
+--- src_origin/main/java/net/minecraft/server/EntityZombie.java	2016-05-29 15:00:14.626641560 +0800
++++ src/main/java/net/minecraft/server/EntityZombie.java	2016-06-08 13:02:34.422102502 +0800
+@@ -1,7 +1,9 @@
+ package net.minecraft.server;
+ 
+ import java.util.Calendar;
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
+@@ -392,8 +394,10 @@
+                 if ((double) this.world.random.nextFloat() < 0.05D) {
+                     List list = this.world.a(EntityChicken.class, this.getBoundingBox().grow(5.0D, 3.0D, 5.0D), IEntitySelector.b);
+ 
++                    Iterator it = list.iterator();
+                     if (!list.isEmpty()) {
+-                        EntityChicken entitychicken = (EntityChicken) list.get(0);
++                        //EntityChicken entitychicken = (EntityChicken) list.get(0);
++                        EntityChicken entitychicken = (EntityChicken) it.next();
+ 
+                         entitychicken.o(true);
+                         this.startRiding(entitychicken);
+diff -Naur src_origin/main/java/net/minecraft/server/Explosion.java src/main/java/net/minecraft/server/Explosion.java
+--- src_origin/main/java/net/minecraft/server/Explosion.java	2016-05-29 15:00:14.619641561 +0800
++++ src/main/java/net/minecraft/server/Explosion.java	2016-06-08 13:02:34.427102502 +0800
+@@ -7,6 +7,7 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Queue;
+ import java.util.Random;
+ 
+ // CraftBukkit start
+@@ -106,6 +107,57 @@
+         List list = this.world.getEntities(this.source, new AxisAlignedBB((double) i, (double) l, (double) j1, (double) j, (double) i1, (double) k1));
+         Vec3D vec3d = new Vec3D(this.posX, this.posY, this.posZ);
+ 
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity = (Entity) it.next();
++
++            if (!entity.br()) {
++                double d7 = entity.f(this.posX, this.posY, this.posZ) / (double) f3;
++
++                if (d7 <= 1.0D) {
++                    double d8 = entity.locX - this.posX;
++                    double d9 = entity.locY + (double) entity.getHeadHeight() - this.posY;
++                    double d10 = entity.locZ - this.posZ;
++                    double d11 = (double) MathHelper.sqrt(d8 * d8 + d9 * d9 + d10 * d10);
++
++                    if (d11 != 0.0D) {
++                        d8 /= d11;
++                        d9 /= d11;
++                        d10 /= d11;
++                        double d12 = (double) this.world.a(vec3d, entity.getBoundingBox());
++                        double d13 = (1.0D - d7) * d12;
++
++                        // CraftBukkit start
++                        // entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f3 + 1.0D)));
++                        CraftEventFactory.entityDamage = source;
++                        entity.forceExplosionKnockback = false;
++                        boolean wasDamaged = entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f3 + 1.0D)));
++                        CraftEventFactory.entityDamage = null;
++                        if (!wasDamaged && !(entity instanceof EntityTNTPrimed || entity instanceof EntityFallingBlock) && !entity.forceExplosionKnockback) {
++                            continue;
++                        }
++                        // CraftBukkit end
++                        double d14 = 1.0D;
++
++                        if (entity instanceof EntityLiving) {
++                            d14 = EnchantmentProtection.a((EntityLiving) entity, d13);
++                        }
++
++                        entity.motX += d8 * d14;
++                        entity.motY += d9 * d14;
++                        entity.motZ += d10 * d14;
++                        if (entity instanceof EntityHuman) {
++                            EntityHuman entityhuman = (EntityHuman) entity;
++
++                            if (!entityhuman.isSpectator() && (!entityhuman.l_() || !entityhuman.abilities.isFlying)) {
++                                this.k.put(entityhuman, new Vec3D(d8 * d13, d9 * d13, d10 * d13));
++                            }
++                        }
++                    }
++                }
++            }
++        }
++        /*
+         for (int l1 = 0; l1 < list.size(); ++l1) {
+             Entity entity = (Entity) list.get(l1);
+ 
+@@ -154,7 +206,7 @@
+                     }
+                 }
+             }
+-        }
++        }*/
+ 
+     }
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/ItemArmor.java src/main/java/net/minecraft/server/ItemArmor.java
+--- src_origin/main/java/net/minecraft/server/ItemArmor.java	2016-05-29 15:00:14.695641554 +0800
++++ src/main/java/net/minecraft/server/ItemArmor.java	2016-06-08 13:02:34.500102495 +0800
+@@ -2,7 +2,9 @@
+ 
+ import com.google.common.base.Predicates;
+ import com.google.common.collect.Multimap;
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.UUID;
+ 
+ // CraftBukkit start
+@@ -35,11 +37,12 @@
+         int k = blockposition.getZ();
+         AxisAlignedBB axisalignedbb = new AxisAlignedBB((double) i, (double) j, (double) k, (double) (i + 1), (double) (j + 1), (double) (k + 1));
+         List list = isourceblock.getWorld().a(EntityLiving.class, axisalignedbb, Predicates.and(IEntitySelector.e, new IEntitySelector.EntitySelectorEquipable(itemstack)));
+-
++        Iterator it = list.iterator();
+         if (list.isEmpty()) {
+             return null;
+         } else {
+-            EntityLiving entityliving = (EntityLiving) list.get(0);
++            //EntityLiving entityliving = (EntityLiving) list.get(0);
++            EntityLiving entityliving = (EntityLiving) it.next();
+             EnumItemSlot enumitemslot = EntityInsentient.d(itemstack);
+             // CraftBukkit start
+             ItemStack itemstack1 = itemstack.cloneAndSubtract(1);
+diff -Naur src_origin/main/java/net/minecraft/server/ItemBoat.java src/main/java/net/minecraft/server/ItemBoat.java
+--- src_origin/main/java/net/minecraft/server/ItemBoat.java	2016-05-29 15:00:14.705641553 +0800
++++ src/main/java/net/minecraft/server/ItemBoat.java	2016-06-08 13:02:34.506102494 +0800
+@@ -1,6 +1,8 @@
+ package net.minecraft.server;
+ 
++import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ public class ItemBoat extends Item {
+ 
+@@ -38,6 +40,19 @@
+             boolean flag = false;
+             List list = world.getEntities(entityhuman, entityhuman.getBoundingBox().a(vec3d2.x * d3, vec3d2.y * d3, vec3d2.z * d3).g(1.0D));
+ 
++            Iterator it = list.iterator();
++            while (it.hasNext()) {
++                 Entity entity = (Entity) it.next();
++
++                if (entity.isInteractable()) {
++                    AxisAlignedBB axisalignedbb = entity.getBoundingBox().g((double) entity.aA());
++
++                    if (axisalignedbb.a(vec3d)) {
++                        flag = true;
++                    }
++                }
++            }
++            /*
+             for (int i = 0; i < list.size(); ++i) {
+                 Entity entity = (Entity) list.get(i);
+ 
+@@ -48,7 +63,7 @@
+                         flag = true;
+                     }
+                 }
+-            }
++            }*/
+ 
+             if (flag) {
+                 return new InteractionResultWrapper(EnumInteractionResult.PASS, itemstack);
+diff -Naur src_origin/main/java/net/minecraft/server/ItemLeash.java src/main/java/net/minecraft/server/ItemLeash.java
+--- src_origin/main/java/net/minecraft/server/ItemLeash.java	2016-05-29 15:00:14.752641549 +0800
++++ src/main/java/net/minecraft/server/ItemLeash.java	2016-06-08 13:02:34.551102490 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ import org.bukkit.event.hanging.HangingPlaceEvent; // CraftBukkit
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-05-29 15:00:14.828641542 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-06-03 11:22:46.249244387 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-06-08 13:02:34.622102484 +0800
 @@ -33,6 +33,7 @@
  import java.util.Arrays;
  import java.util.Collections;
@@ -1693,7 +2984,15 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  import java.util.List;
  import java.util.Queue;
  import java.util.Random;
-@@ -51,6 +52,8 @@
+@@ -40,6 +41,7 @@
+ import java.util.concurrent.Callable;
+ import java.util.concurrent.Executors;
+ import java.util.concurrent.FutureTask;
++import java.util.concurrent.RecursiveAction;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+ import org.apache.commons.lang3.Validate;
+@@ -51,6 +53,8 @@
  import org.bukkit.craftbukkit.CraftServer;
  // CraftBukkit end
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
@@ -1702,7 +3001,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  
  public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
  
-@@ -358,7 +361,10 @@
+@@ -358,7 +362,10 @@
              BlockPosition blockposition = worldserver.getSpawn();
              long j = av();
              i = 0;
@@ -1714,7 +3013,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
              for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
                  for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
                      long i1 = av();
-@@ -369,9 +375,13 @@
+@@ -369,9 +376,13 @@
                      }
  
                      ++i;
@@ -1729,7 +3028,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
          }
  
          for (WorldServer world : this.worlds) {
-@@ -1027,7 +1037,8 @@
+@@ -724,7 +735,7 @@
+         int count = this.j.size();
+         while (count-- > 0 && (entry = this.j.poll()) != null) {
+             SystemUtils.a(entry, MinecraftServer.LOGGER);
+-         }
++        }
+         // Spigot end
+ 
+         this.methodProfiler.c("levels");
+@@ -1027,7 +1038,8 @@
      }
  
      public String getServerModName() {
@@ -1739,7 +3047,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public CrashReport b(CrashReport crashreport) {
-@@ -1109,7 +1120,8 @@
+@@ -1109,7 +1121,8 @@
      }
  
      public String getName() {
@@ -1749,9 +3057,1280 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
+@@ -1537,4 +1550,20 @@
+         return (Bukkit.getServer() instanceof CraftServer) ? ((CraftServer) Bukkit.getServer()).getServer() : null;
+     }
+     // CraftBukkit end
++    
++    class jobs extends RecursiveAction {
++        FutureTask futuretask;
++        Logger logger;
++                
++        <V> jobs(FutureTask<V> futuretask, Logger logger) {
++            this.futuretask = futuretask;
++            this.logger = logger;
++        }
++        
++        @Override
++        protected void compute() {
++            SystemUtils.a(futuretask, MinecraftServer.LOGGER);
++        }
++                 
++    }
+ }
+diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src/main/java/net/minecraft/server/NavigationAbstract.java
+--- src_origin/main/java/net/minecraft/server/NavigationAbstract.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/NavigationAbstract.java	2016-06-08 13:02:34.647102481 +0800
+@@ -0,0 +1,292 @@
++package net.minecraft.server;
++
++import javax.annotation.Nullable;
++
++public abstract class NavigationAbstract {
++
++    private static int f = 20;
++    protected EntityInsentient a;
++    protected World b;
++    @Nullable
++    protected PathEntity c;
++    protected double d;
++    private final AttributeInstance g;
++    private int h;
++    private int i;
++    private Vec3D j;
++    private Vec3D k;
++    private long l;
++    private long m;
++    private double n;
++    private float o;
++    private boolean p;
++    private long q;
++    protected PathfinderAbstract e;
++    private BlockPosition r;
++    private final Pathfinder s;
++
++    public NavigationAbstract(EntityInsentient entityinsentient, World world) {
++        this.j = Vec3D.a;
++        this.k = Vec3D.a;
++        this.l = 0L;
++        this.m = 0L;
++        this.o = 0.5F;
++        this.a = entityinsentient;
++        this.b = world;
++        this.g = entityinsentient.getAttributeInstance(GenericAttributes.FOLLOW_RANGE);
++        this.s = this.a();
++    }
++
++    protected abstract Pathfinder a();
++
++    public void a(double d0) {
++        this.d = d0;
++    }
++
++    public float h() {
++        return (float) this.g.getValue();
++    }
++
++    public boolean i() {
++        return this.p;
++    }
++
++    public void j() {
++        if (this.b.getTime() - this.q > (long) NavigationAbstract.f) {
++            if (this.r != null) {
++                this.c = null;
++                this.c = this.a(this.r);
++                this.q = this.b.getTime();
++                this.p = false;
++            }
++        } else {
++            this.p = true;
++        }
++
++    }
++
++    @Nullable
++    public final PathEntity a(double d0, double d1, double d2) {
++        return this.a(new BlockPosition(MathHelper.floor(d0), (int) d1, MathHelper.floor(d2)));
++    }
++
++    @Nullable
++    public PathEntity a(BlockPosition blockposition) {
++        if (!this.b()) {
++            return null;
++        } else if (this.c != null && !this.c.b() && blockposition.equals(this.r)) {
++            return this.c;
++        } else {
++            this.r = blockposition;
++            float f = this.h();
++
++            this.b.methodProfiler.a("pathfind");
++            BlockPosition blockposition1 = new BlockPosition(this.a);
++            int i = (int) (f + 8.0F);
++            ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
++            PathEntity pathentity = this.s.a(chunkcache, this.a, this.r, f);
++            //fork join
++            
++            
++            this.b.methodProfiler.b();
++            return pathentity;
++        }
++    }
++
++    @Nullable
++    public PathEntity a(Entity entity) {
++        if (!this.b()) {
++            return null;
++        } else {
++            BlockPosition blockposition = new BlockPosition(entity);
++
++            if (this.c != null && !this.c.b() && blockposition.equals(this.r)) {
++                return this.c;
++            } else {
++                this.r = blockposition;
++                float f = this.h();
++
++                this.b.methodProfiler.a("pathfind");
++                BlockPosition blockposition1 = (new BlockPosition(this.a)).up();
++                int i = (int) (f + 16.0F);
++                ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
++                PathEntity pathentity = this.s.a(chunkcache, this.a, entity, f);
++
++                this.b.methodProfiler.b();
++                return pathentity;
++            }
++        }
++    }
++
++    public boolean a(double d0, double d1, double d2, double d3) {
++        PathEntity pathentity = this.a((double) MathHelper.floor(d0), (double) ((int) d1), (double) MathHelper.floor(d2));
++
++        return this.a(pathentity, d3);
++    }
++
++    public boolean a(Entity entity, double d0) {
++        PathEntity pathentity = this.a(entity);
++
++        return pathentity != null ? this.a(pathentity, d0) : false;
++    }
++
++    public boolean a(@Nullable PathEntity pathentity, double d0) {
++        if (pathentity == null) {
++            this.c = null;
++            return false;
++        } else {
++            if (!pathentity.a(this.c)) {
++                this.c = pathentity;
++            }
++
++            this.d();
++            if (this.c.d() == 0) {
++                return false;
++            } else {
++                this.d = d0;
++                Vec3D vec3d = this.c();
++
++                this.i = this.h;
++                this.j = vec3d;
++                return true;
++            }
++        }
++    }
++
++    @Nullable
++    public PathEntity k() {
++        return this.c;
++    }
++
++    public void l() {
++        ++this.h;
++        if (this.p) {
++            this.j();
++        }
++
++        if (!this.n()) {
++            Vec3D vec3d;
++
++            if (this.b()) {
++                this.m();
++            } else if (this.c != null && this.c.e() < this.c.d()) {
++                vec3d = this.c();
++                Vec3D vec3d1 = this.c.a(this.a, this.c.e());
++
++                if (vec3d.y > vec3d1.y && !this.a.onGround && MathHelper.floor(vec3d.x) == MathHelper.floor(vec3d1.x) && MathHelper.floor(vec3d.z) == MathHelper.floor(vec3d1.z)) {
++                    this.c.c(this.c.e() + 1);
++                }
++            }
++
++            if (!this.n()) {
++                vec3d = this.c.a((Entity) this.a);
++                if (vec3d != null) {
++                    BlockPosition blockposition = (new BlockPosition(vec3d)).down();
++                    AxisAlignedBB axisalignedbb = this.b.getType(blockposition).c(this.b, blockposition);
++
++                    vec3d = vec3d.a(0.0D, 1.0D - axisalignedbb.e, 0.0D);
++                    this.a.getControllerMove().a(vec3d.x, vec3d.y, vec3d.z, this.d);
++                }
++            }
++        }
++    }
++
++    protected void m() {
++        Vec3D vec3d = this.c();
++        int i = this.c.d();
++
++        for (int j = this.c.e(); j < this.c.d(); ++j) {
++            if ((double) this.c.a(j).b != Math.floor(vec3d.y)) {
++                i = j;
++                break;
++            }
++        }
++
++        this.o = this.a.width > 0.75F ? this.a.width / 2.0F : 0.75F - this.a.width / 2.0F;
++        Vec3D vec3d1 = this.c.f();
++
++        if (MathHelper.e((float) (this.a.locX - (vec3d1.x + 0.5D))) < this.o && MathHelper.e((float) (this.a.locZ - (vec3d1.z + 0.5D))) < this.o) {
++            this.c.c(this.c.e() + 1);
++        }
++
++        int k = MathHelper.f(this.a.width);
++        int l = MathHelper.f(this.a.length);
++        int i1 = k;
++
++        for (int j1 = i - 1; j1 >= this.c.e(); --j1) {
++            if (this.a(vec3d, this.c.a(this.a, j1), k, l, i1)) {
++                //this.c.c(j1);
++                try {
++                    this.c.c(j1);
++                } catch (Exception ex) {
++                    break;
++                }
++                break;
++            }
++        }
++
++        this.a(vec3d);
++    }
++
++    protected void a(Vec3D vec3d) {
++        if (this.h - this.i > 100) {
++            if (vec3d.distanceSquared(this.j) < 2.25D) {
++                this.o();
++            }
++
++            this.i = this.h;
++            this.j = vec3d;
++        }
++
++        if (this.c != null && !this.c.b()) {
++            Vec3D vec3d1 = this.c.f();
++
++            if (!vec3d1.equals(this.k)) {
++                this.k = vec3d1;
++                double d0 = vec3d.f(this.k);
++
++                this.n = this.a.cl() > 0.0F ? d0 / (double) this.a.cl() * 1000.0D : 0.0D;
++            } else {
++                this.l += System.currentTimeMillis() - this.m;
++            }
++
++            if (this.n > 0.0D && (double) this.l > this.n * 3.0D) {
++                this.k = Vec3D.a;
++                this.l = 0L;
++                this.n = 0.0D;
++                this.o();
++            }
++
++            this.m = System.currentTimeMillis();
++        }
++
++    }
++
++    public boolean n() {
++        return this.c == null || this.c.b();
++    }
++
++    public void o() {
++        this.c = null;
++    }
++
++    protected abstract Vec3D c();
++
++    protected abstract boolean b();
++
++    protected boolean p() {
++        return this.a.isInWater() || this.a.an();
++    }
++
++    protected void d() {}
++
++    protected abstract boolean a(Vec3D vec3d, Vec3D vec3d1, int i, int j, int k);
++
++    public boolean b(BlockPosition blockposition) {
++        return this.b.getType(blockposition.down()).b();
++    }
++
++    public PathfinderAbstract q() {
++        return this.e;
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/NBTBase.java src/main/java/net/minecraft/server/NBTBase.java
+--- src_origin/main/java/net/minecraft/server/NBTBase.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/NBTBase.java	2016-06-08 13:02:34.658102480 +0800
+@@ -0,0 +1,104 @@
++package net.minecraft.server;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++
++public abstract class NBTBase {
++
++    public static final String[] a = new String[] { "END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]"};
++
++    abstract void write(DataOutput dataoutput) throws IOException;
++
++    abstract void load(DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException;
++
++    public abstract String toString();
++
++    public abstract byte getTypeId();
++
++    protected NBTBase() {}
++
++    protected static NBTBase createTag(byte b0) {
++        switch (b0) {
++        case 0:
++            return new NBTTagEnd();
++
++        case 1:
++            return new NBTTagByte();
++
++        case 2:
++            return new NBTTagShort();
++
++        case 3:
++            return new NBTTagInt();
++
++        case 4:
++            return new NBTTagLong();
++
++        case 5:
++            return new NBTTagFloat();
++
++        case 6:
++            return new NBTTagDouble();
++
++        case 7:
++            return new NBTTagByteArray();
++
++        case 8:
++            return new NBTTagString();
++
++        case 9:
++            return new NBTTagList();
++
++        case 10:
++            return new NBTTagCompound();
++
++        case 11:
++            return new NBTTagIntArray();
++
++        default:
++            return null;
++        }
++    }
++
++    public abstract NBTBase clone();
++
++    public boolean isEmpty() {
++        return false;
++    }
++
++    public boolean equals(Object object) {
++        if (!(object instanceof NBTBase)) {
++            return false;
++        } else {
++            NBTBase nbtbase = (NBTBase) object;
++
++            return this.getTypeId() == nbtbase.getTypeId();
++        }
++    }
++
++    public int hashCode() {
++        return this.getTypeId();
++    }
++
++    protected String a_() {
++        return this.toString();
++    }
++
++    public abstract static class NBTNumber extends NBTBase {
++
++        protected NBTNumber() {}
++
++        public abstract long c();
++
++        public abstract int d();
++
++        public abstract short e();
++
++        public abstract byte f();
++
++        public abstract double g();
++
++        public abstract float h();
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/NBTTagCompound.java src/main/java/net/minecraft/server/NBTTagCompound.java
+--- src_origin/main/java/net/minecraft/server/NBTTagCompound.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/NBTTagCompound.java	2016-06-08 13:02:34.665102480 +0800
+@@ -0,0 +1,418 @@
++package net.minecraft.server;
++
++import com.google.common.collect.Maps;
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++import java.util.Iterator;
++import java.util.Map;
++import java.util.Set;
++import java.util.UUID;
++import java.util.Map.Entry;
++import javax.annotation.Nullable;
++
++public class NBTTagCompound extends NBTBase {
++
++    //private Map<String, NBTBase> map = Maps.newHashMap();
++    private Map<String, NBTBase> map = Maps.newConcurrentMap();
++
++    public NBTTagCompound() {}
++
++    void write(DataOutput dataoutput) throws IOException {
++        Iterator iterator = this.map.keySet().iterator();
++
++        while (iterator.hasNext()) {
++            String s = (String) iterator.next();
++            NBTBase nbtbase = (NBTBase) this.map.get(s);
++
++            a(s, nbtbase, dataoutput);
++        }
++
++        dataoutput.writeByte(0);
++    }
++
++    void load(DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException {
++        nbtreadlimiter.a(384L);
++        if (i > 512) {
++            throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
++        } else {
++            this.map.clear();
++
++            byte b0;
++
++            while ((b0 = a(datainput, nbtreadlimiter)) != 0) {
++                String s = b(datainput, nbtreadlimiter);
++
++                nbtreadlimiter.a((long) (224 + 16 * s.length()));
++                NBTBase nbtbase = a(b0, s, datainput, i + 1, nbtreadlimiter);
++
++                if (this.map.put(s, nbtbase) != null) {
++                    nbtreadlimiter.a(288L);
++                }
++            }
++
++        }
++    }
++
++    public Set<String> c() {
++        return this.map.keySet();
++    }
++
++    public byte getTypeId() {
++        return (byte) 10;
++    }
++
++    public int d() {
++        return this.map.size();
++    }
++
++    public void set(String s, NBTBase nbtbase) {
++        this.map.put(s, nbtbase);
++    }
++
++    public void setByte(String s, byte b0) {
++        this.map.put(s, new NBTTagByte(b0));
++    }
++
++    public void setShort(String s, short short0) {
++        this.map.put(s, new NBTTagShort(short0));
++    }
++
++    public void setInt(String s, int i) {
++        this.map.put(s, new NBTTagInt(i));
++    }
++
++    public void setLong(String s, long i) {
++        this.map.put(s, new NBTTagLong(i));
++    }
++
++    public void a(String s, UUID uuid) {
++        this.setLong(s + "Most", uuid.getMostSignificantBits());
++        this.setLong(s + "Least", uuid.getLeastSignificantBits());
++    }
++
++    @Nullable
++    public UUID a(String s) {
++        return new UUID(this.getLong(s + "Most"), this.getLong(s + "Least"));
++    }
++
++    public boolean b(String s) {
++        return this.hasKeyOfType(s + "Most", 99) && this.hasKeyOfType(s + "Least", 99);
++    }
++
++    public void setFloat(String s, float f) {
++        this.map.put(s, new NBTTagFloat(f));
++    }
++
++    public void setDouble(String s, double d0) {
++        this.map.put(s, new NBTTagDouble(d0));
++    }
++
++    public void setString(String s, String s1) {
++        this.map.put(s, new NBTTagString(s1));
++    }
++
++    public void setByteArray(String s, byte[] abyte) {
++        this.map.put(s, new NBTTagByteArray(abyte));
++    }
++
++    public void setIntArray(String s, int[] aint) {
++        this.map.put(s, new NBTTagIntArray(aint));
++    }
++
++    public void setBoolean(String s, boolean flag) {
++        this.setByte(s, (byte) (flag ? 1 : 0));
++    }
++
++    public NBTBase get(String s) {
++        return (NBTBase) this.map.get(s);
++    }
++
++    public byte d(String s) {
++        NBTBase nbtbase = (NBTBase) this.map.get(s);
++
++        return nbtbase == null ? 0 : nbtbase.getTypeId();
++    }
++
++    public boolean hasKey(String s) {
++        return this.map.containsKey(s);
++    }
++
++    public boolean hasKeyOfType(String s, int i) {
++        byte b0 = this.d(s);
++
++        return b0 == i ? true : (i != 99 ? false : b0 == 1 || b0 == 2 || b0 == 3 || b0 == 4 || b0 == 5 || b0 == 6);
++    }
++
++    public byte getByte(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).f();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return (byte) 0;
++    }
++
++    public short getShort(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).e();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return (short) 0;
++    }
++
++    public int getInt(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).d();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return 0;
++    }
++
++    public long getLong(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).c();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return 0L;
++    }
++
++    public float getFloat(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).h();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return 0.0F;
++    }
++
++    public double getDouble(String s) {
++        try {
++            if (this.hasKeyOfType(s, 99)) {
++                return ((NBTBase.NBTNumber) this.map.get(s)).g();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return 0.0D;
++    }
++
++    public String getString(String s) {
++        try {
++            if (this.hasKeyOfType(s, 8)) {
++                return ((NBTBase) this.map.get(s)).a_();
++            }
++        } catch (ClassCastException classcastexception) {
++            ;
++        }
++
++        return "";
++    }
++
++    public byte[] getByteArray(String s) {
++        try {
++            if (this.hasKeyOfType(s, 7)) {
++                return ((NBTTagByteArray) this.map.get(s)).c();
++            }
++        } catch (ClassCastException classcastexception) {
++            throw new ReportedException(this.a(s, 7, classcastexception));
++        }
++
++        return new byte[0];
++    }
++
++    public int[] getIntArray(String s) {
++        try {
++            if (this.hasKeyOfType(s, 11)) {
++                return ((NBTTagIntArray) this.map.get(s)).c();
++            }
++        } catch (ClassCastException classcastexception) {
++            throw new ReportedException(this.a(s, 11, classcastexception));
++        }
++
++        return new int[0];
++    }
++
++    public NBTTagCompound getCompound(String s) {
++        try {
++            if (this.hasKeyOfType(s, 10)) {
++                return (NBTTagCompound) this.map.get(s);
++            }
++        } catch (ClassCastException classcastexception) {
++            throw new ReportedException(this.a(s, 10, classcastexception));
++        }
++
++        return new NBTTagCompound();
++    }
++
++    public NBTTagList getList(String s, int i) {
++        try {
++            if (this.d(s) == 9) {
++                NBTTagList nbttaglist = (NBTTagList) this.map.get(s);
++
++                if (!nbttaglist.isEmpty() && nbttaglist.d() != i) {
++                    return new NBTTagList();
++                }
++
++                return nbttaglist;
++            }
++        } catch (ClassCastException classcastexception) {
++            throw new ReportedException(this.a(s, 9, classcastexception));
++        }
++
++        return new NBTTagList();
++    }
++
++    public boolean getBoolean(String s) {
++        return this.getByte(s) != 0;
++    }
++
++    public void remove(String s) {
++        this.map.remove(s);
++    }
++
++    public String toString() {
++        StringBuilder stringbuilder = new StringBuilder("{");
++
++        Entry entry;
++
++        for (Iterator iterator = this.map.entrySet().iterator(); iterator.hasNext(); stringbuilder.append((String) entry.getKey()).append(':').append(entry.getValue())) {
++            entry = (Entry) iterator.next();
++            if (stringbuilder.length() != 1) {
++                stringbuilder.append(',');
++            }
++        }
++
++        return stringbuilder.append('}').toString();
++    }
++
++    public boolean isEmpty() {
++        return this.map.isEmpty();
++    }
++
++    private CrashReport a(final String s, final int i, ClassCastException classcastexception) {
++        CrashReport crashreport = CrashReport.a(classcastexception, "Reading NBT data");
++        CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Corrupt NBT tag", 1);
++
++        crashreportsystemdetails.a("Tag type found", new CrashReportCallable() {
++            public String a() throws Exception {
++                return NBTBase.a[((NBTBase) NBTTagCompound.this.map.get(s)).getTypeId()];
++            }
++
++            public Object call() throws Exception {
++                return this.a();
++            }
++        });
++        crashreportsystemdetails.a("Tag type expected", new CrashReportCallable() {
++            public String a() throws Exception {
++                return NBTBase.a[i];
++            }
++
++            public Object call() throws Exception {
++                return this.a();
++            }
++        });
++        crashreportsystemdetails.a("Tag name", (Object) s);
++        return crashreport;
++    }
++
++    public NBTBase clone() {
++        NBTTagCompound nbttagcompound = new NBTTagCompound();
++        Iterator iterator = this.map.keySet().iterator();
++
++        while (iterator.hasNext()) {
++            String s = (String) iterator.next();
++
++            nbttagcompound.set(s, ((NBTBase) this.map.get(s)).clone());
++        }
++
++        return nbttagcompound;
++    }
++
++    public boolean equals(Object object) {
++        if (super.equals(object)) {
++            NBTTagCompound nbttagcompound = (NBTTagCompound) object;
++
++            return this.map.entrySet().equals(nbttagcompound.map.entrySet());
++        } else {
++            return false;
++        }
++    }
++
++    public int hashCode() {
++        return super.hashCode() ^ this.map.hashCode();
++    }
++
++    private static void a(String s, NBTBase nbtbase, DataOutput dataoutput) throws IOException {
++        dataoutput.writeByte(nbtbase.getTypeId());
++        if (nbtbase.getTypeId() != 0) {
++            dataoutput.writeUTF(s);
++            nbtbase.write(dataoutput);
++        }
++    }
++
++    private static byte a(DataInput datainput, NBTReadLimiter nbtreadlimiter) throws IOException {
++        return datainput.readByte();
++    }
++
++    private static String b(DataInput datainput, NBTReadLimiter nbtreadlimiter) throws IOException {
++        return datainput.readUTF();
++    }
++
++    static NBTBase a(byte b0, String s, DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException {
++        NBTBase nbtbase = NBTBase.createTag(b0);
++
++        try {
++            nbtbase.load(datainput, i, nbtreadlimiter);
++            return nbtbase;
++        } catch (IOException ioexception) {
++            CrashReport crashreport = CrashReport.a(ioexception, "Loading NBT data");
++            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("NBT Tag");
++
++            crashreportsystemdetails.a("Tag name", (Object) s);
++            crashreportsystemdetails.a("Tag type", (Object) Byte.valueOf(b0));
++            throw new ReportedException(crashreport);
++        }
++    }
++
++    public void a(NBTTagCompound nbttagcompound) {
++        Iterator iterator = nbttagcompound.map.keySet().iterator();
++
++        while (iterator.hasNext()) {
++            String s = (String) iterator.next();
++            NBTBase nbtbase = (NBTBase) nbttagcompound.map.get(s);
++
++            if (nbtbase.getTypeId() == 10) {
++                if (this.hasKeyOfType(s, 10)) {
++                    NBTTagCompound nbttagcompound1 = this.getCompound(s);
++
++                    nbttagcompound1.a((NBTTagCompound) nbtbase);
++                } else {
++                    this.set(s, nbtbase.clone());
++                }
++            } else {
++                this.set(s, nbtbase.clone());
++            }
++        }
++
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/NBTTagList.java src/main/java/net/minecraft/server/NBTTagList.java
+--- src_origin/main/java/net/minecraft/server/NBTTagList.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/NBTTagList.java	2016-06-08 13:02:34.691102477 +0800
+@@ -0,0 +1,233 @@
++package net.minecraft.server;
++
++import com.google.common.collect.Lists;
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++import java.util.Iterator;
++import java.util.List;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++
++public class NBTTagList extends NBTBase {
++
++    private static final Logger b = LogManager.getLogger();
++    //private List<NBTBase> list = Lists.newArrayList();
++    private List<NBTBase> list = Lists.newCopyOnWriteArrayList();
++    private byte type = 0;
++
++    public NBTTagList() {}
++
++    void write(DataOutput dataoutput) throws IOException {
++        if (!this.list.isEmpty()) {
++            this.type = ((NBTBase) this.list.get(0)).getTypeId();
++        } else {
++            this.type = 0;
++        }
++
++        dataoutput.writeByte(this.type);
++        dataoutput.writeInt(this.list.size());
++
++        for (int i = 0; i < this.list.size(); ++i) {
++            ((NBTBase) this.list.get(i)).write(dataoutput);
++        }
++
++    }
++
++    void load(DataInput datainput, int i, NBTReadLimiter nbtreadlimiter) throws IOException {
++        nbtreadlimiter.a(296L);
++        if (i > 512) {
++            throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
++        } else {
++            this.type = datainput.readByte();
++            int j = datainput.readInt();
++
++            if (this.type == 0 && j > 0) {
++                throw new RuntimeException("Missing type on ListTag");
++            } else {
++                nbtreadlimiter.a(32L * (long) j);
++                this.list = Lists.newArrayListWithCapacity(j);
++
++                for (int k = 0; k < j; ++k) {
++                    NBTBase nbtbase = NBTBase.createTag(this.type);
++
++                    nbtbase.load(datainput, i + 1, nbtreadlimiter);
++                    this.list.add(nbtbase);
++                }
++
++            }
++        }
++    }
++
++    public byte getTypeId() {
++        return (byte) 9;
++    }
++
++    public String toString() {
++        StringBuilder stringbuilder = new StringBuilder("[");
++
++        for (int i = 0; i < this.list.size(); ++i) {
++            if (i != 0) {
++                stringbuilder.append(',');
++            }
++
++            stringbuilder.append(i).append(':').append(this.list.get(i));
++        }
++
++        return stringbuilder.append(']').toString();
++    }
++
++    public void add(NBTBase nbtbase) {
++        if (nbtbase.getTypeId() == 0) {
++            NBTTagList.b.warn("Invalid TagEnd added to ListTag");
++        } else {
++            if (this.type == 0) {
++                this.type = nbtbase.getTypeId();
++            } else if (this.type != nbtbase.getTypeId()) {
++                NBTTagList.b.warn("Adding mismatching tag types to tag list");
++                return;
++            }
++
++            this.list.add(nbtbase);
++        }
++    }
++
++    public void a(int i, NBTBase nbtbase) {
++        if (nbtbase.getTypeId() == 0) {
++            NBTTagList.b.warn("Invalid TagEnd added to ListTag");
++        } else if (i >= 0 && i < this.list.size()) {
++            if (this.type == 0) {
++                this.type = nbtbase.getTypeId();
++            } else if (this.type != nbtbase.getTypeId()) {
++                NBTTagList.b.warn("Adding mismatching tag types to tag list");
++                return;
++            }
++
++            this.list.set(i, nbtbase);
++        } else {
++            NBTTagList.b.warn("index out of bounds to set tag in tag list");
++        }
++    }
++
++    public NBTBase remove(int i) {
++        return (NBTBase) this.list.remove(i);
++    }
++
++    public boolean isEmpty() {
++        return this.list.isEmpty();
++    }
++
++    public NBTTagCompound get(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            if (nbtbase.getTypeId() == 10) {
++                return (NBTTagCompound) nbtbase;
++            }
++        }
++
++        return new NBTTagCompound();
++    }
++
++    public int c(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            if (nbtbase.getTypeId() == 3) {
++                return ((NBTTagInt) nbtbase).d();
++            }
++        }
++
++        return 0;
++    }
++
++    public int[] d(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            if (nbtbase.getTypeId() == 11) {
++                return ((NBTTagIntArray) nbtbase).c();
++            }
++        }
++
++        return new int[0];
++    }
++
++    public double e(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            if (nbtbase.getTypeId() == 6) {
++                return ((NBTTagDouble) nbtbase).g();
++            }
++        }
++
++        return 0.0D;
++    }
++
++    public float f(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            if (nbtbase.getTypeId() == 5) {
++                return ((NBTTagFloat) nbtbase).h();
++            }
++        }
++
++        return 0.0F;
++    }
++
++    public String getString(int i) {
++        if (i >= 0 && i < this.list.size()) {
++            NBTBase nbtbase = (NBTBase) this.list.get(i);
++
++            return nbtbase.getTypeId() == 8 ? nbtbase.a_() : nbtbase.toString();
++        } else {
++            return "";
++        }
++    }
++
++    public NBTBase h(int i) {
++        return (NBTBase) (i >= 0 && i < this.list.size() ? (NBTBase) this.list.get(i) : new NBTTagEnd());
++    }
++
++    public int size() {
++        return this.list.size();
++    }
++
++    public NBTBase clone() {
++        NBTTagList nbttaglist = new NBTTagList();
++
++        nbttaglist.type = this.type;
++        Iterator iterator = this.list.iterator();
++
++        while (iterator.hasNext()) {
++            NBTBase nbtbase = (NBTBase) iterator.next();
++            NBTBase nbtbase1 = nbtbase.clone();
++
++            nbttaglist.list.add(nbtbase1);
++        }
++
++        return nbttaglist;
++    }
++
++    public boolean equals(Object object) {
++        if (super.equals(object)) {
++            NBTTagList nbttaglist = (NBTTagList) object;
++
++            if (this.type == nbttaglist.type) {
++                return this.list.equals(nbttaglist.list);
++            }
++        }
++
++        return false;
++    }
++
++    public int hashCode() {
++        return super.hashCode() ^ this.list.hashCode();
++    }
++
++    public int d() {
++        return this.type;
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/PathEntity.java src/main/java/net/minecraft/server/PathEntity.java
+--- src_origin/main/java/net/minecraft/server/PathEntity.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/PathEntity.java	2016-06-08 13:02:34.726102474 +0800
+@@ -0,0 +1,91 @@
++package net.minecraft.server;
++
++public class PathEntity {
++
++    private final PathPoint[] a;
++    private PathPoint[] b = new PathPoint[0];
++    private PathPoint[] c = new PathPoint[0];
++    private int e;
++    private int f;
++
++    public PathEntity(PathPoint[] apathpoint) {
++        this.a = apathpoint;
++        this.f = apathpoint.length;
++    }
++
++    public void a() {
++        ++this.e;
++    }
++
++    public boolean b() {
++        return this.e >= this.f;
++    }
++
++    public PathPoint c() {
++        return this.f > 0 ? this.a[this.f - 1] : null;
++    }
++
++    public PathPoint a(int i) {
++        return this.a[i];
++    }
++
++    public void a(int i, PathPoint pathpoint) {
++        this.a[i] = pathpoint;
++    }
++
++    public int d() {
++        return this.f;
++    }
++
++    public void b(int i) {
++        this.f = i;
++    }
++
++    public int e() {
++        return this.e;
++    }
++
++    public void c(int i) {
++        this.e = i;
++    }
++
++    public Vec3D a(Entity entity, int i) {
++        double d0 = (double) this.a[i].a + (double) ((int) (entity.width + 1.0F)) * 0.5D;
++        double d1 = (double) this.a[i].b;
++        double d2 = (double) this.a[i].c + (double) ((int) (entity.width + 1.0F)) * 0.5D;
++
++        return new Vec3D(d0, d1, d2);
++    }
++
++    public Vec3D a(Entity entity) {
++        return this.a(entity, this.e);
++    }
++
++    public Vec3D f() {
++        PathPoint pathpoint = this.a[this.e];
++
++        return new Vec3D((double) pathpoint.a, (double) pathpoint.b, (double) pathpoint.c);
++    }
++
++    public boolean a(PathEntity pathentity) {
++        if (pathentity == null) {
++            return false;
++        } else if (pathentity.a.length != this.a.length) {
++            return false;
++        } else {
++            for (int i = 0; i < this.a.length; ++i) {
++                if (this.a[i].a != pathentity.a[i].a || this.a[i].b != pathentity.a[i].b || this.a[i].c != pathentity.a[i].c) {
++                    return false;
++                }
++            }
++
++            return true;
++        }
++    }
++
++    public boolean b(Vec3D vec3d) {
++        PathPoint pathpoint = this.c();
++
++        return pathpoint == null ? false : pathpoint.a == (int) vec3d.x && pathpoint.c == (int) vec3d.z;
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalBreed.java src/main/java/net/minecraft/server/PathfinderGoalBreed.java
+--- src_origin/main/java/net/minecraft/server/PathfinderGoalBreed.java	2016-05-29 15:00:14.918641533 +0800
++++ src/main/java/net/minecraft/server/PathfinderGoalBreed.java	2016-06-08 13:02:34.727102474 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ 
+ public class PathfinderGoalBreed extends PathfinderGoal {
+diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalHurtByTarget.java src/main/java/net/minecraft/server/PathfinderGoalHurtByTarget.java
+--- src_origin/main/java/net/minecraft/server/PathfinderGoalHurtByTarget.java	2016-05-29 15:00:14.932641532 +0800
++++ src/main/java/net/minecraft/server/PathfinderGoalHurtByTarget.java	2016-06-08 13:02:34.751102472 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ public class PathfinderGoalHurtByTarget extends PathfinderGoalTarget {
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTargetInsentient.java src/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTargetInsentient.java
+--- src_origin/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTargetInsentient.java	2016-05-29 15:00:14.945641531 +0800
++++ src/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTargetInsentient.java	2016-06-08 13:02:34.758102471 +0800
+@@ -1,8 +1,10 @@
+ package net.minecraft.server;
+ 
+ import com.google.common.base.Predicate;
++import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+@@ -44,7 +46,7 @@
+     public boolean a() {
+         double d0 = this.f();
+         List list = this.b.world.a(this.f, this.b.getBoundingBox().grow(d0, 4.0D, d0), this.c);
+-
++        
+         Collections.sort(list, this.d);
+         if (list.isEmpty()) {
+             return false;
+diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java src/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java
+--- src_origin/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java	2016-05-29 15:00:14.937641532 +0800
++++ src/main/java/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java	2016-06-08 13:02:34.754102472 +0800
+@@ -2,9 +2,11 @@
+ 
+ import com.google.common.base.Function;
+ import com.google.common.base.Predicate;
++import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.Comparator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ public class PathfinderGoalNearestAttackableTarget<T extends EntityLiving> extends PathfinderGoalTarget {
+@@ -45,7 +47,7 @@
+             return false;
+         } else if (this.a != EntityHuman.class && this.a != EntityPlayer.class) {
+             List list = this.e.world.a(this.a, this.a(this.f()), this.c);
+-
++            
+             if (list.isEmpty()) {
+                 return false;
+             } else {
+diff -Naur src_origin/main/java/net/minecraft/server/PathfinderGoalTargetNearestPlayer.java src/main/java/net/minecraft/server/PathfinderGoalTargetNearestPlayer.java
+--- src_origin/main/java/net/minecraft/server/PathfinderGoalTargetNearestPlayer.java	2016-05-29 15:00:14.977641528 +0800
++++ src/main/java/net/minecraft/server/PathfinderGoalTargetNearestPlayer.java	2016-06-08 13:02:34.795102468 +0800
+@@ -1,8 +1,10 @@
+ package net.minecraft.server;
+ 
+ import com.google.common.base.Predicate;
++import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+@@ -58,7 +60,7 @@
+     public boolean a() {
+         double d0 = this.f();
+         List list = this.b.world.a(EntityHuman.class, this.b.getBoundingBox().grow(d0, 4.0D, d0), this.c);
+-
++        
+         Collections.sort(list, this.d);
+         if (list.isEmpty()) {
+             return false;
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-05-29 15:00:14.995641526 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-06-03 11:22:46.418244371 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-06-08 13:02:34.805102467 +0800
 @@ -17,6 +17,8 @@
  
  // CraftBukkit start
@@ -1846,7 +4425,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
              WorldProvider worldprovider = this.world.worldProvider;
 diff -Naur src_origin/main/java/net/minecraft/server/StructureGenerator.java src/main/java/net/minecraft/server/StructureGenerator.java
 --- src_origin/main/java/net/minecraft/server/StructureGenerator.java	2016-05-29 15:00:15.180641509 +0800
-+++ src/main/java/net/minecraft/server/StructureGenerator.java	2016-06-03 11:22:46.591244356 +0800
++++ src/main/java/net/minecraft/server/StructureGenerator.java	2016-06-08 13:02:34.976102451 +0800
 @@ -5,6 +5,7 @@
  import java.util.Iterator;
  import java.util.List;
@@ -1890,10 +4469,95 @@ diff -Naur src_origin/main/java/net/minecraft/server/StructureGenerator.java src
 +                 
 +    }
  }
+diff -Naur src_origin/main/java/net/minecraft/server/SystemUtils.java src/main/java/net/minecraft/server/SystemUtils.java
+--- src_origin/main/java/net/minecraft/server/SystemUtils.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/SystemUtils.java	2016-06-08 13:02:34.994102450 +0800
+@@ -0,0 +1,28 @@
++package net.minecraft.server;
++
++import java.util.List;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.FutureTask;
++import javax.annotation.Nullable;
++import org.apache.logging.log4j.Logger;
++
++public class SystemUtils {
++
++    @Nullable
++    public static <V> V a(FutureTask<V> futuretask, Logger logger) {
++        try {
++            futuretask.run();
++            return futuretask.get();
++        } catch (ExecutionException executionexception) {
++            logger.fatal("Error executing task", executionexception);
++        } catch (InterruptedException interruptedexception) {
++            logger.fatal("Error executing task", interruptedexception);
++        }
++
++        return null;
++    }
++
++    public static <T> T a(List<T> list) {
++        return list.get(list.size() - 1);
++    }
++}
+diff -Naur src_origin/main/java/net/minecraft/server/TileEntityBeacon.java src/main/java/net/minecraft/server/TileEntityBeacon.java
+--- src_origin/main/java/net/minecraft/server/TileEntityBeacon.java	2016-05-29 15:00:15.191641508 +0800
++++ src/main/java/net/minecraft/server/TileEntityBeacon.java	2016-06-08 13:02:34.994102450 +0800
+@@ -6,6 +6,7 @@
+ import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Set;
+ import javax.annotation.Nullable;
+ 
+diff -Naur src_origin/main/java/net/minecraft/server/TileEntityChest.java src/main/java/net/minecraft/server/TileEntityChest.java
+--- src_origin/main/java/net/minecraft/server/TileEntityChest.java	2016-05-29 15:00:15.205641507 +0800
++++ src/main/java/net/minecraft/server/TileEntityChest.java	2016-06-08 13:02:35.000102449 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import javax.annotation.Nullable;
+ 
+ // CraftBukkit start
+diff -Naur src_origin/main/java/net/minecraft/server/TileEntityEndGateway.java src/main/java/net/minecraft/server/TileEntityEndGateway.java
+--- src_origin/main/java/net/minecraft/server/TileEntityEndGateway.java	2016-05-29 15:00:15.223641505 +0800
++++ src/main/java/net/minecraft/server/TileEntityEndGateway.java	2016-06-08 13:02:35.024102447 +0800
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+@@ -56,7 +57,7 @@
+             --this.g;
+         } else if (!this.world.isClientSide) {
+             List list = this.world.a(Entity.class, new AxisAlignedBB(this.getPosition()));
+-
++            
+             if (!list.isEmpty()) {
+                 this.a((Entity) list.get(0));
+             }
+diff -Naur src_origin/main/java/net/minecraft/server/Village.java src/main/java/net/minecraft/server/Village.java
+--- src_origin/main/java/net/minecraft/server/Village.java	2016-05-29 15:00:15.268641501 +0800
++++ src/main/java/net/minecraft/server/Village.java	2016-06-08 13:02:35.061102444 +0800
+@@ -4,6 +4,7 @@
+ import com.mojang.authlib.GameProfile;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.TreeMap;
+ import java.util.UUID;
+ 
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-05-29 15:00:15.302641498 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-06-03 11:22:46.713244344 +0800
-@@ -15,7 +15,11 @@
++++ src/main/java/net/minecraft/server/World.java	2016-06-08 13:02:35.101102440 +0800
+@@ -15,7 +15,12 @@
  
  // CraftBukkit start
  import com.google.common.collect.Maps;
@@ -1901,11 +4565,12 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  import java.util.Map;
 +import java.util.Queue;
 +import java.util.concurrent.CopyOnWriteArrayList;
++import java.util.concurrent.RecursiveTask;
 +import java.util.concurrent.RecursiveAction;
  import org.bukkit.Bukkit;
  import org.bukkit.block.BlockState;
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
-@@ -34,6 +38,8 @@
+@@ -34,6 +39,8 @@
      private int a = 63;
      protected boolean d;
      // Spigot start - guard entity list from removals
@@ -1914,7 +4579,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      public final List<Entity> entityList = new java.util.ArrayList<Entity>()
      {
          @Override
-@@ -57,12 +63,13 @@
+@@ -57,12 +64,13 @@
                  throw new java.util.ConcurrentModificationException();
              }
          }
@@ -1930,7 +4595,27 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      private final List<TileEntity> tileEntityListUnload = Lists.newArrayList();
      public final List<EntityHuman> players = Lists.newArrayList();
      public final List<Entity> j = Lists.newArrayList();
-@@ -945,8 +952,11 @@
+@@ -299,6 +307,10 @@
+     }
+ 
+     private boolean isAreaLoaded(int i, int j, int k, int l, int i1, int j1, boolean flag) {
++        area_load ar_task = new area_load(this, i, j, k, l, i1, j1, flag);
++        ar_task.fork();
++        return ar_task.join();
++        /*
+         if (i1 >= 0 && j < 256) {
+             i >>= 4;
+             k >>= 4;
+@@ -316,7 +328,7 @@
+             return true;
+         } else {
+             return false;
+-        }
++        }*/
+     }
+ 
+     protected abstract boolean isChunkLoaded(int i, int j, boolean flag);
+@@ -945,8 +957,11 @@
          return addEntity(entity, SpawnReason.DEFAULT);
      }
  
@@ -1944,7 +4629,52 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          if (entity == null) return false;
          // CraftBukkit end
          int i = MathHelper.floor(entity.locX / 16.0D);
-@@ -1423,7 +1433,11 @@
+@@ -983,6 +998,7 @@
+             double radius = spigotConfig.expMerge;
+             if (radius > 0) {
+                 List<Entity> entities = this.getEntities(entity, entity.getBoundingBox().grow(radius, radius, radius));
++                //Queue<Entity> entities = this.getEntities(entity, entity.getBoundingBox().grow(radius, radius, radius));
+                 for (Entity e : entities) {
+                     if (e instanceof EntityExperienceOrb) {
+                         EntityExperienceOrb loopItem = (EntityExperienceOrb) e;
+@@ -1151,8 +1167,27 @@
+ 
+         blockposition_pooledblockposition.t();
+         if (entity != null) {
++            //fork join
+             List list = this.getEntities(entity, axisalignedbb.g(0.25D));
+ 
++            Iterator it = list.iterator();
++            while (it.hasNext()) {
++                Entity entity1 = (Entity) it.next();
++
++                if (!entity.x(entity1)) {
++                    AxisAlignedBB axisalignedbb1 = entity1.af();
++
++                    if (axisalignedbb1 != null && axisalignedbb1.b(axisalignedbb)) {
++                        arraylist.add(axisalignedbb1);
++                    }
++
++                    axisalignedbb1 = entity.j(entity1);
++                    if (axisalignedbb1 != null && axisalignedbb1.b(axisalignedbb)) {
++                        arraylist.add(axisalignedbb1);
++                    }
++                }
++            }
++            /*
+             for (k1 = 0; k1 < list.size(); ++k1) {
+                 Entity entity1 = (Entity) list.get(k1);
+ 
+@@ -1168,7 +1203,7 @@
+                         arraylist.add(axisalignedbb1);
+                     }
+                 }
+-            }
++            }*/
+         }
+ 
+         return arraylist;
+@@ -1423,7 +1458,11 @@
              if (!entity.dead && !(entity instanceof EntityPlayer)) {
                  try {
                      SpigotTimings.tickEntityTimer.startTiming(); // Spigot
@@ -1956,7 +4686,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
                  } catch (Throwable throwable1) {
                      crashreport1 = CrashReport.a(throwable1, "Ticking entity");
-@@ -1527,15 +1541,44 @@
+@@ -1527,15 +1566,44 @@
  
          this.methodProfiler.c("pendingBlockEntities");
          if (!this.b.isEmpty()) {
@@ -2006,7 +4736,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
                      if (this.isLoaded(tileentity1.getPosition())) {
                          Chunk chunk = this.getChunkAtWorldCoords(tileentity1.getPosition());
-@@ -1551,7 +1594,7 @@
+@@ -1551,7 +1619,7 @@
                          // CraftBukkit end
                      }
                  }
@@ -2015,7 +4745,32 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
              this.b.clear();
          }
-@@ -1975,13 +2018,22 @@
+@@ -1680,14 +1748,23 @@
+ 
+     public boolean a(AxisAlignedBB axisalignedbb, @Nullable Entity entity) {
+         List list = this.getEntities((Entity) null, axisalignedbb);
++        //Queue list = this.getEntities((Entity) null, axisalignedbb);
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity1 = (Entity) it.next();
+ 
++            if (!entity1.dead && entity1.i && entity1 != entity && (entity == null || entity1.x(entity))) {
++                return false;
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity1 = (Entity) list.get(i);
+ 
+             if (!entity1.dead && entity1.i && entity1 != entity && (entity == null || entity1.x(entity))) {
+                 return false;
+             }
+-        }
++        }*/
+ 
+         return true;
+     }
+@@ -1975,13 +2052,22 @@
  
      @Nullable
      private TileEntity F(BlockPosition blockposition) {
@@ -2039,30 +4794,156 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          return null;
      }
-@@ -3111,4 +3163,20 @@
+@@ -2434,11 +2520,14 @@
+     }
+ 
+     public List<Entity> getEntities(@Nullable Entity entity, AxisAlignedBB axisalignedbb) {
++    //public Queue<Entity> getEntities(@Nullable Entity entity, AxisAlignedBB axisalignedbb) {
+         return this.getEntities(entity, axisalignedbb, IEntitySelector.e);
+     }
+ 
+     public List<Entity> getEntities(@Nullable Entity entity, AxisAlignedBB axisalignedbb, @Nullable Predicate<? super Entity> predicate) {
++    //public Queue<Entity> getEntities(@Nullable Entity entity, AxisAlignedBB axisalignedbb, @Nullable Predicate<? super Entity> predicate) {
+         ArrayList arraylist = Lists.newArrayList();
++        //Queue arraylist = Queues.newConcurrentLinkedQueue();
+         int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
+         int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
+         int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
+@@ -2447,7 +2536,11 @@
+         for (int i1 = i; i1 <= j; ++i1) {
+             for (int j1 = k; j1 <= l; ++j1) {
+                 if (this.isChunkLoaded(i1, j1, true)) {
+-                    this.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, predicate);
++                    //this.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, predicate);
++                    //fork
++                    get_en en_task = new get_en(this, entity, axisalignedbb, predicate, i1, j1, arraylist);
++                    en_task.fork();
++                    en_task.join();
+                 }
+             }
+         }
+@@ -2486,15 +2579,18 @@
+     }
+ 
+     public <T extends Entity> List<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb) {
++    //public <T extends Entity> Queue<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb) {
+         return this.a(oclass, axisalignedbb, IEntitySelector.e);
+     }
+ 
+     public <T extends Entity> List<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, @Nullable Predicate<? super T> predicate) {
++    //public <T extends Entity> Queue<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, @Nullable Predicate<? super T> predicate) {
+         int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
+         int j = MathHelper.f((axisalignedbb.d + 2.0D) / 16.0D);
+         int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
+         int l = MathHelper.f((axisalignedbb.f + 2.0D) / 16.0D);
+         ArrayList arraylist = Lists.newArrayList();
++        //Queue arraylist = Queues.newConcurrentLinkedQueue();
+ 
+         for (int i1 = i; i1 < j; ++i1) {
+             for (int j1 = k; j1 < l; ++j1) {
+@@ -2512,7 +2608,20 @@
+         List list = this.a(oclass, axisalignedbb);
+         Entity entity = null;
+         double d0 = Double.MAX_VALUE;
++        Iterator it = list.iterator();
++        while (it.hasNext()) {
++            Entity entity1 = (Entity) it.next();
++
++            if (entity1 != t0 && IEntitySelector.e.apply(entity1)) {
++                double d1 = t0.h(entity1);
+ 
++                if (d1 <= d0) {
++                    entity = entity1;
++                    d0 = d1;
++                }
++            }
++        }
++        /*
+         for (int i = 0; i < list.size(); ++i) {
+             Entity entity1 = (Entity) list.get(i);
+ 
+@@ -2524,7 +2633,7 @@
+                     d0 = d1;
+                 }
+             }
+-        }
++        }*/
+ 
+         return (T) entity; // CraftBukkit fix decompile error
+     }
+@@ -3111,4 +3220,69 @@
      public LootTableRegistry ak() {
          return this.B;
      }
 +    
-+    class en_tick extends RecursiveAction {
++    class get_en extends RecursiveAction {
 +        World world;
-+        Entity entity;
-+                
-+        en_tick(World world, Entity entity) {
++        @Nullable Entity entity;
++        AxisAlignedBB axisalignedbb;
++        @Nullable Predicate<? super Entity> predicate;
++        int i1, j1;
++        ArrayList arraylist;
++        
++        get_en(World world, @Nullable Entity entity, AxisAlignedBB axisalignedbb, @Nullable Predicate<? super Entity> predicate, int i1, int j1, ArrayList arraylist) {
 +            this.world = world;
 +            this.entity = entity;
++            this.axisalignedbb = axisalignedbb;
++            this.predicate = predicate;
++            this.i1 = i1;
++            this.j1 = j1;
++            this.arraylist = arraylist;
 +        }
 +        
 +        @Override
 +        protected void compute() {
-+            world.g(entity);
++            world.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, predicate);
++        }
++                 
++    }
++    
++    class area_load extends RecursiveTask<Boolean> {
++        World world;
++        int i, j, k, l, i1, j1;
++        boolean flag;
++                
++        area_load(World world, int i, int j, int k, int l, int i1, int j1, boolean flag) {
++            this.i = i;
++            this.j = j;
++            this.k = k;
++            this.l = l;
++            this.i1 = i1;
++            this.j1 = j1;
++            this.flag = flag;
++            this.world = world;
++        }
++        
++        @Override
++        protected Boolean compute() {
++            if (i1 >= 0 && j < 256) {
++                i >>= 4;
++                k >>= 4;
++                l >>= 4;
++                j1 >>= 4;
++
++                for (int k1 = i; k1 <= l; ++k1) {
++                    for (int l1 = k; l1 <= j1; ++l1) {
++                        if (!world.isChunkLoaded(k1, l1, flag)) {
++                            return false;
++                        }
++                    }
++                }
++
++                return true;
++            } else {
++                return false;
++            }
 +        }
 +                 
 +    }
  }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-05-29 15:00:15.395641490 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-06-03 11:22:46.803244336 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-06-08 13:02:35.178102433 +0800
 @@ -11,10 +11,12 @@
  import java.util.Iterator;
  import java.util.List;
@@ -2086,9 +4967,42 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
      // CraftBukkit start
      public final int dimension;
+@@ -531,7 +534,9 @@
+         });
+ 
+         if (!list.isEmpty()) {
+-            return ((EntityLiving) list.get(this.random.nextInt(list.size()))).getChunkCoordinates();
++            //return ((EntityLiving) list.get(this.random.nextInt(list.size()))).getChunkCoordinates();
++            List llll = new ArrayList(list);
++            return ((EntityLiving) llll.get(this.random.nextInt(list.size()))).getChunkCoordinates();
+         } else {
+             if (blockposition1.getY() == -1) {
+                 blockposition1 = blockposition1.up(2);
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+--- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-05-29 15:00:15.690641463 +0800
++++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-06-08 13:02:35.464102407 +0800
+@@ -8,6 +8,7 @@
+ import java.util.HashSet;
+ import java.util.List;
+ import java.util.Iterator;
++import java.util.Queue;
+ import java.util.Random;
+ import java.util.Set;
+ import java.util.UUID;
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+--- src_origin/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java	2016-05-29 15:00:16.594641380 +0800
++++ src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java	2016-06-08 13:02:36.319102328 +0800
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.base.Preconditions;
+ import java.util.List;
++import java.util.Queue;
+ import java.util.Set;
+ import java.util.UUID;
+ 
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-05-29 15:00:17.946641256 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-06-03 11:22:49.246244112 +0800
++++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-06-08 13:02:37.628102208 +0800
 @@ -1,15 +1,20 @@
  package org.bukkit.craftbukkit.util;
  
@@ -2124,7 +5038,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
  
 diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/hose/ChunkFlush_Pool.java
 --- src_origin/main/java/org/hose/ChunkFlush_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-06-03 11:22:44.542244543 +0800
++++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-06-08 13:02:32.954102637 +0800
 @@ -0,0 +1,53 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2181,7 +5095,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/hose/ChunkGen_Pool.java
 --- src_origin/main/java/org/hose/ChunkGen_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkGen_Pool.java	2016-06-03 11:22:44.543244543 +0800
++++ src/main/java/org/hose/ChunkGen_Pool.java	2016-06-08 13:02:32.954102637 +0800
 @@ -0,0 +1,76 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2261,7 +5175,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkPopulate_Pool.java src/main/java/org/hose/ChunkPopulate_Pool.java
 --- src_origin/main/java/org/hose/ChunkPopulate_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkPopulate_Pool.java	2016-06-03 11:22:44.543244543 +0800
++++ src/main/java/org/hose/ChunkPopulate_Pool.java	2016-06-08 13:02:32.954102637 +0800
 @@ -0,0 +1,35 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2300,16 +5214,30 @@ diff -Naur src_origin/main/java/org/hose/ChunkPopulate_Pool.java src/main/java/o
 +}
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-05-29 15:00:13.207641690 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2016-06-03 11:22:44.580244540 +0800
-@@ -1,6 +1,7 @@
++++ src/main/java/org/spigotmc/ActivationRange.java	2016-06-08 13:02:33.050102628 +0800
+@@ -1,7 +1,9 @@
  package org.spigotmc;
  
  import java.util.List;
 +import java.util.Queue;
  import java.util.Set;
++import java.util.concurrent.RecursiveAction;
  import net.minecraft.server.AxisAlignedBB;
  import net.minecraft.server.Chunk;
-@@ -141,7 +142,8 @@
+ import net.minecraft.server.Entity;
+@@ -126,7 +128,10 @@
+                 {
+                     if ( world.getWorld().isChunkLoaded( i1, j1 ) )
+                     {
+-                        activateChunkEntities( world.getChunkAt( i1, j1 ) );
++                        //activateChunkEntities( world.getChunkAt( i1, j1 ) );
++                        //fork
++                        active_en en_task = new active_en(world.getChunkAt( i1, j1 ));
++                        en_task.fork();
+                     }
+                 }
+             }
+@@ -141,7 +146,8 @@
       */
      private static void activateChunkEntities(Chunk chunk)
      {
@@ -2319,10 +5247,30 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/
          {
              for ( Entity entity : slice )
              {
+@@ -284,4 +290,19 @@
+         SpigotTimings.checkIfActiveTimer.stopTiming();
+         return isActive;
+     }
++    
++    static class active_en extends RecursiveAction {
++        Chunk chunk;
++                
++        active_en (Chunk chunk) {
++            //this.chunks = chunks;
++            this.chunk = chunk;
++        }
++        
++        @Override
++        protected void compute() {
++            activateChunkEntities(chunk);
++        }
++                 
++    }
+ }
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-05-29 15:00:13.192641692 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-06-03 11:22:44.569244541 +0800
-@@ -14,4 +14,14 @@
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-06-08 13:02:33.044102628 +0800
+@@ -14,4 +14,16 @@
              throw new IllegalStateException( "Asynchronous " + reason + "!" );
          }
      }
@@ -2332,14 +5280,16 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org
 +    {
 +        if ( enabled && Thread.currentThread() != MinecraftServer.getServer().primaryThread )
 +        {
-+            return true;
++            //return true;
++            MinecraftServer.getServer().postToMainThread(Thread.currentThread());
++            System.out.println("post to main thread");
 +        }
 +        return false;
 +    }
  }
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-05-29 15:00:13.200641691 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-06-03 11:22:44.650244533 +0800
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-06-08 13:02:33.094102624 +0800
 @@ -1,12 +1,115 @@
  package org.spigotmc;
  
