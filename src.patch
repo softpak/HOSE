@@ -1,6 +1,6 @@
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/main/java/net/minecraft/server/BlockRedstoneWire.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-06-17 04:20:29.141705966 +0800
-+++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-06-17 23:17:00.348456200 +0800
++++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-06-19 02:54:42.932340393 +0800
 @@ -20,7 +20,8 @@
      public static final BlockStateInteger POWER = BlockStateInteger.of("power", 0, 15);
      protected static final AxisAlignedBB[] f = new AxisAlignedBB[] { new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D)};
@@ -13,7 +13,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/
          super(Material.ORIENTABLE);
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-06-17 04:20:29.232705958 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2016-06-17 23:17:00.937456146 +0800
++++ src/main/java/net/minecraft/server/Chunk.java	2016-06-19 02:54:43.017340386 +0800
 @@ -15,6 +15,7 @@
  import org.apache.logging.log4j.Logger;
  
@@ -32,8 +32,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
      private boolean done;
      private boolean lit;
      private boolean r;
-@@ -82,14 +84,16 @@
-         this.tileEntities = Maps.newHashMap();
+@@ -79,17 +81,20 @@
+         this.g = new byte[256];
+         this.h = new int[256];
+         this.i = new boolean[256];
+-        this.tileEntities = Maps.newHashMap();
++        //this.tileEntities = Maps.newHashMap();
++        this.tileEntities = Maps.newConcurrentMap();
          this.x = 4096;
          this.y = Queues.newConcurrentLinkedQueue();
 -        this.entitySlices = (List[]) (new List[16]); // Spigot
@@ -51,7 +56,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          }
  
          Arrays.fill(this.h, -999);
-@@ -742,12 +746,13 @@
+@@ -589,6 +594,8 @@
+ 
+         if (i != this.locX || j != this.locZ) {
+             Chunk.e.warn("Wrong location! ({}, {}) should be ({}, {}), {}", new Object[] { Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(this.locX), Integer.valueOf(this.locZ), entity, entity});
++            //trace the track
++            new Exception("Stack trace").printStackTrace();
+             entity.die();
+         }
+ 
+@@ -742,12 +749,13 @@
      public void addEntities() {
          this.j = true;
          this.world.b(this.tileEntities.values());
@@ -68,7 +82,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
              this.world.a((Collection) entityslice);
          }
  
-@@ -775,7 +780,8 @@
+@@ -775,7 +783,8 @@
              this.world.b(tileentity);
          }
  
@@ -78,7 +92,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          int i = aentityslice.length;
  
          for (int j = 0; j < i; ++j) {
-@@ -1259,7 +1265,8 @@
+@@ -1259,7 +1268,8 @@
          return this.tileEntities;
      }
  
@@ -88,9 +102,475 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          return this.entitySlices;
      }
  
+@@ -1309,4 +1319,12 @@
+ 
+         private EnumTileEntityState() {}
+     }
++    
++    class TraceException extends Exception {
++      public TraceException(String mID)
++      {
++        super("ERROR: " + mID);
++      }
++      
++    }
+ }
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java src/main/java/net/minecraft/server/ChunkProviderGenerate.java
+--- src_origin/main/java/net/minecraft/server/ChunkProviderGenerate.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderGenerate.java	2016-06-19 02:54:43.022340385 +0800
+@@ -0,0 +1,449 @@
++package net.minecraft.server;
++
++import java.util.List;
++import java.util.Random;
++import javax.annotation.Nullable;
++
++public class ChunkProviderGenerate implements ChunkGenerator {
++
++    protected static final IBlockData a = Blocks.STONE.getBlockData();
++    private final Random i;
++    private final NoiseGeneratorOctaves j;
++    private final NoiseGeneratorOctaves k;
++    private final NoiseGeneratorOctaves l;
++    private final NoiseGenerator3 m;
++    public NoiseGeneratorOctaves b;
++    public NoiseGeneratorOctaves c;
++    public NoiseGeneratorOctaves d;
++    private final World n;
++    private final boolean o;
++    private final WorldType p;
++    private final double[] q;
++    private final float[] r;
++    private CustomWorldSettingsFinal s;
++    private IBlockData t;
++    private double[] u;
++    private final WorldGenBase v;
++    private final WorldGenStronghold w;
++    private final WorldGenVillage x;
++    private final WorldGenMineshaft y;
++    private final WorldGenLargeFeature z;
++    private final WorldGenBase A;
++    private final WorldGenMonument B;
++    private BiomeBase[] C;
++    double[] e;
++    double[] f;
++    double[] g;
++    double[] h;
++
++    public ChunkProviderGenerate(World world, long i, boolean flag, String s) {
++        this.t = Blocks.WATER.getBlockData();
++        this.u = new double[256];
++        this.v = new WorldGenCaves();
++        this.w = new WorldGenStronghold();
++        this.x = new WorldGenVillage();
++        this.y = new WorldGenMineshaft();
++        this.z = new WorldGenLargeFeature();
++        this.A = new WorldGenCanyon();
++        this.B = new WorldGenMonument();
++        this.n = world;
++        this.o = flag;
++        this.p = world.getWorldData().getType();
++        this.i = new Random(i);
++        this.j = new NoiseGeneratorOctaves(this.i, 16);
++        this.k = new NoiseGeneratorOctaves(this.i, 16);
++        this.l = new NoiseGeneratorOctaves(this.i, 8);
++        this.m = new NoiseGenerator3(this.i, 4);
++        this.b = new NoiseGeneratorOctaves(this.i, 10);
++        this.c = new NoiseGeneratorOctaves(this.i, 16);
++        this.d = new NoiseGeneratorOctaves(this.i, 8);
++        this.q = new double[825];
++        this.r = new float[25];
++
++        for (int j = -2; j <= 2; ++j) {
++            for (int k = -2; k <= 2; ++k) {
++                float f = 10.0F / MathHelper.c((float) (j * j + k * k) + 0.2F);
++
++                this.r[j + 2 + (k + 2) * 5] = f;
++            }
++        }
++
++        if (s != null) {
++            this.s = CustomWorldSettingsFinal.CustomWorldSettings.a(s).b();
++            this.t = this.s.E ? Blocks.LAVA.getBlockData() : Blocks.WATER.getBlockData();
++            world.b(this.s.q);
++        }
++
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot) {
++        this.C = this.n.getWorldChunkManager().getBiomes(this.C, i * 4 - 2, j * 4 - 2, 10, 10);
++        this.a(i * 4, 0, j * 4);
++
++        for (int k = 0; k < 4; ++k) {
++            int l = k * 5;
++            int i1 = (k + 1) * 5;
++
++            for (int j1 = 0; j1 < 4; ++j1) {
++                int k1 = (l + j1) * 33;
++                int l1 = (l + j1 + 1) * 33;
++                int i2 = (i1 + j1) * 33;
++                int j2 = (i1 + j1 + 1) * 33;
++
++                for (int k2 = 0; k2 < 32; ++k2) {
++                    double d0 = 0.125D;
++                    double d1 = this.q[k1 + k2];
++                    double d2 = this.q[l1 + k2];
++                    double d3 = this.q[i2 + k2];
++                    double d4 = this.q[j2 + k2];
++                    double d5 = (this.q[k1 + k2 + 1] - d1) * 0.125D;
++                    double d6 = (this.q[l1 + k2 + 1] - d2) * 0.125D;
++                    double d7 = (this.q[i2 + k2 + 1] - d3) * 0.125D;
++                    double d8 = (this.q[j2 + k2 + 1] - d4) * 0.125D;
++
++                    for (int l2 = 0; l2 < 8; ++l2) {
++                        double d9 = 0.25D;
++                        double d10 = d1;
++                        double d11 = d2;
++                        double d12 = (d3 - d1) * 0.25D;
++                        double d13 = (d4 - d2) * 0.25D;
++
++                        for (int i3 = 0; i3 < 4; ++i3) {
++                            double d14 = 0.25D;
++                            double d15 = (d11 - d10) * 0.25D;
++                            double d16 = d10 - d15;
++
++                            for (int j3 = 0; j3 < 4; ++j3) {
++                                if ((d16 += d15) > 0.0D) {
++                                    chunksnapshot.a(k * 4 + i3, k2 * 8 + l2, j1 * 4 + j3, ChunkProviderGenerate.a);
++                                } else if (k2 * 8 + l2 < this.s.q) {
++                                    chunksnapshot.a(k * 4 + i3, k2 * 8 + l2, j1 * 4 + j3, this.t);
++                                }
++                            }
++
++                            d10 += d12;
++                            d11 += d13;
++                        }
++
++                        d1 += d5;
++                        d2 += d6;
++                        d3 += d7;
++                        d4 += d8;
++                    }
++                }
++            }
++        }
++
++    }
++
++    public void a(int i, int j, ChunkSnapshot chunksnapshot, BiomeBase[] abiomebase) {
++        double d0 = 0.03125D;
++
++        this.u = this.m.a(this.u, (double) (i * 16), (double) (j * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
++
++        for (int k = 0; k < 16; ++k) {
++            for (int l = 0; l < 16; ++l) {
++                BiomeBase biomebase = abiomebase[l + k * 16];
++
++                biomebase.a(this.n, this.i, chunksnapshot, i * 16 + k, j * 16 + l, this.u[l + k * 16]);
++            }
++        }
++
++    }
++
++    public Chunk getOrCreateChunk(int i, int j) {
++        this.i.setSeed((long) i * 341873128712L + (long) j * 132897987541L);
++        ChunkSnapshot chunksnapshot = new ChunkSnapshot();
++
++        this.a(i, j, chunksnapshot);
++        this.C = this.n.getWorldChunkManager().getBiomeBlock(this.C, i * 16, j * 16, 16, 16);
++        this.a(i, j, chunksnapshot, this.C);
++        if (this.s.r) {
++            this.v.a(this.n, i, j, chunksnapshot);
++        }
++
++        if (this.s.z) {
++            this.A.a(this.n, i, j, chunksnapshot);
++        }
++
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.v) {
++                this.x.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, i, j, chunksnapshot);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, i, j, chunksnapshot);
++            }
++        }
++
++        Chunk chunk = new Chunk(this.n, chunksnapshot, i, j);
++        byte[] abyte = chunk.getBiomeIndex();
++
++        for (int k = 0; k < abyte.length; ++k) {
++            abyte[k] = (byte) BiomeBase.a(this.C[k]);
++        }
++
++        chunk.initLighting();
++        return chunk;
++    }
++
++    private void a(int i, int j, int k) {
++        this.h = this.c.a(this.h, i, k, 5, 5, (double) this.s.e, (double) this.s.f, (double) this.s.g);
++        float f = this.s.a;
++        float f1 = this.s.b;
++
++        this.e = this.l.a(this.e, i, j, k, 5, 33, 5, (double) (f / this.s.h), (double) (f1 / this.s.i), (double) (f / this.s.j));
++        this.f = this.j.a(this.f, i, j, k, 5, 33, 5, (double) f, (double) f1, (double) f);
++        this.g = this.k.a(this.g, i, j, k, 5, 33, 5, (double) f, (double) f1, (double) f);
++        int l = 0;
++        int i1 = 0;
++
++        for (int j1 = 0; j1 < 5; ++j1) {
++            for (int k1 = 0; k1 < 5; ++k1) {
++                float f2 = 0.0F;
++                float f3 = 0.0F;
++                float f4 = 0.0F;
++                boolean flag = true;
++                BiomeBase biomebase = this.C[j1 + 2 + (k1 + 2) * 10];
++
++                for (int l1 = -2; l1 <= 2; ++l1) {
++                    for (int i2 = -2; i2 <= 2; ++i2) {
++                        BiomeBase biomebase1 = this.C[j1 + l1 + 2 + (k1 + i2 + 2) * 10];
++                        float f5 = this.s.n + biomebase1.j() * this.s.m;
++                        float f6 = this.s.p + biomebase1.m() * this.s.o;
++
++                        if (this.p == WorldType.AMPLIFIED && f5 > 0.0F) {
++                            f5 = 1.0F + f5 * 2.0F;
++                            f6 = 1.0F + f6 * 4.0F;
++                        }
++
++                        float f7 = this.r[l1 + 2 + (i2 + 2) * 5] / (f5 + 2.0F);
++
++                        if (biomebase1.j() > biomebase.j()) {
++                            f7 /= 2.0F;
++                        }
++
++                        f2 += f6 * f7;
++                        f3 += f5 * f7;
++                        f4 += f7;
++                    }
++                }
++
++                f2 /= f4;
++                f3 /= f4;
++                f2 = f2 * 0.9F + 0.1F;
++                f3 = (f3 * 4.0F - 1.0F) / 8.0F;
++                double d0 = this.h[i1] / 8000.0D;
++
++                if (d0 < 0.0D) {
++                    d0 = -d0 * 0.3D;
++                }
++
++                d0 = d0 * 3.0D - 2.0D;
++                if (d0 < 0.0D) {
++                    d0 /= 2.0D;
++                    if (d0 < -1.0D) {
++                        d0 = -1.0D;
++                    }
++
++                    d0 /= 1.4D;
++                    d0 /= 2.0D;
++                } else {
++                    if (d0 > 1.0D) {
++                        d0 = 1.0D;
++                    }
++
++                    d0 /= 8.0D;
++                }
++
++                ++i1;
++                double d1 = (double) f3;
++                double d2 = (double) f2;
++
++                d1 += d0 * 0.2D;
++                d1 = d1 * (double) this.s.k / 8.0D;
++                double d3 = (double) this.s.k + d1 * 4.0D;
++
++                for (int j2 = 0; j2 < 33; ++j2) {
++                    double d4 = ((double) j2 - d3) * (double) this.s.l * 128.0D / 256.0D / d2;
++
++                    if (d4 < 0.0D) {
++                        d4 *= 4.0D;
++                    }
++
++                    double d5 = this.f[l] / (double) this.s.d;
++                    double d6 = this.g[l] / (double) this.s.c;
++                    double d7 = (this.e[l] / 10.0D + 1.0D) / 2.0D;
++                    double d8 = MathHelper.b(d5, d6, d7) - d4;
++
++                    if (j2 > 29) {
++                        double d9 = (double) ((float) (j2 - 29) / 3.0F);
++
++                        d8 = d8 * (1.0D - d9) + -10.0D * d9;
++                    }
++
++                    this.q[l] = d8;
++                    ++l;
++                }
++            }
++        }
++
++    }
++
++    public void recreateStructures(int i, int j) {
++        BlockFalling.instaFall = true;
++        int k = i * 16;
++        int l = j * 16;
++        BlockPosition blockposition = new BlockPosition(k, 0, l);
++        BiomeBase biomebase = this.n.getBiome(blockposition.a(16, 0, 16));
++
++        this.i.setSeed(this.n.getSeed());
++        long i1 = this.i.nextLong() / 2L * 2L + 1L;
++        long j1 = this.i.nextLong() / 2L * 2L + 1L;
++
++        this.i.setSeed((long) i * i1 + (long) j * j1 ^ this.n.getSeed());
++        boolean flag = false;
++        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
++
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.v) {
++                flag = this.x.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, this.i, chunkcoordintpair);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, this.i, chunkcoordintpair);
++            }
++        }
++
++        int k1;
++        int l1;
++        int i2;
++
++        if (biomebase != Biomes.d && biomebase != Biomes.s && this.s.A && !flag && this.i.nextInt(this.s.B) == 0) {
++            k1 = this.i.nextInt(16) + 8;
++            l1 = this.i.nextInt(256);
++            i2 = this.i.nextInt(16) + 8;
++            (new WorldGenLakes(Blocks.WATER)).generate(this.n, this.i, blockposition.a(k1, l1, i2));
++        }
++
++        if (!flag && this.i.nextInt(this.s.D / 10) == 0 && this.s.C) {
++            k1 = this.i.nextInt(16) + 8;
++            l1 = this.i.nextInt(this.i.nextInt(248) + 8);
++            i2 = this.i.nextInt(16) + 8;
++            if (l1 < this.n.K() || this.i.nextInt(this.s.D / 8) == 0) {
++                (new WorldGenLakes(Blocks.LAVA)).generate(this.n, this.i, blockposition.a(k1, l1, i2));
++            }
++        }
++
++        if (this.s.s) {
++            for (k1 = 0; k1 < this.s.t; ++k1) {
++                l1 = this.i.nextInt(16) + 8;
++                i2 = this.i.nextInt(256);
++                int j2 = this.i.nextInt(16) + 8;
++
++                (new WorldGenDungeons()).generate(this.n, this.i, blockposition.a(l1, i2, j2));
++            }
++        }
++
++        biomebase.a(this.n, this.i, new BlockPosition(k, 0, l));
++        SpawnerCreature.a(this.n, biomebase, k + 8, l + 8, 16, 16, this.i);
++        blockposition = blockposition.a(8, 0, 8);
++
++        for (k1 = 0; k1 < 16; ++k1) {
++            for (l1 = 0; l1 < 16; ++l1) {
++                BlockPosition blockposition1 = this.n.p(blockposition.a(k1, 0, l1));
++                BlockPosition blockposition2 = blockposition1.down();
++
++                if (this.n.u(blockposition2)) {
++                    this.n.setTypeAndData(blockposition2, Blocks.ICE.getBlockData(), 2);
++                }
++
++                if (this.n.f(blockposition1, true)) {
++                    this.n.setTypeAndData(blockposition1, Blocks.SNOW_LAYER.getBlockData(), 2);
++                }
++            }
++        }
++
++        BlockFalling.instaFall = false;
++    }
++
++    public boolean a(Chunk chunk, int i, int j) {
++        boolean flag = false;
++
++        if (this.s.y && this.o && chunk.x() < 3600L) {
++            flag |= this.B.a(this.n, this.i, new ChunkCoordIntPair(i, j));
++        }
++
++        return flag;
++    }
++
++    public List<BiomeBase.BiomeMeta> getMobsFor(EnumCreatureType enumcreaturetype, BlockPosition blockposition) {
++        BiomeBase biomebase = this.n.getBiome(blockposition);
++
++        if (this.o) {
++            if (enumcreaturetype == EnumCreatureType.MONSTER && this.z.a(blockposition)) {
++                return this.z.b();
++            }
++
++            if (enumcreaturetype == EnumCreatureType.MONSTER && this.s.y && this.B.b(this.n, blockposition)) {
++                return this.B.b();
++            }
++        }
++
++        return biomebase.getMobs(enumcreaturetype);
++    }
++
++    @Nullable
++    public BlockPosition findNearestMapFeature(World world, String s, BlockPosition blockposition) {
++        return "Stronghold".equals(s) && this.w != null ? this.w.getNearestGeneratedFeature(world, blockposition) : null;
++    }
++
++    public void recreateStructures(Chunk chunk, int i, int j) {
++        if (this.o) {
++            if (this.s.w) {
++                this.y.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.v) {
++                this.x.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.u) {
++                this.w.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.x) {
++                this.z.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++
++            if (this.s.y) {
++                this.B.a(this.n, i, j, (ChunkSnapshot) null);
++            }
++        }
++
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-06-17 04:20:29.222705959 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-06-17 23:17:00.944456146 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-06-19 02:54:43.020340385 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -107,8 +587,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  import java.util.Set;
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
-@@ -26,7 +28,8 @@
-     public final Set<Long> unloadQueue = Sets.newHashSet();
+@@ -23,10 +25,12 @@
+ public class ChunkProviderServer implements IChunkProvider {
+ 
+     private static final Logger a = LogManager.getLogger();
+-    public final Set<Long> unloadQueue = Sets.newHashSet();
++    //public final Set<Long> unloadQueue = Sets.newHashSet();
++    public final Set<Long> unloadQueue = Sets.newConcurrentHashSet();
      public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
 -    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
@@ -117,9 +602,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
      public final WorldServer world;
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
+diff -Naur src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java src/main/java/net/minecraft/server/ChunkRegionLoader.java
+--- src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-06-17 04:20:29.241705957 +0800
++++ src/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-06-19 02:54:43.028340385 +0800
+@@ -384,7 +384,8 @@
+         return chunk;
+     }
+ 
+-    public void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
++    //be sure do it once at a time
++    public synchronized void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
+         // CraftBukkit end
+         world.timings.syncChunkLoadEntitiesTimer.startTiming(); // Spigot
+         NBTTagList nbttaglist1 = nbttagcompound.getList("Entities", 10);
 diff -Naur src_origin/main/java/net/minecraft/server/EntityBoat.java src/main/java/net/minecraft/server/EntityBoat.java
 --- src_origin/main/java/net/minecraft/server/EntityBoat.java	2016-06-17 04:20:29.466705936 +0800
-+++ src/main/java/net/minecraft/server/EntityBoat.java	2016-06-17 23:17:01.644456081 +0800
++++ src/main/java/net/minecraft/server/EntityBoat.java	2016-06-19 02:54:43.260340363 +0800
 @@ -3,6 +3,7 @@
  import com.google.common.collect.Lists;
  import java.util.ArrayList;
@@ -314,7 +812,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityBoat.java src/main/ja
  }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/main/java/net/minecraft/server/EntityInsentient.java
 --- src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-06-17 04:20:29.581705926 +0800
-+++ src/main/java/net/minecraft/server/EntityInsentient.java	2016-06-17 23:17:02.749455980 +0800
++++ src/main/java/net/minecraft/server/EntityInsentient.java	2016-06-19 02:54:43.382340352 +0800
 @@ -7,6 +7,7 @@
  import java.util.Map;
  import java.util.Random;
@@ -342,26 +840,45 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/m
      protected ControllerJump g;
      private final EntityAIBodyControl c;
      protected NavigationAbstract navigation;
-@@ -645,7 +649,8 @@
+@@ -645,8 +649,10 @@
  
          }
      }
 -
+-    protected final void doTick() {
 +    
-+    //MT_Pool mt_task;
-     protected final void doTick() {
++    navigation nav_task;
++    targetSelector tar_task;
++    protected final void doTick() {//entityliving`s dotick
          ++this.ticksFarFromPlayer;
          this.world.methodProfiler.a("checkDespawn");
-@@ -671,6 +676,8 @@
+         this.L();
+@@ -661,13 +667,21 @@
+         this.bw.a();
+         this.world.methodProfiler.b();
+         this.world.methodProfiler.a("targetSelector");
+-        this.targetSelector.a();
++        //this.targetSelector.a();
++        tar_task = new targetSelector();
++        tar_task.fork();
+         this.world.methodProfiler.b();
+         this.world.methodProfiler.a("goalSelector");
+-        this.goalSelector.a();
++        try {
++            this.goalSelector.a();
++        } catch (Exception ex) {
++            world.getServer().getLogger().log(java.util.logging.Level.WARNING, "Find no goal.");
++        }
+         this.world.methodProfiler.b();
+         this.world.methodProfiler.a("navigation");
+-        this.navigation.l();
++        //this.navigation.l();//hose
++        nav_task = new navigation();
++        nav_task.fork();
          this.world.methodProfiler.b();
          this.world.methodProfiler.a("mob tick");
          this.M();
-+        /*mt_task = new MT_Pool(this);
-+        mt_task.fork();*/
-         this.world.methodProfiler.b();
-         if (this.isPassenger() && this.bB() instanceof EntityInsentient) {
-             EntityInsentient entityinsentient = (EntityInsentient) this.bB();
-@@ -682,14 +689,14 @@
+@@ -682,14 +696,14 @@
          this.world.methodProfiler.a("controls");
          this.world.methodProfiler.a("move");
          this.moveController.c();
@@ -378,27 +895,40 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/m
      protected void M() {}
  
      public int N() {
-@@ -1270,4 +1277,17 @@
+@@ -1270,4 +1284,30 @@
  
          private EnumEntityPositionType() {}
      }
 +    
-+    public class MT_Pool extends RecursiveAction {
-+        EntityInsentient ei;
++    public class navigation extends RecursiveAction {
 +
-+        public MT_Pool(EntityInsentient ei){
-+            this.ei = ei;
++        public navigation(){
 +        }
 +
 +        @Override
 +        protected void compute() {
-+            ei.M();
++            navigation.l();
++        }
++    }
++    
++    public class targetSelector extends RecursiveAction {
++
++        public targetSelector(){
++        }
++
++        @Override
++        protected void compute() {
++            try {
++                targetSelector.a();
++            } catch (Exception ex) {
++                world.getServer().getLogger().log(java.util.logging.Level.WARNING, "Find no target.");
++            }
 +        }
 +    }
  }
 diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/net/minecraft/server/Entity.java
 --- src_origin/main/java/net/minecraft/server/Entity.java	2016-06-17 04:20:29.435705939 +0800
-+++ src/main/java/net/minecraft/server/Entity.java	2016-06-17 23:17:01.674456079 +0800
++++ src/main/java/net/minecraft/server/Entity.java	2016-06-19 02:54:43.222340367 +0800
 @@ -2,15 +2,19 @@
  
  import com.google.common.collect.Iterables;
@@ -829,7 +1359,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/n
  }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
 --- src_origin/main/java/net/minecraft/server/EntityLiving.java	2016-06-17 04:20:29.618705922 +0800
-+++ src/main/java/net/minecraft/server/EntityLiving.java	2016-06-17 23:17:02.240456027 +0800
++++ src/main/java/net/minecraft/server/EntityLiving.java	2016-06-19 02:54:43.427340348 +0800
 @@ -14,6 +14,7 @@
  import java.util.ArrayList;
  import com.google.common.base.Function;
@@ -855,16 +1385,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
      public void n() {
          if (this.bC > 0) {
              --this.bC;
-@@ -1959,6 +1963,8 @@
-         } else if (this.ct()) {
-             this.world.methodProfiler.a("newAi");
-             this.doTick();
-+            /*Tick t_task = new Tick(this);
-+            t_task.fork();*/
-             this.world.methodProfiler.b();
-         }
-         SpigotTimings.timerEntityAI.stopTiming(); // Spigot
-@@ -1985,12 +1991,16 @@
+@@ -1985,12 +1989,16 @@
          this.bh *= 0.9F;
          this.r();
          SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
@@ -883,7 +1404,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
          SpigotTimings.timerEntityAICollision.stopTiming(); // Spigot
          this.world.methodProfiler.b();
      }
-@@ -2022,12 +2032,13 @@
+@@ -2022,12 +2030,13 @@
  
      protected void doTick() {}
  
@@ -900,7 +1421,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
                  Entity entity = (Entity) list.get(i);
                  // TODO better check now?
                  // CraftBukkit start - Only handle mob (non-player) collisions every other tick
-@@ -2418,4 +2429,50 @@
+@@ -2418,4 +2427,50 @@
  
          }
      }
@@ -953,7 +1474,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/
  }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-06-17 04:20:29.754705910 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2016-06-17 23:17:03.064455951 +0800
++++ src/main/java/net/minecraft/server/EntityTracker.java	2016-06-19 02:54:43.555340336 +0800
 @@ -12,7 +12,8 @@
  
      private static final Logger a = LogManager.getLogger();
@@ -975,16 +1496,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
              Iterator iterator = this.c.iterator();
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-06-17 04:20:29.995705888 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-06-17 23:17:03.833455881 +0800
-@@ -33,6 +33,7 @@
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-06-19 02:54:43.808340313 +0800
+@@ -33,6 +33,8 @@
  import java.util.Arrays;
  import java.util.Collections;
  import java.util.Date;
++import java.util.Iterator;
 +import java.util.LinkedList;
  import java.util.List;
  import java.util.Queue;
  import java.util.Random;
-@@ -40,6 +41,7 @@
+@@ -40,6 +42,7 @@
  import java.util.concurrent.Callable;
  import java.util.concurrent.Executors;
  import java.util.concurrent.FutureTask;
@@ -992,7 +1514,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  import javax.annotation.Nullable;
  import javax.imageio.ImageIO;
  import org.apache.commons.lang3.Validate;
-@@ -51,6 +53,8 @@
+@@ -51,6 +54,8 @@
  import org.bukkit.craftbukkit.CraftServer;
  // CraftBukkit end
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
@@ -1001,7 +1523,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
  
  public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
  
-@@ -359,6 +363,9 @@
+@@ -59,7 +64,8 @@
+     public Convertable convertable;
+     private final MojangStatisticsGenerator m = new MojangStatisticsGenerator("server", this, av());
+     public File universe;
+-    private final List<ITickable> o = Lists.newArrayList();
++    //private final List<ITickable> o = Lists.newArrayList();
++    private final Queue<ITickable> o = Queues.newConcurrentLinkedQueue();
+     public final ICommandHandler b;
+     public final MethodProfiler methodProfiler = new MethodProfiler();
+     private ServerConnection p; // Spigot
+@@ -359,6 +365,9 @@
              long j = av();
              i = 0;
  
@@ -1011,7 +1543,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
              for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
                  for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
                      long i1 = av();
-@@ -369,9 +376,13 @@
+@@ -369,9 +378,13 @@
                      }
  
                      ++i;
@@ -1026,7 +1558,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
          }
  
          for (WorldServer world : this.worlds) {
-@@ -722,6 +733,7 @@
+@@ -722,6 +735,7 @@
          org.spigotmc.CustomTimingsHandler.tick(); // Spigot
      }
  
@@ -1034,7 +1566,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      public void D() {
          this.methodProfiler.a("jobs");
          Queue queue = this.j;
-@@ -766,7 +778,7 @@
+@@ -766,7 +780,7 @@
  
          for (i = 0; i < this.worlds.size(); ++i) { // CraftBukkit
              long j = System.nanoTime();
@@ -1043,29 +1575,23 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
              // if (i == 0 || this.getAllowNether()) {
                  WorldServer worldserver = this.worlds.get(i);
  
-@@ -786,6 +798,9 @@
-                 try {
-                     worldserver.timings.doTick.startTiming(); // Spigot
-                     worldserver.doTick();
-+                    /*w_task = new World_Pool(worldserver);
-+                    w_task.fork();
-+                    w_task.join();*/
-                     worldserver.timings.doTick.stopTiming(); // Spigot
-                 } catch (Throwable throwable) {
-                     // Spigot Start
-@@ -802,6 +817,11 @@
-                 try {
-                     worldserver.timings.tickEntities.startTiming(); // Spigot
-                     worldserver.tickEntities();
-+                    //entity move
-+                    /*for (RecursiveAction task : SpigotWorldConfig.move_forks) {
-+                        task.fork();
-+                    }
-+                    SpigotWorldConfig.move_forks.clear();*/
-                     worldserver.timings.tickEntities.stopTiming(); // Spigot
-                 } catch (Throwable throwable1) {
-                     // Spigot Start
-@@ -1034,7 +1054,8 @@
+@@ -838,9 +852,14 @@
+         this.methodProfiler.c("tickables");
+ 
+         SpigotTimings.tickablesTimer.startTiming(); // Spigot
++        Iterator it = this.o.iterator();
++        while (it.hasNext()) {
++            ((ITickable) it.next()).E_();
++        }
++        /*
+         for (i = 0; i < this.o.size(); ++i) {
+             ((ITickable) this.o.get(i)).E_();
+-        }
++        }*/
+         SpigotTimings.tickablesTimer.stopTiming(); // Spigot
+ 
+         this.methodProfiler.b();
+@@ -1034,7 +1053,8 @@
      }
  
      public String getServerModName() {
@@ -1075,7 +1601,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public CrashReport b(CrashReport crashreport) {
-@@ -1116,7 +1137,8 @@
+@@ -1116,7 +1136,8 @@
      }
  
      public String getName() {
@@ -1085,30 +1611,68 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      }
  
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
+diff -Naur src_origin/main/java/net/minecraft/server/MobSpawnerAbstract.java src/main/java/net/minecraft/server/MobSpawnerAbstract.java
+--- src_origin/main/java/net/minecraft/server/MobSpawnerAbstract.java	2016-06-17 04:20:29.997705888 +0800
++++ src/main/java/net/minecraft/server/MobSpawnerAbstract.java	2016-06-19 02:54:43.810340313 +0800
+@@ -1,13 +1,17 @@
+ package net.minecraft.server;
+ 
+ import com.google.common.collect.Lists;
++import com.google.common.collect.Queues;
++import java.util.ArrayList;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Queue;
+ 
+ public abstract class MobSpawnerAbstract {
+ 
+     public int spawnDelay = 20;
+-    private final List<MobSpawnerData> mobs = Lists.newArrayList();
++    //private final List<MobSpawnerData> mobs = Lists.newArrayList();
++    private final Queue<MobSpawnerData> mobs = Queues.newConcurrentLinkedQueue();
+     private MobSpawnerData spawnData = new MobSpawnerData();
+     private double d;
+     private double e;
+@@ -131,7 +135,9 @@
+         }
+ 
+         if (!this.mobs.isEmpty()) {
+-            this.a((MobSpawnerData) WeightedRandom.a(this.a().random, this.mobs));
++            //this.a((MobSpawnerData) WeightedRandom.a(this.a().random, this.mobs));
++            List li = new ArrayList(this.mobs);
++            this.a((MobSpawnerData) WeightedRandom.a(this.a().random, li));
+         }
+ 
+         this.a(1);
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-06-17 04:20:30.145705874 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-06-17 23:17:04.108455856 +0800
-@@ -4,6 +4,7 @@
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-06-19 02:54:43.963340299 +0800
+@@ -4,6 +4,8 @@
  import com.google.common.collect.AbstractIterator;
  import com.google.common.collect.ComparisonChain;
  import com.google.common.collect.Lists;
++import com.google.common.collect.Maps;
 +import com.google.common.collect.Queues;
  import com.google.common.collect.Sets;
  import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
  import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-@@ -17,6 +18,7 @@
+@@ -17,6 +19,8 @@
  
  // CraftBukkit start
  import java.util.LinkedList;
++import java.util.Map;
 +import java.util.Queue;
  // CraftBukkit end
  
  public class PlayerChunkMap {
-@@ -42,10 +44,12 @@
+@@ -41,11 +45,14 @@
+     };
      private final WorldServer world;
      private final List<EntityPlayer> managedPlayers = Lists.newArrayList();
-     private final Long2ObjectMap<PlayerChunk> e = new Long2ObjectOpenHashMap(4096);
+-    private final Long2ObjectMap<PlayerChunk> e = new Long2ObjectOpenHashMap(4096);
 -    private final Set<PlayerChunk> f = Sets.newHashSet();
++    //private final Long2ObjectMap<PlayerChunk> e = new Long2ObjectOpenHashMap(4096);
++    private final Map<Long, PlayerChunk> e = Maps.newConcurrentMap();
 +    //private final Set<PlayerChunk> f = Sets.newHashSet();
 +    private final Set<PlayerChunk> f = Sets.newConcurrentHashSet();
      private final List<PlayerChunk> g = Lists.newLinkedList();
@@ -1119,7 +1683,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
      private int j;
      private long k;
      private boolean l = true;
-@@ -108,11 +112,18 @@
+@@ -108,11 +115,18 @@
          if (i - this.k > 8000L) {
              this.k = i;
  
@@ -1139,13 +1703,37 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
          }
  
          if (!this.f.isEmpty()) {
+diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
+--- src_origin/main/java/net/minecraft/server/PlayerList.java	2016-06-17 04:20:30.201705869 +0800
++++ src/main/java/net/minecraft/server/PlayerList.java	2016-06-19 02:54:44.008340295 +0800
+@@ -50,7 +50,8 @@
+     private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
+     private final MinecraftServer server;
+     public final List<EntityPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+-    private final Map<UUID, EntityPlayer> j = Maps.newHashMap();
++    //private final Map<UUID, EntityPlayer> j = Maps.newHashMap();
++    private final Map<UUID, EntityPlayer> j = Maps.newConcurrentMap();
+     private final GameProfileBanList k;
+     private final IpBanList l;
+     private final OpList operators;
+@@ -78,7 +79,8 @@
+         this.l = new IpBanList(PlayerList.b);
+         this.operators = new OpList(PlayerList.c);
+         this.whitelist = new WhiteList(PlayerList.d);
+-        this.o = Maps.newHashMap();
++        //this.o = Maps.newHashMap();
++        this.o = Maps.newConcurrentMap();
+         this.server = minecraftserver;
+         this.k.a(false);
+         this.l.a(false);
 diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/main/java/net/minecraft/server/SpawnerCreature.java
 --- src_origin/main/java/net/minecraft/server/SpawnerCreature.java	2016-06-17 04:20:30.309705859 +0800
-+++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-06-17 23:17:04.410455828 +0800
-@@ -1,8 +1,10 @@
++++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-06-19 02:54:44.136340283 +0800
+@@ -1,8 +1,11 @@
  package net.minecraft.server;
  
 +import com.google.common.collect.Sets;
++import gnu.trove.iterator.TIntIterator;
  import java.util.Iterator;
  import java.util.List;
  import java.util.Random;
@@ -1153,7 +1741,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
  
  // CraftBukkit start
  import org.bukkit.craftbukkit.util.LongHash;
-@@ -13,7 +15,8 @@
+@@ -13,7 +16,8 @@
  public final class SpawnerCreature {
  
      private static final int a = (int) Math.pow(17.0D, 2.0D);
@@ -1163,20 +1751,85 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
  
      public SpawnerCreature() {}
  
-@@ -29,7 +32,9 @@
-             int z = LongHash.lsw( coord );
-             if ( !((ChunkProviderServer)server.chunkProvider).unloadQueue.contains( coord ) && server.isChunkLoaded( x, z, true ) )
-             {
--                i += server.getChunkAt( x, z ).entityCount.get( oClass );
-+                synchronized (this){
-+                    i += server.getChunkAt( x, z ).entityCount.get( oClass );
-+                }
-             }
-         }
-         return i;
+@@ -36,6 +40,7 @@
+     }
+     // Spigot end
+ 
++    //spawn
+     public int a(WorldServer worldserver, boolean flag, boolean flag1, boolean flag2) {
+         if (!flag && !flag1) {
+             return 0;
+@@ -44,6 +49,7 @@
+             int i = 0;
+             Iterator iterator = worldserver.players.iterator();
+ 
++            int l = 0;
+             int j;
+             int k;
+ 
+@@ -51,7 +57,8 @@
+                 EntityHuman entityhuman = (EntityHuman) iterator.next();
+ 
+                 if (!entityhuman.isSpectator()) {
+-                    int l = MathHelper.floor(entityhuman.locX / 16.0D);
++                    //int l = MathHelper.floor(entityhuman.locX / 16.0D);
++                    l = MathHelper.floor(entityhuman.locX / 16.0D);
+ 
+                     j = MathHelper.floor(entityhuman.locZ / 16.0D);
+                     boolean flag3 = true;
+@@ -181,7 +188,48 @@
+                                                         entityinsentient.setPositionRotation((double) f, (double) k3, (double) f1, worldserver.random.nextFloat() * 360.0F, 0.0F);
+                                                         if (entityinsentient.cK() && entityinsentient.canSpawn()) {
+                                                             groupdataentity = entityinsentient.prepare(worldserver.D(new BlockPosition(entityinsentient)), groupdataentity);
+-                                                            if (entityinsentient.canSpawn()) {
++                                                            //if (entityinsentient.canSpawn()) {
++                                                            //limit spawn
++                                                            int entity_num = 0;
++                                                            TIntIterator tit;
++                                                            tit = worldserver.getChunkAt(l, j).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l+1, j).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l-1, j).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l, j-1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l+1, j-1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l-1, j-1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l, j+1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l+1, j+1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++                                                            tit = worldserver.getChunkAt(l-1, j+1).entityCount.valueCollection().iterator();
++                                                            if (tit.hasNext()) {
++                                                                entity_num += tit.next();
++                                                            }
++
++                                                            if (entityinsentient.canSpawn() && entity_num < 500) {
+                                                                 ++l2;
+                                                                 worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
+                                                             } else {
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-06-17 04:20:30.435705848 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-06-17 23:17:04.622455808 +0800
++++ src/main/java/net/minecraft/server/World.java	2016-06-19 02:54:44.266340271 +0800
 @@ -15,7 +15,10 @@
  
  // CraftBukkit start
@@ -1198,7 +1851,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      {
          @Override
          public Entity remove(int index)
-@@ -57,16 +61,19 @@
+@@ -57,16 +61,20 @@
                  throw new java.util.ConcurrentModificationException();
              }
          }
@@ -1210,7 +1863,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +    protected final Queue<Entity> f = Queues.newConcurrentLinkedQueue();
      public final List<TileEntity> tileEntityList = Lists.newArrayList();
      public final List<TileEntity> tileEntityListTick = Lists.newArrayList();
-     private final List<TileEntity> b = Lists.newArrayList();
+-    private final List<TileEntity> b = Lists.newArrayList();
++    //private final List<TileEntity> b = Lists.newArrayList();
++    private final Queue<TileEntity> b = Queues.newConcurrentLinkedQueue();
      private final List<TileEntity> tileEntityListUnload = Lists.newArrayList();
      public final List<EntityHuman> players = Lists.newArrayList();
 -    public final List<Entity> j = Lists.newArrayList();
@@ -1222,7 +1877,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      private final long I = 16777215L;
      private int J;
      protected int l = (new Random()).nextInt();
-@@ -950,7 +957,7 @@
+@@ -950,7 +958,7 @@
      }
  
      public boolean addEntity(Entity entity, SpawnReason spawnReason) { // Changed signature, added SpawnReason
@@ -1231,7 +1886,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          if (entity == null) return false;
          // CraftBukkit end
          int i = MathHelper.floor(entity.locX / 16.0D);
-@@ -1030,12 +1037,12 @@
+@@ -1030,12 +1038,12 @@
  
          entity.valid = true; // CraftBukkit
      }
@@ -1246,7 +1901,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          entity.valid = false; // CraftBukkit
      }
  
-@@ -1343,9 +1350,39 @@
+@@ -1343,9 +1351,39 @@
          this.methodProfiler.a("entities");
          this.methodProfiler.a("global");
  
@@ -1287,7 +1942,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (i = 0; i < this.j.size(); ++i) {
              entity = (Entity) this.j.get(i);
              // CraftBukkit start - Fixed an NPE
-@@ -1373,13 +1410,24 @@
+@@ -1373,13 +1411,24 @@
              if (entity.dead) {
                  this.j.remove(i--);
              }
@@ -1313,7 +1968,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (i = 0; i < this.f.size(); ++i) {
              entity = (Entity) this.f.get(i);
              int k = entity.ac;
-@@ -1388,11 +1436,16 @@
+@@ -1388,11 +1437,16 @@
              if (entity.ab && this.isChunkLoaded(k, j, true)) {
                  this.getChunkAt(k, j).b(entity);
              }
@@ -1332,7 +1987,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          this.f.clear();
          this.l();
-@@ -1413,8 +1466,12 @@
+@@ -1413,8 +1467,12 @@
              tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
              entity = (Entity) this.entityList.get(this.tickPosition);
              // CraftBukkit end
@@ -1346,7 +2001,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
              if (entity1 != null) {
                  if (!entity1.dead && entity1.w(entity)) {
                      continue;
-@@ -1428,6 +1485,8 @@
+@@ -1428,6 +1486,8 @@
                  try {
                      SpigotTimings.tickEntityTimer.startTiming(); // Spigot
                      this.g(entity);
@@ -1355,7 +2010,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                      SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
                  } catch (Throwable throwable1) {
                      crashreport1 = CrashReport.a(throwable1, "Ticking entity");
-@@ -1455,8 +1514,16 @@
+@@ -1455,8 +1515,16 @@
  
              this.methodProfiler.b();
          }
@@ -1373,7 +2028,79 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          timings.entityTick.stopTiming(); // Spigot
          this.methodProfiler.c("blockEntities");
          this.M = true;
-@@ -2084,8 +2151,11 @@
+@@ -1532,15 +1600,32 @@
+ 
+         this.methodProfiler.c("pendingBlockEntities");
+         if (!this.b.isEmpty()) {
++            Iterator itb = this.b.iterator();
++            while (itb.hasNext()) {
++                TileEntity tileentity1 = (TileEntity) itb.next();
++
++                if (!tileentity1.x()) {
++
++                    if (this.isLoaded(tileentity1.getPosition())) {
++                        Chunk chunk = this.getChunkAtWorldCoords(tileentity1.getPosition());
++                        IBlockData iblockdata = chunk.getBlockData(tileentity1.getPosition());
++
++                        chunk.a(tileentity1.getPosition(), tileentity1);
++                        this.notify(tileentity1.getPosition(), iblockdata, iblockdata, 3);
++                        // CraftBukkit start
++                        // From above, don't screw this up - SPIGOT-1746
++                        if (!this.tileEntityList.contains(tileentity1)) {
++                            this.a(tileentity1);
++                        }
++                        // CraftBukkit end
++                    }
++                }
++            }
++            /*
+             for (int i1 = 0; i1 < this.b.size(); ++i1) {
+                 TileEntity tileentity1 = (TileEntity) this.b.get(i1);
+ 
+                 if (!tileentity1.x()) {
+-                    /* CraftBukkit start - Order matters, moved down
+-                    if (!this.tileEntityList.contains(tileentity1)) {
+-                        this.a(tileentity1);
+-                    }
+-                    // CraftBukkit end */
+ 
+                     if (this.isLoaded(tileentity1.getPosition())) {
+                         Chunk chunk = this.getChunkAtWorldCoords(tileentity1.getPosition());
+@@ -1556,7 +1641,7 @@
+                         // CraftBukkit end
+                     }
+                 }
+-            }
++            }*/
+ 
+             this.b.clear();
+         }
+@@ -1980,13 +2065,23 @@
+ 
+     @Nullable
+     private TileEntity F(BlockPosition blockposition) {
++        Iterator it = this.b.iterator();
++        while (it.hasNext()) {
++            TileEntity tileentity = (TileEntity) it.next();
++
++            if (!tileentity.x() && tileentity.getPosition().equals(blockposition)) {
++                return tileentity;
++            }
++        }
++        
++        /*
+         for (int i = 0; i < this.b.size(); ++i) {
+             TileEntity tileentity = (TileEntity) this.b.get(i);
+ 
+             if (!tileentity.x() && tileentity.getPosition().equals(blockposition)) {
+                 return tileentity;
+             }
+-        }
++        }*/
+ 
+         return null;
+     }
+@@ -2084,8 +2179,11 @@
          this.allowAnimals = flag1;
      }
  
@@ -1386,7 +2113,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      }
  
      protected void I() {
-@@ -2160,11 +2230,18 @@
+@@ -2160,11 +2258,18 @@
                  this.o = MathHelper.a(this.o, 0.0F, 1.0F);
  
                  // CraftBukkit start
@@ -1406,7 +2133,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                  // CraftBukkit end
              }
          }
-@@ -2548,7 +2625,8 @@
+@@ -2548,7 +2653,8 @@
  
      public int a(Class<?> oclass) {
          int i = 0;
@@ -1416,7 +2143,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          while (iterator.hasNext()) {
              Entity entity = (Entity) iterator.next();
-@@ -3116,4 +3194,17 @@
+@@ -3116,4 +3222,17 @@
      public LootTableRegistry ak() {
          return this.B;
      }
@@ -1434,21 +2161,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +    }
 +    
  }
-diff -Naur src_origin/main/java/net/minecraft/server/WorldManager.java src/main/java/net/minecraft/server/WorldManager.java
---- src_origin/main/java/net/minecraft/server/WorldManager.java	2016-06-17 04:20:30.465705845 +0800
-+++ src/main/java/net/minecraft/server/WorldManager.java	2016-06-17 23:17:04.673455804 +0800
-@@ -23,7 +23,7 @@
- 
-     }
- 
--    public void b(Entity entity) {
-+    public synchronized void b(Entity entity) {
-         this.world.getTracker().untrackEntity(entity);
-         this.world.getScoreboard().a(entity);
-         if (entity instanceof EntityPlayer) {
 diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src/main/java/net/minecraft/server/WorldMap.java
 --- src_origin/main/java/net/minecraft/server/WorldMap.java	2016-06-17 04:20:30.499705842 +0800
-+++ src/main/java/net/minecraft/server/WorldMap.java	2016-06-17 23:17:04.686455803 +0800
++++ src/main/java/net/minecraft/server/WorldMap.java	2016-06-19 02:54:44.322340266 +0800
 @@ -25,7 +25,8 @@
      public byte scale;
      public byte[] colors = new byte[16384];
@@ -1461,7 +2176,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldMap.java src/main/java
      // CraftBukkit start
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-06-17 04:20:30.515705840 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-06-17 23:17:04.715455800 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-06-19 02:54:44.346340264 +0800
 @@ -3,6 +3,7 @@
  import com.google.common.base.Predicate;
  import com.google.common.collect.Lists;
@@ -1543,130 +2258,21 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
                                  }
  
                                  this.methodProfiler.b();
-@@ -517,6 +530,112 @@
-         }
-     }
- 
-+    public void chunk_tick_hose(Chunk chunk, int i, boolean flag, boolean flag1) {
-+        this.methodProfiler.a("getChunk");
-+        int j = chunk.locX * 16;
-+        int k = chunk.locZ * 16;
-+
-+        this.methodProfiler.c("checkNextLight");
-+        //chunk.n();
-+        l_task = new light_tick(chunk);
-+        l_task.fork();
-+        this.methodProfiler.c("tickChunk");
-+        chunk.b(false);
-+        if ( !chunk.areNeighborsLoaded( 1 ) ) return;
-+        this.methodProfiler.c("thunder");
-+        int l;
-+        BlockPosition blockposition;
-+
-+        if (flag && flag1 && this.random.nextInt(100000) == 0) {
-+            this.l = this.l * 3 + 1013904223;
-+            l = this.l >> 2;
-+            blockposition = this.a(new BlockPosition(j + (l & 15), 0, k + (l >> 8 & 15)));
-+            if (this.isRainingAt(blockposition)) {
-+                DifficultyDamageScaler difficultydamagescaler = this.D(blockposition);
-+
-+                if (this.random.nextDouble() < (double) difficultydamagescaler.b() * 0.05D) {
-+                    EntityHorse entityhorse = new EntityHorse(this);
-+
-+                    entityhorse.setType(EnumHorseType.SKELETON);
-+                    entityhorse.y(true);
-+                    entityhorse.setAgeRaw(0);
-+                    entityhorse.setPosition((double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ());
-+                    this.addEntity(entityhorse, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING); // CraftBukkit
-+                    this.strikeLightning(new EntityLightning(this, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ(), true));
-+                } else {
-+                    this.strikeLightning(new EntityLightning(this, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ(), false));
-+                }
-+            }
-+        }
-+
-+        this.methodProfiler.c("iceandsnow");
-+        if (this.random.nextInt(16) == 0) {
-+            this.l = this.l * 3 + 1013904223;
-+            l = this.l >> 2;
-+            blockposition = this.p(new BlockPosition(j + (l & 15), 0, k + (l >> 8 & 15)));
-+            BlockPosition blockposition1 = blockposition.down();
-+
-+            if (this.v(blockposition1)) {
-+                // CraftBukkit start
-+                BlockState blockState = this.getWorld().getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ()).getState();
-+                blockState.setTypeId(Block.getId(Blocks.ICE));
-+
-+                BlockFormEvent iceBlockForm = new BlockFormEvent(blockState.getBlock(), blockState);
-+                this.getServer().getPluginManager().callEvent(iceBlockForm);
-+                if (!iceBlockForm.isCancelled()) {
-+                    blockState.update(true);
-+                }
-+                // CraftBukkit end
-+            }
-+
-+            if (flag && this.f(blockposition, true)) {
-+                // CraftBukkit start
-+                BlockState blockState = this.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()).getState();
-+                blockState.setTypeId(Block.getId(Blocks.SNOW_LAYER));
-+
-+                BlockFormEvent snow = new BlockFormEvent(blockState.getBlock(), blockState);
-+                this.getServer().getPluginManager().callEvent(snow);
-+                if (!snow.isCancelled()) {
-+                    blockState.update(true);
-+                }
-+                // CraftBukkit end
-+            }
-+
-+            if (flag && this.getBiome(blockposition1).d()) {
-+                this.getType(blockposition1).getBlock().h(this, blockposition1);
-+            }
-+        }
-+
-+        this.methodProfiler.c("tickBlocks");
-+        if (i > 0) {
-+            ChunkSection[] achunksection = chunk.getSections();
-+            int i1 = achunksection.length;
-+
-+            for (int j1 = 0; j1 < i1; ++j1) {
-+                ChunkSection chunksection = achunksection[j1];
-+
-+                if (chunksection != Chunk.a && chunksection.shouldTick()) {
-+                    for (int k1 = 0; k1 < i; ++k1) {
-+                        this.l = this.l * 3 + 1013904223;
-+                        int l1 = this.l >> 2;
-+                        int i2 = l1 & 15;
-+                        int j2 = l1 >> 8 & 15;
-+                        int k2 = l1 >> 16 & 15;
-+                        IBlockData iblockdata = chunksection.getType(i2, k2, j2);
-+                        Block block = iblockdata.getBlock();
-+
-+                        this.methodProfiler.a("randomTick");
-+                        if (block.isTicking()) {
-+                           block.a((World) this, new BlockPosition(i2 + j, k2 + chunksection.getYPosition(), j2 + k), iblockdata, this.random);
-+                        }
-+
-+                        this.methodProfiler.b();
-+                    }
-+                }
-+            }
-+        }
-+    }
-+    
-     protected BlockPosition a(BlockPosition blockposition) {
-         BlockPosition blockposition1 = this.p(blockposition);
-         AxisAlignedBB axisalignedbb = (new AxisAlignedBB(blockposition1, new BlockPosition(blockposition1.getX(), this.getHeight(), blockposition1.getZ()))).g(3.0D);
-@@ -709,7 +828,8 @@
+@@ -709,7 +722,12 @@
                  NextTickListEntry nextticklistentry;
  
                  for (int j = 0; j < i; ++j) {
 -                    nextticklistentry = (NextTickListEntry) this.nextTickList.first();
-+                    //nextticklistentry = (NextTickListEntry) this.nextTickList.first();
-+                    nextticklistentry = (NextTickListEntry) this.nextTickList.iterator().next();
++                    try {
++                        nextticklistentry = (NextTickListEntry) this.nextTickList.first();
++                    } catch (Exception ex) {
++                        continue;
++                    }
++                    
                      if (!flag && nextticklistentry.b > this.worldData.getTime()) {
                          break;
                      }
-@@ -1124,7 +1244,8 @@
+@@ -1124,7 +1142,8 @@
  
      protected void b(Entity entity) {
          super.b(entity);
@@ -1676,7 +2282,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          this.entitiesByUUID.put(entity.getUniqueID(), entity);
          Entity[] aentity = entity.aT();
  
-@@ -1135,7 +1256,8 @@
+@@ -1135,7 +1154,8 @@
              for (int j = 0; j < i; ++j) {
                  Entity entity1 = aentity1[j];
  
@@ -1686,7 +2292,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              }
          }
  
-@@ -1143,7 +1265,8 @@
+@@ -1143,7 +1163,8 @@
  
      protected void c(Entity entity) {
          super.c(entity);
@@ -1696,7 +2302,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          this.entitiesByUUID.remove(entity.getUniqueID());
          Entity[] aentity = entity.aT();
  
-@@ -1154,7 +1277,8 @@
+@@ -1154,7 +1175,8 @@
              for (int j = 0; j < i; ++j) {
                  Entity entity1 = aentity1[j];
  
@@ -1706,7 +2312,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              }
          }
  
-@@ -1393,4 +1517,57 @@
+@@ -1393,4 +1415,57 @@
              this();
          }
      }
@@ -1764,9 +2370,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +    }
 +    
  }
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/SpigotTimings.java src/main/java/org/bukkit/craftbukkit/SpigotTimings.java
+--- src_origin/main/java/org/bukkit/craftbukkit/SpigotTimings.java	2016-06-17 04:20:30.825705812 +0800
++++ src/main/java/org/bukkit/craftbukkit/SpigotTimings.java	2016-06-19 02:54:44.653340236 +0800
+@@ -42,7 +42,8 @@
+     public static final CustomTimingsHandler entityActivationCheckTimer = new CustomTimingsHandler("entityActivationCheck");
+     public static final CustomTimingsHandler checkIfActiveTimer = new CustomTimingsHandler("** checkIfActive");
+ 
+-    public static final HashMap<String, CustomTimingsHandler> entityTypeTimingMap = new HashMap<String, CustomTimingsHandler>();
++    //public static final HashMap<String, CustomTimingsHandler> entityTypeTimingMap = new HashMap<String, CustomTimingsHandler>();
++    public static final Map<String, CustomTimingsHandler> entityTypeTimingMap = Maps.newConcurrentMap();
+     public static final HashMap<String, CustomTimingsHandler> tileEntityTypeTimingMap = new HashMap<String, CustomTimingsHandler>();
+     public static final HashMap<String, CustomTimingsHandler> pluginTaskTimingMap = new HashMap<String, CustomTimingsHandler>();
+ 
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-06-17 04:20:32.973705615 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-06-17 23:17:09.961455319 +0800
++++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-06-19 02:54:46.808340038 +0800
 @@ -1,16 +1,25 @@
  package org.bukkit.craftbukkit.util;
  
@@ -1856,7 +2475,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
  }
 diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/hose/ChunkFlush_Pool.java
 --- src_origin/main/java/org/hose/ChunkFlush_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-06-17 23:16:58.485456371 +0800
++++ src/main/java/org/hose/ChunkFlush_Pool.java	2016-06-19 02:54:42.173340463 +0800
 @@ -0,0 +1,53 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1913,7 +2532,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkFlush_Pool.java src/main/java/org/
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/hose/ChunkGen_Pool.java
 --- src_origin/main/java/org/hose/ChunkGen_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkGen_Pool.java	2016-06-17 23:16:58.485456371 +0800
++++ src/main/java/org/hose/ChunkGen_Pool.java	2016-06-19 02:54:42.173340463 +0800
 @@ -0,0 +1,54 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -1971,7 +2590,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkGen_Pool.java src/main/java/org/ho
 +}
 diff -Naur src_origin/main/java/org/hose/ChunkPopulate_Pool.java src/main/java/org/hose/ChunkPopulate_Pool.java
 --- src_origin/main/java/org/hose/ChunkPopulate_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/ChunkPopulate_Pool.java	2016-06-17 23:16:58.485456371 +0800
++++ src/main/java/org/hose/ChunkPopulate_Pool.java	2016-06-19 02:54:42.172340463 +0800
 @@ -0,0 +1,35 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2010,7 +2629,7 @@ diff -Naur src_origin/main/java/org/hose/ChunkPopulate_Pool.java src/main/java/o
 +}
 diff -Naur src_origin/main/java/org/hose/GE_Pool.java src/main/java/org/hose/GE_Pool.java
 --- src_origin/main/java/org/hose/GE_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/GE_Pool.java	2016-06-17 23:16:58.506456369 +0800
++++ src/main/java/org/hose/GE_Pool.java	2016-06-19 02:54:42.172340463 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2046,7 +2665,7 @@ diff -Naur src_origin/main/java/org/hose/GE_Pool.java src/main/java/org/hose/GE_
 +}
 diff -Naur src_origin/main/java/org/hose/TE_Pool.java src/main/java/org/hose/TE_Pool.java
 --- src_origin/main/java/org/hose/TE_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/TE_Pool.java	2016-06-17 23:16:58.484456371 +0800
++++ src/main/java/org/hose/TE_Pool.java	2016-06-19 02:54:42.173340463 +0800
 @@ -0,0 +1,34 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2084,7 +2703,7 @@ diff -Naur src_origin/main/java/org/hose/TE_Pool.java src/main/java/org/hose/TE_
 +}
 diff -Naur src_origin/main/java/org/hose/Tick_Pool.java src/main/java/org/hose/Tick_Pool.java
 --- src_origin/main/java/org/hose/Tick_Pool.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/org/hose/Tick_Pool.java	2016-06-17 23:16:58.491456370 +0800
++++ src/main/java/org/hose/Tick_Pool.java	2016-06-19 02:54:42.173340463 +0800
 @@ -0,0 +1,32 @@
 +/*
 + * To change this license header, choose License Headers in Project Properties.
@@ -2120,7 +2739,7 @@ diff -Naur src_origin/main/java/org/hose/Tick_Pool.java src/main/java/org/hose/T
 +}
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-06-17 04:20:28.481706027 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2016-06-17 23:16:58.551456365 +0800
++++ src/main/java/org/spigotmc/ActivationRange.java	2016-06-19 02:54:42.194340461 +0800
 @@ -1,6 +1,7 @@
  package org.spigotmc;
  
@@ -2141,7 +2760,7 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/
              {
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-06-17 04:20:28.473706027 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-06-17 23:16:58.585456362 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-06-19 02:54:42.194340461 +0800
 @@ -11,6 +11,7 @@
      {
          if ( enabled && Thread.currentThread() != MinecraftServer.getServer().primaryThread )
@@ -2152,8 +2771,8 @@ diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org
      }
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-06-17 04:20:28.481706027 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-06-17 23:16:58.662456355 +0800
-@@ -1,12 +1,115 @@
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-06-19 02:54:42.274340454 +0800
+@@ -1,12 +1,116 @@
  package org.spigotmc;
  
  import java.util.List;
@@ -2167,6 +2786,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
  
 +    //hose start
 +    static public final int cpu_core = Runtime.getRuntime().availableProcessors();
++    /*
 +    static final ForkJoinPool.ForkJoinWorkerThreadFactory fetp = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 +        @Override
 +        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
@@ -2199,7 +2819,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +            thread.setName("PlayerChunkPool-" + thread.getPoolIndex());
 +            return thread;
 +        }
-+    };
++    };*/
 +    
 +    static final ForkJoinPool.ForkJoinWorkerThreadFactory fcp = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 +        @Override
@@ -2209,7 +2829,7 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +            return thread;
 +        }
 +    };
-+    
++    /*
 +    static final ForkJoinPool.ForkJoinWorkerThreadFactory fcfpt3 = new ForkJoinPool.ForkJoinWorkerThreadFactory() {
 +        @Override
 +        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
@@ -2231,10 +2851,8 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +    public static ForkJoinPool EntityTickPool;
 +    public static ForkJoinPool TileTickPool;
 +    public static ForkJoinPool MovePool;
-+    public static ForkJoinPool PlayerChunkPool;
++    public static ForkJoinPool PlayerChunkPool;*/
 +    public static ForkJoinPool ChunkPool;
-+    public static ForkJoinPool ChunkFlushPool_T3;
-+    public static ForkJoinPool ChunkPopulate_Pool;
 +    
 +    /*
 +    static public FutureTask CollideTask;
@@ -2251,13 +2869,15 @@ diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/jav
 +    private void wetp_core_multiple()
 +    {
 +        worldtickentitypool_core_multiple = getInt("wetp-core-multiple", 4);
++        ChunkPool = new ForkJoinPool(getthreadnumber(), fcp, null, false);
++        /*
 +        EntityTickPool = new ForkJoinPool(getthreadnumber(), fetp, null, false);
 +        TileTickPool = new ForkJoinPool(getthreadnumber(), fttp, null, false);
 +        MovePool = new ForkJoinPool(getthreadnumber(), fmp, null, false);
 +        PlayerChunkPool = new ForkJoinPool(getthreadnumber(), fpcp, null, false);
-+        ChunkPool = new ForkJoinPool(getthreadnumber(), fcp, null, false);
++        
 +        ChunkFlushPool_T3 = new ForkJoinPool(getthreadnumber(), fcfpt3, null, false);
-+        ChunkPopulate_Pool = new ForkJoinPool(getthreadnumber(), fcpp, null, false);
++        ChunkPopulate_Pool = new ForkJoinPool(getthreadnumber(), fcpp, null, false);*/
 +        //executor = new ThreadPoolExecutor(getthreadnumber(), getthreadnumber(), 1, TimeUnit.DAYS, queue);
 +        log("WETP Core Multiple: " + worldtickentitypool_core_multiple);
 +    }
