@@ -4,7 +4,7 @@
 ####Minecraft Server with Multi-core CPU.
 ForkJoin maybe the way to solve ticking issues.
 
-*   It`s based on SpigotMC v1.9.4. See http://www.spigotmc.org/ for details.
+*   It`s based on SpigotMC v1.10.2. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
@@ -17,7 +17,7 @@ Hardware :
 
 ####Test Server
 *     IP address : 220.132.245.136:25585 (static)
-*     Version : 1.9.4
+*     Version : 1.10.2
 *     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server except red stone clock devices. Most of players are Taiwanese. If you are getting lag. You can try /gc command to check the ticks. Maybe your FPS is too low . You are welcome to leave any messages.`
 
 ####How to build this patch
