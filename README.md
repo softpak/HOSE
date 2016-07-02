@@ -1,16 +1,16 @@
-#HOSE
+﻿#HOSE
 `A flexible tube conveying data.`
 
 ####Minecraft Server with Multi-core CPU.
 ForkJoin maybe the way to solve ticking issues.
 
-*   It`s based on SpigotMC v1.10.2. See http://www.spigotmc.org/ for details.
+*   It`s based on PaperSpigot v1.10.2. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
 Software :
 *   OS : Anything that can run JDK or other JVM.
-*   JVM : Oricale & Open JDK 1.7 or higher.
+*   JVM : Oricale & Open JDK 1.8.
 
 Hardware :
 *   CPU : Any muilti-core CPUs.
@@ -26,7 +26,7 @@ Hardware :
   2. Import the project in Netbeans or Eclipse.
   3. Patch src.patch with "patch -p1 < ../src.patch" command in src folder.
   4. Then build the project in your IDE tools.
-  5. The jar file can be found in target folder like "spigot-1.X.X-R0.1-SNAPSHOT.jar".
+  5. The jar file can be found in target folder like "paper-1.X.X.jar".
   6. Enjoy the new server with multi-core CPU.
 
 ####Settings
