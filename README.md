@@ -22,7 +22,7 @@ Hardware :
 
 ####How to build this patch
 *     Linux
-  1. Build Spigot using BuildTools.jar.
+  1. Build PaperSpigot from source. https://github.com/PaperMC/Paper
   2. Import the project in Netbeans or Eclipse.
   3. Patch src.patch with "patch -p1 < ../src.patch" command in src folder.
   4. Then build the project in your IDE tools.
