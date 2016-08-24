@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.destroystokyo.paper</groupId>
-    <artifactId>paper</artifactId>
+    <groupId>org.spigotmc</groupId>
+    <artifactId>spigot</artifactId>
     <packaging>jar</packaging>
     <version>1.10.2-R0.1-SNAPSHOT</version>
-    <name>Paper</name>
-    <url>https://github.com/PaperMC/Paper</url>
+    <name>Spigot</name>
+    <url>http://www.spigotmc.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,22 +15,21 @@
         <minecraft_version>1_10_R1</minecraft_version>
         <buildtag.prefix>git-Bukkit-</buildtag.prefix>
         <buildtag.suffix></buildtag.suffix>
-        <!--Paper - Bump to 1.8 - This will haunt me -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <parent>
-        <groupId>com.destroystokyo.paper</groupId>
-        <artifactId>paper-parent</artifactId>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-parent</artifactId>
         <version>dev-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
-            <artifactId>paper-api</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -65,12 +64,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>fastutil-lite</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>net.sf.trove4j</groupId>
             <artifactId>trove4j</artifactId>
             <version>3.0.3</version>
@@ -100,22 +93,34 @@
 
     <!-- This builds a completely 'ready to start' jar with all dependencies inside -->
     <build>
-        <finalName>paper-${minecraft.version}</finalName>
-        <defaultGoal>clean install</defaultGoal> <!-- Paper -->
         <plugins>
             <plugin>
-                <groupId>com.lukegb.mojo</groupId>
-                <artifactId>gitdescribe-maven-plugin</artifactId>
-                <version>1.3</version>
-                <configuration>
-                    <outputPrefix>git-Paper-</outputPrefix>
-                    <scmDirectory>..</scmDirectory>
-                </configuration>
+                <groupId>net.md-5</groupId>
+                <artifactId>scriptus</artifactId>
+                <version>0.2</version>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <id>ex-spigot</id>
+                        <configuration>
+                            <format>git-Spigot-%s</format>
+                            <scmDirectory>../</scmDirectory>
+                            <descriptionProperty>spigot.desc</descriptionProperty>
+                        </configuration>
+                        <phase>initialize</phase>
                         <goals>
-                            <goal>gitdescribe</goal>
+                            <goal>describe</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ex-craftbukkit</id>
+                        <configuration>
+                            <format>-%s</format>
+                            <scmDirectory>../../CraftBukkit</scmDirectory>
+                            <descriptionProperty>craftbukkit.desc</descriptionProperty>
+                        </configuration>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>describe</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -125,12 +130,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <forceCreation>true</forceCreation> <!-- Required to prevent shading the jar multiple times -->
                     <archive>
                         <manifestEntries>
                             <Main-Class>org.bukkit.craftbukkit.Main</Main-Class>
                             <Implementation-Title>CraftBukkit</Implementation-Title>
-                            <Implementation-Version>${describe}</Implementation-Version>
+                            <Implementation-Version>${spigot.desc}${craftbukkit.desc}</Implementation-Version>
                             <Implementation-Vendor>Bukkit Team</Implementation-Vendor>
                             <Specification-Title>Bukkit</Specification-Title>
                             <Specification-Version>${api.version}</Specification-Version>
@@ -160,6 +164,26 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.14</version>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java18</artifactId>
+                        <version>1.0</version>
+                    </signature>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.4.1</version>
@@ -170,13 +194,11 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom> <!-- Paper -->
                             <relocations>
-                                <!-- Paper - Workaround for hardcoded path lookup in dependency, easier than forking it - GH-189 -->
-                                <!--<relocation>-->
-                                    <!--<pattern>joptsimple</pattern>-->
-                                    <!--<shadedPattern>org.bukkit.craftbukkit.libs.joptsimple</shadedPattern>-->
-                                <!--</relocation>-->
+                                <relocation>
+                                    <pattern>joptsimple</pattern>
+                                    <shadedPattern>org.bukkit.craftbukkit.libs.joptsimple</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>jline</pattern>
                                     <shadedPattern>org.bukkit.craftbukkit.libs.jline</shadedPattern>
@@ -210,6 +232,20 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <!-- versions after this appear to be broken -->
                 <version>3.1</version>
+                <configuration>
+                    <!-- we use the Eclipse compiler as it doesn't need a JDK -->
+                    <compilerId>eclipse</compilerId>
+                    <!-- source and target are ignored if this isn't true -->
+                    <optimize>true</optimize>
+                </configuration>
+                <dependencies>
+                    <!-- we need our custom version as it fixes some bugs on case sensitive file systems -->
+                    <dependency>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-compiler-eclipse</artifactId>
+                        <version>2.5.0-spigotmc</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
