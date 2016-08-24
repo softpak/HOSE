@@ -4,11 +4,7 @@
 ####Minecraft Server with Multi-core CPU.
 ForkJoin maybe the way to solve ticking issues.
 
-<<<<<<< HEAD
 *   It`s based on Spigot v1.10.2. See http://www.spigotmc.org/ for details.
-=======
-*   It`s based on Paper v1.10.2. See https://paper.emc.gs/ for details.
->>>>>>> f86f1899c8b007429e41b90e0b96be504ec68407
 
 ####Software & Hardware Requirements
 
