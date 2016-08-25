@@ -1,6 +1,6 @@
 diff -Naur src_origin/main/java/net/minecraft/server/BlockDiodeAbstract.java src/main/java/net/minecraft/server/BlockDiodeAbstract.java
 --- src_origin/main/java/net/minecraft/server/BlockDiodeAbstract.java	2016-08-25 04:49:41.803594057 +0800
-+++ src/main/java/net/minecraft/server/BlockDiodeAbstract.java	2016-08-25 04:49:38.567593755 +0800
++++ src/main/java/net/minecraft/server/BlockDiodeAbstract.java	2016-08-25 16:43:38.315602126 +0800
 @@ -102,6 +102,8 @@
                  }
  
@@ -12,7 +12,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockDiodeAbstract.java src
          }
 diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/main/java/net/minecraft/server/BlockRedstoneWire.java
 --- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-08-25 04:49:42.045594080 +0800
-+++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-08-25 04:49:38.801593777 +0800
++++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2016-08-25 16:43:38.534602147 +0800
 @@ -3,6 +3,7 @@
  import com.google.common.collect.Lists;
  import com.google.common.collect.Sets;
@@ -62,7 +62,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/
      private IBlockData a(World world, BlockPosition blockposition, BlockPosition blockposition1, IBlockData iblockdata) {
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2016-08-25 04:49:42.178594092 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2016-08-25 04:49:38.931593789 +0800
++++ src/main/java/net/minecraft/server/Chunk.java	2016-08-25 16:43:38.672602160 +0800
 @@ -15,6 +15,7 @@
  import org.apache.logging.log4j.Logger;
  
@@ -205,7 +205,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
  
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2016-08-25 04:49:42.187594093 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-08-25 04:49:38.933593789 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2016-08-25 16:43:38.676602160 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -279,7 +279,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  }
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java src/main/java/net/minecraft/server/ChunkRegionLoader.java
 --- src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-08-25 04:49:42.202594095 +0800
-+++ src/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-08-25 04:49:38.946593790 +0800
++++ src/main/java/net/minecraft/server/ChunkRegionLoader.java	2016-08-25 16:43:38.686602161 +0800
 @@ -10,10 +10,17 @@
  import java.util.List;
  import java.util.Map;
@@ -317,16 +317,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkRegionLoader.java src/
              }
          }
 +        //add to next at once
-+        if (!WorldServer.nextTickQueue.isEmpty()) {
++        /*if (!WorldServer.nextTickQueue.isEmpty()) {
 +            WorldServer.nextTickList.addAll(WorldServer.nextTickQueue);
 +            WorldServer.nextTickQueue.clear();
-+        }
++        }*/
          world.timings.syncChunkLoadTileTicksTimer.stopTiming(); // Spigot
  
          // return chunk; // CraftBukkit
 diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/main/java/net/minecraft/server/EntityInsentient.java
 --- src_origin/main/java/net/minecraft/server/EntityInsentient.java	2016-08-25 04:49:42.714594143 +0800
-+++ src/main/java/net/minecraft/server/EntityInsentient.java	2016-08-25 04:49:39.590593850 +0800
++++ src/main/java/net/minecraft/server/EntityInsentient.java	2016-08-25 16:43:39.168602206 +0800
 @@ -664,10 +664,18 @@
          this.targetSelector.a();
          this.world.methodProfiler.b();
@@ -350,7 +350,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityInsentient.java src/m
          this.M();
 diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/java/net/minecraft/server/EntityPlayer.java
 --- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2016-08-25 04:49:42.831594154 +0800
-+++ src/main/java/net/minecraft/server/EntityPlayer.java	2016-08-25 04:49:39.715593862 +0800
++++ src/main/java/net/minecraft/server/EntityPlayer.java	2016-08-25 16:43:39.272602216 +0800
 @@ -5,6 +5,7 @@
  import com.mojang.authlib.GameProfile;
  import io.netty.buffer.Unpooled;
@@ -392,36 +392,59 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/
              this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(aint));
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2016-08-25 04:49:42.951594165 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2016-08-25 04:49:39.835593873 +0800
-@@ -3,6 +3,7 @@
++++ src/main/java/net/minecraft/server/EntityTracker.java	2016-08-25 16:43:39.394602227 +0800
+@@ -1,9 +1,12 @@
+ package net.minecraft.server;
+ 
  import com.google.common.collect.Lists;
++import com.google.common.collect.Maps;
  import com.google.common.collect.Sets;
  import java.util.ArrayList;
 +import java.util.Collections;
  import java.util.Iterator;
++import java.util.Map;
  import java.util.Set;
  import org.apache.logging.log4j.LogManager;
-@@ -12,7 +13,8 @@
+ import org.apache.logging.log4j.Logger;
+@@ -12,8 +15,10 @@
  
      private static final Logger a = LogManager.getLogger();
      private final WorldServer world;
 -    private final Set<EntityTrackerEntry> c = Sets.newHashSet();
+-    public final IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
 +    //private final Set<EntityTrackerEntry> c = Sets.newHashSet();
 +    private final Set<EntityTrackerEntry> c = Collections.synchronizedSet(Sets.newHashSet());
-     public final IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
++    //public final IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
++    public final Map<Integer, EntityTrackerEntry> trackedEntities = Maps.newConcurrentMap();
      private int e;
  
-@@ -105,7 +107,8 @@
+     public EntityTracker(WorldServer worldserver) {
+@@ -104,14 +109,21 @@
+         org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
          i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
          try {
-             if (this.trackedEntities.b(entity.getId())) {
+-            if (this.trackedEntities.b(entity.getId())) {
 -                throw new IllegalStateException("Entity is already tracked!");
++            if (this.trackedEntities.containsKey(entity.getId())) {
++                //throw new IllegalStateException("Entity is already tracked!");
++                this.trackedEntities.remove(entity.getId());
+             }
++            /*
++            if (this.trackedEntities.b(entity.getId())) {
 +                //throw new IllegalStateException("Entity is already tracked!");
 +                this.trackedEntities.d(entity.getId());
-             }
++            }*/
  
              EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entity, i, this.e, j, flag);
-@@ -150,12 +153,14 @@
+ 
+             this.c.add(entitytrackerentry);
+-            this.trackedEntities.a(entity.getId(), entitytrackerentry);
++            //this.trackedEntities.a(entity.getId(), entitytrackerentry);
++            this.trackedEntities.put(entity.getId(), entitytrackerentry);
+             entitytrackerentry.scanPlayers(this.world.players);
+         } catch (Throwable throwable) {
+             CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
+@@ -150,16 +162,19 @@
          org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
          if (entity instanceof EntityPlayer) {
              EntityPlayer entityplayer = (EntityPlayer) entity;
@@ -440,7 +463,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
              }
          }
  
-@@ -170,46 +175,49 @@
+-        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
++        //EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.d(entity.getId());
++        EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) this.trackedEntities.remove(entity.getId());
+ 
+         if (entitytrackerentry1 != null) {
+             this.c.remove(entitytrackerentry1);
+@@ -170,46 +185,49 @@
  
      public void updatePlayers() {
          ArrayList arraylist = Lists.newArrayList();
@@ -514,7 +543,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
              }
          }
  
-@@ -247,41 +255,43 @@
+@@ -247,41 +265,43 @@
      public void a(EntityPlayer entityplayer, Chunk chunk) {
          ArrayList arraylist = Lists.newArrayList();
          ArrayList arraylist1 = Lists.newArrayList();
@@ -584,7 +613,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
  
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2016-08-25 04:49:43.388594206 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-08-25 04:49:40.236593911 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2016-08-25 16:43:39.749602260 +0800
 @@ -32,7 +32,9 @@
  import java.util.UUID;
  import java.util.concurrent.Callable;
@@ -669,7 +698,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
          } else {
 diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src/main/java/net/minecraft/server/NavigationAbstract.java
 --- src_origin/main/java/net/minecraft/server/NavigationAbstract.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/NavigationAbstract.java	2016-08-25 04:49:40.266593914 +0800
++++ src/main/java/net/minecraft/server/NavigationAbstract.java	2016-08-25 16:43:39.776602263 +0800
 @@ -0,0 +1,280 @@
 +package net.minecraft.server;
 +
@@ -953,7 +982,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/NavigationListener.java src/main/java/net/minecraft/server/NavigationListener.java
 --- src_origin/main/java/net/minecraft/server/NavigationListener.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/NavigationListener.java	2016-08-25 04:49:40.270593914 +0800
++++ src/main/java/net/minecraft/server/NavigationListener.java	2016-08-25 16:43:39.782602263 +0800
 @@ -0,0 +1,91 @@
 +package net.minecraft.server;
 +
@@ -1048,7 +1077,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/NavigationListener.java src
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/PersistentVillage.java src/main/java/net/minecraft/server/PersistentVillage.java
 --- src_origin/main/java/net/minecraft/server/PersistentVillage.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/PersistentVillage.java	2016-08-25 04:49:40.519593937 +0800
++++ src/main/java/net/minecraft/server/PersistentVillage.java	2016-08-25 16:43:40.027602286 +0800
 @@ -0,0 +1,271 @@
 +package net.minecraft.server;
 +
@@ -1323,7 +1352,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PersistentVillage.java src/
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2016-08-25 04:49:43.672594232 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-08-25 04:49:40.536593939 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2016-08-25 16:43:40.045602288 +0800
 @@ -42,7 +42,8 @@
      private final WorldServer world;
      private final List<EntityPlayer> managedPlayers = Lists.newArrayList();
@@ -1336,7 +1365,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
      private final List<PlayerChunk> i = Lists.newArrayList();
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
 --- src_origin/main/java/net/minecraft/server/PlayerList.java	2016-08-25 04:49:43.748594239 +0800
-+++ src/main/java/net/minecraft/server/PlayerList.java	2016-08-25 04:49:40.602593945 +0800
++++ src/main/java/net/minecraft/server/PlayerList.java	2016-08-25 16:43:40.106602294 +0800
 @@ -1167,9 +1167,11 @@
      }
  
@@ -1352,7 +1381,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/ja
  
 diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/main/java/net/minecraft/server/SpawnerCreature.java
 --- src_origin/main/java/net/minecraft/server/SpawnerCreature.java	2016-08-25 04:49:43.888594252 +0800
-+++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-08-25 04:49:40.745593958 +0800
++++ src/main/java/net/minecraft/server/SpawnerCreature.java	2016-08-25 16:43:40.269602309 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -1383,12 +1412,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/SpawnerCreature.java src/ma
                              int i2 = blockposition1.getX();
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2016-08-25 04:49:44.077594270 +0800
-+++ src/main/java/net/minecraft/server/World.java	2016-08-25 04:49:40.934593976 +0800
-@@ -15,7 +15,11 @@
++++ src/main/java/net/minecraft/server/World.java	2016-08-25 16:43:40.471602328 +0800
+@@ -15,7 +15,12 @@
  
  // CraftBukkit start
  import com.google.common.collect.Maps;
 +import com.google.common.collect.Queues;
++import java.util.LinkedList;
  import java.util.Map;
 +import java.util.Queue;
 +import java.util.concurrent.ConcurrentLinkedQueue;
@@ -1396,20 +1426,20 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  import org.bukkit.Bukkit;
  import org.bukkit.block.BlockState;
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
-@@ -33,8 +37,11 @@
+@@ -33,8 +38,11 @@
  
      private int a = 63;
      protected boolean d;
-+    Queue<Entity> entityremoveList = Queues.newConcurrentLinkedQueue();
++    //Queue<Entity> entityremoveList = Queues.newConcurrentLinkedQueue();
      // Spigot start - guard entity list from removals
 -    public final List<Entity> entityList = new java.util.ArrayList<Entity>()
-+    Queue<Entity> entityQueue = Queues.newConcurrentLinkedQueue();
++    public final Queue<Entity> entityQueue = Queues.newConcurrentLinkedQueue();
 +    //public final List<Entity> entityList = new java.util.ArrayList<Entity>()
-+    public final List<Entity> entityList = new CopyOnWriteArrayList<Entity>()
++    public List<Entity> entityList = new ArrayList<Entity>()
      {
          @Override
          public Entity remove(int index)
-@@ -122,7 +129,7 @@
+@@ -122,7 +130,7 @@
      public long ticksPerAnimalSpawns;
      public long ticksPerMonsterSpawns;
      public boolean populating;
@@ -1418,11 +1448,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
  
      public final SpigotTimings.WorldTimingsHandler timings; // Spigot
-@@ -1092,13 +1099,15 @@
+@@ -1017,7 +1025,8 @@
+             }
+ 
+             this.getChunkAt(i, j).a(entity);
+-            this.entityList.add(entity);
++            //this.entityList.add(entity);
++            this.entityQueue.add(entity);
+             this.b(entity);
+             return true;
+         }
+@@ -1092,13 +1101,16 @@
          }
  
          // CraftBukkit start - Decrement loop variable field if we've already ticked this entity
-+        this.entityremoveList.add(entity);
++        //this.entityremoveList.add(entity);
++        this.entityQueue.remove(entity);
 +        /*
          int index = this.entityList.indexOf(entity);
          if (index != -1) {
@@ -1435,7 +1476,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          // CraftBukkit end
          } // Spigot
          this.c(entity);
-@@ -1339,6 +1348,8 @@
+@@ -1339,6 +1351,8 @@
  
      public void b(BlockPosition blockposition, Block block, int i, int j) {}
  
@@ -1444,12 +1485,16 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      public void tickEntities() {
          this.methodProfiler.a("entities");
          this.methodProfiler.a("global");
-@@ -1378,17 +1389,21 @@
-         this.methodProfiler.c("remove");
-         this.entityList.removeAll(this.f);
+@@ -1376,19 +1390,24 @@
+         }
  
--        int j;
+         this.methodProfiler.c("remove");
+-        this.entityList.removeAll(this.f);
 -
+-        int j;
++        //this.entityList.removeAll(this.f);
++        this.entityQueue.removeAll(this.f);
+ 
 +        //int j;
 +        this.f.parallelStream().filter(ent -> ent.ab && this.isChunkLoaded(ent.ac, ent.ae, true)).forEach(ent -> {
 +            this.getChunkAt(ent.ac, ent.ae).b(ent);
@@ -1470,7 +1515,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          for (i = 0; i < this.f.size(); ++i) {
              this.c((Entity) this.f.get(i));
-@@ -1397,16 +1412,58 @@
+@@ -1397,16 +1416,59 @@
          this.f.clear();
          this.l();
          this.methodProfiler.c("regular");
@@ -1482,7 +1527,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          org.spigotmc.ActivationRange.activateEntities(this); // Spigot
          timings.entityTick.startTiming(); // Spigot
-+        this.entityQueue = new ConcurrentLinkedQueue(this.entityList);
++        //this.entityQueue = new ConcurrentLinkedQueue(this.entityList);
          guardEntityList = true; // Spigot
          // CraftBukkit start - Use field for loop variable
 -        int entitiesThisCycle = 0;
@@ -1523,7 +1568,8 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +                if (ent.ab && this.isChunkLoaded(j, l, true)) {
 +                    this.getChunkAt(j, l).b(ent);
 +                }
-+                this.entityremoveList.add(ent);
++                //this.entityremoveList.add(ent);
++                this.entityQueue.remove(ent);
 +                this.c(ent);
 +            }
 +
@@ -1533,23 +1579,44 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (entityLimiter.initTick();
                  entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
                  tickPosition++, entitiesThisCycle++) {
-@@ -1454,8 +1511,14 @@
+@@ -1454,8 +1516,15 @@
              }
  
              this.methodProfiler.b();
 -        }
 +        }*/
          guardEntityList = false; // Spigot
++        /*
 +        guardEntityList = true;
 +        if (!this.entityremoveList.isEmpty()) {
 +            this.entityList.removeAll(this.entityremoveList);
 +            this.entityremoveList.clear();
 +        }
-+        guardEntityList = false;
++        guardEntityList = false;*/
  
          timings.entityTick.stopTiming(); // Spigot
          this.methodProfiler.c("blockEntities");
-@@ -1621,7 +1684,7 @@
+@@ -1472,6 +1541,10 @@
+         // Spigot start
+         // Iterator iterator = this.tileEntityListTick.iterator();
+         int tilesThisCycle = 0;
++        if (!WorldServer.nextTickQueue.isEmpty()) {
++            WorldServer.nextTickList.addAll(WorldServer.nextTickQueue);
++            WorldServer.nextTickQueue.clear();
++        }
+         for (tileLimiter.initTick();
+                 tilesThisCycle < tileEntityListTick.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
+                 tileTickPosition++, tilesThisCycle++) {
+@@ -1485,7 +1558,7 @@
+                 continue;
+             }
+             // Spigot end
+-
++           
+             if (!tileentity.x() && tileentity.t()) {
+                 BlockPosition blockposition = tileentity.getPosition();
+ 
+@@ -1621,7 +1694,7 @@
              entity.O = entity.locZ;
              entity.lastYaw = entity.yaw;
              entity.lastPitch = entity.pitch;
@@ -1558,10 +1625,36 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                  ++entity.ticksLived;
                  if (entity.isPassenger()) {
                      entity.aw();
+@@ -2469,6 +2542,7 @@
+ 
+     public <T extends Entity> List<T> a(Class<? extends T> oclass, Predicate<? super T> predicate) {
+         ArrayList arraylist = Lists.newArrayList();
++        this.entityList = new ArrayList(this.entityQueue);
+         Iterator iterator = this.entityList.iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -2555,6 +2629,7 @@
+ 
+     public int a(Class<?> oclass) {
+         int i = 0;
++        this.entityList = new ArrayList(this.entityQueue);
+         Iterator iterator = this.entityList.iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -2589,7 +2664,8 @@
+             if (entity == null) {
+                 continue;
+             }
+-            this.entityList.add(entity);
++            //this.entityList.add(entity);
++            this.entityQueue.add(entity);
+             // CraftBukkit end
+             this.b(entity);
+         }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2016-08-25 04:49:44.184594280 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2016-08-25 04:49:41.034593985 +0800
-@@ -3,18 +3,26 @@
++++ src/main/java/net/minecraft/server/WorldServer.java	2016-08-25 16:43:40.569602337 +0800
+@@ -3,24 +3,33 @@
  import com.google.common.base.Predicate;
  import com.google.common.collect.Lists;
  import com.google.common.collect.Maps;
@@ -1588,7 +1681,14 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
-@@ -28,6 +36,7 @@
+ 
+ // CraftBukkit start
+ import java.util.logging.Level;
++import java.util.stream.IntStream;
+ 
+ import org.bukkit.WeatherType;
+ import org.bukkit.block.BlockState;
+@@ -28,6 +37,7 @@
  
  import org.bukkit.event.block.BlockFormEvent;
  import org.bukkit.event.weather.LightningStrikeEvent;
@@ -1596,7 +1696,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  // CraftBukkit end
  
  public class WorldServer extends World implements IAsyncTaskHandler {
-@@ -37,7 +46,9 @@
+@@ -37,7 +47,9 @@
      public EntityTracker tracker;
      private final PlayerChunkMap manager;
      // private final Set<NextTickListEntry> nextTickListHash = Sets.newHashSet();
@@ -1607,7 +1707,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
      private final Map<UUID, Entity> entitiesByUUID = Maps.newHashMap();
      public boolean savingDisabled;
      private boolean O;
-@@ -47,7 +58,8 @@
+@@ -47,7 +59,8 @@
      protected final VillageSiege siegeManager = new VillageSiege(this);
      private final WorldServer.BlockActionDataList[] S = new WorldServer.BlockActionDataList[] { new WorldServer.BlockActionDataList(null), new WorldServer.BlockActionDataList(null)};
      private int T;
@@ -1617,7 +1717,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
      // CraftBukkit start
      public final int dimension;
-@@ -224,7 +236,9 @@
+@@ -224,7 +237,9 @@
          long time = this.worldData.getTime();
          if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && (this instanceof WorldServer && this.players.size() > 0)) {
              timings.mobSpawn.startTiming(); // Spigot
@@ -1628,7 +1728,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              timings.mobSpawn.stopTiming(); // Spigot
              // CraftBukkit end
          }
-@@ -282,8 +296,19 @@
+@@ -282,8 +297,19 @@
          return list != null && !list.isEmpty() ? (BiomeBase.BiomeMeta) WeightedRandom.a(this.random, list) : null;
      }
  
@@ -1649,11 +1749,21 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
          return list != null && !list.isEmpty() ? list.contains(biomebase_biomemeta) : false;
      }
-@@ -592,11 +617,13 @@
+@@ -557,6 +583,7 @@
+         this.a(blockposition, block, i, 0);
+     }
+ 
++    //world.a
+     public void a(BlockPosition blockposition, Block block, int i, int j) {
+         if (blockposition instanceof BlockPosition.MutableBlockPosition || blockposition instanceof BlockPosition.PooledBlockPosition) {
+             blockposition = new BlockPosition(blockposition);
+@@ -591,12 +618,14 @@
+ 
              // CraftBukkit - use nextTickList
              if (!this.nextTickList.contains(nextticklistentry)) {
-                 this.nextTickList.add(nextticklistentry);
-+                //this.nextTickQueue.add(nextticklistentry);
+-                this.nextTickList.add(nextticklistentry);
++                //this.nextTickList.add(nextticklistentry);
++                this.nextTickQueue.add(nextticklistentry);
              }
          }
  
@@ -1664,7 +1774,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
      public void b(BlockPosition blockposition, Block block, int i, int j) {
          if (blockposition instanceof BlockPosition.MutableBlockPosition || blockposition instanceof BlockPosition.PooledBlockPosition) {
              blockposition = new BlockPosition(blockposition);
-@@ -614,11 +641,13 @@
+@@ -614,11 +643,13 @@
  
          // CraftBukkit - use nextTickList
          if (!this.nextTickList.contains(nextticklistentry)) {
@@ -1680,7 +1790,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
      public void tickEntities() {
          if (false && this.players.isEmpty()) { // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
              if (this.emptyTime++ >= 300) {
-@@ -628,7 +657,9 @@
+@@ -628,7 +659,9 @@
              this.m();
          }
  
@@ -1691,36 +1801,68 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          super.tickEntities();
          spigotConfig.currentPrimedTnt = 0; // Spigot
      }
-@@ -707,21 +738,46 @@
+@@ -672,7 +705,8 @@
+                     this.getChunkAt(j, k).b(entity);
+                 }
+ 
+-                this.entityList.remove(entity);
++                //this.entityList.remove(entity);
++                this.entityQueue.remove(entity);
+                 this.c(entity);
+             }
+ 
+@@ -707,7 +741,18 @@
                  this.methodProfiler.a("cleaning");
  
                  NextTickListEntry nextticklistentry;
-+                synchronized (this.nextTickList) {
-+                    for (int j = 0; j < i; ++j) {
-+                        nextticklistentry = (NextTickListEntry) this.nextTickList.first();
-+                        if (!flag && nextticklistentry.b > this.worldData.getTime()) {
-+                            break;
-+                        }
++                
++                this.nextTickList.parallelStream().forEach(ntle -> {
++                    if (!flag && ntle.b > this.worldData.getTime()) {
++                        return;
++                    }
  
--                for (int j = 0; j < i; ++j) {
--                    nextticklistentry = (NextTickListEntry) this.nextTickList.first();
--                    if (!flag && nextticklistentry.b > this.worldData.getTime()) {
--                        break;
-+                        // CraftBukkit - use nextTickList
-+                        this.nextTickList.remove(nextticklistentry);
-+                        // this.nextTickListHash.remove(nextticklistentry);
-+                        this.U.add(nextticklistentry);
-                     }
++                    // CraftBukkit - use nextTickList
++                    this.nextTickList.remove(ntle);
++                    // this.nextTickListHash.remove(nextticklistentry);
++                    this.U.add(ntle);
++                });
++                /*
+                 for (int j = 0; j < i; ++j) {
+                     nextticklistentry = (NextTickListEntry) this.nextTickList.first();
+                     if (!flag && nextticklistentry.b > this.worldData.getTime()) {
+@@ -718,10 +763,57 @@
+                     this.nextTickList.remove(nextticklistentry);
+                     // this.nextTickListHash.remove(nextticklistentry);
+                     this.U.add(nextticklistentry);
+-                }
 -
--                    // CraftBukkit - use nextTickList
--                    this.nextTickList.remove(nextticklistentry);
--                    // this.nextTickListHash.remove(nextticklistentry);
--                    this.U.add(nextticklistentry);
-                 }
--
++                }*/
++                
                  this.methodProfiler.b();
                  this.methodProfiler.a("ticking");
 +                
++                this.U.parallelStream().forEachOrdered(ntle -> {
++                    boolean flag1 = false;
++
++                    if (this.areChunksLoadedBetween(ntle.a.a(0, 0, 0), ntle.a.a(0, 0, 0))) {
++                        IBlockData iblockdata = this.getType(ntle.a);
++
++                        if (iblockdata.getMaterial() != Material.AIR && Block.a(iblockdata.getBlock(), ntle.a())) {
++                            try {
++                                iblockdata.getBlock().b((World) this, ntle.a, iblockdata, this.random);
++                            } catch (Throwable throwable) {
++                                CrashReport crashreport = CrashReport.a(throwable, "Exception while ticking a block");
++                                CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being ticked");
++
++                                CrashReportSystemDetails.a(crashreportsystemdetails, ntle.a, iblockdata);
++                                throw new ReportedException(crashreport);
++                            }
++                        }
++                    } else {
++                        this.a(ntle.a, ntle.a(), 0);
++                    }
++                });
++                /*
 +                while (!this.U.isEmpty()) {
 +                    nextticklistentry = (NextTickListEntry) this.U.poll();
 +                    boolean flag1 = false;
@@ -1743,12 +1885,12 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +                        this.a(nextticklistentry.a, nextticklistentry.a(), 0);
 +                    }
 +                    
-+                }
++                }*/
 +                /*
                  Iterator iterator = this.U.iterator();
  
                  while (iterator.hasNext()) {
-@@ -746,10 +802,10 @@
+@@ -746,7 +838,7 @@
                      } else {
                          this.a(nextticklistentry.a, nextticklistentry.a(), 0);
                      }
@@ -1756,12 +1898,8 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +                }*/
  
                  this.methodProfiler.b();
--                this.U.clear();
-+                //this.U.clear();
-                 return !this.nextTickList.isEmpty();
-             }
-         }
-@@ -775,10 +831,57 @@
+                 this.U.clear();
+@@ -775,10 +867,61 @@
  
              if (i == 0) {
                  iterator = this.nextTickList.iterator();
@@ -1786,15 +1924,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +                        arraylist.add(nextticklistentry);
 +                    }
 +                }
-+                this.nextTickList.removeAll(this.nextTickList_remove);
-+                this.nextTickList_remove.clear();
++                if (!this.nextTickList_remove.isEmpty()){
++                    this.nextTickList.removeAll(this.nextTickList_remove);
++                    this.nextTickList_remove.clear();
++                }
              } else {
                  iterator = this.U.iterator();
 -            }
 +                while (iterator.hasNext()) {
 +                    NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
 +                    BlockPosition blockposition = nextticklistentry.a;
- 
++
 +                    if (blockposition.getX() >= structureboundingbox.a && blockposition.getX() < structureboundingbox.d && blockposition.getZ() >= structureboundingbox.c && blockposition.getZ() < structureboundingbox.f) {
 +                        if (flag) {
 +                            if (i == 0) {
@@ -1804,7 +1944,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +                            //iterator.remove();
 +                            this.nextTickList_remove.add(nextticklistentry);
 +                        }
-+
+ 
 +                        if (arraylist == null) {
 +                            arraylist = Lists.newArrayList();
 +                        }
@@ -1812,15 +1952,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +                        arraylist.add(nextticklistentry);
 +                    }
 +                }
-+                this.nextTickList.removeAll(this.nextTickList_remove);
-+                this.nextTickList_remove.clear();
++                if (!this.nextTickList_remove.isEmpty()){
++                    this.nextTickList.removeAll(this.nextTickList_remove);
++                    this.nextTickList_remove.clear();
++                }
 +            }
 +            
 +            /*
              while (iterator.hasNext()) {
                  NextTickListEntry nextticklistentry = (NextTickListEntry) iterator.next();
                  BlockPosition blockposition = nextticklistentry.a;
-@@ -798,7 +901,7 @@
+@@ -798,7 +941,7 @@
  
                      arraylist.add(nextticklistentry);
                  }
@@ -1829,7 +1971,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          }
  
          return arraylist;
-@@ -856,12 +959,15 @@
+@@ -856,12 +999,15 @@
                  if (chunk == null) {
                      continue;
                  }
@@ -1846,7 +1988,33 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              }
          }
          /*
-@@ -1389,4 +1495,47 @@
+@@ -1077,16 +1223,23 @@
+ 
+     public void a(Collection<Entity> collection) {
+         ArrayList arraylist = Lists.newArrayList(collection);
++        
++        arraylist.parallelStream().filter(entity -> this.i((Entity)entity)).forEach(entity -> {
++            this.entityQueue.add((Entity)entity);
++            this.b((Entity)entity);
++        });
++        /*
+         Iterator iterator = arraylist.iterator();
+ 
+         while (iterator.hasNext()) {
+             Entity entity = (Entity) iterator.next();
+ 
+             if (this.i(entity)) {
+-                this.entityList.add(entity);
++                //this.entityList.add(entity);
++                this.entityQueue.add(entity);
+                 this.b(entity);
+             }
+-        }
++        }*/
+ 
+     }
+ 
+@@ -1389,4 +1542,47 @@
              this();
          }
      }
@@ -1894,9 +2062,48 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +    }
 +    
  }
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+--- src_origin/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-08-25 04:49:44.494594309 +0800
++++ src/main/java/org/bukkit/craftbukkit/CraftWorld.java	2016-08-25 16:43:40.887602367 +0800
+@@ -613,7 +613,7 @@
+ 
+     public List<Entity> getEntities() {
+         List<Entity> list = new ArrayList<Entity>();
+-
++        world.entityList = new ArrayList(world.entityQueue);
+         for (Object o : world.entityList) {
+             if (o instanceof net.minecraft.server.Entity) {
+                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
+@@ -631,7 +631,7 @@
+ 
+     public List<LivingEntity> getLivingEntities() {
+         List<LivingEntity> list = new ArrayList<LivingEntity>();
+-
++        world.entityList = new ArrayList(world.entityQueue);
+         for (Object o : world.entityList) {
+             if (o instanceof net.minecraft.server.Entity) {
+                 net.minecraft.server.Entity mcEnt = (net.minecraft.server.Entity) o;
+@@ -656,7 +656,7 @@
+     @SuppressWarnings("unchecked")
+     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T> clazz) {
+         Collection<T> list = new ArrayList<T>();
+-
++        world.entityList = new ArrayList(world.entityQueue);
+         for (Object entity: world.entityList) {
+             if (entity instanceof net.minecraft.server.Entity) {
+                 Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
+@@ -678,7 +678,7 @@
+ 
+     public Collection<Entity> getEntitiesByClasses(Class<?>... classes) {
+         Collection<Entity> list = new ArrayList<Entity>();
+-
++        world.entityList = new ArrayList(world.entityQueue);
+         for (Object entity: world.entityList) {
+             if (entity instanceof net.minecraft.server.Entity) {
+                 Entity bukkitEntity = ((net.minecraft.server.Entity) entity).getBukkitEntity();
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 --- src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-08-25 04:49:49.159594746 +0800
-+++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-08-25 04:49:46.175594466 +0800
++++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2016-08-25 16:43:42.545602522 +0800
 @@ -498,7 +498,8 @@
              } else if (source == DamageSource.HOT_FLOOR) {
                  cause = DamageCause.HOT_FLOOR;
@@ -1920,7 +2127,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.j
      private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, Map<DamageModifier, Double> modifiers, Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-08-25 04:49:50.193594842 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-08-25 04:49:47.187594561 +0800
++++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2016-08-25 16:43:43.529602614 +0800
 @@ -5,12 +5,14 @@
  import java.util.Iterator;
  import java.util.Set;
@@ -1938,22 +2145,24 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
      public HashTreeSet() {
  
      }
-@@ -112,6 +114,12 @@
+@@ -111,7 +113,13 @@
+     }
  
      public V first() {
-         return tree.first();
-+        /*if (tree.first() != null) {
+-        return tree.first();
++        //return tree.first();
++        if (tree.first() != null) {
 +            return tree.first();
 +        } else {
 +            this.remove(tree.first());
 +            return this.first();
-+        }*/
++        }
      }
  
  }
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2016-08-25 04:49:37.760593679 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2016-08-25 04:49:37.003593608 +0800
++++ src/main/java/org/spigotmc/ActivationRange.java	2016-08-25 16:43:37.509602051 +0800
 @@ -1,6 +1,7 @@
  package org.spigotmc;
  
@@ -1974,32 +2183,33 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/
              {
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2016-08-25 04:49:37.752593678 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-08-25 04:49:37.006593609 +0800
-@@ -1,5 +1,9 @@
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2016-08-25 16:43:37.498602050 +0800
+@@ -1,5 +1,6 @@
  package org.spigotmc;
  
-+import com.google.common.util.concurrent.ListenableFutureTask;
-+import java.util.concurrent.Callable;
 +import java.util.concurrent.ForkJoinTask;
-+import java.util.concurrent.FutureTask;
  import net.minecraft.server.MinecraftServer;
  
  public class AsyncCatcher
-@@ -11,7 +15,10 @@
+@@ -9,9 +10,13 @@
+ 
+     public static void catchOp(String reason)
      {
++        /*
          if ( enabled && Thread.currentThread() != MinecraftServer.getServer().primaryThread )
          {
 -            throw new IllegalStateException( "Asynchronous " + reason + "!" );
+-        }
 +            SpigotWorldConfig.TickTask = ForkJoinTask.adapt(Thread.currentThread());
-+            SpigotWorldConfig.TickPool.invoke(SpigotWorldConfig.TickTask);
++            SpigotWorldConfig.TickPool.submit(SpigotWorldConfig.TickTask);
 +            //MinecraftServer.LOGGER.warn("Asynchronous " + reason + "!");
 +            //throw new IllegalStateException( "Asynchronous " + reason + "!" );
-         }
++        }*/
      }
  }
 diff -Naur src_origin/main/java/org/spigotmc/SpigotWorldConfig.java src/main/java/org/spigotmc/SpigotWorldConfig.java
 --- src_origin/main/java/org/spigotmc/SpigotWorldConfig.java	2016-08-25 04:49:37.755593679 +0800
-+++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-08-25 04:49:37.018593610 +0800
++++ src/main/java/org/spigotmc/SpigotWorldConfig.java	2016-08-25 16:43:37.512602051 +0800
 @@ -1,11 +1,123 @@
  package org.spigotmc;
  
