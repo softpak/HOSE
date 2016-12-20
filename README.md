@@ -4,7 +4,7 @@
 ####Minecraft Server with Multi-core CPU.
 ForkJoin maybe the way to solve ticking issues.
 
-*   It`s based on Spigot v1.10.2. See http://www.spigotmc.org/ for details.
+*   It`s based on Spigot v1.11. See http://www.spigotmc.org/ for details.
 
 ####Software & Hardware Requirements
 
@@ -17,7 +17,7 @@ Hardware :
 
 ####Test Server
 *     IP address : 220.132.245.136:25585 (static)
-*     Version : 1.10.2
+*     Version : 1.11
 *     Rule : `DO NOT interfere other players. Otherwise, you can find a wild open space to do things you like to test this server except red stone clock devices. Most of players are Taiwanese. If you are getting lag. You can try /gc command to check the ticks. Maybe your FPS is too low . You are welcome to leave any messages.`
 
 ####How to build this patch
@@ -28,9 +28,6 @@ Hardware :
   4. Then build the project in your IDE tools.
   5. The jar file can be found in target folder like "spigot-1.X.X-R0.1-SNAPSHOT.jar".
   6. Enjoy the new server with multi-core CPU.
-
-####Settings
-*     wetp-core-multiple:1(default) #Using threads that are multiple by the numbers of your cpu cores. If your cpu has 2 cores. It will use 2 threads to calculate EntityTicks. Set it to 10 will use 20 threads.
 
 ####Issues
 *     No issues for now.
