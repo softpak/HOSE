@@ -1,0 +1,31 @@
+diff -Naur src_origin/main/java/org/bukkit/World.java src/main/java/org/bukkit/World.java
+--- src_origin/main/java/org/bukkit/World.java	2016-12-27 15:29:51.209842179 +0800
++++ src/main/java/org/bukkit/World.java	2016-12-27 15:29:41.781842170 +0800
+@@ -6,6 +6,7 @@
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Queue;
+ import java.util.UUID;
+ 
+ import org.bukkit.block.Biome;
+@@ -398,7 +399,8 @@
+      *
+      * @return A List of all LivingEntities currently residing in this world
+      */
+-    public List<LivingEntity> getLivingEntities();
++    //public List<LivingEntity> getLivingEntities();
++    public Queue<LivingEntity> getLivingEntities(); //hose
+ 
+     /**
+      * Get a collection of all entities in this World matching the given
+@@ -688,7 +690,8 @@
+      *
+      * @return List containing any or none BlockPopulators
+      */
+-    public List<BlockPopulator> getPopulators();
++    //public List<BlockPopulator> getPopulators();
++    public Queue<BlockPopulator> getPopulators();   //hose
+ 
+     /**
+      * Spawn an entity of a specific class at the given {@link Location}
