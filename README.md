@@ -9,7 +9,7 @@
 
 Software :
 *   OS : Anything that can run JDK or other JVM.
-*   JVM : Oricale & Open JDK 1.8.
+*   JVM : Oricale JDK 1.8.
 
 Hardware :
 *   CPU : Any muilti-core CPUs.
