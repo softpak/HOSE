@@ -1,6 +1,27 @@
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLightning.java src/main/java/net/minecraft/server/EntityLightning.java
+--- src_origin/main/java/net/minecraft/server/EntityLightning.java	2017-05-06 23:42:12.550754095 +0800
++++ src/main/java/net/minecraft/server/EntityLightning.java	2017-05-06 23:59:44.403852513 +0800
+@@ -1,6 +1,7 @@
+ package net.minecraft.server;
+ 
+ import java.util.List;
++import java.util.Queue;
+ 
+ import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
+ 
+@@ -66,7 +67,8 @@
+             // this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.dv, SoundCategory.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
+             float pitch = 0.8F + this.random.nextFloat() * 0.2F;
+             int viewDistance = ((WorldServer) this.world).getServer().getViewDistance() * 16;
+-            for (EntityPlayer player : (List<EntityPlayer>) (List) this.world.players) {
++            //for (EntityPlayer player : (List<EntityPlayer>) (List) this.world.players) {
++            for (EntityPlayer player : (Queue<EntityPlayer>) (Queue) this.world.players) {
+                 double deltaX = this.locX - player.locX;
+                 double deltaZ = this.locZ - player.locZ;
+                 double distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
 diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/java/net/minecraft/server/EntityPlayer.java
 --- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2017-05-06 23:42:12.679754107 +0800
-+++ src/main/java/net/minecraft/server/EntityPlayer.java	2017-05-06 23:42:03.656753262 +0800
++++ src/main/java/net/minecraft/server/EntityPlayer.java	2017-05-06 23:59:44.501852522 +0800
 @@ -14,6 +14,9 @@
  
  // CraftBukkit start
@@ -35,7 +56,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/
      protected void a(MobEffect mobeffect) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src/main/java/net/minecraft/server/EntityTrackerEntry.java
 --- src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-06 23:42:12.840754122 +0800
-+++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-06 23:42:03.836753279 +0800
++++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-06 23:59:44.656852537 +0800
 @@ -1,10 +1,12 @@
  package net.minecraft.server;
  
@@ -136,7 +157,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src
  
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2017-05-06 23:42:12.832754121 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2017-05-06 23:42:03.815753277 +0800
++++ src/main/java/net/minecraft/server/EntityTracker.java	2017-05-06 23:59:44.642852535 +0800
 @@ -1,9 +1,11 @@
  package net.minecraft.server;
  
@@ -232,7 +253,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
      public void a(EntityPlayer entityplayer, Chunk chunk) {
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2017-05-06 23:42:13.394754174 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2017-05-06 23:42:04.236753317 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2017-05-06 23:59:45.024852571 +0800
 @@ -1044,7 +1044,8 @@
      }
  
@@ -255,7 +276,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
 --- src_origin/main/java/net/minecraft/server/PlayerList.java	2017-05-06 23:42:13.760754208 +0800
-+++ src/main/java/net/minecraft/server/PlayerList.java	2017-05-06 23:42:04.698753360 +0800
++++ src/main/java/net/minecraft/server/PlayerList.java	2017-05-06 23:59:45.380852604 +0800
 @@ -995,9 +995,11 @@
      }
  
@@ -271,7 +292,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/ja
      // CraftBukkit end
 diff -Naur src_origin/main/java/net/minecraft/server/VillageSiege.java src/main/java/net/minecraft/server/VillageSiege.java
 --- src_origin/main/java/net/minecraft/server/VillageSiege.java	2017-05-06 23:42:14.110754241 +0800
-+++ src/main/java/net/minecraft/server/VillageSiege.java	2017-05-06 23:42:05.017753390 +0800
++++ src/main/java/net/minecraft/server/VillageSiege.java	2017-05-06 23:59:45.627852627 +0800
 @@ -2,6 +2,7 @@
  
  import java.util.Iterator;
@@ -351,7 +372,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/VillageSiege.java src/main/
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldData.java src/main/java/net/minecraft/server/WorldData.java
 --- src_origin/main/java/net/minecraft/server/WorldData.java	2017-05-06 23:42:14.142754244 +0800
-+++ src/main/java/net/minecraft/server/WorldData.java	2017-05-06 23:42:05.034753391 +0800
++++ src/main/java/net/minecraft/server/WorldData.java	2017-05-06 23:59:45.665852631 +0800
 @@ -630,9 +630,13 @@
          this.C = enumdifficulty;
          // CraftBukkit start
@@ -369,7 +390,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldData.java src/main/jav
  
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2017-05-06 23:42:14.166754246 +0800
-+++ src/main/java/net/minecraft/server/World.java	2017-05-06 23:42:05.098753397 +0800
++++ src/main/java/net/minecraft/server/World.java	2017-05-06 23:59:45.660852631 +0800
 @@ -15,7 +15,9 @@
  
  // CraftBukkit start
@@ -553,7 +574,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2017-05-06 23:42:14.296754258 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2017-05-06 23:42:05.181753405 +0800
++++ src/main/java/net/minecraft/server/WorldServer.java	2017-05-06 23:59:45.767852641 +0800
 @@ -386,7 +386,9 @@
          this.methodProfiler.a("playerCheckLight");
          if (spigotConfig.randomLightUpdates && !this.players.isEmpty()) { // Spigot
@@ -673,7 +694,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2017-05-06 23:42:09.653753824 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2017-05-06 23:42:01.533753064 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2017-05-06 23:59:42.376852323 +0800
 @@ -11,7 +11,8 @@
      {
          if ( enabled && Thread.currentThread() != MinecraftServer.getServer().primaryThread )
