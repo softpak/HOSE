@@ -31,10 +31,6 @@ Hardware :
 #### Issues
 *     No issues for now.
 
-#### Settings
-1. entity-piece(default:2): Splitting entity-list into pieces. In default, it`s 2 pieces. It can reduce the time looping the list.
-2. entity-min-pertick(default:2000): If you split your entity-list in many pieces, this number will check the min number of entities every tick. To ensure your service goes well.
-
 # [贊助(NTD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMV8PH8TDHSCY)
 # [Donate(USD)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYUVSZYQBPXF2)
 
