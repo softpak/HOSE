@@ -1,15 +1,66 @@
+diff -Naur src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java src/main/java/net/minecraft/server/BlockRedstoneWire.java
+--- src_origin/main/java/net/minecraft/server/BlockRedstoneWire.java	2017-05-15 13:09:52.349961582 +0800
++++ src/main/java/net/minecraft/server/BlockRedstoneWire.java	2017-05-30 05:34:07.726665412 +0800
+@@ -3,6 +3,7 @@
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+ import java.util.ArrayList;
++import java.util.Collections;
+ import java.util.EnumSet;
+ import java.util.Iterator;
+ import java.util.Random;
+@@ -20,7 +21,8 @@
+     public static final BlockStateInteger POWER = BlockStateInteger.of("power", 0, 15);
+     protected static final AxisAlignedBB[] f = new AxisAlignedBB[] { new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D)};
+     private boolean g = true;
+-    private final Set<BlockPosition> B = Sets.newHashSet();
++    //private final Set<BlockPosition> B = Sets.newHashSet();
++    private final Set<BlockPosition> B = Collections.synchronizedSet(Sets.newHashSet());
+ 
+     public BlockRedstoneWire() {
+         super(Material.ORIENTABLE);
+@@ -109,18 +111,20 @@
+ 
+     private IBlockData e(World world, BlockPosition blockposition, IBlockData iblockdata) {
+         iblockdata = this.a(world, blockposition, blockposition, iblockdata);
+-        ArrayList arraylist = Lists.newArrayList(this.B);
++        synchronized (this.B) {
++            ArrayList arraylist = Lists.newArrayList(this.B);
+ 
+-        this.B.clear();
+-        Iterator iterator = arraylist.iterator();
++            this.B.clear();
++            Iterator iterator = arraylist.iterator();
+ 
+-        while (iterator.hasNext()) {
+-            BlockPosition blockposition1 = (BlockPosition) iterator.next();
++            while (iterator.hasNext()) {
++                BlockPosition blockposition1 = (BlockPosition) iterator.next();
+ 
+-            world.applyPhysics(blockposition1, this, false);
+-        }
++                world.applyPhysics(blockposition1, this, false);
++            }
+ 
+-        return iblockdata;
++            return iblockdata;
++        }
+     }
+ 
+     private IBlockData a(World world, BlockPosition blockposition, BlockPosition blockposition1, IBlockData iblockdata) {
 diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/net/minecraft/server/Chunk.java
 --- src_origin/main/java/net/minecraft/server/Chunk.java	2017-05-15 13:09:52.500961596 +0800
-+++ src/main/java/net/minecraft/server/Chunk.java	2017-05-16 01:09:28.334001414 +0800
-@@ -15,6 +15,7 @@
++++ src/main/java/net/minecraft/server/Chunk.java	2017-05-30 05:34:07.855665425 +0800
+@@ -15,6 +15,8 @@
  import org.apache.logging.log4j.Logger;
  
  import com.google.common.collect.Lists; // CraftBukkit
 +import java.util.Queue;
++import java.util.stream.IntStream;
  import org.bukkit.Server; // CraftBukkit
  
  public class Chunk {
-@@ -32,7 +33,8 @@
+@@ -32,7 +34,8 @@
      public final int locZ;
      private boolean m;
      public final Map<BlockPosition, TileEntity> tileEntities;
@@ -19,8 +70,13 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
      private boolean done;
      private boolean lit;
      private boolean r;
-@@ -83,14 +85,16 @@
-         this.tileEntities = Maps.newHashMap();
+@@ -80,17 +83,20 @@
+         this.g = new byte[256];
+         this.h = new int[256];
+         this.i = new boolean[256];
+-        this.tileEntities = Maps.newHashMap();
++        //this.tileEntities = Maps.newHashMap();
++        this.tileEntities = Maps.newConcurrentMap();//hose
          this.x = 4096;
          this.y = Queues.newConcurrentLinkedQueue();
 -        this.entitySlices = (List[]) (new List[16]); // Spigot
@@ -38,7 +94,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          }
  
          Arrays.fill(this.h, -999);
-@@ -744,11 +748,13 @@
+@@ -744,11 +750,13 @@
      public void addEntities() {
          this.j = true;
          this.world.b(this.tileEntities.values());
@@ -54,7 +110,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
  
              this.world.a((Collection) entityslice);
          }
-@@ -777,7 +783,8 @@
+@@ -777,7 +785,8 @@
              this.world.b(tileentity);
          }
  
@@ -64,19 +120,24 @@ diff -Naur src_origin/main/java/net/minecraft/server/Chunk.java src/main/java/ne
          int i = aentityslice.length;
  
          for (int j = 0; j < i; ++j) {
-@@ -1288,7 +1295,8 @@
+@@ -1288,8 +1297,12 @@
          return this.tileEntities;
      }
  
 -    public List<Entity>[] getEntitySlices() {
-+    //public List<Entity>[] getEntitySlices() {
-+    public Queue<Entity>[] getEntitySlices() {//hose
-         return this.entitySlices;
+-        return this.entitySlices;
++    public List<Entity>[] getEntitySlices() {//hose
++        List<Entity>[] al = (List[]) (new List[16]);
++        IntStream.range(0, 16).forEach(c -> {
++            al[c] = Lists.newArrayList(this.entitySlices[c]);
++        });
++        return al;
      }
  
+     public boolean isDone() {
 diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java src/main/java/net/minecraft/server/ChunkProviderServer.java
 --- src_origin/main/java/net/minecraft/server/ChunkProviderServer.java	2017-05-15 13:09:52.463961593 +0800
-+++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2017-05-16 01:09:28.343001415 +0800
++++ src/main/java/net/minecraft/server/ChunkProviderServer.java	2017-05-30 05:34:07.858665425 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -127,9 +188,435 @@ diff -Naur src_origin/main/java/net/minecraft/server/ChunkProviderServer.java sr
  
      }
  
+diff -Naur src_origin/main/java/net/minecraft/server/Entity.java src/main/java/net/minecraft/server/Entity.java
+--- src_origin/main/java/net/minecraft/server/Entity.java	2017-05-15 13:09:52.703961615 +0800
++++ src/main/java/net/minecraft/server/Entity.java	2017-05-30 05:34:08.126665450 +0800
+@@ -12,6 +12,7 @@
+ import java.util.Random;
+ import java.util.Set;
+ import java.util.UUID;
++import java.util.concurrent.RecursiveTask;
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+@@ -586,6 +587,18 @@
+                 }
+             }
+ 
++            double[] cor = new double[3];
++            cor[0] = d0;
++            cor[1] = d1;
++            cor[2] = d2;
++            move mvt = new move(cor, this, enummovetype);
++            mvt.fork();
++            cor = (double[]) mvt.join();
++            d0 = cor[0];
++            d1 = cor[1];
++            d2 = cor[2];
++            /*
++            long mst = System.nanoTime();
+             this.world.methodProfiler.a("move");
+             double d4 = this.locX;
+             double d5 = this.locY;
+@@ -778,8 +791,12 @@
+                     this.a(axisalignedbb1);
+                 }
+             }
+-
++            
+             this.world.methodProfiler.b();
++            long met = System.nanoTime();
++            System.out.println("move time: "+(met-mst)+"ns.");
++            
++            //long rst = System.nanoTime();
+             this.world.methodProfiler.a("rest");
+             this.recalcPosition();
+             this.positionChanged = d7 != d0 || d9 != d2;
+@@ -873,20 +890,6 @@
+                 }
+             }
+ 
+-            // CraftBukkit start - Move to the top of the method
+-            /*
+-            try {
+-                this.checkBlockCollisions();
+-            } catch (Throwable throwable) {
+-                CrashReport crashreport = CrashReport.a(throwable, "Checking entity block collision");
+-                CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being checked for collision");
+-
+-                this.appendEntityCrashDetails(crashreportsystemdetails);
+-                throw new ReportedException(crashreport);
+-            }
+-            */
+-            // CraftBukkit end
+-
+             boolean flag1 = this.ai();
+ 
+             if (this.world.e(this.getBoundingBox().shrink(0.001D))) {
+@@ -914,6 +917,8 @@
+             }
+ 
+             this.world.methodProfiler.b();
++            //long ret = System.nanoTime();
++            //System.out.println("rest time: "+(ret-rst)+"ns.");*/
+         }
+         org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.stopTiming(); // Spigot
+     }
+@@ -2790,4 +2795,351 @@
+     public int getMaxFireTicks() {
+         return 1;
+     }
++    
++    public class move extends RecursiveTask {
++        double[] cor = new double[3];
++        Entity ent;
++        EnumMoveType enummovetype;
++        
++        public move (double[] cor, Entity ent, EnumMoveType enummovetype) {
++            this.cor = cor;
++            this.ent = ent;
++            this.enummovetype = enummovetype;
++        }
++        
++        
++        @Override
++        protected double[] compute() {
++            long mst = System.nanoTime();
++            world.methodProfiler.a("move");
++            double d4 = locX;
++            double d5 = locY;
++            double d6 = locZ;
++            double d0 = this.cor[0];
++            double d1 = this.cor[1];
++            double d2 = this.cor[2];
++            
++
++            if (E) {
++                E = false;
++                d0 *= 0.25D;
++                d1 *= 0.05000000074505806D;
++                d2 *= 0.25D;
++                motX = 0.0D;
++                motY = 0.0D;
++                motZ = 0.0D;
++            }
++
++            double d7 = d0;
++            double d8 = d1;
++            double d9 = d2;
++
++            if ((enummovetype == EnumMoveType.SELF || enummovetype == EnumMoveType.PLAYER) && onGround && isSneaking() && ent instanceof EntityHuman) {
++                for (double d10 = 0.05D; d0 != 0.0D && world.getCubes(ent, getBoundingBox().d(d0, (double) (-P), 0.0D)).isEmpty(); d7 = d0) {
++                    if (d0 < 0.05D && d0 >= -0.05D) {
++                        d0 = 0.0D;
++                    } else if (d0 > 0.0D) {
++                        d0 -= 0.05D;
++                    } else {
++                        d0 += 0.05D;
++                    }
++                }
++
++                for (; d2 != 0.0D && world.getCubes(ent, getBoundingBox().d(0.0D, (double) (-P), d2)).isEmpty(); d9 = d2) {
++                    if (d2 < 0.05D && d2 >= -0.05D) {
++                        d2 = 0.0D;
++                    } else if (d2 > 0.0D) {
++                        d2 -= 0.05D;
++                    } else {
++                        d2 += 0.05D;
++                    }
++                }
++
++                for (; d0 != 0.0D && d2 != 0.0D && world.getCubes(ent, getBoundingBox().d(d0, (double) (-P), d2)).isEmpty(); d9 = d2) {
++                    if (d0 < 0.05D && d0 >= -0.05D) {
++                        d0 = 0.0D;
++                    } else if (d0 > 0.0D) {
++                        d0 -= 0.05D;
++                    } else {
++                        d0 += 0.05D;
++                    }
++
++                    d7 = d0;
++                    if (d2 < 0.05D && d2 >= -0.05D) {
++                        d2 = 0.0D;
++                    } else if (d2 > 0.0D) {
++                        d2 -= 0.05D;
++                    } else {
++                        d2 += 0.05D;
++                    }
++                }
++            }
++
++            List list = world.getCubes(ent, getBoundingBox().b(d0, d1, d2));
++            AxisAlignedBB axisalignedbb = getBoundingBox();
++            int k;
++            int l;
++
++            if (d1 != 0.0D) {
++                k = 0;
++
++                for (l = list.size(); k < l; ++k) {
++                    d1 = ((AxisAlignedBB) list.get(k)).b(getBoundingBox(), d1);
++                }
++
++                a(getBoundingBox().d(0.0D, d1, 0.0D));
++            }
++
++            if (d0 != 0.0D) {
++                k = 0;
++
++                for (l = list.size(); k < l; ++k) {
++                    d0 = ((AxisAlignedBB) list.get(k)).a(getBoundingBox(), d0);
++                }
++
++                if (d0 != 0.0D) {
++                    a(getBoundingBox().d(d0, 0.0D, 0.0D));
++                }
++            }
++
++            if (d2 != 0.0D) {
++                k = 0;
++
++                for (l = list.size(); k < l; ++k) {
++                    d2 = ((AxisAlignedBB) list.get(k)).c(getBoundingBox(), d2);
++                }
++
++                if (d2 != 0.0D) {
++                    a(getBoundingBox().d(0.0D, 0.0D, d2));
++                }
++            }
++
++            boolean flag = onGround || d1 != d8 && d1 < 0.0D; // CraftBukkit - decompile error
++            double d11;
++
++            if (P > 0.0F && flag && (d7 != d0 || d9 != d2)) {
++                double d12 = d0;
++                double d13 = d1;
++                double d14 = d2;
++                AxisAlignedBB axisalignedbb1 = getBoundingBox();
++
++                a(axisalignedbb);
++                d1 = (double) P;
++                List list1 = world.getCubes(ent, getBoundingBox().b(d7, d1, d9));
++                AxisAlignedBB axisalignedbb2 = getBoundingBox();
++                AxisAlignedBB axisalignedbb3 = axisalignedbb2.b(d7, 0.0D, d9);
++
++                d11 = d1;
++                int i1 = 0;
++
++                for (int j1 = list1.size(); i1 < j1; ++i1) {
++                    d11 = ((AxisAlignedBB) list1.get(i1)).b(axisalignedbb3, d11);
++                }
++
++                axisalignedbb2 = axisalignedbb2.d(0.0D, d11, 0.0D);
++                double d15 = d7;
++                int k1 = 0;
++
++                for (int l1 = list1.size(); k1 < l1; ++k1) {
++                    d15 = ((AxisAlignedBB) list1.get(k1)).a(axisalignedbb2, d15);
++                }
++
++                axisalignedbb2 = axisalignedbb2.d(d15, 0.0D, 0.0D);
++                double d16 = d9;
++                int i2 = 0;
++
++                for (int j2 = list1.size(); i2 < j2; ++i2) {
++                    d16 = ((AxisAlignedBB) list1.get(i2)).c(axisalignedbb2, d16);
++                }
++
++                axisalignedbb2 = axisalignedbb2.d(0.0D, 0.0D, d16);
++                AxisAlignedBB axisalignedbb4 = getBoundingBox();
++                double d17 = d1;
++                int k2 = 0;
++
++                for (int l2 = list1.size(); k2 < l2; ++k2) {
++                    d17 = ((AxisAlignedBB) list1.get(k2)).b(axisalignedbb4, d17);
++                }
++
++                axisalignedbb4 = axisalignedbb4.d(0.0D, d17, 0.0D);
++                double d18 = d7;
++                int i3 = 0;
++
++                for (int j3 = list1.size(); i3 < j3; ++i3) {
++                    d18 = ((AxisAlignedBB) list1.get(i3)).a(axisalignedbb4, d18);
++                }
++
++                axisalignedbb4 = axisalignedbb4.d(d18, 0.0D, 0.0D);
++                double d19 = d9;
++                int k3 = 0;
++
++                for (int l3 = list1.size(); k3 < l3; ++k3) {
++                    d19 = ((AxisAlignedBB) list1.get(k3)).c(axisalignedbb4, d19);
++                }
++
++                axisalignedbb4 = axisalignedbb4.d(0.0D, 0.0D, d19);
++                double d20 = d15 * d15 + d16 * d16;
++                double d21 = d18 * d18 + d19 * d19;
++
++                if (d20 > d21) {
++                    d0 = d15;
++                    d2 = d16;
++                    d1 = -d11;
++                    a(axisalignedbb2);
++                } else {
++                    d0 = d18;
++                    d2 = d19;
++                    d1 = -d17;
++                    a(axisalignedbb4);
++                }
++
++                int i4 = 0;
++
++                for (int j4 = list1.size(); i4 < j4; ++i4) {
++                    d1 = ((AxisAlignedBB) list1.get(i4)).b(getBoundingBox(), d1);
++                }
++
++                a(getBoundingBox().d(0.0D, d1, 0.0D));
++                if (d12 * d12 + d14 * d14 >= d0 * d0 + d2 * d2) {
++                    d0 = d12;
++                    d1 = d13;
++                    d2 = d14;
++                    a(axisalignedbb1);
++                }
++            }
++            
++            world.methodProfiler.b();
++                        
++            //long rst = System.nanoTime();
++            world.methodProfiler.a("rest");
++            recalcPosition();
++            positionChanged = d7 != d0 || d9 != d2;
++            B = d1 != d8; // CraftBukkit - decompile error
++            onGround = B && d8 < 0.0D;
++            C = positionChanged || B;
++            l = MathHelper.floor(locX);
++            int k4 = MathHelper.floor(locY - 0.20000000298023224D);
++            int l4 = MathHelper.floor(locZ);
++            BlockPosition blockposition = new BlockPosition(l, k4, l4);
++            IBlockData iblockdata = world.getType(blockposition);
++
++            if (iblockdata.getMaterial() == Material.AIR) {
++                BlockPosition blockposition1 = blockposition.down();
++                IBlockData iblockdata1 = world.getType(blockposition1);
++                Block block = iblockdata1.getBlock();
++
++                if (block instanceof BlockFence || block instanceof BlockCobbleWall || block instanceof BlockFenceGate) {
++                    iblockdata = iblockdata1;
++                    blockposition = blockposition1;
++                }
++            }
++
++            a(d1, onGround, iblockdata, blockposition);
++            if (d7 != d0) {
++                motX = 0.0D;
++            }
++
++            if (d9 != d2) {
++                motZ = 0.0D;
++            }
++
++            Block block1 = iblockdata.getBlock();
++
++            if (d8 != d1) {
++                block1.a(world, ent);
++            }
++
++            // CraftBukkit start
++            if (positionChanged && getBukkitEntity() instanceof Vehicle) {
++                Vehicle vehicle = (Vehicle) getBukkitEntity();
++                org.bukkit.block.Block bl = world.getWorld().getBlockAt(MathHelper.floor(locX), MathHelper.floor(locY), MathHelper.floor(locZ));
++
++                if (d6 > d0) {
++                    bl = bl.getRelative(BlockFace.EAST);
++                } else if (d6 < d0) {
++                    bl = bl.getRelative(BlockFace.WEST);
++                } else if (d8 > d2) {
++                    bl = bl.getRelative(BlockFace.SOUTH);
++                } else if (d8 < d2) {
++                    bl = bl.getRelative(BlockFace.NORTH);
++                }
++
++                if (bl.getType() != org.bukkit.Material.AIR) {
++                    VehicleBlockCollisionEvent event = new VehicleBlockCollisionEvent(vehicle, bl);
++                    world.getServer().getPluginManager().callEvent(event);
++                }
++            }
++            // CraftBukkit end            // CraftBukkit end
++
++            if (playStepSound() && (!onGround || !isSneaking() || !(ent instanceof EntityHuman)) && !isPassenger()) {
++                double d22 = locX - d4;
++                double d23 = locY - d5;
++
++                d11 = locZ - d6;
++                if (block1 != Blocks.LADDER) {
++                    d23 = 0.0D;
++                }
++
++                if (block1 != null && onGround) {
++                    block1.stepOn(world, blockposition, ent);
++                }
++
++                J = (float) ((double) J + (double) MathHelper.sqrt(d22 * d22 + d11 * d11) * 0.6D);
++                K = (float) ((double) K + (double) MathHelper.sqrt(d22 * d22 + d23 * d23 + d11 * d11) * 0.6D);
++                if (K > (float) ax && iblockdata.getMaterial() != Material.AIR) {
++                    ax = (int) K + 1;
++                    if (isInWater()) {
++                        Entity entity = isVehicle() && bw() != null ? bw() : ent;
++                        float f = entity == ent ? 0.35F : 0.4F;
++                        float f1 = MathHelper.sqrt(entity.motX * entity.motX * 0.20000000298023224D + entity.motY * entity.motY + entity.motZ * entity.motZ * 0.20000000298023224D) * f;
++
++                        if (f1 > 1.0F) {
++                            f1 = 1.0F;
++                        }
++
++                        a(aa(), f1, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.4F);
++                    } else {
++                        a(blockposition, block1);
++                    }
++                }
++            }
++
++            boolean flag1 = ai();
++
++            if (world.e(getBoundingBox().shrink(0.001D))) {
++                burn(1);
++                if (!flag1) {
++                    ++fireTicks;
++                    if (fireTicks == 0) {
++                        // CraftBukkit start
++                        EntityCombustEvent event = new org.bukkit.event.entity.EntityCombustByBlockEvent(null, getBukkitEntity(), 8);
++                        world.getServer().getPluginManager().callEvent(event);
++
++                        if (!event.isCancelled()) {
++                            setOnFire(event.getDuration());
++                        }
++                        // CraftBukkit end
++                    }
++                }
++            } else if (fireTicks <= 0) {
++                fireTicks = -getMaxFireTicks();
++            }
++
++            if (flag1 && isBurning()) {
++                a(SoundEffects.bQ, 0.7F, 1.6F + (random.nextFloat() - random.nextFloat()) * 0.4F);
++                fireTicks = -getMaxFireTicks();
++            }
++
++            world.methodProfiler.b();
++            //long ret = System.nanoTime();
++            //System.out.println("rest time: "+(ret-rst)+"ns.");
++            
++            cor[0] = d0;
++            cor[1] = d1;
++            cor[2] = d2;
++            return this.cor;
++        }
++    
++    
++    }
+ }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityLightning.java src/main/java/net/minecraft/server/EntityLightning.java
 --- src_origin/main/java/net/minecraft/server/EntityLightning.java	2017-05-15 13:09:52.889961633 +0800
-+++ src/main/java/net/minecraft/server/EntityLightning.java	2017-05-16 01:09:28.778001456 +0800
++++ src/main/java/net/minecraft/server/EntityLightning.java	2017-05-30 05:34:08.316665468 +0800
 @@ -1,6 +1,7 @@
  package net.minecraft.server;
  
@@ -148,9 +635,56 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityLightning.java src/ma
                  double deltaX = this.locX - player.locX;
                  double deltaZ = this.locZ - player.locZ;
                  double distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+diff -Naur src_origin/main/java/net/minecraft/server/EntityLiving.java src/main/java/net/minecraft/server/EntityLiving.java
+--- src_origin/main/java/net/minecraft/server/EntityLiving.java	2017-05-15 13:09:52.942961638 +0800
++++ src/main/java/net/minecraft/server/EntityLiving.java	2017-05-30 05:34:08.340665470 +0800
+@@ -17,6 +17,7 @@
+ import java.util.ArrayList;
+ import com.google.common.base.Function;
+ import com.google.common.collect.Lists;
++import java.util.concurrent.RecursiveAction;
+ import org.bukkit.Location;
+ import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+@@ -2061,7 +2062,13 @@
+         this.bg *= 0.9F;
+         this.r();
+         SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
+-        this.g(this.be, this.bf);
++        //this.g(this.be, this.bf);
++        float x = this.be;//hose
++        float y = this.bf;
++        AImove ait = new AImove(x, y);
++        ait.fork();
++        ait.join();
++        
+         SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot
+         this.world.methodProfiler.b();
+         this.world.methodProfiler.a("push");
+@@ -2476,4 +2483,20 @@
+     public boolean cK() {
+         return true;
+     }
++    
++    public class AImove extends RecursiveAction {
++        float x, y;
++        
++        public AImove(float x, float y) {
++            this.x = x;
++            this.y = y;
++        }
++        
++        @Override
++        protected void compute() {
++            g(this.x, this.y);
++        }
++        
++    }
++    
+ }
 diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/java/net/minecraft/server/EntityPlayer.java
 --- src_origin/main/java/net/minecraft/server/EntityPlayer.java	2017-05-15 13:09:52.995961643 +0800
-+++ src/main/java/net/minecraft/server/EntityPlayer.java	2017-05-16 01:09:28.877001465 +0800
++++ src/main/java/net/minecraft/server/EntityPlayer.java	2017-05-30 05:34:08.410665476 +0800
 @@ -14,6 +14,8 @@
  
  // CraftBukkit start
@@ -184,7 +718,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityPlayer.java src/main/
      protected void a(MobEffect mobeffect) {
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src/main/java/net/minecraft/server/EntityTrackerEntry.java
 --- src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-15 13:09:53.098961652 +0800
-+++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-16 01:09:28.982001475 +0800
++++ src/main/java/net/minecraft/server/EntityTrackerEntry.java	2017-05-30 05:34:08.531665488 +0800
 @@ -1,10 +1,12 @@
  package net.minecraft.server;
  
@@ -284,7 +818,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTrackerEntry.java src
  
 diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main/java/net/minecraft/server/EntityTracker.java
 --- src_origin/main/java/net/minecraft/server/EntityTracker.java	2017-05-15 13:09:53.090961652 +0800
-+++ src/main/java/net/minecraft/server/EntityTracker.java	2017-05-16 01:09:28.975001474 +0800
++++ src/main/java/net/minecraft/server/EntityTracker.java	2017-05-30 05:34:08.525665487 +0800
 @@ -1,9 +1,13 @@
  package net.minecraft.server;
  
@@ -331,7 +865,20 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
              entitytrackerentry.scanPlayers(this.world.players);
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
-@@ -150,7 +158,7 @@
+@@ -139,7 +147,11 @@
+                 }
+             });
+             entity.appendEntityCrashDetails(crashreportsystemdetails);
+-            ((EntityTrackerEntry) this.trackedEntities.get(entity.getId())).b().appendEntityCrashDetails(crashreport.a("Entity That Is Already Tracked"));
++            try {
++                ((EntityTrackerEntry) this.trackedEntities.get(entity.getId())).b().appendEntityCrashDetails(crashreport.a("Entity That Is Already Tracked"));
++            } catch (Exception ex) {
++                this.trackedEntities.remove(entity.getId());
++            }
+ 
+             try {
+                 throw new ReportedException(crashreport);
+@@ -150,7 +162,7 @@
  
      }
  
@@ -340,7 +887,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
          org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
          if (entity instanceof EntityPlayer) {
              EntityPlayer entityplayer = (EntityPlayer) entity;
-@@ -163,8 +171,8 @@
+@@ -163,8 +175,8 @@
              }
          }
  
@@ -351,7 +898,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
          if (entitytrackerentry1 != null) {
              this.c.remove(entitytrackerentry1);
              entitytrackerentry1.a();
-@@ -172,7 +180,23 @@
+@@ -172,7 +184,23 @@
  
      }
  
@@ -376,7 +923,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
          ArrayList arraylist = Lists.newArrayList();
          Iterator iterator = this.c.iterator();
  
-@@ -200,7 +224,7 @@
+@@ -200,7 +228,7 @@
                      entitytrackerentry1.updatePlayer(entityplayer);
                  }
              }
@@ -385,7 +932,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
  
      }
  
-@@ -236,8 +260,9 @@
+@@ -236,8 +264,9 @@
          }
  
      }
@@ -397,7 +944,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
          Iterator iterator = this.c.iterator();
  
          while (iterator.hasNext()) {
-@@ -245,7 +270,22 @@
+@@ -245,7 +274,26 @@
  
              entitytrackerentry.clear(entityplayer);
          }
@@ -406,13 +953,17 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
 +        
 +        for (EntityTrackerEntry ete: this.c) {
 +            int exist_count = 0;
-+            for (Entity ent:this.world.entityList) {
-+                if (ent.getId() == ete.hashCode()) {
-+                    exist_count++;
++            try {
++                for (Entity ent:this.world.entityList) {
++                    if (ent.getId() == ete.hashCode()) {
++                        exist_count++;
++                    }
 +                }
-+            }
-+            if (exist_count == 0) {
-+                remove_untrack.add(ete);
++                if (exist_count == 0) {
++                    remove_untrack.add(ete);
++                }
++            } catch (Exception ex) {
++                //
 +            }
 +        }
 +        
@@ -421,88 +972,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/EntityTracker.java src/main
      }
  
      public void a(EntityPlayer entityplayer, Chunk chunk) {
-diff -Naur src_origin/main/java/net/minecraft/server/FileIOThread.java src/main/java/net/minecraft/server/FileIOThread.java
---- src_origin/main/java/net/minecraft/server/FileIOThread.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/FileIOThread.java	2017-05-16 01:09:29.037001480 +0800
-@@ -0,0 +1,75 @@
-+package net.minecraft.server;
-+
-+import com.google.common.collect.Lists;
-+import java.util.Collections;
-+import java.util.List;
-+
-+public class FileIOThread implements Runnable {
-+
-+    private static final FileIOThread a = new FileIOThread();
-+    private final List<IAsyncChunkSaver> b = Collections.synchronizedList(Lists.newArrayList());
-+    private volatile long c;
-+    private volatile long d;
-+    private volatile boolean e;
-+
-+    private FileIOThread() {
-+        Thread thread = new Thread(this, "File IO Thread");
-+
-+        thread.setPriority(1);
-+        thread.start();
-+    }
-+
-+    public static FileIOThread a() {
-+        return FileIOThread.a;
-+    }
-+
-+    public void run() {
-+        while (true) {
-+            this.c();
-+        }
-+    }
-+
-+    private void c() {
-+        for (int i = 0; i < this.b.size(); ++i) {
-+            IAsyncChunkSaver iasyncchunksaver = (IAsyncChunkSaver) this.b.get(i);
-+            boolean flag = iasyncchunksaver.c();
-+
-+            if (!flag) {
-+                this.b.remove(i--);
-+                ++this.d;
-+            }
-+
-+            try {
-+                Thread.sleep(this.e ? 0L : 10L);
-+            } catch (InterruptedException interruptedexception) {
-+                interruptedexception.printStackTrace();
-+            }
-+        }
-+
-+        if (this.b.isEmpty()) {
-+            try {
-+                Thread.sleep(25L);
-+            } catch (InterruptedException interruptedexception1) {
-+                interruptedexception1.printStackTrace();
-+            }
-+        }
-+
-+    }
-+
-+    public void a(IAsyncChunkSaver iasyncchunksaver) {
-+        if (!this.b.contains(iasyncchunksaver)) {
-+            ++this.c;
-+            this.b.add(iasyncchunksaver);
-+        }
-+    }
-+
-+    public void b() throws InterruptedException {
-+        this.e = true;
-+
-+        while (this.c != this.d) {
-+            Thread.sleep(10L);
-+        }
-+
-+        this.e = false;
-+    }
-+}
 diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/main/java/net/minecraft/server/MinecraftServer.java
 --- src_origin/main/java/net/minecraft/server/MinecraftServer.java	2017-05-15 13:09:53.392961680 +0800
-+++ src/main/java/net/minecraft/server/MinecraftServer.java	2017-05-16 01:09:29.304001505 +0800
++++ src/main/java/net/minecraft/server/MinecraftServer.java	2017-05-30 05:34:08.887665521 +0800
 @@ -1043,8 +1043,9 @@
  
      }
@@ -529,7 +1001,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/MinecraftServer.java src/ma
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
 diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src/main/java/net/minecraft/server/NavigationAbstract.java
 --- src_origin/main/java/net/minecraft/server/NavigationAbstract.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/NavigationAbstract.java	2017-05-16 01:09:29.323001507 +0800
++++ src/main/java/net/minecraft/server/NavigationAbstract.java	2017-05-30 05:34:08.920665524 +0800
 @@ -0,0 +1,289 @@
 +package net.minecraft.server;
 +
@@ -820,9 +1292,288 @@ diff -Naur src_origin/main/java/net/minecraft/server/NavigationAbstract.java src
 +        return this.e;
 +    }
 +}
+diff -Naur src_origin/main/java/net/minecraft/server/Navigation.java src/main/java/net/minecraft/server/Navigation.java
+--- src_origin/main/java/net/minecraft/server/Navigation.java	1970-01-01 08:00:00.000000000 +0800
++++ src/main/java/net/minecraft/server/Navigation.java	2017-05-30 05:34:08.913665523 +0800
+@@ -0,0 +1,275 @@
++package net.minecraft.server;
++
++import java.util.Iterator;
++
++public class Navigation extends NavigationAbstract {
++
++    private boolean f;
++
++    public Navigation(EntityInsentient entityinsentient, World world) {
++        super(entityinsentient, world);
++    }
++
++    protected Pathfinder a() {
++        this.e = new PathfinderNormal();
++        this.e.a(true);
++        return new Pathfinder(this.e);
++    }
++
++    protected boolean b() {
++        return this.a.onGround || this.g() && this.p() || this.a.isPassenger();
++    }
++
++    protected Vec3D c() {
++        return new Vec3D(this.a.locX, (double) this.r(), this.a.locZ);
++    }
++
++    public PathEntity a(BlockPosition blockposition) {
++        BlockPosition blockposition1;
++
++        if (this.b.getType(blockposition).getMaterial() == Material.AIR) {
++            for (blockposition1 = blockposition.down(); blockposition1.getY() > 0 && this.b.getType(blockposition1).getMaterial() == Material.AIR; blockposition1 = blockposition1.down()) {
++                ;
++            }
++
++            if (blockposition1.getY() > 0) {
++                return super.a(blockposition1.up());
++            }
++
++            while (blockposition1.getY() < this.b.getHeight() && this.b.getType(blockposition1).getMaterial() == Material.AIR) {
++                blockposition1 = blockposition1.up();
++            }
++
++            blockposition = blockposition1;
++        }
++
++        if (!this.b.getType(blockposition).getMaterial().isBuildable()) {
++            return super.a(blockposition);
++        } else {
++            for (blockposition1 = blockposition.up(); blockposition1.getY() < this.b.getHeight() && this.b.getType(blockposition1).getMaterial().isBuildable(); blockposition1 = blockposition1.up()) {
++                ;
++            }
++
++            return super.a(blockposition1);
++        }
++    }
++
++    public PathEntity a(Entity entity) {
++        return this.a(new BlockPosition(entity));
++    }
++
++    private int r() {
++        if (this.a.isInWater() && this.g()) {
++            int i = (int) this.a.getBoundingBox().b;
++            Block block = this.b.getType(new BlockPosition(MathHelper.floor(this.a.locX), i, MathHelper.floor(this.a.locZ))).getBlock();
++            int j = 0;
++
++            do {
++                if (block != Blocks.FLOWING_WATER && block != Blocks.WATER) {
++                    return i;
++                }
++
++                ++i;
++                block = this.b.getType(new BlockPosition(MathHelper.floor(this.a.locX), i, MathHelper.floor(this.a.locZ))).getBlock();
++                ++j;
++            } while (j <= 16);
++
++            return (int) this.a.getBoundingBox().b;
++        } else {
++            return (int) (this.a.getBoundingBox().b + 0.5D);
++        }
++    }
++
++    protected void d() {
++        super.d();
++
++        int i;
++        PathPoint pathpoint;
++        
++        for (i = 0; i < this.c.d(); ++i) {
++            try {//hose
++                pathpoint = this.c.a(i);
++                PathPoint pathpoint1 = i + 1 < this.c.d() ? this.c.a(i + 1) : null;
++                IBlockData iblockdata = this.b.getType(new BlockPosition(pathpoint.a, pathpoint.b, pathpoint.c));
++                Block block = iblockdata.getBlock();
++
++                if (block == Blocks.cauldron) {
++                    this.c.a(i, pathpoint.a(pathpoint.a, pathpoint.b + 1, pathpoint.c));
++                    if (pathpoint1 != null && pathpoint.b >= pathpoint1.b) {
++                        this.c.a(i + 1, pathpoint1.a(pathpoint1.a, pathpoint.b + 1, pathpoint1.c));
++                    }
++                }
++            } catch (Exception ex) {
++                this.b.getServer().getLogger().warning("nv d():"+ex);
++            }
++        }
++
++        if (this.f) {
++            if (this.b.h(new BlockPosition(MathHelper.floor(this.a.locX), (int) (this.a.getBoundingBox().b + 0.5D), MathHelper.floor(this.a.locZ)))) {
++                return;
++            }
++
++            for (i = 0; i < this.c.d(); ++i) {
++                pathpoint = this.c.a(i);
++                if (this.b.h(new BlockPosition(pathpoint.a, pathpoint.b, pathpoint.c))) {
++                    this.c.b(i - 1);
++                    return;
++                }
++            }
++        }
++
++    }
++
++    protected boolean a(Vec3D vec3d, Vec3D vec3d1, int i, int j, int k) {
++        int l = MathHelper.floor(vec3d.x);
++        int i1 = MathHelper.floor(vec3d.z);
++        double d0 = vec3d1.x - vec3d.x;
++        double d1 = vec3d1.z - vec3d.z;
++        double d2 = d0 * d0 + d1 * d1;
++
++        if (d2 < 1.0E-8D) {
++            return false;
++        } else {
++            double d3 = 1.0D / Math.sqrt(d2);
++
++            d0 *= d3;
++            d1 *= d3;
++            i += 2;
++            k += 2;
++            if (!this.a(l, (int) vec3d.y, i1, i, j, k, vec3d, d0, d1)) {
++                return false;
++            } else {
++                i -= 2;
++                k -= 2;
++                double d4 = 1.0D / Math.abs(d0);
++                double d5 = 1.0D / Math.abs(d1);
++                double d6 = (double) l - vec3d.x;
++                double d7 = (double) i1 - vec3d.z;
++
++                if (d0 >= 0.0D) {
++                    ++d6;
++                }
++
++                if (d1 >= 0.0D) {
++                    ++d7;
++                }
++
++                d6 /= d0;
++                d7 /= d1;
++                int j1 = d0 < 0.0D ? -1 : 1;
++                int k1 = d1 < 0.0D ? -1 : 1;
++                int l1 = MathHelper.floor(vec3d1.x);
++                int i2 = MathHelper.floor(vec3d1.z);
++                int j2 = l1 - l;
++                int k2 = i2 - i1;
++
++                do {
++                    if (j2 * j1 <= 0 && k2 * k1 <= 0) {
++                        return true;
++                    }
++
++                    if (d6 < d7) {
++                        d6 += d4;
++                        l += j1;
++                        j2 = l1 - l;
++                    } else {
++                        d7 += d5;
++                        i1 += k1;
++                        k2 = i2 - i1;
++                    }
++                } while (this.a(l, (int) vec3d.y, i1, i, j, k, vec3d, d0, d1));
++
++                return false;
++            }
++        }
++    }
++
++    private boolean a(int i, int j, int k, int l, int i1, int j1, Vec3D vec3d, double d0, double d1) {
++        int k1 = i - l / 2;
++        int l1 = k - j1 / 2;
++
++        if (!this.b(k1, j, l1, l, i1, j1, vec3d, d0, d1)) {
++            return false;
++        } else {
++            for (int i2 = k1; i2 < k1 + l; ++i2) {
++                for (int j2 = l1; j2 < l1 + j1; ++j2) {
++                    double d2 = (double) i2 + 0.5D - vec3d.x;
++                    double d3 = (double) j2 + 0.5D - vec3d.z;
++
++                    if (d2 * d0 + d3 * d1 >= 0.0D) {
++                        PathType pathtype = this.e.a(this.b, i2, j - 1, j2, this.a, l, i1, j1, true, true);
++
++                        if (pathtype == PathType.WATER) {
++                            return false;
++                        }
++
++                        if (pathtype == PathType.LAVA) {
++                            return false;
++                        }
++
++                        if (pathtype == PathType.OPEN) {
++                            return false;
++                        }
++
++                        pathtype = this.e.a(this.b, i2, j, j2, this.a, l, i1, j1, true, true);
++                        float f = this.a.a(pathtype);
++
++                        if (f < 0.0F || f >= 8.0F) {
++                            return false;
++                        }
++
++                        if (pathtype == PathType.DAMAGE_FIRE || pathtype == PathType.DANGER_FIRE || pathtype == PathType.DAMAGE_OTHER) {
++                            return false;
++                        }
++                    }
++                }
++            }
++
++            return true;
++        }
++    }
++
++    private boolean b(int i, int j, int k, int l, int i1, int j1, Vec3D vec3d, double d0, double d1) {
++        Iterator iterator = BlockPosition.a(new BlockPosition(i, j, k), new BlockPosition(i + l - 1, j + i1 - 1, k + j1 - 1)).iterator();
++
++        while (iterator.hasNext()) {
++            BlockPosition blockposition = (BlockPosition) iterator.next();
++            double d2 = (double) blockposition.getX() + 0.5D - vec3d.x;
++            double d3 = (double) blockposition.getZ() + 0.5D - vec3d.z;
++
++            if (d2 * d0 + d3 * d1 >= 0.0D) {
++                Block block = this.b.getType(blockposition).getBlock();
++
++                if (!block.b(this.b, blockposition)) {
++                    return false;
++                }
++            }
++        }
++
++        return true;
++    }
++
++    public void a(boolean flag) {
++        this.e.b(flag);
++    }
++
++    public void b(boolean flag) {
++        this.e.a(flag);
++    }
++
++    public boolean f() {
++        return this.e.c();
++    }
++
++    public void c(boolean flag) {
++        this.e.c(flag);
++    }
++
++    public boolean g() {
++        return this.e.e();
++    }
++
++    public void d(boolean flag) {
++        this.f = flag;
++    }
++}
 diff -Naur src_origin/main/java/net/minecraft/server/NavigationListener.java src/main/java/net/minecraft/server/NavigationListener.java
 --- src_origin/main/java/net/minecraft/server/NavigationListener.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/NavigationListener.java	2017-05-16 01:09:29.329001507 +0800
++++ src/main/java/net/minecraft/server/NavigationListener.java	2017-05-30 05:34:08.915665524 +0800
 @@ -0,0 +1,80 @@
 +package net.minecraft.server;
 +
@@ -835,7 +1586,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/NavigationListener.java src
 +public class NavigationListener implements IWorldAccess {
 +
 +    //private final List<NavigationAbstract> a = Lists.newArrayList();
-+    private final Queue<NavigationAbstract> a = Queues.newConcurrentLinkedQueue();
++    private final Queue<NavigationAbstract> a = Queues.newConcurrentLinkedQueue();//hose
 +
 +    public NavigationListener() {}
 +
@@ -906,7 +1657,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/NavigationListener.java src
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/PersistentVillage.java src/main/java/net/minecraft/server/PersistentVillage.java
 --- src_origin/main/java/net/minecraft/server/PersistentVillage.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/PersistentVillage.java	2017-05-16 01:09:29.518001525 +0800
++++ src/main/java/net/minecraft/server/PersistentVillage.java	2017-05-30 05:34:09.132665544 +0800
 @@ -0,0 +1,273 @@
 +package net.minecraft.server;
 +
@@ -1183,7 +1934,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/PersistentVillage.java src/
 +}
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/main/java/net/minecraft/server/PlayerChunkMap.java
 --- src_origin/main/java/net/minecraft/server/PlayerChunkMap.java	2017-05-15 13:09:53.595961699 +0800
-+++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2017-05-16 01:09:29.532001526 +0800
++++ src/main/java/net/minecraft/server/PlayerChunkMap.java	2017-05-30 05:34:09.146665545 +0800
 @@ -42,7 +42,8 @@
      private final WorldServer world;
      private final List<EntityPlayer> managedPlayers = Lists.newArrayList();
@@ -1194,18 +1945,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerChunkMap.java src/mai
      private final List<PlayerChunk> g = Lists.newLinkedList();
      private final List<PlayerChunk> h = Lists.newLinkedList();
      private final List<PlayerChunk> i = Lists.newArrayList();
-@@ -100,7 +101,7 @@
-         };
-     }
- 
--    public void flush() {
-+    public synchronized void flush() {//hose
-         long i = this.world.getTime();
-         int j;
-         PlayerChunk playerchunk;
 diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/java/net/minecraft/server/PlayerList.java
 --- src_origin/main/java/net/minecraft/server/PlayerList.java	2017-05-15 13:09:53.649961704 +0800
-+++ src/main/java/net/minecraft/server/PlayerList.java	2017-05-16 01:09:29.589001532 +0800
++++ src/main/java/net/minecraft/server/PlayerList.java	2017-05-30 05:34:09.207665551 +0800
 @@ -432,7 +432,8 @@
          // CraftBukkit end
  
@@ -1216,11 +1958,12 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/ja
          return playerQuitEvent.getQuitMessage(); // CraftBukkit
      }
  
-@@ -996,9 +997,11 @@
+@@ -996,9 +997,12 @@
      }
  
      public void sendAll(Packet packet, World world) {
 +        world.players.stream().forEach(pl -> ((EntityPlayer) pl).playerConnection.sendPacket(packet));
++        
 +        /*
          for (int i = 0; i < world.players.size(); ++i) {
              ((EntityPlayer) world.players.get(i)).playerConnection.sendPacket(packet);
@@ -1231,8 +1974,18 @@ diff -Naur src_origin/main/java/net/minecraft/server/PlayerList.java src/main/ja
      // CraftBukkit end
 diff -Naur src_origin/main/java/net/minecraft/server/RegionFileCache.java src/main/java/net/minecraft/server/RegionFileCache.java
 --- src_origin/main/java/net/minecraft/server/RegionFileCache.java	2017-05-15 13:09:53.717961710 +0800
-+++ src/main/java/net/minecraft/server/RegionFileCache.java	2017-05-16 01:09:29.657001538 +0800
-@@ -47,6 +47,7 @@
++++ src/main/java/net/minecraft/server/RegionFileCache.java	2017-05-30 05:34:09.279665558 +0800
+@@ -10,7 +10,8 @@
+ 
+ public class RegionFileCache {
+ 
+-    public static final Map<File, RegionFile> a = Maps.newHashMap(); // Spigot - private -> public
++    //public static final Map<File, RegionFile> a = Maps.newHashMap(); // Spigot - private -> public
++    public static final Map<File, RegionFile> a = Maps.newConcurrentMap();
+ 
+     public static synchronized RegionFile a(File file, int i, int j) {
+         File file1 = new File(file, "region");
+@@ -47,6 +48,7 @@
                  a();
              }
  
@@ -1240,56 +1993,9 @@ diff -Naur src_origin/main/java/net/minecraft/server/RegionFileCache.java src/ma
              RegionFile regionfile1 = new RegionFile(file2);
  
              RegionFileCache.a.put(file2, regionfile1);
-diff -Naur src_origin/main/java/net/minecraft/server/ServerNBTManager.java src/main/java/net/minecraft/server/ServerNBTManager.java
---- src_origin/main/java/net/minecraft/server/ServerNBTManager.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/main/java/net/minecraft/server/ServerNBTManager.java	2017-05-16 01:09:29.685001541 +0800
-@@ -0,0 +1,43 @@
-+package net.minecraft.server;
-+
-+import java.io.File;
-+import javax.annotation.Nullable;
-+
-+public class ServerNBTManager extends WorldNBTStorage {
-+
-+    public ServerNBTManager(File file, String s, boolean flag, DataConverterManager dataconvertermanager) {
-+        super(file, s, flag, dataconvertermanager);
-+    }
-+
-+    public IChunkLoader createChunkLoader(WorldProvider worldprovider) {
-+        File file = this.getDirectory();
-+        File file1;
-+
-+        if (worldprovider instanceof WorldProviderHell) {
-+            file1 = new File(file, "DIM-1");
-+            file1.mkdirs();
-+            return new ChunkRegionLoader(file1, this.a);
-+        } else if (worldprovider instanceof WorldProviderTheEnd) {
-+            file1 = new File(file, "DIM1");
-+            file1.mkdirs();
-+            return new ChunkRegionLoader(file1, this.a);
-+        } else {
-+            return new ChunkRegionLoader(file, this.a);
-+        }
-+    }
-+
-+    public void saveWorldData(WorldData worlddata, @Nullable NBTTagCompound nbttagcompound) {
-+        worlddata.e(19133);
-+        super.saveWorldData(worlddata, nbttagcompound);
-+    }
-+
-+    public void a() {
-+        try {
-+            FileIOThread.a().b();
-+        } catch (InterruptedException interruptedexception) {
-+            interruptedexception.printStackTrace();
-+        }
-+
-+        RegionFileCache.a();
-+    }
-+}
 diff -Naur src_origin/main/java/net/minecraft/server/VillageSiege.java src/main/java/net/minecraft/server/VillageSiege.java
 --- src_origin/main/java/net/minecraft/server/VillageSiege.java	2017-05-15 13:09:53.865961724 +0800
-+++ src/main/java/net/minecraft/server/VillageSiege.java	2017-05-16 01:09:29.826001554 +0800
++++ src/main/java/net/minecraft/server/VillageSiege.java	2017-05-30 05:34:09.456665574 +0800
 @@ -64,6 +64,58 @@
      }
  
@@ -1360,7 +2066,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/VillageSiege.java src/main/
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldData.java src/main/java/net/minecraft/server/WorldData.java
 --- src_origin/main/java/net/minecraft/server/WorldData.java	2017-05-15 13:09:53.902961727 +0800
-+++ src/main/java/net/minecraft/server/WorldData.java	2017-05-16 01:09:29.861001557 +0800
++++ src/main/java/net/minecraft/server/WorldData.java	2017-05-30 05:34:09.491665578 +0800
 @@ -630,7 +630,8 @@
          this.C = enumdifficulty;
          // CraftBukkit start
@@ -1373,28 +2079,28 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldData.java src/main/jav
          // CraftBukkit end
 diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/net/minecraft/server/World.java
 --- src_origin/main/java/net/minecraft/server/World.java	2017-05-15 13:09:53.897961727 +0800
-+++ src/main/java/net/minecraft/server/World.java	2017-05-16 01:09:29.855001557 +0800
-@@ -15,7 +15,10 @@
++++ src/main/java/net/minecraft/server/World.java	2017-05-30 05:34:09.503665579 +0800
+@@ -15,7 +15,9 @@
  
  // CraftBukkit start
  import com.google.common.collect.Maps;
 +import com.google.common.collect.Queues;
  import java.util.Map;
 +import java.util.Queue;
-+import java.util.concurrent.CopyOnWriteArrayList;
  import org.bukkit.Bukkit;
  import org.bukkit.block.BlockState;
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
-@@ -34,6 +37,8 @@
+@@ -34,6 +36,9 @@
      private int a = 63;
      protected boolean d;
      // Spigot start - guard entity list from removals
-+    public final List<Entity> entityList = new CopyOnWriteArrayList();//hose
++    public final Queue<Entity> entityList = Queues.newConcurrentLinkedQueue();//hose
++    public final Queue<Entity> entityList_remove = Queues.newConcurrentLinkedQueue();//hose
 +    /*
      public final List<Entity> entityList = new java.util.ArrayList<Entity>()
      {
          @Override
-@@ -57,14 +62,15 @@
+@@ -57,16 +62,19 @@
                  throw new java.util.ConcurrentModificationException();
              }
          }
@@ -1404,25 +2110,79 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      protected final List<Entity> f = Lists.newArrayList();
      public final List<TileEntity> tileEntityList = Lists.newArrayList();
      public final List<TileEntity> tileEntityListTick = Lists.newArrayList();
-     private final List<TileEntity> b = Lists.newArrayList();
+-    private final List<TileEntity> b = Lists.newArrayList();
++    //private final List<TileEntity> b = Lists.newArrayList();
++    private final Queue<TileEntity> b = Queues.newConcurrentLinkedQueue();
      private final List<TileEntity> tileEntityListUnload = Lists.newArrayList();
 -    public final List<EntityHuman> players = Lists.newArrayList();
 +    //public final List<EntityHuman> players = Lists.newArrayList();
 +    public final Queue<EntityHuman> players = Queues.newConcurrentLinkedQueue();//hose
      public final List<Entity> j = Lists.newArrayList();
-     protected final IntHashMap<Entity> entitiesById = new IntHashMap();
+-    protected final IntHashMap<Entity> entitiesById = new IntHashMap();
++    //protected final IntHashMap<Entity> entitiesById = new IntHashMap();
++    protected final Map<Integer, Entity> entitiesById = Maps.newConcurrentMap();//hose
      private final long I = 16777215L;
-@@ -1341,6 +1347,9 @@
+     private int J;
+     protected int l = (new Random()).nextInt();
+@@ -333,7 +341,7 @@
+         return this.isChunkLoaded(i, j, false) ? true : this.chunkProvider.e(i, j);
+     }
+ 
+-    public boolean setTypeAndData(BlockPosition blockposition, IBlockData iblockdata, int i) {
++    public boolean setTypeAndData(BlockPosition blockposition, IBlockData iblockdata, int i) {//hose
+         // CraftBukkit start - tree generation
+         if (this.captureTreeGeneration) {
+             BlockState blockstate = null;
+@@ -1155,13 +1163,15 @@
+         }
+ 
+         // CraftBukkit start - Decrement loop variable field if we've already ticked this entity
++        /*
+         int index = this.entityList.indexOf(entity);
+         if (index != -1) {
+             if (index <= this.tickPosition) {
+                 this.tickPosition--;
+             }
+             this.entityList.remove(index);
+-        }
++        }*/
++        this.entityList.remove(entity);
+         // CraftBukkit end
+         } // Spigot
+         this.c(entity);
+@@ -1341,6 +1351,9 @@
  
      public void b(BlockPosition blockposition, Block block, int i, int j) {}
  
 +    CrashReportSystemDetails crashreportsystemdetails1;//hose
 +    CrashReport crashreport1;
-+    public final Queue<Entity> entityList_remove = Queues.newConcurrentLinkedQueue();
++    //public final Queue<Entity> entityList_remove = Queues.newConcurrentLinkedQueue();
      public void tickEntities() {
          this.methodProfiler.a("entities");
          this.methodProfiler.a("global");
-@@ -1400,8 +1409,8 @@
+@@ -1383,12 +1396,16 @@
+         int j;
+ 
+         for (i = 0; i < this.f.size(); ++i) {
+-            entity = (Entity) this.f.get(i);
+-            int k = entity.ab;
++            try {
++                entity = (Entity) this.f.get(i);
++                int k = entity.ab;
+ 
+-            j = entity.ad;
+-            if (entity.aa && this.isChunkLoaded(k, j, true)) {
+-                this.getChunkAt(k, j).b(entity);
++                j = entity.ad;
++                if (entity.aa && this.isChunkLoaded(k, j, true)) {
++                    this.getChunkAt(k, j).b(entity);
++                }
++            } catch (Exception ex) {
++                
+             }
+         }
+ 
+@@ -1400,8 +1417,8 @@
          this.l();
          this.methodProfiler.c("regular");
  
@@ -1433,10 +2193,19 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
  
          org.spigotmc.ActivationRange.activateEntities(this); // Spigot
          timings.entityTick.startTiming(); // Spigot
-@@ -1409,6 +1418,59 @@
+@@ -1409,38 +1426,105 @@
          // CraftBukkit start - Use field for loop variable
          int entitiesThisCycle = 0;
          if (tickPosition < 0) tickPosition = 0;
+-        for (entityLimiter.initTick();
+-                entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
+-                tickPosition++, entitiesThisCycle++) {
+-            tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
+-            entity = (Entity) this.entityList.get(this.tickPosition);
+-            // CraftBukkit end
+-            Entity entity1 = entity.bB();
++        
++        
 +        entityLimiter.initTick();//hose
 +        entityList.parallelStream().forEach(ent -> {//hose
 +            if (!entityLimiter.shouldContinue()) {
@@ -1444,31 +2213,37 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +            }
 +            
 +            Entity entity1 = ent.bB();
-+
-+            if (entity1 != null) {
+ 
+             if (entity1 != null) {
+-                if (!entity1.dead && entity1.w(entity)) {
+-                    continue;
 +                if (!entity1.dead && entity1.w(ent)) {
 +                    return;
-+                }
-+
+                 }
+ 
+-                entity.stopRiding();
 +                ent.stopRiding();
-+            }
-+
-+            this.methodProfiler.a("tick");
+             }
+ 
+             this.methodProfiler.a("tick");
+-            if (!entity.dead && !(entity instanceof EntityPlayer)) {
 +            if (!ent.dead && !(ent instanceof EntityPlayer)) {
-+                try {
-+                    SpigotTimings.tickEntityTimer.startTiming(); // Spigot
+                 try {
+                     SpigotTimings.tickEntityTimer.startTiming(); // Spigot
+-                    this.h(entity);
 +                    this.h(ent);
-+                    SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
-+                } catch (Throwable throwable1) {
-+                    crashreport1 = CrashReport.a(throwable1, "Ticking entity");
-+                    crashreportsystemdetails1 = crashreport1.a("Entity being ticked");
+                     SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
+                 } catch (Throwable throwable1) {
+                     crashreport1 = CrashReport.a(throwable1, "Ticking entity");
+                     crashreportsystemdetails1 = crashreport1.a("Entity being ticked");
+-                    entity.appendEntityCrashDetails(crashreportsystemdetails1);
 +                    ent.appendEntityCrashDetails(crashreportsystemdetails1);
-+                    throw new ReportedException(crashreport1);
-+                }
-+            }
-+
-+            this.methodProfiler.b();
-+            this.methodProfiler.a("remove");
+                     throw new ReportedException(crashreport1);
+                 }
+             }
+ 
+             this.methodProfiler.b();
+             this.methodProfiler.a("remove");
 +            if (ent.dead) {
 +                int jj = ent.ab;
 +                int l = ent.ad;
@@ -1490,10 +2265,54 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +        this.entityList.removeAll(entityList_remove);
 +        entityList_remove.clear();
 +        /*
-         for (entityLimiter.initTick();
-                 entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
-                 tickPosition++, entitiesThisCycle++) {
-@@ -1456,7 +1518,7 @@
++        for (entityLimiter.initTick();
++                entitiesThisCycle < entityList.size() && (entitiesThisCycle % 10 != 0 || entityLimiter.shouldContinue());
++                tickPosition++, entitiesThisCycle++) {
++            tickPosition = (tickPosition < entityList.size()) ? tickPosition : 0;
++            try {
++                entity = (Entity) this.entityList.get(this.tickPosition);
++            } catch (Exception ex) {
++                continue;
++            } 
++            // CraftBukkit end
++            Entity entity1 = null;
++            try {
++                entity1 = entity.bB();
++            } catch (Exception ex) {
++                entity1 = null;
++            }
++
++            if (entity1 != null) {
++                if (!entity1.dead && entity1.w(entity)) {
++                    continue;
++                }
++
++                entity.stopRiding();
++            }
++
++            this.methodProfiler.a("tick");
++            try {
++                if (!entity.dead && !(entity instanceof EntityPlayer)) {
++                    try {
++                        SpigotTimings.tickEntityTimer.startTiming(); // Spigot
++                        this.h(entity);
++                        SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
++                    } catch (Throwable throwable1) {
++                        crashreport1 = CrashReport.a(throwable1, "Ticking entity");
++                        crashreportsystemdetails1 = crashreport1.a("Entity being ticked");
++                        entity.appendEntityCrashDetails(crashreportsystemdetails1);
++                        throw new ReportedException(crashreport1);
++                    }
++                }
++            } catch (Exception ex) {
++                continue;
++            } 
++            this.methodProfiler.b();
++            this.methodProfiler.a("remove");
+             if (entity.dead) {
+                 j = entity.ab;
+                 int l = entity.ad;
+@@ -1456,7 +1540,7 @@
              }
  
              this.methodProfiler.b();
@@ -1502,7 +2321,95 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          guardEntityList = false; // Spigot
  
          timings.entityTick.stopTiming(); // Spigot
-@@ -2139,11 +2201,13 @@
+@@ -1534,16 +1618,26 @@
+ 
+         this.methodProfiler.c("pendingBlockEntities");
+         if (!this.b.isEmpty()) {
++            
++            this.b.stream().filter(tileentity1 -> !tileentity1.y()).filter(tileentity1 -> this.isLoaded(tileentity1.getPosition())).forEach(tileentity1 -> {
++                Chunk chunk = this.getChunkAtWorldCoords(tileentity1.getPosition());
++                IBlockData iblockdata = chunk.getBlockData(tileentity1.getPosition());
++
++                chunk.a(tileentity1.getPosition(), tileentity1);
++                this.notify(tileentity1.getPosition(), iblockdata, iblockdata, 3);
++                // CraftBukkit start
++                // From above, don't screw this up - SPIGOT-1746
++                if (!this.tileEntityList.contains(tileentity1)) {
++                    this.a(tileentity1);
++                }
++                // CraftBukkit end
++            });
++            /*
+             for (int i1 = 0; i1 < this.b.size(); ++i1) {
+                 TileEntity tileentity1 = (TileEntity) this.b.get(i1);
+ 
+                 if (!tileentity1.y()) {
+-                    /* CraftBukkit start - Order matters, moved down
+-                    if (!this.tileEntityList.contains(tileentity1)) {
+-                        this.a(tileentity1);
+-                    }
+-                    // CraftBukkit end */
+-
++                    
+                     if (this.isLoaded(tileentity1.getPosition())) {
+                         Chunk chunk = this.getChunkAtWorldCoords(tileentity1.getPosition());
+                         IBlockData iblockdata = chunk.getBlockData(tileentity1.getPosition());
+@@ -1558,7 +1652,7 @@
+                         // CraftBukkit end
+                     }
+                 }
+-            }
++            }*/
+ 
+             this.b.clear();
+         }
+@@ -1672,6 +1766,15 @@
+ 
+             this.methodProfiler.b();
+             if (flag && entity.aa) {
++                
++                entity.bx().forEach(entity1 -> {//hose
++                    if (!entity1.dead && entity1.bB() == entity) {
++                        this.h(entity1);
++                    } else {
++                        entity1.stopRiding();
++                    }
++                });
++                /*
+                 Iterator iterator = entity.bx().iterator();
+ 
+                 while (iterator.hasNext()) {
+@@ -1682,7 +1785,7 @@
+                     } else {
+                         entity1.stopRiding();
+                     }
+-                }
++                }*/
+             }
+ 
+             entity.tickTimer.stopTiming(); // Spigot
+@@ -1955,13 +2058,19 @@
+ 
+     @Nullable
+     private TileEntity F(BlockPosition blockposition) {
++        for (TileEntity tileentity: this.b) {
++            if (!tileentity.y() && tileentity.getPosition().equals(blockposition)) {
++                return tileentity;
++            }
++        }
++        /*
+         for (int i = 0; i < this.b.size(); ++i) {
+             TileEntity tileentity = (TileEntity) this.b.get(i);
+ 
+             if (!tileentity.y() && tileentity.getPosition().equals(blockposition)) {
+                 return tileentity;
+             }
+-        }
++        }*/
+ 
+         return null;
+     }
+@@ -2139,11 +2248,13 @@
                  this.o = MathHelper.a(this.o, 0.0F, 1.0F);
  
                  // CraftBukkit start
@@ -1517,7 +2424,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
                  // CraftBukkit end
              }
          }
-@@ -2689,7 +2753,23 @@
+@@ -2689,7 +2800,23 @@
      public EntityHuman a(double d0, double d1, double d2, double d3, Predicate<Entity> predicate) {
          double d4 = -1.0D;
          EntityHuman entityhuman = null;
@@ -1541,7 +2448,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (int i = 0; i < this.players.size(); ++i) {
              EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
              // CraftBukkit start - Fixed an NPE
-@@ -2706,12 +2786,14 @@
+@@ -2706,12 +2833,14 @@
                      entityhuman = entityhuman1;
                  }
              }
@@ -1557,7 +2464,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (int i = 0; i < this.players.size(); ++i) {
              EntityHuman entityhuman = (EntityHuman) this.players.get(i);
  
-@@ -2724,7 +2806,7 @@
+@@ -2724,7 +2853,7 @@
              }
          }
  
@@ -1566,7 +2473,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      }
  
      @Nullable
-@@ -2741,7 +2823,37 @@
+@@ -2741,7 +2870,37 @@
      public EntityHuman a(double d0, double d1, double d2, double d3, double d4, @Nullable Function<EntityHuman, Double> function, @Nullable Predicate<EntityHuman> predicate) {
          double d5 = -1.0D;
          EntityHuman entityhuman = null;
@@ -1579,7 +2486,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +                if (entityhuman1.isSneaking()) {
 +                    d7 = d3 * 0.800000011920929D;
 +                }
-+
+ 
 +                if (entityhuman1.isInvisible()) {
 +                    float f = entityhuman1.cO();
 +
@@ -1589,7 +2496,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
 +
 +                    d7 *= (double) (0.7F * f);
 +                }
- 
++
 +                if (function != null) {
 +                    d7 *= ((Double) Objects.firstNonNull(function.apply(entityhuman1), Double.valueOf(1.0D))).doubleValue();
 +                }
@@ -1604,7 +2511,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
          for (int i = 0; i < this.players.size(); ++i) {
              EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
  
-@@ -2772,33 +2884,45 @@
+@@ -2772,33 +2931,45 @@
                      entityhuman = entityhuman1;
                  }
              }
@@ -1655,16 +2562,70 @@ diff -Naur src_origin/main/java/net/minecraft/server/World.java src/main/java/ne
      }
 diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/java/net/minecraft/server/WorldServer.java
 --- src_origin/main/java/net/minecraft/server/WorldServer.java	2017-05-15 13:09:53.994961736 +0800
-+++ src/main/java/net/minecraft/server/WorldServer.java	2017-05-16 01:09:29.943001565 +0800
-@@ -15,6 +15,7 @@
++++ src/main/java/net/minecraft/server/WorldServer.java	2017-05-30 05:34:09.599665588 +0800
+@@ -3,6 +3,7 @@
+ import com.google.common.base.Predicate;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Maps;
++import com.google.common.collect.Queues;
+ import com.google.common.collect.Sets;
+ import com.google.common.util.concurrent.ListenableFuture;
+ import java.io.File;
+@@ -11,10 +12,16 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Queue;
+ import java.util.Random;
  import java.util.Set;
  import java.util.TreeSet;
  import java.util.UUID;
++import java.util.concurrent.Callable;
++import java.util.concurrent.ConcurrentSkipListSet;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.FutureTask;
 +import java.util.concurrent.RecursiveAction;
  import javax.annotation.Nullable;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
-@@ -226,7 +227,12 @@
+@@ -29,6 +36,7 @@
+ import org.bukkit.event.block.BlockFormEvent;
+ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+ import org.bukkit.event.weather.LightningStrikeEvent;
++import org.spigotmc.TickLimiter;
+ // CraftBukkit end
+ 
+ public class WorldServer extends World implements IAsyncTaskHandler {
+@@ -39,7 +47,8 @@
+     private final PlayerChunkMap manager;
+     // private final Set<NextTickListEntry> nextTickListHash = Sets.newHashSet();
+     private final HashTreeSet<NextTickListEntry> nextTickList = new HashTreeSet<NextTickListEntry>(); // CraftBukkit - HashTreeSet
+-    private final Map<UUID, Entity> entitiesByUUID = Maps.newHashMap();
++    //private final Map<UUID, Entity> entitiesByUUID = Maps.newHashMap();
++    private final Map<UUID, Entity> entitiesByUUID = Maps.newConcurrentMap();//hose
+     public boolean savingDisabled;
+     private boolean O;
+     private int emptyTime;
+@@ -48,7 +57,8 @@
+     protected final VillageSiege siegeManager = new VillageSiege(this);
+     private final WorldServer.BlockActionDataList[] S = new WorldServer.BlockActionDataList[] { new WorldServer.BlockActionDataList(null), new WorldServer.BlockActionDataList(null)};
+     private int T;
+-    private final List<NextTickListEntry> U = Lists.newArrayList();
++    //private final List<NextTickListEntry> U = Lists.newArrayList();
++    private final Queue<NextTickListEntry> U = Queues.newConcurrentLinkedQueue();
+ 
+     // CraftBukkit start
+     public final int dimension;
+@@ -203,7 +213,7 @@
+         }
+     }
+     // CraftBukkit end
+-
++    
+     public void doTick() {
+         super.doTick();
+         if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {
+@@ -226,7 +236,12 @@
          long time = this.worldData.getTime();
          if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && (this instanceof WorldServer && this.players.size() > 0)) {
              timings.mobSpawn.startTiming(); // Spigot
@@ -1678,29 +2639,35 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              timings.mobSpawn.stopTiming(); // Spigot
              // CraftBukkit end
          }
-@@ -256,7 +262,9 @@
-         timings.doTickTiles.stopTiming(); // Spigot
+@@ -257,6 +272,8 @@
          this.methodProfiler.c("chunkMap");
          timings.doChunkMap.startTiming(); // Spigot
--        this.manager.flush();
-+        //this.manager.flush();
-+        cmf cmft = new cmf(this.manager);
-+        cmft.fork();
+         this.manager.flush();
++        /*cmf cmft = new cmf(this.manager);
++        cmft.fork();*/
          timings.doChunkMap.stopTiming(); // Spigot
          this.methodProfiler.c("village");
          timings.doVillages.startTiming(); // Spigot
-@@ -386,7 +394,9 @@
+@@ -386,12 +403,16 @@
          this.methodProfiler.a("playerCheckLight");
          if (spigotConfig.randomLightUpdates && !this.players.isEmpty()) { // Spigot
              int i = this.random.nextInt(this.players.size());
 -            EntityHuman entityhuman = (EntityHuman) this.players.get(i);
 +            //EntityHuman entityhuman = (EntityHuman) this.players.get(i);
-+            ArrayList rndarr = new ArrayList(this.players);
++            ArrayList rndarr = new ArrayList(this.players);//hose
 +            EntityHuman entityhuman = (EntityHuman) rndarr.get(i);
              int j = MathHelper.floor(entityhuman.locX) + this.random.nextInt(11) - 5;
              int k = MathHelper.floor(entityhuman.locY) + this.random.nextInt(11) - 5;
              int l = MathHelper.floor(entityhuman.locZ) + this.random.nextInt(11) - 5;
-@@ -623,8 +633,9 @@
+ 
+-            this.w(new BlockPosition(j, k, l));
++            //this.w(new BlockPosition(j, k, l));
++            clight cl = new clight(j, k, l);//hose
++            cl.fork();
+         }
+ 
+         this.methodProfiler.b();
+@@ -623,8 +644,9 @@
          super.l();
          this.methodProfiler.c("players");
  
@@ -1712,8 +2679,22 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
              Entity entity1 = entity.bB();
  
              if (entity1 != null) {
-@@ -696,6 +707,9 @@
+@@ -670,7 +692,8 @@
+     public void m() {
+         this.emptyTime = 0;
+     }
+-
++    
++    private TickLimiter pendingLimiter = new TickLimiter(10);
+     public boolean a(boolean flag) {
+         if (this.worldData.getType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+             return false;
+@@ -693,9 +716,12 @@
+                 this.methodProfiler.a("cleaning");
  
+                 NextTickListEntry nextticklistentry;
+-
++                //System.out.println(nextTickList.size());
                  for (int j = 0; j < i; ++j) {
                      nextticklistentry = (NextTickListEntry) this.nextTickList.first();
 +                    if (nextticklistentry == null) {
@@ -1722,7 +2703,95 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
                      if (!flag && nextticklistentry.b > this.worldData.getTime()) {
                          break;
                      }
-@@ -1278,17 +1292,20 @@
+@@ -709,8 +735,12 @@
+                 this.methodProfiler.b();
+                 this.methodProfiler.a("ticking");
+                 Iterator iterator = this.U.iterator();
+-
++                //long tickst = System.currentTimeMillis();
++                pendingLimiter.initTick();
+                 while (iterator.hasNext()) {
++                    if (!pendingLimiter.shouldContinue()) {
++                        break;
++                    }
+                     nextticklistentry = (NextTickListEntry) iterator.next();
+                     iterator.remove();
+                     boolean flag1 = false;
+@@ -733,9 +763,9 @@
+                         this.a(nextticklistentry.a, nextticklistentry.a(), 0);
+                     }
+                 }
+-
++                //long ticket = System.currentTimeMillis();
+                 this.methodProfiler.b();
+-                this.U.clear();
++                //this.U.clear();
+                 return !this.nextTickList.isEmpty();
+             }
+         }
+@@ -1068,6 +1098,12 @@
+ 
+     public void a(Collection<Entity> collection) {
+         ArrayList arraylist = Lists.newArrayList(collection);
++        
++        arraylist.stream().filter(entity -> this.j((Entity)entity)).forEach(entity -> {//hose
++            this.entityList.add((Entity)entity);
++            this.b((Entity)entity);
++        });
++        /*
+         Iterator iterator = arraylist.iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -1077,7 +1113,7 @@
+                 this.entityList.add(entity);
+                 this.b(entity);
+             }
+-        }
++        }*/
+ 
+     }
+ 
+@@ -1111,7 +1147,8 @@
+ 
+     protected void b(Entity entity) {
+         super.b(entity);
+-        this.entitiesById.a(entity.getId(), entity);
++        //this.entitiesById.a(entity.getId(), entity);
++        this.entitiesById.put(entity.getId(), entity);//hose
+         this.entitiesByUUID.put(entity.getUniqueID(), entity);
+         Entity[] aentity = entity.aT();
+ 
+@@ -1122,7 +1159,8 @@
+             for (int j = 0; j < i; ++j) {
+                 Entity entity1 = aentity1[j];
+ 
+-                this.entitiesById.a(entity1.getId(), entity1);
++                //this.entitiesById.a(entity1.getId(), entity1);
++                this.entitiesById.put(entity1.getId(), entity1);//hose
+             }
+         }
+ 
+@@ -1130,7 +1168,8 @@
+ 
+     protected void c(Entity entity) {
+         super.c(entity);
+-        this.entitiesById.d(entity.getId());
++        //this.entitiesById.d(entity.getId());
++        this.entitiesById.remove(entity.getId());//hose
+         this.entitiesByUUID.remove(entity.getUniqueID());
+         Entity[] aentity = entity.aT();
+ 
+@@ -1141,7 +1180,8 @@
+             for (int j = 0; j < i; ++j) {
+                 Entity entity1 = aentity1[j];
+ 
+-                this.entitiesById.d(entity1.getId());
++                //this.entitiesById.d(entity1.getId());
++                this.entitiesById.remove(entity1.getId());//hose
+             }
+         }
+ 
+@@ -1278,17 +1318,20 @@
          // */
          if (flag != this.W()) {
              // Only send weather packets to those affected
@@ -1746,7 +2815,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
          // CraftBukkit end
  
      }
-@@ -1326,7 +1343,16 @@
+@@ -1326,7 +1369,16 @@
      public void sendParticles(EntityPlayer sender, EnumParticle enumparticle, boolean flag, double d0, double d1, double d2, int i, double d3, double d4, double d5, double d6, int... aint) {
          // CraftBukkit end
          PacketPlayOutWorldParticles packetplayoutworldparticles = new PacketPlayOutWorldParticles(enumparticle, flag, (float) d0, (float) d1, (float) d2, (float) d3, (float) d4, (float) d5, (float) d6, i, aint);
@@ -1755,15 +2824,15 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +            if (sender != null && !((EntityPlayer)entityplayer).getBukkitEntity().canSee(sender.getBukkitEntity())) continue; // CraftBukkit
 +            BlockPosition blockposition = ((EntityPlayer)entityplayer).getChunkCoordinates();
 +            double d7 = blockposition.distanceSquared(d0, d1, d2);
- 
 +
+ 
 +            this.a((EntityPlayer)entityplayer, flag, d0, d1, d2, packetplayoutworldparticles);
 +        }
 +        /*
          for (int j = 0; j < this.players.size(); ++j) {
              EntityPlayer entityplayer = (EntityPlayer) this.players.get(j);
              if (sender != null && !entityplayer.getBukkitEntity().canSee(sender.getBukkitEntity())) continue; // CraftBukkit
-@@ -1335,7 +1361,7 @@
+@@ -1335,7 +1387,7 @@
  
  
              this.a(entityplayer, flag, d0, d1, d2, packetplayoutworldparticles);
@@ -1772,7 +2841,7 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
  
      }
  
-@@ -1385,4 +1411,37 @@
+@@ -1385,4 +1437,71 @@
              this();
          }
      }
@@ -1809,22 +2878,86 @@ diff -Naur src_origin/main/java/net/minecraft/server/WorldServer.java src/main/j
 +        
 +    }
 +    
++    public class clight extends RecursiveAction {
++        int j, k, l;
++        
++        public clight(int j, int k, int l) {
++            this.l = l;
++            this.j = j;
++            this.k = k;
++        }
++        
++        @Override
++        protected void compute() {
++            try {
++                w(new BlockPosition(this.j, this.k, this.l));
++            } catch (Exception ex) {
++                LogManager.getLogger().warn("check light warn: "+ex);
++            }
++        }
++        
++    }
++    
++    
++    public class doSound extends RecursiveAction {
++        
++        @Override
++        protected void compute() {
++            try {
++                ao();
++            } catch (Exception ex) {
++                LogManager.getLogger().warn("do sound: "+ex);
++            }
++        }
++        
++    }
++    
  }
+diff -Naur src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
+--- src_origin/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java	2017-05-15 13:09:54.913961822 +0800
++++ src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java	2017-05-30 05:34:10.548665676 +0800
+@@ -8,6 +8,7 @@
+ 
+ public class ChunkIOExecutor {
+     static final int BASE_THREADS = 1;
++    static final int NOW_THREADS = 1;
+     static final int PLAYERS_PER_THREAD = 50;
+ 
+     private static final AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException> instance = new AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException>(new ChunkIOProvider(), BASE_THREADS);
+@@ -27,7 +28,9 @@
+ 
+     public static void adjustPoolSize(int players) {
+         int size = Math.max(BASE_THREADS, (int) Math.ceil(players / PLAYERS_PER_THREAD));
+-        instance.setActiveThreads(size);
++        if (size != NOW_THREADS) {
++            instance.setActiveThreads(size);
++        }
+     }
+ 
+     public static void tick() {
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 --- src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2017-05-15 13:09:55.835961908 +0800
-+++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2017-05-16 01:09:31.831001741 +0800
-@@ -500,7 +500,9 @@
++++ src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java	2017-05-30 05:34:11.578665773 +0800
+@@ -500,6 +500,18 @@
                  cause = DamageCause.CONTACT;
              } else if (source == DamageSource.HOT_FLOOR) {
                  cause = DamageCause.HOT_FLOOR;
--            } else {
 +            } else if (source == DamageSource.CRAMMING) {//hose
 +                cause = DamageCause.CRAMMING;
-+             } else {
++            } else if (source == DamageSource.DROWN) {//hose
++                cause = DamageCause.DROWNING;
++            } else if (source == DamageSource.FALL) {//hose
++                cause = DamageCause.FALL;
++            } else if (source == DamageSource.STUCK) {//hose
++                cause = DamageCause.SUFFOCATION;
++            } else if (source == DamageSource.FIRE) {//hose
++                cause = DamageCause.FIRE;             
++            } else if (source == DamageSource.BURN) {//hose
++                cause = DamageCause.FIRE_TICK;                             
+             } else {
                  throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex));
              }
-             EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
-@@ -557,8 +559,12 @@
+@@ -557,8 +569,12 @@
              cause = DamageCause.CRAMMING;
          } else if (source == DamageSource.GENERIC) {
              cause = DamageCause.CUSTOM;
@@ -1840,16 +2973,16 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.j
          }
 diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java
 --- src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2017-05-15 13:09:56.791961998 +0800
-+++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2017-05-16 01:09:32.809001833 +0800
-@@ -1,15 +1,17 @@
++++ src/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java	2017-05-30 05:34:12.587665867 +0800
+@@ -1,15 +1,19 @@
  package org.bukkit.craftbukkit.util;
  
 +import com.google.common.collect.Sets;
  import java.util.Collection;
--import java.util.HashSet;
+ import java.util.HashSet;
  import java.util.Iterator;
  import java.util.Set;
--import java.util.TreeSet;
+ import java.util.TreeSet;
 +import java.util.concurrent.ConcurrentSkipListSet;
  
  public class HashTreeSet<V> implements Set<V> {
@@ -1863,7 +2996,7 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
  
      public HashTreeSet() {
  
-@@ -110,8 +112,11 @@
+@@ -110,8 +114,20 @@
          tree.clear();
      }
  
@@ -1876,10 +3009,19 @@ diff -Naur src_origin/main/java/org/bukkit/craftbukkit/util/HashTreeSet.java src
 +        return null;
      }
  
++    public V pollfirst() {//hose
++        if (tree.size() > 0) {
++            V v = tree.first();
++            hash.remove(v);
++            tree.remove(v);
++            return v;
++        }
++        return null;
++    }
  }
 diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/org/spigotmc/ActivationRange.java
 --- src_origin/main/java/org/spigotmc/ActivationRange.java	2017-05-15 13:09:51.314961485 +0800
-+++ src/main/java/org/spigotmc/ActivationRange.java	2017-05-16 01:09:27.225001310 +0800
++++ src/main/java/org/spigotmc/ActivationRange.java	2017-05-30 05:34:06.694665316 +0800
 @@ -1,6 +1,7 @@
  package org.spigotmc;
  
@@ -1900,7 +3042,7 @@ diff -Naur src_origin/main/java/org/spigotmc/ActivationRange.java src/main/java/
              {
 diff -Naur src_origin/main/java/org/spigotmc/AsyncCatcher.java src/main/java/org/spigotmc/AsyncCatcher.java
 --- src_origin/main/java/org/spigotmc/AsyncCatcher.java	2017-05-15 13:09:51.314961485 +0800
-+++ src/main/java/org/spigotmc/AsyncCatcher.java	2017-05-16 01:09:27.220001310 +0800
++++ src/main/java/org/spigotmc/AsyncCatcher.java	2017-05-30 05:34:06.686665315 +0800
 @@ -11,7 +11,7 @@
      {
          if ( enabled && Thread.currentThread() != MinecraftServer.getServer().primaryThread )
